@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PersonaType } from '../types';
 import { AdminPanel } from './AdminPanel';
-import { Moon, Sun, Briefcase, UserCheck, Menu, X } from 'lucide-react';
+import { Moon, Sun, Briefcase, UserCheck } from 'lucide-react';
 
 export type AppView =
   | 'pipeline'
@@ -31,7 +31,6 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   // State for dynamically rendered white logo URL
   const [whiteLogoUrl, setWhiteLogoUrl] = useState<string>('/huntington-logo-white.png');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   // Use useEffect to load the Huntington Bank logo and dynamically transform pixels to pure white
   useEffect(() => {
@@ -69,7 +68,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-[#003319] bg-[#004724] text-white shadow-md">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 h-22 flex items-center justify-between">
         
         {/* Left: Huntington Bank Official Logo & Horizon Title */}
         <div
@@ -89,7 +88,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Center: Contextual Navigation Tabs (Swiss Editorial Underline Indicators - No White Ovals) */}
-        <nav className="hidden lg:flex items-center gap-6">
+        <nav className="hidden lg:flex items-center gap-7">
           {persona === 'commercial_rm' ? (
             <>
               <button
@@ -175,22 +174,6 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             </>
           )}
-
-          {/* Desktop Executive Briefing Tab */}
-          <div className="h-4 w-px bg-white/20" />
-          <button
-            onClick={() => onViewChange('executive')}
-            className={`relative py-2.5 text-xs font-bold uppercase tracking-wider transition ${
-              activeView === 'executive'
-                ? 'text-white'
-                : 'text-emerald-200/75 hover:text-white'
-            }`}
-          >
-            Executive Briefing
-            {activeView === 'executive' && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#7ECF1C] rounded-full" />
-            )}
-          </button>
         </nav>
 
         {/* Right: Persona Switcher, Theme Toggle, and Mandatory Admin Panel Gear */}
@@ -242,93 +225,15 @@ export const Header: React.FC<HeaderProps> = ({
             {isDark ? <Sun className="w-4 h-4 text-[#A9D42C]" /> : <Moon className="w-4 h-4" />}
           </button>
 
-          {/* Mandatory Admin Panel Gear Icon */}
+          {/* Mandatory Admin Panel Gear Icon (far right) */}
           <AdminPanel
             appName="Huntington Horizon"
             brandKitUrl="/brand_kit.html"
             demoScriptUrl="/demo_script.html"
           />
-
-          {/* Mobile Navigation Toggle (visible on < lg screens) */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 rounded-full text-emerald-100 hover:text-white hover:bg-white/10 transition"
-            aria-label="Toggle Navigation Menu"
-          >
-            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
         </div>
 
       </div>
-
-      {/* Mobile Navigation Dropdown Drawer */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden bg-[#003319] border-t border-emerald-800/80 px-6 py-4 space-y-1 shadow-lg">
-          {persona === 'commercial_rm' ? (
-            <>
-              <button
-                onClick={() => { onViewChange('pipeline'); setIsMobileMenuOpen(false); }}
-                className={`block w-full text-left py-2.5 px-3.5 rounded-lg text-xs font-bold uppercase tracking-wider transition ${
-                  activeView === 'pipeline' ? 'bg-[#006738] text-white' : 'text-emerald-200/80 hover:text-white'
-                }`}
-              >
-                Payoff Pipeline
-              </button>
-              <button
-                onClick={() => { onViewChange('analysis'); setIsMobileMenuOpen(false); }}
-                className={`block w-full text-left py-2.5 px-3.5 rounded-lg text-xs font-bold uppercase tracking-wider transition ${
-                  activeView === 'analysis' ? 'bg-[#006738] text-white' : 'text-emerald-200/80 hover:text-white'
-                }`}
-              >
-                Deal Analysis
-              </button>
-              <button
-                onClick={() => { onViewChange('retention'); setIsMobileMenuOpen(false); }}
-                className={`block w-full text-left py-2.5 px-3.5 rounded-lg text-xs font-bold uppercase tracking-wider transition ${
-                  activeView === 'retention' ? 'bg-[#006738] text-white' : 'text-emerald-200/80 hover:text-white'
-                }`}
-              >
-                Retention &amp; Settlement
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => { onViewChange('wealth_queue'); setIsMobileMenuOpen(false); }}
-                className={`block w-full text-left py-2.5 px-3.5 rounded-lg text-xs font-bold uppercase tracking-wider transition ${
-                  activeView === 'wealth_queue' ? 'bg-[#006738] text-white' : 'text-emerald-200/80 hover:text-white'
-                }`}
-              >
-                Client Queue
-              </button>
-              <button
-                onClick={() => { onViewChange('wealth_dossier'); setIsMobileMenuOpen(false); }}
-                className={`block w-full text-left py-2.5 px-3.5 rounded-lg text-xs font-bold uppercase tracking-wider transition ${
-                  activeView === 'wealth_dossier' ? 'bg-[#006738] text-white' : 'text-emerald-200/80 hover:text-white'
-                }`}
-              >
-                Onboarding Dossier
-              </button>
-              <button
-                onClick={() => { onViewChange('wealth_strategy'); setIsMobileMenuOpen(false); }}
-                className={`block w-full text-left py-2.5 px-3.5 rounded-lg text-xs font-bold uppercase tracking-wider transition ${
-                  activeView === 'wealth_strategy' ? 'bg-[#006738] text-white' : 'text-emerald-200/80 hover:text-white'
-                }`}
-              >
-                Portfolio Strategy
-              </button>
-            </>
-          )}
-          <button
-            onClick={() => { onViewChange('executive'); setIsMobileMenuOpen(false); }}
-            className={`block w-full text-left py-2.5 px-3.5 rounded-lg text-xs font-bold uppercase tracking-wider transition ${
-              activeView === 'executive' ? 'bg-[#006738] text-white' : 'text-emerald-200/80 hover:text-white'
-            }`}
-          >
-            Executive Briefing
-          </button>
-        </div>
-      )}
     </header>
   );
 };
