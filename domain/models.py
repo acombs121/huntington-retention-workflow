@@ -34,9 +34,12 @@ class PayoffStatement(BaseModel):
     submarket_cap_rate: float = 0.075
     known_hban_balances: float = 2100000.00
     managing_member: str = "Marcus Vance"
+    primary_guarantor: Optional[str] = None
     seller_entity: Optional[str] = None
 
     def model_post_init(self, __context):
+        if not self.primary_guarantor:
+            self.primary_guarantor = self.managing_member
         if not self.seller_entity:
             self.seller_entity = self.borrower_entity
 

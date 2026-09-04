@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { AlertCircle, X } from 'lucide-react';
 import { Header, AppView } from './components/Header';
 import { PayoffPipelineView } from './views/PayoffPipelineView';
 import { DealAnalysisView } from './views/DealAnalysisView';
@@ -68,6 +69,24 @@ export const App: React.FC = () => {
 
       {/* 2. Main Focused Workspace: Exactly ONE Thing Each Page Does */}
       <main className="flex-1 w-full">
+        {state.error && (
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-6">
+            <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" />
+                <p className="text-xs sm:text-sm font-semibold text-rose-800 dark:text-rose-200">{state.error}</p>
+              </div>
+              <button
+                onClick={actions.clearError}
+                className="p-1.5 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50 transition"
+                title="Dismiss error"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {activeView === 'pipeline' && (
           <PayoffPipelineView
             items={state.payoffItems}

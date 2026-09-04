@@ -13,6 +13,7 @@ Adheres strictly to the Google Cloud Run Demo Standard:
 """
 import os
 import logging
+import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, Dict, Any, List
@@ -81,13 +82,21 @@ except Exception as e:
 # In-Memory State & Domain Data
 # =====================================================================
 
-quarantine_state = {
-    "quarantined": True,
-    "verbal_consent_recorded": False,
-    "recorded_by": None,
-    "consent_timestamp": None,
-    "audit_hash": "SHA256-GLBA-HBAN-99418-PENDING",
-    "compliance_notes": "Awaiting Commercial RM verbal opt-in during T-12 client touchpoint per 15 U.S.C. § 6801 (GLBA) and 12 C.F.R. § 1016.11."
+def get_default_quarantine(payoff_id: str) -> Dict[str, Any]:
+    return {
+        "payoff_id": payoff_id,
+        "quarantined": True,
+        "verbal_consent_recorded": False,
+        "recorded_by": None,
+        "consent_timestamp": None,
+        "audit_hash": f"SHA256-GLBA-HBAN-{payoff_id}-PENDING",
+        "compliance_notes": f"Awaiting Commercial RM verbal opt-in for {payoff_id} per 15 U.S.C. § 6801 (GLBA) and 12 C.F.R. § 1016.11."
+    }
+
+quarantine_states: Dict[str, Dict[str, Any]] = {
+    "PO-2026-8821": get_default_quarantine("PO-2026-8821"),
+    "PO-2026-7492": get_default_quarantine("PO-2026-7492"),
+    "PO-2026-6108": get_default_quarantine("PO-2026-6108"),
 }
 
 PAYOFF_QUEUE = [
@@ -117,6 +126,8 @@ PAYOFF_QUEUE = [
         "estimated_net_equity": 2902700.00,
         "known_hban_balances": 2100000.00,
         "total_hban_position": 5002700.00,
+        "managing_member": "Marcus Vance",
+        "primary_guarantor": "Marcus Vance",
         "tax_strategy_detected": "Taxable Cash-Out (1031 Eligible)",
         "status": "Staged for Call"
     },
@@ -146,6 +157,8 @@ PAYOFF_QUEUE = [
         "estimated_net_equity": 1588250.00,
         "known_hban_balances": 890000.00,
         "total_hban_position": 2478250.00,
+        "managing_member": "Thomas Buckeye",
+        "primary_guarantor": "Thomas Buckeye",
         "tax_strategy_detected": "IRC §1031 Exchange (QI Routed)",
         "status": "Document Parsing Complete"
     },
@@ -175,6 +188,8 @@ PAYOFF_QUEUE = [
         "estimated_net_equity": 2222600.00,
         "known_hban_balances": 1450000.00,
         "total_hban_position": 3672600.00,
+        "managing_member": "Dr. Robert Miller",
+        "primary_guarantor": "Dr. Robert Miller",
         "tax_strategy_detected": "Taxable Cash-Out",
         "status": "Monitoring Queue"
     }
@@ -182,7 +197,9 @@ PAYOFF_QUEUE = [
 
 
 def get_payoff_by_id(payoff_id: str) -> PayoffStatement:
-    """Adapts in-memory payoff queue items to the canonical PayoffStatement domain model."""
+    """Adapts in-memory payoff queue items to the canonical PayoffStatement domain model with safe fallback."""
+    if not PAYOFF_QUEUE:
+        raise HTTPException(status_code=404, detail="Payoff queue is empty")
     raw = next((p for p in PAYOFF_QUEUE if p["id"] == payoff_id), PAYOFF_QUEUE[0])
     return PayoffStatement(**{k: v for k, v in raw.items() if k in PayoffStatement.model_fields})
 
@@ -229,6 +246,7 @@ class ValuationResponse(BaseModel):
     occ_sr11_7_designation: str
 
 class QuarantineToggleRequest(BaseModel):
+    payoff_id: Optional[str] = "PO-2026-8821"
     verbal_consent_recorded: bool
     recorded_by: str = "Greg Miller (Commercial RM)"
     client_notes: Optional[str] = "Borrower affirmed willingness to review Huntington Max$aver ICS and Private Wealth advisory options."
@@ -493,10 +511,13 @@ async def calculate_valuation(
 
 @app.get("/api/quarantine")
 async def get_quarantine_status(
+    payoff_id: str = Query("PO-2026-8821"),
     user: Dict[str, Any] = Depends(get_authenticated_user)
 ) -> Dict[str, Any]:
-    """Returns the current status of the GLBA Quarantined Consent Gate."""
-    return quarantine_state
+    """Returns the current status of the GLBA Quarantined Consent Gate for a specific deal."""
+    if payoff_id not in quarantine_states:
+        quarantine_states[payoff_id] = get_default_quarantine(payoff_id)
+    return quarantine_states[payoff_id]
 
 
 @app.post("/api/quarantine")
@@ -508,28 +529,24 @@ async def toggle_quarantine_status(
     Enforces GLBA compliance: records commercial RM verbal consent opt-in,
     unlocking the staged wealth management onboarding package.
     """
-    global quarantine_state
+    target_id = req.payoff_id or "PO-2026-8821"
     now_iso = datetime.now(timezone.utc).isoformat()
     
     if req.verbal_consent_recorded:
-        quarantine_state = {
+        audit_data = f"{target_id}:{req.recorded_by}:{now_iso}:GLBA-15USC6801-COMPLIANT".encode("utf-8")
+        crypto_hash = hashlib.sha256(audit_data).hexdigest()
+        quarantine_states[target_id] = {
+            "payoff_id": target_id,
             "quarantined": False,
             "verbal_consent_recorded": True,
             "recorded_by": req.recorded_by,
             "consent_timestamp": now_iso,
-            "audit_hash": f"SHA256-GLBA-HBAN-VERIFIED-{int(datetime.now(timezone.utc).timestamp())}",
-            "compliance_notes": f"Affirmative verbal consent recorded by {req.recorded_by} at {now_iso}. GLBA barrier lifted; SEI Wealth Platform and retail CRM synchronization unlocked."
+            "audit_hash": f"SHA256-{crypto_hash}",
+            "compliance_notes": f"Affirmative verbal consent recorded for {target_id} by {req.recorded_by} at {now_iso}. GLBA barrier lifted; SEI Wealth Platform and retail CRM synchronization unlocked."
         }
     else:
-        quarantine_state = {
-            "quarantined": True,
-            "verbal_consent_recorded": False,
-            "recorded_by": None,
-            "consent_timestamp": None,
-            "audit_hash": "SHA256-GLBA-HBAN-99418-PENDING",
-            "compliance_notes": "Consent revoked or reset. Wealth onboarding package returned to quarantined status."
-        }
-    return quarantine_state
+        quarantine_states[target_id] = get_default_quarantine(target_id)
+    return quarantine_states[target_id]
 
 
 @app.get("/api/wire-instructions")
@@ -554,27 +571,33 @@ async def get_wire_instructions(
 
 @app.get("/api/wealth-onboarding")
 async def get_wealth_onboarding_dossier(
+    payoff_id: str = Query("PO-2026-8821"),
     user: Dict[str, Any] = Depends(get_authenticated_user)
 ) -> Dict[str, Any]:
     """
     Returns the 80% pre-staged Private Wealth Advisor (PWA) onboarding scaffolding:
     KYC/CIP, SEI Custodial Shell, Draft IPS framework, and Automated Quarterly Review Dossier.
     """
+    payoff = get_payoff_by_id(payoff_id)
+    q_state = quarantine_states.get(payoff_id, get_default_quarantine(payoff_id))
+    is_quarantined = q_state.get("quarantined", True)
+
     return {
-        "status": "Quarantined" if quarantine_state["quarantined"] else "Active / Ready for Advisor Authorship",
-        "quarantined": quarantine_state["quarantined"],
+        "status": "Quarantined" if is_quarantined else "Active / Ready for Advisor Authorship",
+        "quarantined": is_quarantined,
+        "payoff_id": payoff_id,
         "assigned_pwa": "Sarah Jenkins, CFP, Senior Private Wealth Advisor",
-        "target_client": "Marcus Vance (85%) & Elena Vance (15%)",
-        "household_id": "HH-VANCE-4401",
+        "target_client": f"{payoff.primary_guarantor} (85%) & Co-Guarantors (15%)",
+        "household_id": f"HH-{payoff.borrower_entity[:8].replace(' ', '').upper()}-4401",
         "staged_kyc_cip": {
             "completion_percentage": 82,
             "verified_fields": [
-                {"field": "Full Legal Names", "value": "Marcus Vance & Elena Vance", "status": "Verified (Commercial Credit File)"},
-                {"field": "Entity Structure", "value": "Ohio Single-Asset LLC / Vance 2018 Family Trust", "status": "Verified (Articles of Org)"},
-                {"field": "Taxpayer Identification", "value": "EIN on file (Credit Vault #CC-8821)", "status": "Verified"},
+                {"field": "Full Legal Names", "value": f"{payoff.primary_guarantor} & Spouse", "status": "Verified (Commercial Credit File)"},
+                {"field": "Entity Structure", "value": f"{payoff.borrower_entity} / Family Trust", "status": "Verified (Articles of Org)"},
+                {"field": "Taxpayer Identification", "value": "EIN on file (Commercial Credit Vault)", "status": "Verified"},
                 {"field": "Residential Address", "value": "2410 Bexley Park Rd, Columbus, OH 43209", "status": "Verified"},
                 {"field": "Primary Banking Source", "value": "Huntington Commercial DDA #..4401", "status": "Verified"},
-                {"field": "Source of Wealth", "value": "Commercial Real Estate Disposition (Riverfront Commons)", "status": "Pending Closing Settlement"}
+                {"field": "Source of Wealth", "value": f"Commercial Real Estate Disposition ({payoff.property_name})", "status": "Pending Closing Settlement"}
             ],
             "pending_advisor_actions": [
                 "Reg BI Suitability Evaluation",
@@ -583,10 +606,10 @@ async def get_wealth_onboarding_dossier(
             ]
         },
         "sei_custodial_shell": {
-            "shell_id": "SEI-WP-HBAN-99418",
-            "account_title": "Marcus Vance & Elena Vance Joint Tenancy with Rights of Survivorship (JTWROS)",
+            "shell_id": f"SEI-WP-HBAN-{payoff_id.split('-')[-1]}",
+            "account_title": f"{payoff.primary_guarantor} Joint Tenancy with Rights of Survivorship (JTWROS)",
             "custodian": "SEI Private Trust Company / Huntington Wealth Services",
-            "clearing_status": "Staged Pending Consent",
+            "clearing_status": "Staged Pending Consent" if is_quarantined else "Active Staged Shell",
             "cash_depository_link": "Huntington National Bank FDIC Pass-Through Sweep"
         },
         "draft_ips_scaffolding": {

@@ -106,7 +106,8 @@ export function useRetentionWorkflow(): {
         }
       })
       .catch((err) => {
-        console.warn('Initial data synchronization notice:', err);
+        if (!isMounted) return;
+        setError(err.message || 'Failed to initialize commercial payoff pipeline data');
       })
       .finally(() => {
         if (isMounted) setIsLoading(false);
@@ -130,7 +131,7 @@ export function useRetentionWorkflow(): {
       })
       .catch((err) => {
         if (err.name !== 'AbortError') {
-          console.warn('Entity resolution synchronization notice:', err);
+          setError(`Entity resolution notice: ${err.message || 'Failed to fetch entity records'}`);
         }
       });
 
@@ -159,7 +160,7 @@ export function useRetentionWorkflow(): {
       signal: controller.signal,
     })
       .then((res) => {
-        if (!res.ok) throw new Error(`Valuation calculation returned status ${res.status}`);
+        if (!res.ok) throw new Error(`Valuation calculation returned HTTP ${res.status}`);
         return res.json();
       })
       .then((valData: ValuationData | null) => {
@@ -169,7 +170,7 @@ export function useRetentionWorkflow(): {
       })
       .catch((err) => {
         if (err.name !== 'AbortError') {
-          console.warn('Valuation synchronization notice:', err);
+          setError(`Valuation calculation error: ${err.message || 'Failed to calculate net proceeds'}`);
         }
       });
 
@@ -179,7 +180,7 @@ export function useRetentionWorkflow(): {
       { signal: controller.signal }
     )
       .then((res) => {
-        if (!res.ok) throw new Error(`Wire instruction returned status ${res.status}`);
+        if (!res.ok) throw new Error(`Wire instruction returned HTTP ${res.status}`);
         return res.json();
       })
       .then((wireData: WireInstructionData | null) => {
@@ -189,7 +190,7 @@ export function useRetentionWorkflow(): {
       })
       .catch((err) => {
         if (err.name !== 'AbortError') {
-          console.warn('Wire instructions synchronization notice:', err);
+          setError(`Wire instruction error: ${err.message || 'Failed to generate title wire instructions'}`);
         }
       });
 
@@ -206,6 +207,19 @@ export function useRetentionWorkflow(): {
       if (targetDeal && targetDeal.indicative_valuation) {
         setSalePrice(targetDeal.indicative_valuation);
       }
+      fetch(`/api/quarantine?payoff_id=${id}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((qData) => {
+          if (qData) {
+            setQuarantineState(qData);
+            setWealthOnboarding((prev) => ({
+              ...prev,
+              quarantined: qData.quarantined,
+              status: qData.quarantined ? 'Quarantined' : 'Active / Ready for Advisor Authorship',
+            }));
+          }
+        })
+        .catch(() => {});
     },
     [payoffItems]
   );
@@ -222,6 +236,7 @@ export function useRetentionWorkflow(): {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          payoff_id: selectedPayoffId,
           verbal_consent_recorded: newState,
           recorded_by: 'Greg Miller (Commercial RM)',
           client_notes: 'Affirmative opt-in recorded for wealth staging.',
@@ -243,7 +258,7 @@ export function useRetentionWorkflow(): {
     } finally {
       setIsTogglingConsent(false);
     }
-  }, [isTogglingConsent, quarantineState.verbal_consent_recorded]);
+  }, [isTogglingConsent, quarantineState.verbal_consent_recorded, selectedPayoffId]);
 
   const clearError = useCallback(() => setError(null), []);
 

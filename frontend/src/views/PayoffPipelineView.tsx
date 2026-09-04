@@ -23,7 +23,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
       item.id.toLowerCase().includes(searchTerm.toLowerCase());
 
     if (!matchesSearch) return false;
-    if (filterMode === 'high_urgency') return item.days_to_close <= 2;
+    if (filterMode === 'high_urgency') return item.days_to_close <= 14;
     if (filterMode === 'pass_tier') return item.credit_risk_rating.toLowerCase().includes('pass');
     return true;
   });
@@ -109,7 +109,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200'
             }`}
           >
-            Imminent Flight (&lt; 48 Hours)
+            Critical Flight (T-14 Days)
           </button>
           <button
             onClick={() => setFilterMode('pass_tier')}

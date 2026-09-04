@@ -5,6 +5,7 @@
 .env
 .env.*
 !example.env
+!.env.example
 __pycache__/
 *.pyc
 *.json
@@ -26,6 +27,8 @@ scratch/
 tests/
 .pytest_cache/
 *.pdf
+!frontend/public/*.pdf
 docs/
 *.png
+!frontend/public/*.png
 pytest.ini

@@ -69,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-[#003319] bg-[#004724] text-white shadow-md">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 h-22 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between">
         
         {/* Left: Huntington Bank Official Logo & Horizon Title */}
         <div
@@ -89,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Center: Contextual Navigation Tabs (Swiss Editorial Underline Indicators - No White Ovals) */}
-        <nav className="hidden lg:flex items-center gap-7">
+        <nav className="hidden lg:flex items-center gap-6">
           {persona === 'commercial_rm' ? (
             <>
               <button
@@ -175,6 +175,22 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             </>
           )}
+
+          {/* Desktop Executive Briefing Tab */}
+          <div className="h-4 w-px bg-white/20" />
+          <button
+            onClick={() => onViewChange('executive')}
+            className={`relative py-2.5 text-xs font-bold uppercase tracking-wider transition ${
+              activeView === 'executive'
+                ? 'text-white'
+                : 'text-emerald-200/75 hover:text-white'
+            }`}
+          >
+            Executive Briefing
+            {activeView === 'executive' && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#7ECF1C] rounded-full" />
+            )}
+          </button>
         </nav>
 
         {/* Right: Persona Switcher, Theme Toggle, and Mandatory Admin Panel Gear */}

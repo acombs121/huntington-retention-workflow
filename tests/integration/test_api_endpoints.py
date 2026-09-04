@@ -82,22 +82,60 @@ def test_wire_instructions_deal_parameterization():
 
 
 def test_glba_quarantine_flow():
-    """Verifies GLBA verbal consent recording and status reflection."""
+    """Verifies GLBA verbal consent recording, genuine SHA-256 audit hash, and deal isolation."""
+    # Record consent for Vance Riverfront deal
     post_resp = client.post("/api/quarantine", json={
+        "payoff_id": "PO-2026-8821",
         "verbal_consent_recorded": True,
         "recorded_by": "Greg Miller (Commercial RM)",
         "client_notes": "Test verbal consent."
     })
     assert post_resp.status_code == 200
-    assert post_resp.json()["quarantined"] is False
+    vance_data = post_resp.json()
+    assert vance_data["quarantined"] is False
+    assert vance_data["verbal_consent_recorded"] is True
+    assert vance_data["audit_hash"].startswith("SHA256-")
+    # Verify the SHA-256 hex digest contains 64 hex characters
+    raw_hash = vance_data["audit_hash"].replace("SHA256-", "")
+    assert len(raw_hash) == 64
+    assert all(c in "0123456789abcdefABCDEF" for c in raw_hash)
 
-    get_resp = client.get("/api/quarantine")
-    assert get_resp.status_code == 200
-    assert get_resp.json()["quarantined"] is False
+    # Verify Buckeye Tooling remains quarantined (deal isolation)
+    buckeye_resp = client.get("/api/quarantine?payoff_id=PO-2026-7492")
+    assert buckeye_resp.status_code == 200
+    assert buckeye_resp.json()["quarantined"] is True
 
-    # Reset
+    # Reset Vance consent
     reset_resp = client.post("/api/quarantine", json={
+        "payoff_id": "PO-2026-8821",
         "verbal_consent_recorded": False
     })
     assert reset_resp.status_code == 200
     assert reset_resp.json()["quarantined"] is True
+
+
+def test_wealth_onboarding_deal_parameterization():
+    """Verifies wealth onboarding dossier adapts dynamically to the target deal."""
+    vance_resp = client.get("/api/wealth-onboarding?payoff_id=PO-2026-8821")
+    assert vance_resp.status_code == 200
+    vance_data = vance_resp.json()
+    assert "Marcus Vance" in vance_data["target_client"]
+    assert "SEI-WP-HBAN-8821" == vance_data["sei_custodial_shell"]["shell_id"]
+
+    buckeye_resp = client.get("/api/wealth-onboarding?payoff_id=PO-2026-7492")
+    assert buckeye_resp.status_code == 200
+    buckeye_data = buckeye_resp.json()
+    assert "Thomas Buckeye" in buckeye_data["target_client"]
+    assert "SEI-WP-HBAN-7492" == buckeye_data["sei_custodial_shell"]["shell_id"]
+
+
+def test_payoffs_queue_endpoint():
+    """Verifies payoff queue returns pipeline items and capacity meter."""
+    resp = client.get("/api/payoffs")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "capacity_meter" in data
+    assert data["capacity_meter"]["book_scale_volume"] == "$4.50 Billion"
+    assert len(data["payoff_items"]) == 3
+    assert data["payoff_items"][0]["id"] == "PO-2026-8821"
+

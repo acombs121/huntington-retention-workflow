@@ -101,11 +101,11 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
           {/* Document Body with Grounded Bounding Boxes */}
           <div className="p-8 text-sm leading-relaxed text-slate-800 dark:text-slate-200 space-y-5 select-text">
             <div className="text-center font-bold text-xs tracking-widest uppercase text-slate-500 dark:text-slate-400 pb-4 border-b border-slate-200 dark:border-slate-800">
-              FIRST AMERICAN TITLE INSURANCE COMPANY &bull; COMMERCIAL ESCROW DEMAND
+              {deal.title_company.toUpperCase()} &bull; COMMERCIAL ESCROW DEMAND
             </div>
 
             <p className="text-xs text-slate-600 dark:text-slate-400">
-              Attn: Karen Lindqvist, Commercial Escrow Officer &bull; Escrow File: <strong>{deal.escrow_file_number}</strong>
+              Attn: {deal.settlement_officer}, Commercial Escrow Officer &bull; Escrow File: <strong>{deal.escrow_file_number}</strong>
             </p>
 
             <p className="text-xs text-slate-600 dark:text-slate-400">
@@ -149,11 +149,12 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
               </p>
             </div>
 
-            {/* Bounding Box 3: Guarantor Marcus Vance */}
+            {/* Bounding Box 3: Guarantor */}
             <div
               onClick={() => {
                 setActiveCitation('guarantor');
-                setSelectedMember('Marcus Vance');
+                const primaryName = entityData.grounded_members?.[0]?.name || 'Managing Member';
+                setSelectedMember(primaryName);
               }}
               className={`p-4 rounded-xl border-2 transition cursor-pointer ${
                 activeCitation === 'guarantor'
@@ -166,7 +167,7 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
                 <span className="text-xs">Confirmed</span>
               </div>
               <p className="text-xs text-slate-900 dark:text-slate-100">
-                Incumbency Certification: <strong>Marcus Vance</strong>, holding an undivided 85% Managing Membership Interest with sole operating signatory authority, and joint guarantor with spouse <strong>Elena Vance</strong> (15%).
+                Incumbency Certification: <strong>{entityData.grounded_members?.[0]?.name || 'Managing Member'}</strong>, holding an undivided Managing Membership Interest with sole operating signatory authority for {deal.borrower_entity}.
               </p>
             </div>
 
@@ -254,7 +255,7 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
                 </h2>
               </div>
               <span className="text-xs font-bold text-[#006738] dark:text-emerald-400 uppercase tracking-wider">
-                Franklin Co. 7.5% Cap
+                Submarket {(deal.submarket_cap_rate * 100).toFixed(1)}% Cap
               </span>
             </div>
 
@@ -267,7 +268,7 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500 dark:text-slate-400">Submarket Cap Rate:</span>
-                <span className="font-bold text-slate-900 dark:text-white">7.50%</span>
+                <span className="font-bold text-slate-900 dark:text-white">{(deal.submarket_cap_rate * 100).toFixed(2)}%</span>
               </div>
               <div className="pt-2.5 border-t border-slate-200 dark:border-slate-700 flex justify-between text-sm">
                 <span className="font-bold text-slate-900 dark:text-white">Indicative Value:</span>
@@ -278,7 +279,7 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
             </div>
 
             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Property valuation modeled from trailing 12-month net operating income against prevailing Franklin County commercial transaction comparables (7.50% cap rate).
+              Property valuation modeled from trailing 12-month net operating income against prevailing submarket commercial transaction comparables ({(deal.submarket_cap_rate * 100).toFixed(2)}% cap rate).
             </p>
           </div>
 

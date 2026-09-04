@@ -139,16 +139,16 @@ Special Instructions: ${wireInstructions.special_instructions}`;
           <div className="flex items-center justify-between font-bold text-slate-900 dark:text-white text-sm">
             <span className="flex items-center gap-2.5">
               <PhoneCall className="w-4 h-4 text-[#006738]" />
-              Commercial RM Client Call Guide (Greg Miller to Marcus Vance)
+              Commercial RM Client Call Guide ({wireInstructions?.officer_signature?.split(',')[0] || 'Relationship Manager'} to {wireInstructions?.managing_member || 'Client'})
             </span>
             <span className="text-xs uppercase font-semibold text-slate-400">Relationship Touchpoint</span>
           </div>
           <div className="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
             <p>
-              <strong>1. Acknowledge Closing:</strong> &quot;Marcus, congratulations on going into escrow on the Riverfront Commons property. We just received the payoff demand from Karen at First American Title.&quot;
+              <strong>1. Acknowledge Closing:</strong> &quot;{wireInstructions?.managing_member?.split(' ')[0] || 'Client'}, congratulations on going into escrow on {wireInstructions?.property?.split(',')[0] || 'the property'}. We just received the payoff demand from {wireInstructions?.attention?.split(',')[0] || 'the settlement officer'} at {wireInstructions?.title_company || 'Title'}.&quot;
             </p>
             <p>
-              <strong>2. Protect Net Proceeds ($3.28M):</strong> &quot;Rather than letting your ~$3.28M in net equity sit in a standard escrow checking account, we have pre-staged our {taxStrategy === '1031_exchange' ? 'Huntington 1031 Qualified Escrow Depository' : 'Huntington Commercial Max$aver ICS Sweep'}. That gives you {valuation.yield_apy}% APY with multi-million FDIC passthrough protection.&quot;
+              <strong>2. Protect Net Proceeds (${(valuation.net_equity_proceeds / 1000000).toFixed(2)}M):</strong> &quot;Rather than letting your ~${(valuation.net_equity_proceeds / 1000000).toFixed(2)}M in net equity sit in a standard escrow checking account, we have pre-staged our {taxStrategy === '1031_exchange' ? 'Huntington 1031 Qualified Escrow Depository' : 'Huntington Commercial Max$aver ICS Sweep'}. That gives you {valuation.yield_apy}% APY with multi-million FDIC passthrough protection.&quot;
             </p>
             <p>
               <strong>3. Secure Verbal Consent (GLBA Gate):</strong> &quot;To coordinate smoothly with our Private Wealth group so you don&apos;t have to re-submit financial statements, do I have your permission to share your entity structure with Sarah Jenkins on our Wealth team?&quot;
@@ -353,7 +353,7 @@ Special Instructions: ${wireInstructions.special_instructions}`;
             
             <button
               onClick={handleCopy}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-750 transition text-slate-700 dark:text-slate-300"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-300"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-[#006738]" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied' : 'Copy Letter'}</span>
@@ -440,7 +440,7 @@ Special Instructions: ${wireInstructions.special_instructions}`;
                 Client Verbal Consent Verified (GLBA Sec. 502(e))
               </div>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                Marcus Vance has authorized Private Wealth engagement. Pre-verified KYC documentation and custodial onboarding shell are ready for wealth advisory intake.
+                {wireInstructions?.managing_member || 'The commercial client'} has authorized Private Wealth engagement. Pre-verified KYC documentation and custodial onboarding shell are ready for wealth advisory intake.
               </p>
             </div>
           </div>
