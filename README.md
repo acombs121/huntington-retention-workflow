@@ -1,6 +1,6 @@
 # Huntington Horizon: Intelligent Liquidity Orchestration
 
-Production-grade, interactive full-stack Google Cloud Run application for **Huntington Horizon: Intelligent Liquidity Orchestration**. Built strictly in accordance with the **Google Cloud Run Demo Standard** (`/cloud-run-demo`), the approved **Huntington Bank Corporate Design Specification** (`DESIGN.md`, `brand_kit.html`), and **Functional Specifications** (`PRD.md`, `DEMO_SCRIPT.md`).
+Production-grade, interactive full-stack Google Cloud Run application for **Huntington Horizon: Intelligent Liquidity Orchestration**. Built strictly in accordance with the **Google Cloud Run Demo Standard** (`/cloud-run-demo`), the approved **Huntington Bank Corporate Design Specification** ([`docs/DESIGN.md`](docs/DESIGN.md), `brand_kit.html`), and **Functional Specifications** ([`docs/PRD.md`](docs/PRD.md), [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)).
 
 ---
 
@@ -140,7 +140,7 @@ Run both the FastAPI backend and Vite frontend proxy concurrently bound strictly
 
 ## 7. Operational Workflow (The 10-Minute Walkthrough)
 
-Detailed in [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) and viewable interactively at `/demo_script.html`:
+Detailed in [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) and viewable interactively at `/demo_script.html`:
 
 1. **Step 1 (00:00–01:30) - The Problem & The $4.5B Flight Cliff**: Review the two-sided capacity bottleneck: Commercial discovery drag (~7 hrs) vs. Wealth onboarding/servicing capacity limit (80 accounts).
 2. **Step 2 (01:30–03:30) - Commercial Payoff Surveillance**: Inspect the commercial loan payoff queue. Review Riverfront Commercial Commons at T-12 days with imminent 78% flight risk.

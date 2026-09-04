@@ -1,7 +1,7 @@
 """
 Huntington Horizon: Domain Models
 Explicit domain types for Commercial Liquidity Orchestration.
-Follows ubiquitous language documented in CONTEXT.md.
+Follows ubiquitous language documented in docs/CONTEXT.md.
 """
 from typing import Optional, Dict, Any
 from pydantic import BaseModel, Field
