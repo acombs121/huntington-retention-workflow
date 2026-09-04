@@ -1,7 +1,7 @@
 # Huntington Horizon: Master Claims & Numbers Verification Audit
 
 **Audit Date:** September 4, 2026  
-**Target Document:** [`index.html`](file:///Users/alexcombs/Projects/huntington-horizon/index.html) & [`PRD.md`](file:///Users/alexcombs/Projects/huntington-horizon/PRD.md)  
+**Target Document:** Initial Prototype ([`frontend/index.html`](../frontend/index.html)) & [`PRD.md`](PRD.md)  
 **Auditing Agents:**
 1. **Regulatory, Tax & Compliance Auditor** (`11f7562e`) — Internal Revenue Code, Treasury Regulations, FINRA, SEC, OCC, GLBA, and FDIC statutes.
 2. **Industry Benchmarks Auditor** (`7e17d2f3`) — Commercial real estate studies, wealth management operational surveys, and banking deposit analytics.
