@@ -100,15 +100,20 @@ Run both the FastAPI backend and Vite frontend proxy concurrently bound strictly
 - **Interactive Brand Kit**: `http://127.0.0.1:5173/brand_kit.html` (or `http://127.0.0.1:8080/brand_kit.html`)
 - **Workflow & Operating Guide**: `http://127.0.0.1:5173/demo_script.html` (or `http://127.0.0.1:8080/demo_script.html`)
 
-### Manual Verification Commands
+### Verification & Test Commands
+- **Automated Test Suites (Unit & Integration)**:
+  ```bash
+  source .venv/bin/activate && pytest -v
+  npm --prefix frontend test
+  ```
 - **Backend Import & Boot**:
   ```bash
   source .venv/bin/activate
   uvicorn main:app --host 127.0.0.1 --port 8080
   ```
-- **Frontend Compilation & Build**:
+- **Frontend Compilation & Production Build**:
   ```bash
-  cd frontend && npm run build
+  npm --prefix frontend run build
   ```
 - **Strict Zero-Emoji Rule Verification**:
   ```bash

@@ -139,9 +139,16 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
-              {filteredItems.map((item) => {
-                const isSelected = item.id === selectedId;
-                const isUrgent = item.days_to_close <= 2;
+              {filteredItems.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-12 px-6 text-center text-slate-500 dark:text-slate-400 text-sm">
+                    No commercial payoff events match the active filter criteria.
+                  </td>
+                </tr>
+              ) : (
+                filteredItems.map((item) => {
+                  const isSelected = item.id === selectedId;
+                  const isUrgent = item.days_to_close <= 2;
 
                 return (
                   <tr
@@ -235,7 +242,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>

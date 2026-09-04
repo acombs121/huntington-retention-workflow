@@ -25,6 +25,9 @@ interface RetentionSettlementViewProps {
   wireInstructions: WireInstructionData;
   onBackToAnalysis: () => void;
   onHandoffToWealth: () => void;
+  isTogglingConsent?: boolean;
+  error?: string | null;
+  onClearError?: () => void;
 }
 
 export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = ({
@@ -37,9 +40,20 @@ export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = (
   wireInstructions,
   onBackToAnalysis,
   onHandoffToWealth,
+  isTogglingConsent = false,
+  error = null,
+  onClearError,
 }) => {
   const [copied, setCopied] = useState(false);
   const [showCallScript, setShowCallScript] = useState(false);
+
+  const baseValuation =
+    valuation.grounded_noi > 0 && valuation.grounded_cap_rate > 0
+      ? valuation.grounded_noi / valuation.grounded_cap_rate
+      : valuation.sale_price;
+  const minSlider = Math.max(500000, Math.round((baseValuation * 0.85) / 50000) * 50000);
+  const maxSlider = Math.round((baseValuation * 1.15) / 50000) * 50000;
+  const midSlider = Math.round((minSlider + maxSlider) / 2 / 50000) * 50000;
 
   const handleCopy = () => {
     const text = `HUNTINGTON NATIONAL BANK - SETTLEMENT WIRE INSTRUCTIONS
@@ -50,9 +64,14 @@ Account Number: ${wireInstructions.account_number}
 Escrow File: ${wireInstructions.escrow_file}
 Net Disbursement: $${valuation.net_equity_proceeds.toLocaleString()}
 Special Instructions: ${wireInstructions.special_instructions}`;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch((err) => {
+        console.warn('Clipboard write failed:', err);
+      });
   };
 
   return (
@@ -98,6 +117,21 @@ Special Instructions: ${wireInstructions.special_instructions}`;
           </div>
         </div>
       </div>
+
+      {/* Error Alert Banner */}
+      {error && (
+        <div className="p-4 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 text-sm flex items-center justify-between shadow-sm">
+          <span>{error}</span>
+          {onClearError && (
+            <button
+              onClick={onClearError}
+              className="text-xs font-bold uppercase tracking-wider text-red-700 dark:text-red-400 hover:underline ml-4"
+            >
+              Dismiss
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Optional Collapsible RM Call Script */}
       {showCallScript && (
@@ -145,18 +179,18 @@ Special Instructions: ${wireInstructions.special_instructions}`;
 
             <input
               type="range"
-              min="8500000"
-              max="9000000"
-              step="50000"
+              min={minSlider}
+              max={maxSlider}
+              step={25000}
               value={valuation.sale_price}
               onChange={(e) => onSalePriceChange(parseFloat(e.target.value))}
               className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#006738]"
             />
 
             <div className="flex justify-between text-xs text-slate-400">
-              <span>$8.50M (Base Cap Rate)</span>
-              <span>$8.75M</span>
-              <span>$9.00M (Premium)</span>
+              <span>${(minSlider / 1000000).toFixed(2)}M (Conservative)</span>
+              <span>${(midSlider / 1000000).toFixed(2)}M</span>
+              <span>${(maxSlider / 1000000).toFixed(2)}M (Premium)</span>
             </div>
 
             {/* Instant Math Breakdown */}
@@ -287,13 +321,18 @@ Special Instructions: ${wireInstructions.special_instructions}`;
 
               <button
                 onClick={onToggleQuarantine}
-                className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition ${
+                disabled={isTogglingConsent}
+                className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition disabled:opacity-50 disabled:cursor-not-allowed ${
                   quarantineState.quarantined
                     ? 'bg-[#006738] hover:bg-[#1B5630] text-white shadow-sm'
                     : 'bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200'
                 }`}
               >
-                {quarantineState.quarantined ? 'Record Client Opt-In' : 'Reset Gate'}
+                {isTogglingConsent
+                  ? 'Recording...'
+                  : quarantineState.quarantined
+                    ? 'Record Client Opt-In'
+                    : 'Reset Gate'}
               </button>
             </div>
           </div>

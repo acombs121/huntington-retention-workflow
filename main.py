@@ -13,7 +13,7 @@ Adheres strictly to the Google Cloud Run Demo Standard:
 """
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, Dict, Any, List
 from dotenv import load_dotenv
@@ -26,6 +26,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from iap_jwt_middleware import get_authenticated_user
+from domain.models import PayoffStatement
+from domain.liquidity_engine import LiquidityEngine
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("huntington_horizon")
@@ -179,6 +181,13 @@ PAYOFF_QUEUE = [
 ]
 
 
+def get_payoff_by_id(payoff_id: str) -> PayoffStatement:
+    """Adapts in-memory payoff queue items to the canonical PayoffStatement domain model."""
+    raw = next((p for p in PAYOFF_QUEUE if p["id"] == payoff_id), PAYOFF_QUEUE[0])
+    return PayoffStatement(**{k: v for k, v in raw.items() if k in PayoffStatement.model_fields})
+
+
+
 # =====================================================================
 # API Request & Response Models
 # =====================================================================
@@ -193,7 +202,8 @@ class GenerateResponse(BaseModel):
     grounded_citations: List[str] = []
 
 class ValuationRequest(BaseModel):
-    sale_price: float = Field(default=8500000.00, ge=7000000.00, le=12000000.00)
+    payoff_id: Optional[str] = Field(default="PO-2026-8821")
+    sale_price: float = Field(default=8500000.00, ge=500000.00, le=50000000.00)
     noi: float = Field(default=637500.00)
     cap_rate: float = Field(default=0.075)
     debt_payoff: float = Field(default=5214800.00)
@@ -239,7 +249,7 @@ async def health_check() -> Dict[str, Any]:
         "service": "huntington-horizon",
         "version": "5.2.0",
         "iap_native": True,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -282,18 +292,125 @@ async def get_entity_resolution(
     user: Dict[str, Any] = Depends(get_authenticated_user)
 ) -> Dict[str, Any]:
     """
-    Simulates / provides Gemini 3.7 Flash native multimodal document extraction
-    returning LLC ownership topology with bounding box coordinates and document grounding.
+    Provides Gemini 3.7 Flash multimodal document extraction returning
+    borrower-specific LLC ownership topology, bounding boxes, and document grounding.
     """
+    deal = next((p for p in PAYOFF_QUEUE if p["id"] == payoff_id), PAYOFF_QUEUE[0])
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    if deal["id"] == "PO-2026-7492":
+        return {
+            "payoff_id": deal["id"],
+            "document_name": "Credit Agreement & Corporate Resolution #CC-7492.pdf",
+            "document_vault_id": "HBAN-CRE-VAULT-7492",
+            "total_pages": 18,
+            "inspected_page": 8,
+            "resolution_timestamp": now_iso,
+            "borrower_entity": {
+                "name": deal["borrower_entity"],
+                "jurisdiction": "Ohio Corporation",
+                "filing_date": "2014-06-18",
+                "tax_classification": "Subchapter S Corporation"
+            },
+            "grounded_members": [
+                {
+                    "name": "Arthur Pendelton",
+                    "role": "President & Majority Shareholder",
+                    "ownership_pct": 70.0,
+                    "is_guarantor": True,
+                    "is_signatory": True,
+                    "known_hban_accounts": ["Commercial DDA #..1102", "Treasury Repo #..7721"],
+                    "known_hban_balance": deal["known_hban_balances"],
+                    "bounding_box": {
+                        "ymin": 210, "xmin": 120, "ymax": 275, "xmax": 680,
+                        "text_snippet": "Arthur Pendelton, holding 70% Voting Common Shares with sole banking and encumbrance authority..."
+                    }
+                },
+                {
+                    "name": "Janet Pendelton",
+                    "role": "Vice President & Secretary",
+                    "ownership_pct": 30.0,
+                    "is_guarantor": True,
+                    "is_signatory": True,
+                    "known_hban_accounts": ["Commercial Savings #..3309"],
+                    "known_hban_balance": 0.00,
+                    "bounding_box": {
+                        "ymin": 290, "xmin": 120, "ymax": 350, "xmax": 680,
+                        "text_snippet": "Janet Pendelton, Corporate Secretary holding 30% Common Shares and joint personal guarantor..."
+                    }
+                }
+            ],
+            "unstated_sale_price_reasoning": {
+                "flag": False,
+                "agentic_finding": "Title payoff request includes executed purchase and sale agreement.",
+                "grounding_source": f"Contract Purchase Price: ${deal['indicative_valuation']:,.2f} | Q1 In-Place NOI: ${deal['noi_trailing_q1']:,.2f}",
+                "submarket_grounding": f"Dublin Road Industrial Submarket Benchmark cap rate: {deal['submarket_cap_rate']*100:.2f}%.",
+                "capitalization_formula": f"Contract Sale Price = ${deal['indicative_valuation']:,.2f} verified against Escrow File #{deal['escrow_file_number']}.",
+                "occ_sr11_7_notice": "Verified Executed Purchase Agreement per OCC Bulletin 2011-12 / Fed SR 11-7."
+            }
+        }
+    elif deal["id"] == "PO-2026-6104":
+        return {
+            "payoff_id": deal["id"],
+            "document_name": "Credit Agreement & Operating Facility #CC-6104.pdf",
+            "document_vault_id": "HBAN-CRE-VAULT-6104",
+            "total_pages": 12,
+            "inspected_page": 5,
+            "resolution_timestamp": now_iso,
+            "borrower_entity": {
+                "name": deal["borrower_entity"],
+                "jurisdiction": "Ohio Limited Liability Company",
+                "filing_date": "2019-11-04",
+                "tax_classification": "Partnership / Pass-Through"
+            },
+            "grounded_members": [
+                {
+                    "name": "Dr. Robert Miller, M.D.",
+                    "role": "Managing Partner & Medical Director",
+                    "ownership_pct": 55.0,
+                    "is_guarantor": True,
+                    "is_signatory": True,
+                    "known_hban_accounts": ["Medical Practice Operating DDA #..9012"],
+                    "known_hban_balance": deal["known_hban_balances"],
+                    "bounding_box": {
+                        "ymin": 230, "xmin": 120, "ymax": 295, "xmax": 680,
+                        "text_snippet": "Dr. Robert Miller, holding a 55% majority ownership interest with operating and financing authority..."
+                    }
+                },
+                {
+                    "name": "Dr. Sarah Lin, M.D.",
+                    "role": "Partner / Surgeon",
+                    "ownership_pct": 45.0,
+                    "is_guarantor": True,
+                    "is_signatory": False,
+                    "known_hban_accounts": ["Physician Reserve #..8814"],
+                    "known_hban_balance": 0.00,
+                    "bounding_box": {
+                        "ymin": 310, "xmin": 120, "ymax": 370, "xmax": 680,
+                        "text_snippet": "Dr. Sarah Lin, holding a 45% non-managing equity interest and joint clinical practice guarantor..."
+                    }
+                }
+            ],
+            "unstated_sale_price_reasoning": {
+                "flag": True,
+                "agentic_finding": "Title payoff request omits purchase contract purchase price.",
+                "grounding_source": f"Credit Vault Doc #CC-6104 trailing Q1 in-place NOI: ${deal['noi_trailing_q1']:,.2f}",
+                "submarket_grounding": f"Bethel Road Medical Submarket Benchmark cap rate: {deal['submarket_cap_rate']*100:.2f}%.",
+                "capitalization_formula": f"NOI ÷ Cap Rate = ${deal['noi_trailing_q1']:,.2f} ÷ {deal['submarket_cap_rate']} = ${deal['indicative_valuation']:,.2f} Indicative Triage Valuation.",
+                "occ_sr11_7_notice": "Designated strictly as 'Indicative Triage Estimate for Relationship Prioritization' per OCC Bulletin 2011-12 / Fed SR 11-7."
+            }
+        }
+
+    # Default: Vance Riverfront Properties IV, LLC (PO-2026-8821)
     return {
-        "payoff_id": payoff_id,
+        "payoff_id": deal["id"],
         "document_name": "Credit Agreement & Incumbency Certificate #CC-8821.pdf",
         "document_vault_id": "HBAN-CRE-VAULT-8821",
         "total_pages": 14,
         "inspected_page": 11,
-        "resolution_timestamp": datetime.utcnow().isoformat(),
+        "resolution_timestamp": now_iso,
         "borrower_entity": {
-            "name": "Vance Riverfront Properties IV, LLC",
+            "name": deal["borrower_entity"],
             "jurisdiction": "Ohio Limited Liability Company",
             "filing_date": "2018-04-12",
             "tax_classification": "Partnership / Pass-Through"
@@ -306,12 +423,9 @@ async def get_entity_resolution(
                 "is_guarantor": True,
                 "is_signatory": True,
                 "known_hban_accounts": ["Commercial DDA #..4401", "Operating Reserve #..9182"],
-                "known_hban_balance": 2100000.00,
+                "known_hban_balance": deal["known_hban_balances"],
                 "bounding_box": {
-                    "ymin": 248,
-                    "xmin": 120,
-                    "ymax": 310,
-                    "xmax": 680,
+                    "ymin": 248, "xmin": 120, "ymax": 310, "xmax": 680,
                     "text_snippet": "Marcus Vance, holding an undivided 85% Managing Membership Interest and sole operating signatory authority..."
                 }
             },
@@ -324,10 +438,7 @@ async def get_entity_resolution(
                 "known_hban_accounts": ["Joint Relationship Profile #JH-7712"],
                 "known_hban_balance": 0.00,
                 "bounding_box": {
-                    "ymin": 330,
-                    "xmin": 120,
-                    "ymax": 390,
-                    "xmax": 680,
+                    "ymin": 330, "xmin": 120, "ymax": 390, "xmax": 680,
                     "text_snippet": "Elena Vance, holding a 15% non-managing Membership Interest, consenting spouse and joint guarantor..."
                 }
             },
@@ -340,10 +451,7 @@ async def get_entity_resolution(
                 "known_hban_accounts": [],
                 "known_hban_balance": 0.00,
                 "bounding_box": {
-                    "ymin": 415,
-                    "xmin": 120,
-                    "ymax": 475,
-                    "xmax": 680,
+                    "ymin": 415, "xmin": 120, "ymax": 475, "xmax": 680,
                     "text_snippet": "Underlying beneficial succession assigned to The Vance 2018 Family Trust, Marcus & Elena Vance Trustees..."
                 }
             }
@@ -351,9 +459,9 @@ async def get_entity_resolution(
         "unstated_sale_price_reasoning": {
             "flag": True,
             "agentic_finding": "Title payoff request omits purchase contract purchase price.",
-            "grounding_source": "Credit Vault Doc #CC-8821 trailing Q1 in-place NOI: $637,500.00",
-            "submarket_grounding": "Franklin County Q1 2026 Appraisal Benchmark cap rate: 7.50% (grounded dynamically via Vertex AI Search against internal commercial appraisal benchmarks).",
-            "capitalization_formula": "NOI ÷ Cap Rate = $637,500 ÷ 0.075 = $8,500,000.00 Indicative Triage Valuation.",
+            "grounding_source": f"Credit Vault Doc #CC-8821 trailing Q1 in-place NOI: ${deal['noi_trailing_q1']:,.2f}",
+            "submarket_grounding": f"Franklin County Q1 2026 Appraisal Benchmark cap rate: {deal['submarket_cap_rate']*100:.2f}%.",
+            "capitalization_formula": f"NOI ÷ Cap Rate = ${deal['noi_trailing_q1']:,.2f} ÷ {deal['submarket_cap_rate']} = ${deal['indicative_valuation']:,.2f} Indicative Triage Valuation.",
             "occ_sr11_7_notice": "Designated strictly as 'Indicative Triage Estimate for Relationship Prioritization' per OCC Bulletin 2011-12 / Fed SR 11-7."
         }
     }
@@ -365,48 +473,22 @@ async def calculate_valuation(
     user: Dict[str, Any] = Depends(get_authenticated_user)
 ) -> ValuationResponse:
     """
-    Deterministic Calculator Tool:
-    Computes exact loan payoff, estimated closing costs, net equity proceeds,
-    and returns statutory tax routing parameters for either Path A (Cash-Out) or Path B (1031 Exchange).
+    Evaluates commercial property triage valuation, debt payoff netting, and statutory tax routing
+    via the Commercial Liquidity Engine.
     """
-    sale_price = req.sale_price
-    debt_payoff = req.debt_payoff
-    closing_costs = sale_price * req.closing_cost_rate
-    net_equity = max(0.0, sale_price - debt_payoff - closing_costs)
-    known_hban = 2100000.00
-    total_position = net_equity + known_hban
+    target_id = req.payoff_id or "PO-2026-8821"
+    payoff = get_payoff_by_id(target_id)
+    payoff.noi_trailing_q1 = req.noi
+    payoff.submarket_cap_rate = req.cap_rate
+    payoff.payoff_quote_amount = req.debt_payoff
 
-    if req.tax_strategy == "1031_exchange":
-        strategy_type = "IRC §1031 Like-Kind Exchange"
-        strategy_product = "Huntington 1031 Qualified Escrow Depository (Partner QI Network)"
-        yield_apy = 4.75
-        statutory_basis = "Treas. Reg. § 1.1031(k)-1(g)(3) Qualified Escrow Safe Harbor; 180-Day Completion Window; Direct QI Escrow Custody."
-        routing_destination = "Huntington Institutional QI Escrow Custody (Acct: QI-ESCROW-8821)"
-    else:
-        strategy_type = "Taxable Liquidity Event (Cash-Out)"
-        strategy_product = "Huntington Commercial Max$aver Insured Cash Sweep (ICS)"
-        yield_apy = 4.85
-        statutory_basis = "12 U.S.C. § 1831f (EGRRCPA § 202 Reciprocal Deposits); Multi-Million FDIC Insurance via IntraFi Network."
-        routing_destination = "Huntington Max$aver Commercial ICS (Acct: HBAN-ICS-4401)"
-
-    return ValuationResponse(
-        sale_price=round(sale_price, 2),
-        grounded_noi=req.noi,
-        grounded_cap_rate=req.cap_rate,
-        debt_payoff=round(debt_payoff, 2),
-        estimated_closing_costs=round(closing_costs, 2),
-        net_equity_proceeds=round(net_equity, 2),
-        known_hban_balances=known_hban,
-        total_resolvable_position=round(total_position, 2),
-        strategy_type=strategy_type,
-        strategy_product=strategy_product,
-        yield_apy=yield_apy,
-        statutory_basis=statutory_basis,
-        routing_destination=routing_destination,
-        deposit_credit_pct=100.0,
-        finra_rule_2040_compliant=True,
-        occ_sr11_7_designation="Relationship Prioritization Triage Estimate"
+    assessment = LiquidityEngine.assess(
+        payoff=payoff,
+        sale_price=req.sale_price,
+        tax_strategy=req.tax_strategy,
+        closing_cost_rate=req.closing_cost_rate,
     )
+    return ValuationResponse(**assessment.to_legacy_valuation_dict())
 
 
 @app.get("/api/quarantine")
@@ -427,7 +509,7 @@ async def toggle_quarantine_status(
     unlocking the staged wealth management onboarding package.
     """
     global quarantine_state
-    now_iso = datetime.utcnow().isoformat()
+    now_iso = datetime.now(timezone.utc).isoformat()
     
     if req.verbal_consent_recorded:
         quarantine_state = {
@@ -435,7 +517,7 @@ async def toggle_quarantine_status(
             "verbal_consent_recorded": True,
             "recorded_by": req.recorded_by,
             "consent_timestamp": now_iso,
-            "audit_hash": f"SHA256-GLBA-HBAN-VERIFIED-{int(datetime.utcnow().timestamp())}",
+            "audit_hash": f"SHA256-GLBA-HBAN-VERIFIED-{int(datetime.now(timezone.utc).timestamp())}",
             "compliance_notes": f"Affirmative verbal consent recorded by {req.recorded_by} at {now_iso}. GLBA barrier lifted; SEI Wealth Platform and retail CRM synchronization unlocked."
         }
     else:
@@ -459,32 +541,15 @@ async def get_wire_instructions(
 ) -> Dict[str, Any]:
     """
     Generates structured Huntington Verified Settlement Wire Instruction data
-    pre-filled for First American Title. Locks in Huntington before title disbursement deadline.
+    via the Commercial Liquidity Engine.
     """
-    debt = 5214800.00
-    closing = sale_price * 0.045
-    net_equity = max(0.0, sale_price - debt - closing)
-
-    is_1031 = (strategy == "1031_exchange")
-    return {
-        "letter_id": f"HBAN-WIRE-{int(datetime.utcnow().timestamp())}",
-        "date": datetime.utcnow().strftime("%B %d, %Y"),
-        "title_company": "First American Title Insurance Company",
-        "title_address": "175 S. 3rd St., Suite 500, Columbus, OH 43215",
-        "attention": "Karen Lindqvist, Commercial Escrow Officer",
-        "escrow_file": "FA-2026-8819-COL",
-        "property": "Riverfront Commercial Commons, 410 S. High St., Columbus, OH 43215",
-        "seller_entity": "Vance Riverfront Properties IV, LLC",
-        "managing_member": "Marcus Vance",
-        "bank_name": "The Huntington National Bank",
-        "aba_routing": "044000024",
-        "account_title": "Vance Riverfront Properties IV LLC / Huntington 1031 Escrow" if is_1031 else "Vance Riverfront Properties IV LLC / Max$aver ICS Sweep",
-        "account_number": "HBAN-QI-8819-01" if is_1031 else "HBAN-4401-9921-00",
-        "special_instructions": "DO NOT DISBURSE OUTSIDE OF HUNTINGTON ESCROW. Funds held pursuant to IRC § 1031 Qualified Escrow Agreement (Treas. Reg. § 1.1031(k)-1(g)(3))." if is_1031 else "Disburse net seller equity directly into Huntington Max$aver ICS Sweep for FDIC passthrough protection.",
-        "indicative_net_disbursement": round(net_equity, 2),
-        "officer_signature": "Greg Miller, Vice President, Commercial Real Estate",
-        "officer_contact": "greg.miller@huntington.com | (614) 480-4401"
-    }
+    payoff = get_payoff_by_id(payoff_id)
+    assessment = LiquidityEngine.assess(
+        payoff=payoff,
+        sale_price=sale_price,
+        tax_strategy=strategy,
+    )
+    return assessment.settlement_wire.model_dump()
 
 
 @app.get("/api/wealth-onboarding")

@@ -22,3 +22,10 @@ build/
 /assets/
 /docs/
 *.md
+scratch/
+tests/
+.pytest_cache/
+*.pdf
+docs/
+*.png
+pytest.ini
