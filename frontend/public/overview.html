@@ -1,0 +1,2513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Anti-Caching Meta Headers per Cloud Run Demo Specification -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <!-- Huntington Brand Typography (Mulish / Apex New Humanist Sans) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" />
+
+  <title>Huntington Horizon | Intelligent Liquidity Orchestration</title>
+  <style>
+    :root {
+      /* Huntington Bank Official Brand Identity */
+      --hban-green: #006738;
+      --hban-green-dark: #004724;
+      --hban-green-darker: #003319;
+      --hban-green-hover: #1B5630;
+      --hban-green-abundant: #7ECF1C;
+      --hban-green-light: #CDFA6C;
+      --hban-mint: #e8f5e9;
+      --hban-mint-border: #a7f3d0;
+      --hban-accent: #059669;
+      
+      /* Huntington Corporate Neutral Palette (Charcoal, Slate, Off-White) */
+      --hban-charcoal: #0f172a;
+      --slate-900: #0f172a;
+      --slate-800: #1e293b;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-400: #94a3b8;
+      --slate-300: #cbd5e1;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+      --white: #ffffff;
+      
+      /* Executive Shadows */
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --card-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Mulish', 'Muli', 'Apex New', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--slate-50);
+      color: var(--slate-800);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    code, pre, kbd, samp, var, tt {
+      font-family: inherit;
+    }
+
+    /* Top Navigation Header */
+    header.top-nav {
+      background-color: var(--hban-green-dark);
+      border-bottom: 1px solid var(--hban-green-darker);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(0, 51, 25, 0.15);
+    }
+    .nav-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0.85rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      text-decoration: none;
+    }
+    .brand-logo-img {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+    }
+    .brand-divider {
+      width: 1px;
+      height: 32px;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    .brand-title-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--white);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      position: relative;
+      top: -3px;
+    }
+    .brand-subtitle {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--hban-mint-border);
+      font-weight: 700;
+    }
+    .nav-actions-group {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.25rem;
+      align-items: center;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: rgba(232, 245, 233, 0.85);
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover {
+      color: var(--white);
+    }
+    .version-pill {
+      background-color: rgba(0, 51, 25, 0.8);
+      color: var(--hban-mint);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(167, 243, 208, 0.3);
+    }
+
+    /* Mandatory Gear Icon (Cloud Run Demo Specification) */
+    .gear-btn {
+      background: rgba(0, 51, 25, 0.6);
+      border: 1px solid rgba(167, 243, 208, 0.3);
+      border-radius: 9999px;
+      padding: 0.45rem;
+      cursor: pointer;
+      color: var(--hban-mint);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .gear-btn:hover {
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: rotate(45deg);
+    }
+    .gear-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+    .gear-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Container */
+    .main-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 5rem 2rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, var(--hban-charcoal) 0%, var(--hban-green-darker) 100%);
+      color: var(--white);
+      border-radius: 16px;
+      padding: 3.5rem 3rem;
+      margin-bottom: 3.5rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--card-shadow-lg);
+      border: 1px solid var(--hban-green-dark);
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -20%;
+      right: -10%;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(0, 103, 56, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+      color: var(--hban-mint-border);
+    }
+    .hero h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+      max-width: 920px;
+      color: var(--white);
+    }
+    .hero p.hero-lead {
+      font-size: 1.2rem;
+      color: var(--slate-300);
+      max-width: 860px;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    .hero-stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      padding-top: 2rem;
+    }
+    .hero-stat-card {
+      display: flex;
+      flex-direction: column;
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-highlight {
+      color: #34d399;
+    }
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--slate-400);
+      margin-top: 0.25rem;
+      font-weight: 500;
+    }
+
+    /* Section Headings */
+    .section-header {
+      margin-bottom: 2rem;
+    }
+    .section-eyebrow {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--hban-green);
+      margin-bottom: 0.35rem;
+    }
+    .section-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .section-desc {
+      font-size: 1.05rem;
+      color: var(--slate-600);
+      max-width: 880px;
+      margin-top: 0.5rem;
+    }
+
+    /* Part 1: Business Problem & The Fork in the Road */
+    .problem-section {
+      margin-bottom: 4.5rem;
+    }
+
+    /* Catalyst & Tax Strategy Fork Explainer */
+    .catalyst-card {
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 2.25rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--card-shadow);
+      border-top: 5px solid var(--hban-green);
+    }
+    .catalyst-header {
+      margin-bottom: 1.25rem;
+    }
+    .catalyst-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--hban-green-dark);
+      background-color: var(--hban-mint);
+      border: 1px solid var(--hban-mint-border);
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+    }
+    .catalyst-title {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.015em;
+    }
+    .catalyst-intro {
+      font-size: 1rem;
+      color: var(--slate-700);
+      line-height: 1.6;
+      max-width: 1040px;
+    }
+    .catalyst-intro p {
+      margin-bottom: 0.75rem;
+      color: var(--slate-700);
+      line-height: 1.6;
+    }
+    .catalyst-intro p:last-child {
+      margin-bottom: 0;
+    }
+    .catalyst-label {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      margin-right: 0.5rem;
+      vertical-align: 1px;
+    }
+    .catalyst-label.problem {
+      background-color: #FEE2E2;
+      color: #991B1B;
+      border: 1px solid #FECACA;
+    }
+    .catalyst-label.example {
+      background-color: var(--hban-mint);
+      color: var(--hban-green-dark);
+      border: 1px solid var(--hban-mint-border);
+    }
+    .catalyst-equation-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      background-color: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      padding: 0.85rem 1.25rem;
+      margin: 1.25rem 0 1.75rem 0;
+      font-size: 0.9rem;
+      color: var(--slate-800);
+    }
+    .equation-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .equation-item .eq-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--slate-500);
+      font-weight: 700;
+    }
+    .equation-item .eq-val {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--slate-900);
+    }
+    .equation-op {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--slate-400);
+    }
+    .equation-item.highlight .eq-val {
+      color: var(--hban-green);
+    }
+
+    .fork-split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 850px) {
+      .fork-split-grid { grid-template-columns: 1fr; }
+    }
+    .fork-card {
+      border: 1px solid var(--slate-200);
+      border-radius: 10px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      background: var(--white);
+    }
+    .fork-card.cashout {
+      border-top: 4px solid var(--hban-green);
+      background: linear-gradient(180deg, rgba(232, 245, 233, 0.25) 0%, rgba(255, 255, 255, 1) 100px);
+    }
+    .fork-card.exchange {
+      border-top: 4px solid var(--slate-700);
+      background: linear-gradient(180deg, rgba(241, 245, 249, 0.4) 0%, rgba(255, 255, 255, 1) 100px);
+    }
+    .fork-card-header {
+      margin-bottom: 1rem;
+    }
+    .fork-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+    .fork-badge.cashout {
+      background-color: var(--hban-mint);
+      color: var(--hban-green-dark);
+      border: 1px solid var(--hban-mint-border);
+    }
+    .fork-badge.exchange {
+      background-color: var(--slate-200);
+      color: var(--slate-800);
+      border: 1px solid var(--slate-300);
+    }
+    .fork-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      letter-spacing: -0.01em;
+    }
+    .fork-subtitle {
+      font-size: 0.82rem;
+      color: var(--slate-500);
+      font-weight: 600;
+      margin-top: 0.15rem;
+    }
+    .fork-metric {
+      background-color: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+    }
+    .fork-metric-val {
+      display: block;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      letter-spacing: -0.01em;
+    }
+    .fork-card.cashout .fork-metric-val {
+      color: var(--hban-green);
+    }
+    .fork-metric-sub {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--slate-600);
+      margin-top: 0.15rem;
+    }
+    .fork-steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      font-size: 0.88rem;
+      color: var(--slate-700);
+      line-height: 1.45;
+    }
+    .fork-steps li {
+      position: relative;
+      padding-left: 1.35rem;
+    }
+    .fork-steps li::before {
+      content: '•';
+      position: absolute;
+      left: 0.2rem;
+      top: 0;
+      font-size: 1.1rem;
+      line-height: 1.3;
+    }
+    .fork-card.cashout .fork-steps li::before {
+      color: var(--hban-green);
+    }
+    .fork-card.exchange .fork-steps li::before {
+      color: var(--slate-600);
+    }
+    .catalyst-footer {
+      background-color: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      padding: 0.85rem 1.25rem;
+      font-size: 0.88rem;
+      color: var(--slate-700);
+      line-height: 1.5;
+    }
+    .catalyst-footer .stat-bold {
+      font-weight: 700;
+      color: var(--hban-green-dark);
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 900px) {
+      .problem-grid { grid-template-columns: 1fr; }
+    }
+    .problem-card {
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .problem-card.commercial {
+      border-top: 4px solid var(--slate-700);
+    }
+    .problem-card.wealth {
+      border-top: 4px solid var(--hban-green);
+    }
+    .card-badge {
+      align-self: flex-start;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+    .card-badge.commercial {
+      background-color: var(--slate-100);
+      color: var(--slate-800);
+      border: 1px solid var(--slate-300);
+    }
+    .card-badge.wealth {
+      background-color: var(--hban-mint);
+      color: var(--hban-green-dark);
+      border: 1px solid var(--hban-mint-border);
+    }
+    .problem-card h3 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 0.75rem;
+    }
+    .problem-metric-callout {
+      background-color: var(--slate-50);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1.25rem 0;
+      border-left: 3px solid var(--slate-400);
+    }
+    .problem-metric-callout .metric {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--slate-900);
+    }
+    .problem-metric-callout .metric-desc {
+      font-size: 0.85rem;
+      color: var(--slate-600);
+    }
+    .problem-points {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      font-size: 0.95rem;
+      color: var(--slate-700);
+    }
+    .problem-points li {
+      position: relative;
+      padding-left: 1.5rem;
+    }
+    .problem-points li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--slate-500);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .flight-banner {
+      background: var(--hban-charcoal);
+      border: 1px solid var(--slate-700);
+      border-radius: 12px;
+      padding: 1.75rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      color: var(--white);
+      box-shadow: var(--card-shadow);
+    }
+    .flight-banner-icon {
+      background-color: var(--hban-green);
+      color: var(--white);
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .flight-banner-text h4 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.25rem;
+      letter-spacing: -0.01em;
+    }
+    .flight-banner-text p {
+      font-size: 0.95rem;
+      color: var(--slate-300);
+      line-height: 1.5;
+    }
+
+    /* Part 2: Solution & Workflow Section */
+    .solution-section {
+      margin-bottom: 4.5rem;
+    }
+    .thesis-box {
+      background-color: var(--white);
+      border: 1px solid var(--slate-200);
+      border-left: 6px solid var(--hban-green);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--card-shadow);
+    }
+    .thesis-box h3 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--hban-green-dark);
+      margin-bottom: 0.75rem;
+    }
+    .thesis-box p {
+      font-size: 1.05rem;
+      color: var(--slate-700);
+      line-height: 1.6;
+    }
+    .capacity-meter-card {
+      background: linear-gradient(135deg, var(--hban-green-dark) 0%, var(--hban-green-darker) 100%);
+      color: var(--white);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin: 1.5rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      border: 1px solid var(--hban-green);
+    }
+    .meter-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--hban-mint-border);
+      margin-bottom: 0.25rem;
+    }
+    .meter-display {
+      font-size: 1.35rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.01em;
+    }
+    .meter-tag {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    /* Comparison Table */
+    .table-container {
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 2rem;
+    }
+    table.comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    table.comparison-table th {
+      background-color: var(--slate-100);
+      color: var(--slate-700);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--slate-200);
+    }
+    table.comparison-table td {
+      padding: 1.15rem 1.5rem;
+      font-size: 0.95rem;
+      border-bottom: 1px solid var(--slate-200);
+      vertical-align: top;
+    }
+    table.comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+    table.comparison-table tr:hover td {
+      background-color: var(--slate-50);
+    }
+    .badge-today {
+      color: var(--slate-600);
+      font-weight: 600;
+    }
+    .badge-horizon {
+      color: var(--hban-green-dark);
+      font-weight: 700;
+    }
+
+    /* Reg BI Callout */
+    .guardrail-callout {
+      background-color: var(--slate-100);
+      border: 1px solid var(--slate-300);
+      border-radius: 10px;
+      padding: 1.25rem 1.75rem;
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+    }
+    .guardrail-icon {
+      background-color: var(--hban-green-dark);
+      color: var(--white);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .guardrail-text h5 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 0.25rem;
+    }
+    .guardrail-text p {
+      font-size: 0.875rem;
+      color: var(--slate-600);
+    }
+
+    /* Part 3: Demo Flow (Timeline with 3 Core Dimensions) */
+    .demo-flow-section {
+      margin-bottom: 4.5rem;
+    }
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      position: relative;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 1.5rem;
+      bottom: 1.5rem;
+      left: 28px;
+      width: 3px;
+      background: var(--slate-200);
+      z-index: 1;
+    }
+    .timeline-step {
+      display: flex;
+      gap: 1.75rem;
+      position: relative;
+      z-index: 2;
+    }
+    .step-marker {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 3px solid var(--hban-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--hban-green);
+      flex-shrink: 0;
+      box-shadow: 0 0 0 4px var(--slate-50);
+    }
+    .step-marker.highlight {
+      background: var(--hban-green);
+      color: var(--white);
+      border-color: var(--hban-green-dark);
+    }
+    .step-content {
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      box-shadow: var(--card-shadow);
+      flex-grow: 1;
+    }
+    .step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .step-timing {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--slate-600);
+      background: var(--slate-100);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid var(--slate-200);
+    }
+    .step-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--slate-900);
+    }
+    .step-persona {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+    }
+    .persona-agent { 
+      background: var(--hban-mint); 
+      color: var(--hban-green-dark); 
+      border: 1px solid var(--hban-mint-border);
+    }
+    .persona-rm { 
+      background: var(--slate-100); 
+      color: var(--slate-800); 
+      border: 1px solid var(--slate-300);
+    }
+    .persona-pwa { 
+      background: var(--hban-green-dark); 
+      color: var(--white); 
+    }
+    .persona-client { 
+      background: var(--slate-200); 
+      color: var(--slate-700); 
+    }
+
+    /* 3-Part Dimensions per Step (Actions, What is Shown, Production Blueprint) */
+    .step-dimensions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--slate-200);
+    }
+    @media (max-width: 900px) {
+      .step-dimensions-grid { grid-template-columns: 1fr; }
+    }
+    .dim-box {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      padding: 0.85rem;
+    }
+    .dim-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--slate-500);
+      margin-bottom: 0.35rem;
+    }
+    .dim-text {
+      font-size: 0.825rem;
+      color: var(--slate-700);
+      line-height: 1.4;
+    }
+
+    /* Part 4: Architecture Section */
+    .arch-section {
+      margin-bottom: 4.5rem;
+    }
+    .tabs-wrapper {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--slate-200);
+      margin-bottom: 2rem;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 0.85rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--slate-500);
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      color: var(--slate-900);
+    }
+    .tab-btn.active {
+      color: var(--hban-green);
+    }
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--hban-green);
+      border-radius: 3px 3px 0 0;
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Architecture Visualizer Box */
+    .diagram-container {
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 2rem;
+    }
+    .diagram-desc {
+      font-size: 0.95rem;
+      color: var(--slate-600);
+      margin-bottom: 2rem;
+    }
+
+    /* Visual Architecture Nodes */
+    .arch-grid-demo {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 992px) {
+      .arch-grid-demo { grid-template-columns: 1fr; }
+    }
+    .arch-column {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .arch-col-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--slate-700);
+      border-bottom: 1px solid var(--slate-200);
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .arch-node {
+      background: var(--white);
+      border: 1px solid var(--slate-300);
+      border-radius: 8px;
+      padding: 1.15rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .arch-node:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--card-shadow);
+    }
+    .arch-node.core-focus {
+      border: 2px solid var(--hban-green);
+      background: #fafdfb;
+    }
+    .node-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+    .badge-ui { 
+      background: var(--slate-100); 
+      color: var(--slate-800); 
+      border: 1px solid var(--slate-300);
+    }
+    .badge-cloud { 
+      background: var(--hban-mint); 
+      color: var(--hban-green-dark); 
+      border: 1px solid var(--hban-mint-border);
+    }
+    .badge-ai { 
+      background: var(--hban-green-dark); 
+      color: var(--white); 
+    }
+    .badge-tool { 
+      background: var(--slate-200); 
+      color: var(--slate-800); 
+    }
+    .badge-data { 
+      background: var(--slate-100); 
+      color: var(--slate-700); 
+      border: 1px solid var(--slate-300);
+    }
+    .node-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 0.25rem;
+    }
+    .node-tech {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--hban-green-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.5rem;
+    }
+    .node-desc {
+      font-size: 0.825rem;
+      color: var(--slate-600);
+      line-height: 1.4;
+    }
+
+    /* Production Diagram (Multi-Tier) */
+    .prod-tiers {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .prod-tier-row {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+    }
+    .tier-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .tier-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--slate-800);
+    }
+    .tier-boundary {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--slate-600);
+      background: var(--slate-200);
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+    }
+    .tier-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    /* Financial ROI Table Section */
+    .roi-section {
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 4rem;
+    }
+    .roi-table-wrapper {
+      margin: 1.5rem 0;
+      overflow-x: auto;
+    }
+    .roi-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .roi-table th {
+      background-color: var(--hban-charcoal);
+      color: var(--white);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 1rem 1.25rem;
+    }
+    .roi-table td {
+      padding: 1rem 1.25rem;
+      font-size: 0.95rem;
+      border-bottom: 1px solid var(--slate-200);
+      font-variant-numeric: tabular-nums;
+    }
+    .roi-table tr:hover td {
+      background-color: var(--slate-50);
+    }
+    .roi-highlight {
+      font-weight: 800;
+      color: var(--hban-green-dark);
+    }
+
+    /* Mandatory Slide-Out Admin Panel Drawer (Skill §1.5) */
+    .admin-drawer-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .admin-drawer-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .admin-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      max-width: 440px;
+      background: var(--white);
+      box-shadow: -10px 0 25px -5px rgba(0, 0, 0, 0.2);
+      z-index: 101;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    .admin-drawer.open {
+      transform: translateX(0);
+    }
+    .admin-drawer-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--slate-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--slate-50);
+    }
+    .admin-drawer-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--slate-900);
+    }
+    .admin-close-btn {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      cursor: pointer;
+      color: var(--slate-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.25rem;
+      border-radius: 4px;
+    }
+    .admin-close-btn:hover {
+      color: var(--slate-900);
+      background: var(--slate-200);
+    }
+    .admin-drawer-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .admin-section-label {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--slate-500);
+      margin-bottom: 0.75rem;
+    }
+    .telemetry-badge-card {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .telemetry-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.825rem;
+    }
+    .telemetry-key {
+      color: var(--slate-500);
+      font-weight: 500;
+    }
+    .telemetry-val {
+      font-weight: 700;
+      color: var(--slate-900);
+      font-variant-numeric: tabular-nums;
+    }
+    .admin-links-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .admin-nav-card {
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      padding: 1rem;
+      text-decoration: none;
+      color: var(--slate-900);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .admin-nav-card:hover {
+      border-color: var(--hban-green);
+      transform: translateY(-1px);
+    }
+    .admin-nav-info h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--hban-green-dark);
+      margin-bottom: 0.2rem;
+    }
+    .admin-nav-info p {
+      font-size: 0.8rem;
+      color: var(--slate-600);
+    }
+
+    /* Print Styles for Executive PDF Generation */
+    @media print {
+      @page {
+        size: letter;
+        margin: 0.4in;
+      }
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      body {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        font-size: 8.5pt;
+        line-height: 1.4;
+      }
+      .main-container {
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      header.top-nav {
+        position: static !important;
+        border-bottom: 2px solid var(--hban-green) !important;
+        padding: 0 0 0.75rem 0 !important;
+        margin-bottom: 1rem !important;
+      }
+      .nav-container {
+        padding: 0 !important;
+      }
+      .nav-links, .gear-btn, #admin-overlay, #admin-drawer {
+        display: none !important;
+      }
+      .hero {
+        padding: 1.5rem 2rem !important;
+        margin-bottom: 1.5rem !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .hero h1 {
+        font-size: 20pt !important;
+        line-height: 1.15 !important;
+        margin-bottom: 0.5rem !important;
+      }
+      .hero p.hero-lead {
+        font-size: 9.5pt !important;
+        line-height: 1.4 !important;
+        margin-bottom: 1rem !important;
+      }
+      .hero-stats-row {
+        padding-top: 0.75rem !important;
+        gap: 0.75rem !important;
+      }
+      .stat-number {
+        font-size: 15pt !important;
+      }
+      .stat-label {
+        font-size: 7.5pt !important;
+      }
+      .section-header {
+        margin-bottom: 1rem !important;
+      }
+      .section-title {
+        font-size: 14pt !important;
+      }
+      .section-desc {
+        font-size: 8.5pt !important;
+      }
+      .problem-section {
+        margin-bottom: 2rem !important;
+      }
+      .catalyst-card {
+        padding: 1.25rem !important;
+        margin-bottom: 1.5rem !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .catalyst-title {
+        font-size: 12pt !important;
+      }
+      .catalyst-intro, .catalyst-intro p {
+        font-size: 8.5pt !important;
+        margin-bottom: 0.35rem !important;
+      }
+      .catalyst-equation-bar {
+        padding: 0.5rem 0.75rem !important;
+        margin: 0.75rem 0 !important;
+      }
+      .equation-item .eq-val {
+        font-size: 10pt !important;
+      }
+      .fork-split-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.85rem !important;
+        margin-bottom: 0.75rem !important;
+      }
+      .fork-card {
+        padding: 1rem !important;
+      }
+      .fork-title {
+        font-size: 10pt !important;
+      }
+      .fork-metric {
+        padding: 0.5rem !important;
+        margin-bottom: 0.6rem !important;
+      }
+      .fork-metric-val {
+        font-size: 11pt !important;
+      }
+      .fork-steps {
+        font-size: 7.5pt !important;
+        gap: 0.35rem !important;
+      }
+      .catalyst-footer {
+        padding: 0.6rem 0.85rem !important;
+        font-size: 7.8pt !important;
+      }
+      .problem-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 1rem !important;
+        margin-bottom: 1rem !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .problem-card {
+        padding: 1.25rem !important;
+      }
+      .problem-card h3 {
+        font-size: 11pt !important;
+      }
+      .problem-metric-callout {
+        margin: 0.75rem 0 !important;
+        padding: 0.6rem !important;
+      }
+      .problem-metric-callout .metric {
+        font-size: 12pt !important;
+      }
+      .problem-points {
+        font-size: 8pt !important;
+        gap: 0.4rem !important;
+      }
+      .flight-banner {
+        padding: 1rem 1.25rem !important;
+        break-inside: avoid;
+      }
+      .solution-section {
+        margin-bottom: 2rem !important;
+        page-break-before: always;
+      }
+      .thesis-box {
+        padding: 1.25rem !important;
+        margin-bottom: 1rem !important;
+      }
+      .thesis-box h3 {
+        font-size: 11pt !important;
+      }
+      .thesis-box p {
+        font-size: 9pt !important;
+      }
+      .capacity-meter-card {
+        padding: 0.85rem 1.25rem !important;
+        margin: 1rem 0 !important;
+      }
+      .meter-display {
+        font-size: 11pt !important;
+      }
+      .table-container {
+        margin-bottom: 1rem !important;
+      }
+      table.comparison-table th {
+        padding: 0.6rem 0.85rem !important;
+        font-size: 7.5pt !important;
+      }
+      table.comparison-table td {
+        padding: 0.6rem 0.85rem !important;
+        font-size: 8pt !important;
+      }
+      .guardrail-callout {
+        padding: 0.85rem 1.25rem !important;
+      }
+      .demo-flow-section {
+        margin-bottom: 2rem !important;
+        page-break-before: always;
+      }
+      .timeline {
+        gap: 1rem !important;
+      }
+      .timeline::before {
+        left: 18px !important;
+      }
+      .timeline-step {
+        gap: 1rem !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .step-marker {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 0.9rem !important;
+      }
+      .step-content {
+        padding: 1rem 1.25rem !important;
+      }
+      .step-title {
+        font-size: 10.5pt !important;
+      }
+      .step-dimensions-grid {
+        gap: 0.6rem !important;
+        margin-top: 0.6rem !important;
+        padding-top: 0.6rem !important;
+      }
+      .dim-box {
+        padding: 0.6rem !important;
+      }
+      .dim-text {
+        font-size: 7.5pt !important;
+      }
+      .arch-section {
+        margin-bottom: 2rem !important;
+        page-break-before: always;
+      }
+      .tabs-wrapper {
+        display: none !important;
+      }
+      .tab-pane {
+        display: block !important;
+        margin-bottom: 1.5rem !important;
+      }
+      #demo-arch::before {
+        content: "Architecture 1: Working Cloud Run Monostack Prototype (React + Vite + FastAPI)";
+        display: block;
+        font-size: 11pt;
+        font-weight: 800;
+        color: var(--hban-green-dark);
+        margin-bottom: 0.5rem;
+      }
+      #prod-arch {
+        page-break-before: always;
+      }
+      #prod-arch::before {
+        content: "Architecture 2: Target Enterprise Production Architecture (Google Cloud + Banking Core)";
+        display: block;
+        font-size: 11pt;
+        font-weight: 800;
+        color: var(--hban-green-dark);
+        margin-bottom: 0.5rem;
+      }
+      .diagram-container {
+        padding: 1.25rem !important;
+      }
+      .arch-column {
+        padding: 1rem !important;
+        gap: 0.75rem !important;
+      }
+      .arch-node {
+        padding: 0.75rem !important;
+      }
+      .node-title {
+        font-size: 9pt !important;
+      }
+      .node-desc {
+        font-size: 7.5pt !important;
+      }
+      .prod-tier-row {
+        padding: 1rem !important;
+      }
+      .roi-section {
+        padding: 1.5rem !important;
+        margin-bottom: 2rem !important;
+        break-inside: avoid;
+        page-break-before: always;
+      }
+      .roi-table th {
+        padding: 0.6rem 0.85rem !important;
+        font-size: 7.5pt !important;
+      }
+      .roi-table td {
+        padding: 0.6rem 0.85rem !important;
+        font-size: 8pt !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="top-nav">
+    <div class="nav-container">
+      <div class="brand-group">
+        <a href="#" class="brand-logo">
+          <img src="huntington-logo-white.png" alt="Huntington Bank" class="brand-logo-img" />
+          <div class="brand-divider"></div>
+          <span class="brand-title">Horizon</span>
+        </a>
+      </div>
+      <div class="nav-actions-group">
+        <nav class="nav-links">
+          <a href="#problem">Business Problem</a>
+          <a href="#solution">Workflow &amp; Thesis</a>
+          <a href="#demoflow">Operating Workflow</a>
+          <a href="#architecture">Architecture</a>
+          <a href="#roi">Financial ROI</a>
+          <span class="version-pill">v5.2 Production Enterprise</span>
+        </nav>
+        
+        <!-- Mandatory Gear Icon Trigger (Cloud Run Demo Skill §1.5) -->
+        <button class="gear-btn" onclick="toggleAdminPanel()" aria-label="Open Admin Panel" title="Open Admin &amp; Telemetry Panel">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-container">
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        Executive Committee Strategic Operating Model
+      </div>
+      <h1>Scaling Huntington's Wealth Management Franchise with Existing Headcount</h1>
+      <p class="hero-lead">
+        Huntington cannot scale wealth management by asking bankers to work harder. The barrier is physical human capacity against an un-monitorable commercial book. Powered by the <strong>Gemini Enterprise Agent Platform (fka Vertex AI Platform)</strong>, <strong>Huntington Horizon</strong> provides dual-sided capacity leverage—monitoring the entire book, absorbing manual discovery for Commercial RMs, pre-staging onboarding and servicing for Private Wealth Advisors, and safeguarding both taxable cash-out and IRC §1031 exchange liquidity.
+      </p>
+
+      <div class="hero-stats-row">
+        <div class="hero-stat-card">
+          <div class="stat-number">$4.5 Billion</div>
+          <div class="stat-label">Annual CRE & Mid-Market Payoffs</div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="stat-number stat-highlight">~78% Flight</div>
+          <div class="stat-label">Deposits Leaving Within 48–72 Hrs</div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="stat-number">~7 hrs → 4 min</div>
+          <div class="stat-label">Commercial RM Discovery Absorbed</div>
+        </div>
+        <div class="hero-stat-card">
+          <div class="stat-number stat-highlight">80 → 150 Accounts</div>
+          <div class="stat-label">Advisor Ongoing Capacity Expanded</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: Business Problem -->
+    <section id="problem" class="problem-section">
+      <div class="section-header">
+        <div class="section-eyebrow">Part 1: The Challenge</div>
+        <h2 class="section-title">The Business Problem: A Two-Sided Bottleneck & 1031 Flight</h2>
+        <p class="section-desc">
+          Huntington's commercial book experiences $4.5B in annual loan payoffs. Each represents an urgent liquidity event. Today, manual bandwidth limitations across both lines of business create an unavoidable deposit leakage point.
+        </p>
+      </div>
+
+      <!-- The Catalyst & The Fork in the Road Explainer Card -->
+      <div class="catalyst-card">
+        <div class="catalyst-header">
+          <div class="catalyst-tag">The Problem in Practice</div>
+          <h3 class="catalyst-title">The Core Problem: Commercial Loan Payoffs Trigger Deposit Flight</h3>
+          <div class="catalyst-intro">
+            <p>
+              <span class="catalyst-label problem">The Problem</span> When a commercial borrower sells a property and pays off their Huntington loan, millions of dollars in net cash are suddenly released. Because Huntington lacks early automated visibility into title payoff requests before closing, <strong>~78% of these deposits wire out to competing institutions within 48 to 72 hours</strong>—costing the bank both the loan asset and the resulting deposit relationship.
+            </p>
+            <p>
+              <span class="catalyst-label example">The Example</span> Commercial borrower <strong>Marcus Vance</strong> sells <em>Riverfront Commons</em> for <strong>$8.5M</strong>, triggering a <strong>$5.2M Huntington CRE loan payoff</strong> and releasing <strong>$2.9M in net cash</strong>. At closing, Marcus must decide between taking taxable cash or rolling into an IRC §1031 exchange—and in either case, without early intervention, those funds leave Huntington forever:
+            </p>
+          </div>
+        </div>
+
+        <div class="catalyst-equation-bar">
+          <div class="equation-item">
+            <span class="eq-label">Asset Disposition</span>
+            <span class="eq-val">Riverfront Commons ($8.5M)</span>
+          </div>
+          <div class="equation-op">−</div>
+          <div class="equation-item">
+            <span class="eq-label">Huntington CRE Debt</span>
+            <span class="eq-val">Term Loan Payoff ($5.2M)</span>
+          </div>
+          <div class="equation-op">=</div>
+          <div class="equation-item highlight">
+            <span class="eq-label">Net Liquid Equity</span>
+            <span class="eq-val">$2,900,000 Cash Event</span>
+          </div>
+          <div class="equation-op">➔</div>
+          <div class="equation-item">
+            <span class="eq-label">Borrower Tax Decision</span>
+            <span class="eq-val">40% Cash-Out vs. 60% 1031 Roll</span>
+          </div>
+        </div>
+
+        <div class="fork-split-grid">
+          <!-- Path A: Standard Cash-Out -->
+          <div class="fork-card cashout">
+            <div class="fork-card-header">
+              <span class="fork-badge cashout">Path A: Standard Cash-Out (~40% of Dispositions)</span>
+              <div class="fork-title">Outright Cash-Out & Wealth Diversification</div>
+              <div class="fork-subtitle">Primary Demo Scenario • Marcus Vance Baseline</div>
+            </div>
+            <div class="fork-body">
+              <div class="fork-metric">
+                <span class="fork-metric-val">$2.9M Liquid Proceeds</span>
+                <span class="fork-metric-sub">Client realizes capital gains, taking cash out to diversify into wealth management</span>
+              </div>
+              <ul class="fork-steps">
+                <li><strong>The Flight Risk:</strong> Commercial proceeds settle into a low-yielding operating checking account; historical Treasury data proves ~78% wires away to Wall Street wirehouses within 5 business days without proactive intervention.</li>
+                <li><strong>Day 0 Capture:</strong> Horizon pre-stages <strong>Huntington Max$aver ICS</strong> (4.85% APY, multi-million FDIC insurance via IntraFi reciprocal network), securing title wire routing instructions before closing.</li>
+                <li><strong>Day 10 Outcome:</strong> Automated fiduciary onboarding into <strong>Huntington SEI Wealth Management</strong>: $2.0M AUM Family Trust + $900k Commercial Operating Reserves.</li>
+                <li><strong>Capacity Impact:</strong> Automated client dossier and ongoing review packs expand Private Wealth Advisor book capacity from <strong>80 to 150 accounts</strong> with zero new headcount.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Path B: IRC §1031 Exchange -->
+          <div class="fork-card exchange">
+            <div class="fork-card-header">
+              <span class="fork-badge exchange">Path B: IRC §1031 Exchange (~60% of Dispositions)</span>
+              <div class="fork-title">Tax-Deferred Roll & Replacement Financing</div>
+              <div class="fork-subtitle">Commercial CRE Reality • Institutional Depository Protection</div>
+            </div>
+            <div class="fork-body">
+              <div class="fork-metric">
+                <span class="fork-metric-val">$2.9M Escrow Custody</span>
+                <span class="fork-metric-sub">Client defers capital gains & depreciation recapture by acquiring replacement property</span>
+              </div>
+              <ul class="fork-steps">
+                <li><strong>The IRS Rule:</strong> Under Treas. Reg. § 1.1031(k)-1(k), the client <em>cannot touch the funds</em> (constructive receipt voids tax deferral). Huntington cannot act directly as the Qualified Intermediary (QI) due to disqualified person rules.</li>
+                <li><strong>The Flight Risk:</strong> Without an institutional custody integration, 100% of exchange proceeds legally wire out to external third-party exchange accommodators.</li>
+                <li><strong>Horizon Solution:</strong> Horizon detects 1031 intent early in contract riders and routes wire instructions to the <strong>Huntington 1031 Qualified Escrow Depository (Partner QI Network)</strong> under Treas. Reg. § 1.1031(k)-1(g)(3).</li>
+                <li><strong>Capacity Impact:</strong> Retains the <strong>$2.9M institutional deposit for 180 days</strong>, delivers 4.75% escrow yield, and pre-qualifies Huntington Commercial Lending to originate the replacement mortgage.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="catalyst-footer">
+          <span class="stat-bold">Why This Matters for Executive Leadership:</span> Whether a commercial borrower chooses Cash-Out (~40%) or 1031 Tax Deferral (~60%), Horizon eliminates the manual discovery drag for Commercial RMs and onboarding friction for Wealth Advisors—guaranteeing <strong>100% deposit retention and dual-sided capacity leverage</strong> across Huntington.
+        </div>
+      </div>
+
+      <div class="problem-grid">
+        <!-- Commercial Bottleneck -->
+        <div class="problem-card commercial">
+          <span class="card-badge commercial">Side 1: Commercial RM Bottleneck</span>
+          <h3>Commercial Discovery Drag</h3>
+          <p style="color: var(--slate-600); font-size: 0.95rem;">
+            Commercial Relationship Managers (RMs) are focused on loan origination. They lack the bandwidth to manually hunt for exits across thousands of servicing tickets.
+          </p>
+
+          <div class="problem-metric-callout">
+            <div class="metric">6 to 8 Hours / Deal</div>
+            <div class="metric-desc">Manual time across 3 systems (core servicing, credit vault, CRM) to resolve LLC guarantors, calculate equity, and check tax intent.</div>
+          </div>
+
+          <ul class="problem-points">
+            <li><strong>Un-monitorable Book:</strong> Thousands of payoff requests arrive via PDF from title companies and sit unread in servicing queues.</li>
+            <li><strong>Entity Resolution Gap:</strong> Borrower LLCs conceal living owners; parsing incumbency certificates is manual and labor-intensive.</li>
+            <li><strong>The Title Wire Deadline:</strong> Title companies disburse funds based on seller wire instructions signed days before closing. Without early contact, the wire routes away.</li>
+          </ul>
+        </div>
+
+        <!-- Wealth Bottleneck -->
+        <div class="problem-card wealth">
+          <span class="card-badge wealth">Side 2: Wealth Advisor Bottleneck</span>
+          <h3>Wealth Onboarding & Ongoing Servicing Drag</h3>
+          <p style="color: var(--slate-600); font-size: 0.95rem;">
+            Private Wealth Advisors (PWAs) manage full client books (80–100 families). Simply sending them more commercial leads just moves the bottleneck without scaling the business.
+          </p>
+
+          <div class="problem-metric-callout">
+            <div class="metric">80–100 Client Ceiling</div>
+            <div class="metric-desc">Manual onboarding takes 2–3 weeks, and ongoing fiduciary servicing (quarterly reviews, asset allocation tracking) limits advisor bandwidth.</div>
+          </div>
+
+          <ul class="problem-points">
+            <li><strong>Capacity Throttle:</strong> Advisors cannot absorb new multi-million dollar relationships without ongoing fiduciary servicing fatigue.</li>
+            <li><strong>The 1031 Exchange Blind Spot:</strong> Over 50–65% of commercial dispositions execute IRC §1031 exchanges. If funds touch operating accounts, tax deferral is voided.</li>
+            <li><strong>Flight Window Lost:</strong> Proceeds wire out to Wall Street wirehouses or third-party exchange accommodators in 48–72 hours.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Deposit Flight Callout -->
+      <div class="flight-banner">
+        <div class="flight-banner-icon">§</div>
+        <div class="flight-banner-text">
+          <h4>The 48–72 Hour Deposit Flight Cliff & Title Wire Routing</h4>
+          <p>
+            When a commercial borrower sells an asset, net equity proceeds ($2M–$10M+) settle into an operating account. Historical Treasury data proves that <strong>~78% of these funds wire out to competitors within 5 business days</strong> unless an immediate, high-yield, FDIC-insured structure (Max$aver ICS or 1031 Qualified Escrow Depository) is pre-staged and delivered to the title company before closing.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: How Horizon Solves It -->
+    <section id="solution" class="solution-section">
+      <div class="section-header">
+        <div class="section-eyebrow">Part 2: The Core Workflow</div>
+        <h2 class="section-title">How Horizon Solves It: Dual-Sided Capacity Leverage</h2>
+        <p class="section-desc">
+          Horizon does not ask bankers to work longer hours, nor does it fire bankers. Built on the <strong>Gemini Enterprise Agent Platform (fka Vertex AI Platform)</strong>, it introduces an intelligent agentic layer that <strong>absorbs the un-staffable work</strong> across both commercial and wealth operations.
+        </p>
+      </div>
+
+      <div class="thesis-box">
+        <h3>The Scaling Thesis Stated Plainly</h3>
+        <p>
+          <em>"No human team could monitor a $4.5B payoff book in real time. Horizon monitors all of it, absorbs multi-hour discovery on the commercial side, and pre-stages onboarding and ongoing fiduciary servicing on the wealth side. The same headcount—commercial and wealth—now covers a franchise it physically could not have covered before. That is how Huntington scales wealth management without scaling the org chart."</em>
+        </p>
+      </div>
+
+      <!-- Capacity Meter Display -->
+      <div class="capacity-meter-card">
+        <div>
+          <div class="meter-title">Synthetic Capacity Meter (Live In-Product)</div>
+          <div class="meter-display">2,140 screened ▸ 6 qualified & staged ▸ ~46 hrs manual discovery absorbed</div>
+        </div>
+        <div class="meter-tag">Zero Net New Headcount Required</div>
+      </div>
+
+      <!-- Side-by-Side Value Table -->
+      <div class="table-container">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th style="width: 25%;">Dimension</th>
+              <th style="width: 35%;">Manual Baseline (Today)</th>
+              <th style="width: 40%;">With Huntington Horizon</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Book Coverage</strong></td>
+              <td class="badge-today">Effectively &lt;5% (Humanly un-monitorable)</td>
+              <td class="badge-horizon">100% of $4.5B book monitored in real time via Pub/Sub</td>
+            </tr>
+            <tr>
+              <td><strong>Commercial RM Discovery</strong></td>
+              <td class="badge-today">~6–8 hours per deal across 3 siloed systems</td>
+              <td class="badge-horizon"><strong>~4 minutes total:</strong> Gemini multimodal entity resolution + automated Title Wire Instruction Form</td>
+            </tr>
+            <tr>
+              <td><strong>Messy Real-World Pricing</strong></td>
+              <td class="badge-today">Blocks workflow; requires human analyst to research property</td>
+              <td class="badge-horizon"><strong>Agentic Proof:</strong> Trailing NOI ($637.5k) capitalized via 7.5% submarket cap rate grounded via Vertex AI Search ($8.5M value)</td>
+            </tr>
+            <tr>
+              <td><strong>IRC §1031 Exchange Routing</strong></td>
+              <td class="badge-today">0% captured; 100% leaks to third-party QI accommodators</td>
+              <td class="badge-horizon"><strong>Native 1031 Detection:</strong> Automatic routing to Huntington 1031 Qualified Escrow Depository (Partner QI Network, yielding 4.75%)</td>
+            </tr>
+            <tr>
+              <td><strong>Wealth Advisor Intake & Servicing</strong></td>
+              <td class="badge-today">~4–6 hrs onboarding (2–3 weeks elapsed); capped at 80 clients</td>
+              <td class="badge-horizon"><strong>~3-day onboarding:</strong> Pre-filled KYC/CIP, SEI shell, draft IPS, & ongoing review dossiers expanding capacity to <strong>150 clients</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Compliance & Risk</strong></td>
+              <td class="badge-today">Manual checks; risk of fee-splitting violations or bad credits</td>
+              <td class="badge-horizon"><strong>Exclusion Sentry Tool:</strong> Pass rating (Tier 2), FINRA 2040 100% Shadow Deposit Credit, GLBA Quarantined Consent Gate</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Reg BI Guardrail Box -->
+      <div class="guardrail-callout">
+        <div class="guardrail-icon">§</div>
+        <div class="guardrail-text">
+          <h5>Institutional Governance: Reg BI & Fiduciary Boundary</h5>
+          <p>
+            Horizon generates <strong>administrative scaffolding only</strong>. It never renders investment advice or suitability determinations. All pre-filled KYC entries, SEI model portfolios, and draft IPS structures require mandatory review and authorship by licensed Series 7/66/CFP advisors before client presentation.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: The Demo Flow (With 3-Part Dimensions) -->
+    <section id="demoflow" class="demo-flow-section">
+      <div class="section-header">
+        <div class="section-eyebrow">Part 3: Demonstration Blueprint</div>
+        <h2 class="section-title">The 10-Minute Executive Demonstration Flow</h2>
+        <p class="section-desc">
+          A structured walkthrough demonstrating the exact presenter actions, visible UI feedback, and production enterprise implementation mapping for every step of the workflow.
+        </p>
+      </div>
+
+      <div class="timeline">
+        <!-- Step 1 -->
+        <div class="timeline-step">
+          <div class="step-marker">1</div>
+          <div class="step-content">
+            <div class="step-header">
+              <span class="step-timing">Day T-14 • 01:30 in Demo</span>
+              <div class="step-title">Continuous Servicing Queue Ingestion</div>
+              <span class="step-persona persona-agent">Horizon Agent</span>
+            </div>
+            <p>Horizon monitors commercial loan servicing queues (AFS/ACBS). It automatically intercepts an inbound title payoff request PDF from First American Title on <em>Riverfront Commercial Commons</em> ($5,214,800 payoff, 14 days to close).</p>
+            
+            <div class="step-dimensions-grid">
+              <div class="dim-box">
+                <div class="dim-label">Presenter Action</div>
+                <div class="dim-text">Opens Salesforce FSC shell; highlights live ingestion feed and T-14 payoff request document.</div>
+              </div>
+              <div class="dim-box">
+                <div class="dim-label">What is Shown in Demo</div>
+                <div class="dim-text">Inbound PDF preview, extracted UPB ($5,214,800), and 14-day payoff countdown badge.</div>
+              </div>
+              <div class="dim-box">
+                <div class="dim-label">Production Implementation</div>
+                <div class="dim-text">Google Cloud Pub/Sub event bus ingesting core servicing feeds into Cloud Run microservices.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="timeline-step">
+          <div class="step-marker">2</div>
+          <div class="step-content">
+            <div class="step-header">
+              <span class="step-timing">Day T-14 • 03:00 in Demo</span>
+              <div class="step-title">Multimodal Entity Resolution & Guarantor Mapping</div>
+              <span class="step-persona persona-agent">Gemini 3.7 Flash</span>
+            </div>
+            <p>Powered by the <strong>Gemini Enterprise Agent Platform</strong>, Horizon inspects raw credit documents (Incumbency Certificate & Guaranty Agreement), resolving <code>Vance Riverfront Properties IV, LLC</code> to <strong>Marcus Vance (85%)</strong> and <strong>Elena Vance (15%)</strong> with pixel-level bounding boxes.</p>
+            
+            <div class="step-dimensions-grid">
+              <div class="dim-box">
+                <div class="dim-label">Presenter Action</div>
+                <div class="dim-text">Clicks Marcus Vance in Pane 1; triggers multimodal layout analysis on scanned credit vault documents.</div>
+              </div>
+              <div class="dim-box">
+                <div class="dim-label">What is Shown in Demo</div>
+                <div class="dim-text">Pane 2 household topology map with green bounding-box citations on scanned credit certificates.</div>
+              </div>
+              <div class="dim-box">
+                <div class="dim-label">Production Implementation</div>
+                <div class="dim-text">Gemini 3.7 Flash native multimodal visual understanding parsing raw TIFF/PDFs directly from BigQuery vault.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="timeline-step">
+          <div class="step-marker highlight">3</div>
+          <div class="step-content">
+            <div class="step-header">
+              <span class="step-timing">Day T-14 • 04:30 in Demo</span>
+              <div class="step-title">The "Agentic Proof" Moment: Grounded Valuation & 1031 Strategy</div>
+              <span class="step-persona persona-agent">Gemini 3.7 Flash + Vertex Search</span>
+            </div>
+            <p>The title letter omits the contract sale price. Rather than failing, the agent retrieves Q1 trailing NOI ($637.5k), grounds the 7.5% submarket cap rate via Vertex AI Search, computes an indicative $8.5M value ($2.9M net equity), and verifies IRC §1031 exchange intent.</p>
+            
+            <div class="step-dimensions-grid">
+              <div class="dim-box">
+                <div class="dim-label">Presenter Action</div>
+                <div class="dim-text">Adjusts the Sale Price Slider from $8.5M to $9.0M live; inspects the 1031 Tax Strategy Toggle.</div>
+              </div>
+              <div class="dim-box">
+                <div class="dim-label">What is Shown in Demo</div>
+                <div class="dim-text">Real-time dynamic arithmetic updating net equity to $3.35M; source citations linking to appraisal database.</div>
+              </div>
+              <div class="dim-box">
+                <div class="dim-label">Production Implementation</div>
+                <div class="dim-text">Vertex AI Search grounding regional cap rates; deterministic Cloud Run `CalculatorTool` executing math.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="timeline-step">
+          <div class="step-marker">4</div>
+          <div class="step-content">
+            <div class="step-header">
+              <span class="step-timing">Day T-12 • 06:00 in Demo</span>
+              <div class="step-title">Automated Risk & Compliance Screening (Exclusion Sentry)</div>
+              <span class="step-persona persona-agent">Deterministic Cloud Run Tool</span>
+            </div>
+            <p>Before any banker's time is requested, Horizon validates that credit risk is <strong>Pass (Rating 2)</strong> and configures <strong>FINRA Rule 2040 compliance</strong>: RM receives 100% Shadow Deposit Credit on their cost-of-funds scorecard with zero securities fee-splitting.</p>
+            
+            <div class="step-dimensions-grid">
+              <div class="dim-box">
+                <div class="dim-label">Presenter Action</div>
+                <div class="dim-text">Opens compliance drawer; demonstrates deterministic credit risk checks and non-fee-splitting verification.</div>
+              </div>
+              <div class="dim-box">
+                <div class="dim-label">What is Shown in Demo</div>
+                <div class="dim-text">Green badges for Pass Rating 2, FINRA 2040 Shadow Credit, and GLBA Quarantined Consent Gate.</div>
+              </div>
+              <div class="dim-box">
+                <div class="dim-label">Production Implementation</div>
+                <div class="dim-text">Cloud Run microservice enforcing deterministic ECOA/Reg B rules and immutable Cloud Audit Logs.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="timeline-step">
+          <div class="step-marker">5</div>
+          <div class="step-content">
+            <div class="step-header">
+              <span class="step-timing">Day T-12 • 06:45 in Demo</span>
+              <div class="step-title">High-Value Human Call & Title Wire Form Delivery</div>
+              <span class="step-persona persona-rm">Greg Miller (Commercial RM)</span>
+            </div>
+            <p>RM Greg Miller places a 4-minute warm call: <em>"Marcus, congratulations on getting Riverfront under contract. Let's make sure that $2.9M net proceeds works immediately for you upon closing. I'd like to bring in Sarah Jenkins to structure our 4.85% Treasury sweep and send First American Title our verified settlement wire instructions."</em> Greg clicks <strong>[Approve & Deliver Wire Form]</strong>.</p>
+            
+            <div class="step-dimensions-grid">
+              <div class="dim-box">
+                <div class="dim-label">Presenter Action</div>
+                <div class="dim-text">Reviews briefing talk track; clicks [Approve & Deliver Wire Form] to generate title settlement document.</div>
+              </div>
+              <div class="dim-box">
+                <div class="dim-label">What is Shown in Demo</div>
+                <div class="dim-text">Pre-filled Huntington Verified Wire Instruction Form generated as PDF ready for First American Title.</div>
+              </div>
+              <div class="dim-box">
+                <div class="dim-label">Production Implementation</div>
+                <div class="dim-text">Apigee X API Gateway delivering authenticated payload to title settlement coordination queues.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="timeline-step">
+          <div class="step-marker highlight">6</div>
+          <div class="step-content">
+            <div class="step-header">
+              <span class="step-timing">Day T-8 • 07:30 in Demo</span>
+              <div class="step-title">Wealth Capacity Leverage: Onboarding & Ongoing Servicing</div>
+              <span class="step-persona persona-pwa">Sarah Jenkins (Private Wealth Advisor)</span>
+            </div>
+            <p>The demo toggles to Sarah Jenkins. Horizon does not dump a raw lead. It delivers an <strong>80% pre-staged onboarding package</strong> (KYC/CIP, SEI custodial shell, draft IPS) plus an <strong>Automated Quarterly Review Dossier</strong> template—expanding Sarah's client capacity from 80 to 150 relationships.</p>
+            
+            <div class="step-dimensions-grid">
+              <div class="dim-box">
+                <div class="dim-label">Presenter Action</div>
+                <div class="dim-text">Toggles Persona Switcher to Sarah Jenkins (PWA view); reviews staged dossier and IPS framework.</div>
+              </div>
+              <div class="dim-box">
+                <div class="dim-label">What is Shown in Demo</div>
+                <div class="dim-text">Pre-filled KYC/CIP entries, staged SEI shell, draft IPS framework, and ongoing review dossier template.</div>
+              </div>
+              <div class="dim-box">
+                <div class="dim-label">Production Implementation</div>
+                <div class="dim-text">Apigee X routing to SEI Wealth Platform Gateway; Cloud Spanner persistent household topology.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 7 -->
+        <div class="timeline-step">
+          <div class="step-marker">7</div>
+          <div class="step-content">
+            <div class="step-header">
+              <span class="step-timing">Day T-0 to T+10 • 09:00 in Demo</span>
+              <div class="step-title">Dual-Path Deposit Retention: 100% Retained at Closing</div>
+              <span class="step-persona persona-client">Client & Treasury Platform</span>
+            </div>
+            <p><strong>Path A (Cash Out):</strong> On Day T-0, $2.9M settles directly into Marcus's commercial <strong>Max$aver Insured Cash Sweep (ICS)</strong> yielding 4.85% with multi-million-dollar FDIC insurance. On Day T+10, $2.0M transitions to an SEI discretionary family trust, retaining $900k in commercial liquidity.</p>
+            <p><strong>Path B (1031 Exchange):</strong> If 1031 intent is flagged, proceeds route directly into the <strong>Huntington 1031 Qualified Escrow Depository (Partner QI Network)</strong> (yielding 4.75%) under Treas. Reg. § 1.1031(k)-1(g)(3) during the 180-day window.</p>
+            
+            <div class="step-dimensions-grid">
+              <div class="dim-box">
+                <div class="dim-label">Presenter Action</div>
+                <div class="dim-text">Shows Day 0 settlement ledger; highlights seamless transition from Treasury ICS to SEI Wealth Platform.</div>
+              </div>
+              <div class="dim-box">
+                <div class="dim-label">What is Shown in Demo</div>
+                <div class="dim-text">Two-tier retention breakdown: $2.0M Wealth AUM + $900k Commercial Deposits = $2.9M retained.</div>
+              </div>
+              <div class="dim-box">
+                <div class="dim-label">Production Implementation</div>
+                <div class="dim-text">Core deposit accounting (AFS/ACBS) coupled with SEI Wealth Platform custodial ledger.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: Architecture Diagrams -->
+    <section id="architecture" class="arch-section">
+      <div class="section-header">
+        <div class="section-eyebrow">Part 4: System Architecture</div>
+        <h2 class="section-title">Technical Architecture: Demo vs. Target Production</h2>
+        <p class="section-desc">
+          Compare the high-speed prototype monostack built for executive demonstration against the enterprise-hardened production architecture engineered for scale, auditability, and regulatory compliance.
+        </p>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="tabs-wrapper">
+        <button class="tab-btn active" onclick="switchTab('demo-arch')">1. Working Demo Stack (React + Vite + FastAPI on Cloud Run)</button>
+        <button class="tab-btn" onclick="switchTab('prod-arch')">2. Target Enterprise Production Stack (Google Cloud + Banking Core)</button>
+      </div>
+
+      <!-- TAB 1: DEMO ARCHITECTURE -->
+      <div id="demo-arch" class="tab-pane active">
+        <div class="diagram-container">
+          <p class="diagram-desc">
+            <strong>Standard Cloud Run Monostack:</strong> Containerized React 18 + Vite SPA paired with a Python 3.11 FastAPI backend in a multi-stage Docker container deployed on Google Cloud Run. Features native Cloud Run Direct IAP with cryptographic JWT verification, Application Default Credentials (ADC), scale-to-zero idle defaults (`--min-instances=0`), and live integration with the Gemini Enterprise Agent Platform.
+          </p>
+
+          <div class="arch-grid-demo">
+            <!-- Col 1: Presentation -->
+            <div class="arch-column">
+              <div class="arch-col-title">
+                <span>Presentation Tier</span>
+                <span style="color: var(--hban-green-dark); font-size: 0.75rem;">Client Browser</span>
+              </div>
+              <div class="arch-node core-focus">
+                <span class="node-badge badge-ui">UI Monostack</span>
+                <div class="node-title">Salesforce FSC Shell</div>
+                <div class="node-tech">React 18 • Vite • TailwindCSS • shadcn/ui</div>
+                <div class="node-desc">Embedded 3-Pane console: Priority Radar, Household Topology Canvas, and Agent Staging Workspace.</div>
+              </div>
+              <div class="arch-node">
+                <span class="node-badge badge-ui">Interactive Control</span>
+                <div class="node-title">Persona Switcher</div>
+                <div class="node-tech">Dual-Persona State Manager</div>
+                <div class="node-desc">Instant toggle between Commercial RM (Greg) and Private Wealth Advisor (Sarah) proving dual-sided leverage.</div>
+              </div>
+              <div class="arch-node">
+                <span class="node-badge badge-ui">Mandatory Admin</span>
+                <div class="node-title">Admin Panel & Gear Icon</div>
+                <div class="node-tech">Slide-Over Sheet • Lucide Settings</div>
+                <div class="node-desc">Slide-out drawer displaying live telemetry badges and quick links to Brand Kit and Demo Script.</div>
+              </div>
+            </div>
+
+            <!-- Col 2: Cloud Run Host & Proxy -->
+            <div class="arch-column">
+              <div class="arch-col-title">
+                <span>Compute & Security Tier</span>
+                <span style="color: var(--hban-green-dark); font-size: 0.75rem;">Google Cloud Run</span>
+              </div>
+              <div class="arch-node core-focus">
+                <span class="node-badge badge-cloud">Monostack Host</span>
+                <div class="node-title">FastAPI Application Server</div>
+                <div class="node-tech">Cloud Run Container • Python 3.11</div>
+                <div class="node-desc">Multi-stage Docker container serving static bundle and protected APIs. Bound to `0.0.0.0:${PORT:-8080}`.</div>
+              </div>
+              <div class="arch-node">
+                <span class="node-badge badge-tool">Enterprise Security</span>
+                <div class="node-title">Direct IAP + JWT Middleware</div>
+                <div class="node-tech">X-Goog-IAP-JWT-Assertion</div>
+                <div class="node-desc">Cryptographic JWT verification against Google public keys. Scale-to-zero defaults (`--min-instances=0`).</div>
+              </div>
+              <div class="arch-node">
+                <span class="node-badge badge-tool">Deterministic Tool</span>
+                <div class="node-title">Calculator & Sentry Engine</div>
+                <div class="node-tech">Deterministic Python Services</div>
+                <div class="node-desc">Executes UPB per diem interest, NOI capitalization arithmetic, and ECOA/Reg B credit risk filters.</div>
+              </div>
+            </div>
+
+            <!-- Col 3: Live Intelligence & Fallback -->
+            <div class="arch-column">
+              <div class="arch-col-title">
+                <span>Intelligence & Mock Core</span>
+                <span style="color: var(--hban-green-dark); font-size: 0.75rem;">Gemini Enterprise Agent</span>
+              </div>
+              <div class="arch-node core-focus">
+                <span class="node-badge badge-ai">Live Multimodal AI</span>
+                <div class="node-title">Gemini 3.7 Flash</div>
+                <div class="node-tech">Gemini Enterprise Agent Platform</div>
+                <div class="node-desc">Processes raw scanned PDF/TIFF documents directly with visual bounding-box extraction and ADC authentication.</div>
+              </div>
+              <div class="arch-node">
+                <span class="node-badge badge-ai">RAG Grounding</span>
+                <div class="node-title">Vertex AI Search Grounding</div>
+                <div class="node-tech">Grounding Attribution Engine</div>
+                <div class="node-desc">Dynamically retrieves commercial appraisal records and submarket cap rates with clickable citation badges.</div>
+              </div>
+              <div class="arch-node">
+                <span class="node-badge badge-data">Resilience Layer</span>
+                <div class="node-title">Local Encrypted Fallback</div>
+                <div class="node-tech">In-Memory Redis Cache</div>
+                <div class="node-desc">Pre-loaded backup document (*Apex Logistics*) and cached lookups guaranteeing zero-crash stage delivery.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: PRODUCTION ARCHITECTURE -->
+      <div id="prod-arch" class="tab-pane">
+        <div class="diagram-container">
+          <p class="diagram-desc">
+            <strong>Target Enterprise Production Architecture:</strong> Multi-tier banking integration featuring event-driven core servicing listeners, Gemini Enterprise Agent Platform with multimodal visual layout understanding, Apigee X API gateway security, VPC Service Controls, and deep integration with SEI Wealth Platform and DocuSign.
+          </p>
+
+          <div class="prod-tiers">
+            <!-- Tier 1: Ingestion & Core Banking -->
+            <div class="prod-tier-row">
+              <div class="tier-header">
+                <span class="tier-name">Tier 1: Core Banking & Ingestion Layer</span>
+                <span class="tier-boundary">Bank Core Boundary</span>
+              </div>
+              <div class="tier-grid">
+                <div class="arch-node">
+                  <span class="node-badge badge-data">Core Servicing</span>
+                  <div class="node-title">AFS & ACBS Loan Servicing</div>
+                  <div class="node-tech">Mainframe / Core Feeds</div>
+                  <div class="node-desc">Inbound payoff statement request documents and daily loan maturity queues.</div>
+                </div>
+                <div class="arch-node">
+                  <span class="node-badge badge-cloud">Message Broker</span>
+                  <div class="node-title">Google Cloud Pub/Sub</div>
+                  <div class="node-tech">High-throughput Event Stream</div>
+                  <div class="node-desc">Publishes payoff request ingestion events to trigger asynchronous processing.</div>
+                </div>
+                <div class="arch-node">
+                  <span class="node-badge badge-data">Document Vault</span>
+                  <div class="node-title">Commercial Credit Vault</div>
+                  <div class="node-tech">Enterprise Content Mgmt</div>
+                  <div class="node-desc">Stores signed incumbency certificates, commercial guaranties, and covenant compliance reports.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tier 2: Agentic Processing & Tooling -->
+            <div class="prod-tier-row">
+              <div class="tier-header">
+                <span class="tier-name">Tier 2: Agentic Orchestration & Grounding</span>
+                <span class="tier-boundary">Google Cloud Banking Enclave</span>
+              </div>
+              <div class="tier-grid">
+                <div class="arch-node core-focus">
+                  <span class="node-badge badge-ai">Agent Orchestrator</span>
+                  <div class="node-title">Gemini 3.7 Flash</div>
+                  <div class="node-tech">Gemini Enterprise Agent Platform</div>
+                  <div class="node-desc">Native multimodal layout parsing, unstated parameter identification, and structured planning.</div>
+                </div>
+                <div class="arch-node">
+                  <span class="node-badge badge-ai">Dynamic Grounding</span>
+                  <div class="node-title">Vertex AI Search</div>
+                  <div class="node-tech">Appraisal Vector Retrieval</div>
+                  <div class="node-desc">Grounds property NOI and regional cap rate indices with verifiable document provenance.</div>
+                </div>
+                <div class="arch-node">
+                  <span class="node-badge badge-tool">Deterministic Microservices</span>
+                  <div class="node-title">Cloud Run Tool Cluster</div>
+                  <div class="node-tech">Containerized Python Services</div>
+                  <div class="node-desc">Hosts CalculatorTool, 1031ExchangeDetector, and ExclusionSentryTool.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tier 3: Enterprise Data & State -->
+            <div class="prod-tier-row">
+              <div class="tier-header">
+                <span class="tier-name">Tier 3: Enterprise Data & Relationship Graph</span>
+                <span class="tier-boundary">Data Persistence Layer</span>
+              </div>
+              <div class="tier-grid">
+                <div class="arch-node">
+                  <span class="node-badge badge-data">Graph & Topology</span>
+                  <div class="node-title">Google Cloud Spanner</div>
+                  <div class="node-tech">Globally Consistent Graph</div>
+                  <div class="node-desc">Maps complex commercial LLC hierarchies, operating entities, and beneficial human guarantors.</div>
+                </div>
+                <div class="arch-node">
+                  <span class="node-badge badge-data">Analytics & Auditing</span>
+                  <div class="node-title">BigQuery Analytics Vault</div>
+                  <div class="node-tech">Historical Telemetry</div>
+                  <div class="node-desc">Maintains historical payoff tracking, flight pattern telemetry, and model performance metrics.</div>
+                </div>
+                <div class="arch-node">
+                  <span class="node-badge badge-data">Security Boundary</span>
+                  <div class="node-title">VPC-SC & Cloud KMS</div>
+                  <div class="node-tech">CMEK • Service Perimeters</div>
+                  <div class="node-desc">Zero-data-logging boundary protecting confidential banking records under OCC standards.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tier 4: Governance, Integration & Channels -->
+            <div class="prod-tier-row">
+              <div class="tier-header">
+                <span class="tier-name">Tier 4: Enterprise Integration & Endpoints</span>
+                <span class="tier-boundary">Apigee X API Gateway (mTLS)</span>
+              </div>
+              <div class="tier-grid">
+                <div class="arch-node">
+                  <span class="node-badge badge-ui">Banker CRM</span>
+                  <div class="node-title">Salesforce Financial Services Cloud</div>
+                  <div class="node-tech">Canvas Integration</div>
+                  <div class="node-desc">Embedded Horizon workspace for Commercial RMs and Private Wealth Advisors.</div>
+                </div>
+                <div class="arch-node">
+                  <span class="node-badge badge-cloud">Wealth Platform</span>
+                  <div class="node-title">SEI Wealth Platform Gateway</div>
+                  <div class="node-tech">REST / FIX Integration</div>
+                  <div class="node-desc">Provisions staged account shells, model allocations, and custodial trust accounts.</div>
+                </div>
+                <div class="arch-node">
+                  <span class="node-badge badge-cloud">1031 Custody</span>
+                  <div class="node-title">1031 Escrow & DocuSign Gateway</div>
+                  <div class="node-tech">Dual-ID Immutable Log</div>
+                  <div class="node-desc">Delivers Max$aver ICS and 1031 Escrow signature packets, recording tamper-evident audit logs.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: Financial Sensitivity ROI -->
+    <section id="roi" class="roi-section">
+      <div class="section-header">
+        <div class="section-eyebrow">Part 5: Financial Justification</div>
+        <h2 class="section-title">The Business Case: Sensitivity & Payback</h2>
+        <p class="section-desc">
+          Horizon's economics rest on conservative assumptions: a $4.5B annual payoff pool, 78% historical flight rate, a blended 77 bps capture margin (Tier 1 Treasury ICS & 1031 Escrow at 85 bps; Tier 2 Wealth AUM at 65 bps), and an annual enterprise cloud run-rate of $1.25M.
+        </p>
+      </div>
+
+      <div class="roi-table-wrapper">
+        <table class="roi-table">
+          <thead>
+            <tr>
+              <th>Retention Scenario</th>
+              <th>Retained Liquidity</th>
+              <th>Blended Value (77 bps)</th>
+              <th>Operating Cost</th>
+              <th>Net Annual ROI</th>
+              <th>Breakeven Payback</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>5% Floor (Ultra-Conservative)</strong></td>
+              <td>$225,000,000</td>
+              <td>$1,732,500 / yr</td>
+              <td>($1,250,000)</td>
+              <td class="roi-highlight">+$482,500 / yr</td>
+              <td><strong>8.6 Months</strong></td>
+            </tr>
+            <tr>
+              <td><strong>10% Target (Conservative)</strong></td>
+              <td>$450,000,000</td>
+              <td>$3,465,000 / yr</td>
+              <td>($1,250,000)</td>
+              <td class="roi-highlight">+$2,215,000 / yr</td>
+              <td><strong>4.3 Months</strong></td>
+            </tr>
+            <tr>
+              <td><strong>15% Goal (Executive Target)</strong></td>
+              <td>$675,000,000</td>
+              <td>$5,197,500 / yr</td>
+              <td>($1,250,000)</td>
+              <td class="roi-highlight">+$3,947,500 / yr</td>
+              <td><strong>2.9 Months</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="font-size: 0.85rem; color: var(--slate-500); margin-top: 1rem;">
+        * Note: Capturing 2.5% of at-risk commercial credits from refinancing away represents ~$1.35M in additional preserved commercial loan NIM, treated as un-modeled upside.
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Mandatory Slide-Over Admin Panel Drawer (Skill §1.5) -->
+  <div id="admin-overlay" class="admin-drawer-overlay" onclick="toggleAdminPanel()"></div>
+  <div id="admin-drawer" class="admin-drawer">
+    <div class="admin-drawer-header">
+      <div class="admin-drawer-title">Horizon Admin & Telemetry</div>
+      <button class="admin-close-btn" onclick="toggleAdminPanel()" aria-label="Close Admin Panel">✕</button>
+    </div>
+    <div class="admin-drawer-body">
+      
+      <!-- Diagnostic Telemetry -->
+      <div>
+        <div class="admin-section-label">Runtime Telemetry & Architecture</div>
+        <div class="telemetry-badge-card">
+          <div class="telemetry-item">
+            <span class="telemetry-key">AI Platform</span>
+            <span class="telemetry-val" style="color: var(--hban-green-dark);">Gemini Enterprise Agent</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-key">Baseline Model</span>
+            <span class="telemetry-val">gemini-3.7-flash</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-key">Security</span>
+            <span class="telemetry-val">Cloud Run Direct IAP</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-key">JWT Verification</span>
+            <span class="telemetry-val">Active (X-Goog-IAP-JWT)</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-key">Runtime Identity</span>
+            <span class="telemetry-val">huntington-horizon-sa</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-key">Scaling Limits</span>
+            <span class="telemetry-val">Min: 0 (Idle) | Max: 3</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-key">GCP Project</span>
+            <span class="telemetry-val">hban-wealth-innovation</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-key">Auth User</span>
+            <span class="telemetry-val">developer@huntington.com</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Links per Skill §1.5 -->
+      <div>
+        <div class="admin-section-label">Authoritative Documentation Links</div>
+        <div class="admin-links-group">
+          <a href="brand_kit.html" class="admin-nav-card" target="_blank">
+            <div class="admin-nav-info">
+              <h4>Interactive Brand Kit ↗</h4>
+              <p>Explore design tokens, Huntington green palette, and component states.</p>
+            </div>
+          </a>
+          <a href="demo_script.html" class="admin-nav-card" target="_blank">
+            <div class="admin-nav-info">
+              <h4>Customer Demo Script ↗</h4>
+              <p>Presenter click-path, customer problem, and production implementation mapping.</p>
+            </div>
+          </a>
+          <a href="huntington-horizon.pdf" class="admin-nav-card" target="_blank">
+            <div class="admin-nav-info">
+              <h4>PRD Specification v5.2 (PDF) ↗</h4>
+              <p>Full executive blueprint, regulatory boundaries, and financial model.</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="page-footer">
+    <div style="font-weight: 700; color: var(--slate-700); margin-bottom: 0.25rem;">
+      Huntington Bancshares Incorporated • Huntington Horizon Project
+    </div>
+    <div>
+      Internal Working Document & Cloud Run Monostack Blueprint (Version 5.2) • Dual-Sided Capacity Leverage Thesis
+    </div>
+  </footer>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+
+      if (tabId === 'demo-arch') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('demo-arch').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('prod-arch').classList.add('active');
+      }
+    }
+
+    function toggleAdminPanel() {
+      const overlay = document.getElementById('admin-overlay');
+      const drawer = document.getElementById('admin-drawer');
+      overlay.classList.toggle('open');
+      drawer.classList.toggle('open');
+    }
+
+    // Dismiss on Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        const overlay = document.getElementById('admin-overlay');
+        const drawer = document.getElementById('admin-drawer');
+        if (drawer.classList.contains('open')) {
+          overlay.classList.remove('open');
+          drawer.classList.remove('open');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -746,7 +746,7 @@ async def serve_spa(full_path: str):
         if candidate_dir.is_dir():
             candidate_file = (candidate_dir / full_path).resolve()
             if (candidate_dir in candidate_file.parents or candidate_file == candidate_dir) and candidate_file.is_file():
-                if full_path in ["brand_kit.html", "demo_script.html", "huntington-horizon.pdf"]:
+                if full_path in ["brand_kit.html", "demo_script.html", "huntington-horizon.pdf", "overview.html", "static_overview.html"]:
                     return FileResponse(candidate_file)
 
     # SPA Fallback to index.html with no-cache headers

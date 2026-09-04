@@ -230,6 +230,7 @@ export const Header: React.FC<HeaderProps> = ({
             appName="Huntington Horizon"
             brandKitUrl="/brand_kit.html"
             demoScriptUrl="/demo_script.html"
+            overviewUrl="/overview.html"
           />
         </div>
 
