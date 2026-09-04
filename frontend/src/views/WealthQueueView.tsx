@@ -1,8 +1,10 @@
 import React from 'react';
-import { QuarantineState, ValuationData } from '../types';
+import { QuarantineState, ValuationData, PayoffItem, WealthOnboardingData } from '../types';
 import { UserCheck, Building2, ArrowRight, CheckCircle2, Lock } from 'lucide-react';
 
 interface WealthQueueViewProps {
+  deal?: PayoffItem;
+  wealthOnboarding?: WealthOnboardingData;
   quarantineState: QuarantineState;
   valuation: ValuationData;
   onOpenDossier: () => void;
@@ -10,12 +12,21 @@ interface WealthQueueViewProps {
 }
 
 export const WealthQueueView: React.FC<WealthQueueViewProps> = ({
+  deal,
+  wealthOnboarding,
   quarantineState,
   valuation,
   onOpenDossier,
   onSwitchToCommercial,
 }) => {
   const isUnlocked = !quarantineState.quarantined;
+  const clientName = wealthOnboarding?.target_client
+    ? wealthOnboarding.target_client.replace(' (85%) & Co-Guarantors (15%)', '')
+    : deal?.primary_guarantor || 'Marcus Vance & Elena Vance';
+  const propertyName = deal?.property_name || 'Commercial Property';
+  const commercialRM = deal?.commercial_rm || 'Greg Miller';
+  const borrowerEntity = deal?.borrower_entity || 'Commercial Entity';
+  const assignedPwa = wealthOnboarding?.assigned_pwa || (deal?.assigned_pwa ? `${deal.assigned_pwa}, CFP` : 'Sarah Jenkins, CFP');
 
   return (
     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12 md:py-16 space-y-12">
@@ -68,7 +79,7 @@ export const WealthQueueView: React.FC<WealthQueueViewProps> = ({
             </h2>
           </div>
           <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-            Assigned PWA: Sarah Jenkins, CFP
+            Assigned PWA: {assignedPwa}
           </span>
         </div>
 
@@ -78,7 +89,7 @@ export const WealthQueueView: React.FC<WealthQueueViewProps> = ({
               <div className="space-y-3 max-w-2xl">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
-                    Marcus Vance &amp; Elena Vance
+                    {clientName}
                   </h3>
                   <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#E8F5E9] dark:bg-emerald-950/60 text-[#006738] dark:text-emerald-300 border border-[#A7F3D0] dark:border-emerald-800">
                     Consent Verified
@@ -88,14 +99,14 @@ export const WealthQueueView: React.FC<WealthQueueViewProps> = ({
                 <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
                   <span className="flex items-center gap-1.5 font-medium">
                     <Building2 className="w-4 h-4 text-[#006738]" />
-                    Riverfront Commercial Commons Disposition
+                    {propertyName} Disposition
                   </span>
                   <span>&bull;</span>
                   <span>
                     Net Proceeds: <strong className="text-slate-900 dark:text-white tabular-nums">${valuation.net_equity_proceeds.toLocaleString()}</strong>
                   </span>
                   <span>&bull;</span>
-                  <span>Originating RM: Greg Miller</span>
+                  <span>Originating RM: {commercialRM}</span>
                 </div>
 
                 <div className="pt-3 flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
@@ -129,14 +140,14 @@ export const WealthQueueView: React.FC<WealthQueueViewProps> = ({
                 Relationship Quarantined by GLBA Privacy Barrier
               </h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                The commercial payoff for Vance Riverfront Properties IV LLC is active, but verbal opt-in consent has not yet been recorded by Commercial RM Greg Miller.
+                The commercial payoff for {borrowerEntity} is active, but verbal opt-in consent has not yet been recorded by Commercial RM {commercialRM}.
               </p>
             </div>
             <button
               onClick={onSwitchToCommercial}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-bold tracking-wide bg-[#006738] text-white hover:bg-[#1B5630] shadow-sm transition active:scale-[0.98]"
             >
-              <span>Switch to Greg Miller to Record Consent</span>
+              <span>Switch to {commercialRM} to Record Consent</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

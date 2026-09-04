@@ -38,6 +38,8 @@ export interface PayoffItem {
   total_hban_position: number;
   tax_strategy_detected: string;
   status: string;
+  managing_member?: string;
+  primary_guarantor?: string;
 }
 
 export interface BoundingBox {

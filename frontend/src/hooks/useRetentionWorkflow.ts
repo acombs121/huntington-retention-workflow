@@ -79,31 +79,20 @@ export function useRetentionWorkflow(): {
     return payoffItems.find((p) => p.id === selectedPayoffId) || payoffItems[0];
   }, [payoffItems, selectedPayoffId]);
 
-  // Initial Data Fetching from Backend API with Proper Loading Cleanup
+  // Initial Pipeline Queue Fetching from Backend API
   useEffect(() => {
     let isMounted = true;
     setIsLoading(true);
 
-    Promise.allSettled([
-      fetch('/api/payoffs').then((res) => (res.ok ? res.json() : null)),
-      fetch('/api/quarantine').then((res) => (res.ok ? res.json() : null)),
-    ])
-      .then(([payoffsRes, quarantineRes]) => {
-        if (!isMounted) return;
-
-        if (payoffsRes.status === 'fulfilled' && payoffsRes.value) {
-          if (payoffsRes.value.capacity_meter) setCapacityMeter(payoffsRes.value.capacity_meter);
-          if (payoffsRes.value.payoff_items) setPayoffItems(payoffsRes.value.payoff_items);
-        }
-
-        if (quarantineRes.status === 'fulfilled' && quarantineRes.value) {
-          setQuarantineState(quarantineRes.value);
-          setWealthOnboarding((prev) => ({
-            ...prev,
-            quarantined: quarantineRes.value.quarantined,
-            status: quarantineRes.value.quarantined ? 'Quarantined' : 'Active / Ready for Advisor Authorship',
-          }));
-        }
+    fetch('/api/payoffs')
+      .then((res) => {
+        if (!res.ok) throw new Error(`Payoffs API returned HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (!isMounted || !data) return;
+        if (data.capacity_meter) setCapacityMeter(data.capacity_meter);
+        if (data.payoff_items) setPayoffItems(data.payoff_items);
       })
       .catch((err) => {
         if (!isMounted) return;
@@ -118,10 +107,11 @@ export function useRetentionWorkflow(): {
     };
   }, []);
 
-  // Entity Resolution Fetching on Deal Selection Change with AbortController
+  // Synchronize Deal Metadata (Entity Resolution, GLBA Quarantine, Wealth Onboarding) on Deal Selection Change
   useEffect(() => {
     const controller = new AbortController();
 
+    // 1. Entity Resolution
     fetch(`/api/entity-resolution?payoff_id=${selectedPayoffId}`, {
       signal: controller.signal,
     })
@@ -132,6 +122,44 @@ export function useRetentionWorkflow(): {
       .catch((err) => {
         if (err.name !== 'AbortError') {
           setError(`Entity resolution notice: ${err.message || 'Failed to fetch entity records'}`);
+        }
+      });
+
+    // 2. GLBA Compliance Quarantine Status
+    fetch(`/api/quarantine?payoff_id=${selectedPayoffId}`, {
+      signal: controller.signal,
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Quarantine API returned HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((qData: QuarantineState | null) => {
+        if (qData) {
+          setQuarantineState(qData);
+        }
+      })
+      .catch((err) => {
+        if (err.name !== 'AbortError') {
+          setError(`Failed to synchronize GLBA quarantine status: ${err.message || 'Network error'}`);
+        }
+      });
+
+    // 3. Private Wealth Onboarding Dossier
+    fetch(`/api/wealth-onboarding?payoff_id=${selectedPayoffId}`, {
+      signal: controller.signal,
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Wealth onboarding API returned HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((wData: WealthOnboardingData | null) => {
+        if (wData) {
+          setWealthOnboarding(wData);
+        }
+      })
+      .catch((err) => {
+        if (err.name !== 'AbortError') {
+          setError(`Failed to synchronize Wealth Advisory dossier: ${err.message || 'Network error'}`);
         }
       });
 
@@ -207,19 +235,6 @@ export function useRetentionWorkflow(): {
       if (targetDeal && targetDeal.indicative_valuation) {
         setSalePrice(targetDeal.indicative_valuation);
       }
-      fetch(`/api/quarantine?payoff_id=${id}`)
-        .then((res) => (res.ok ? res.json() : null))
-        .then((qData) => {
-          if (qData) {
-            setQuarantineState(qData);
-            setWealthOnboarding((prev) => ({
-              ...prev,
-              quarantined: qData.quarantined,
-              status: qData.quarantined ? 'Quarantined' : 'Active / Ready for Advisor Authorship',
-            }));
-          }
-        })
-        .catch(() => {});
     },
     [payoffItems]
   );
@@ -238,7 +253,7 @@ export function useRetentionWorkflow(): {
         body: JSON.stringify({
           payoff_id: selectedPayoffId,
           verbal_consent_recorded: newState,
-          recorded_by: 'Greg Miller (Commercial RM)',
+          recorded_by: `${selectedDeal.commercial_rm || 'Greg Miller'} (Commercial RM)`,
           client_notes: 'Affirmative opt-in recorded for wealth staging.',
         }),
       });
@@ -247,18 +262,26 @@ export function useRetentionWorkflow(): {
       }
       const data = await res.json();
       setQuarantineState(data);
-      setWealthOnboarding((prev) => ({
-        ...prev,
-        quarantined: data.quarantined,
-        status: data.quarantined ? 'Quarantined' : 'Active / Ready for Advisor Authorship',
-      }));
+
+      // Refresh wealth onboarding dossier to synchronize clearing status and compliance badge
+      const wRes = await fetch(`/api/wealth-onboarding?payoff_id=${selectedPayoffId}`);
+      if (wRes.ok) {
+        const wData = await wRes.json();
+        setWealthOnboarding(wData);
+      } else {
+        setWealthOnboarding((prev) => ({
+          ...prev,
+          quarantined: data.quarantined,
+          status: data.quarantined ? 'Quarantined' : 'Active / Ready for Advisor Authorship',
+        }));
+      }
     } catch (e: any) {
       console.error('Error toggling quarantine via API:', e);
       setError('Unable to record GLBA verbal consent with compliance service. Please retry.');
     } finally {
       setIsTogglingConsent(false);
     }
-  }, [isTogglingConsent, quarantineState.verbal_consent_recorded, selectedPayoffId]);
+  }, [isTogglingConsent, quarantineState.verbal_consent_recorded, selectedPayoffId, selectedDeal]);
 
   const clearError = useCallback(() => setError(null), []);
 

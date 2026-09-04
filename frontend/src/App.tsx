@@ -123,6 +123,8 @@ export const App: React.FC = () => {
 
         {activeView === 'wealth_queue' && (
           <WealthQueueView
+            deal={state.selectedDeal}
+            wealthOnboarding={state.wealthOnboarding}
             quarantineState={state.quarantineState}
             valuation={state.valuation}
             onOpenDossier={() => setActiveView('wealth_dossier')}

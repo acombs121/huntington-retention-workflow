@@ -128,6 +128,13 @@ def test_wealth_onboarding_deal_parameterization():
     assert "Thomas Buckeye" in buckeye_data["target_client"]
     assert "SEI-WP-HBAN-7492" == buckeye_data["sei_custodial_shell"]["shell_id"]
 
+    medical_resp = client.get("/api/wealth-onboarding?payoff_id=PO-2026-6104")
+    assert medical_resp.status_code == 200
+    medical_data = medical_resp.json()
+    assert "Dr. Robert Miller" in medical_data["target_client"]
+    assert "SEI-WP-HBAN-6104" == medical_data["sei_custodial_shell"]["shell_id"]
+    assert "Brian Gallagher" in medical_data["assigned_pwa"]
+
 
 def test_payoffs_queue_endpoint():
     """Verifies payoff queue returns pipeline items and capacity meter."""

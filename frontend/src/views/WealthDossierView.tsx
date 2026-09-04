@@ -82,7 +82,7 @@ export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
         </div>
 
         <span className="text-xs font-bold text-[#006738] dark:text-emerald-400 uppercase tracking-wider self-start md:self-center">
-          Sarah Jenkins, CFP (PWA)
+          {data.assigned_pwa || 'Sarah Jenkins, CFP (Senior PWA)'}
         </span>
       </div>
 

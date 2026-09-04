@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { EntityResolutionData, PayoffItem } from '../types';
 import {
   FileText,
@@ -25,7 +25,17 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
   onProceedToRetention,
 }) => {
   const [activeCitation, setActiveCitation] = useState<string | null>('borrower');
-  const [selectedMember, setSelectedMember] = useState<string>('Marcus Vance');
+  const [selectedMember, setSelectedMember] = useState<string>(
+    entityData.grounded_members?.[0]?.name || deal.primary_guarantor || 'Marcus Vance'
+  );
+
+  useEffect(() => {
+    if (entityData.grounded_members?.length) {
+      setSelectedMember(entityData.grounded_members[0].name);
+    } else if (deal.primary_guarantor) {
+      setSelectedMember(deal.primary_guarantor);
+    }
+  }, [entityData, deal]);
 
   return (
     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12 md:py-16 space-y-12">

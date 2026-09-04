@@ -96,7 +96,7 @@ def get_default_quarantine(payoff_id: str) -> Dict[str, Any]:
 quarantine_states: Dict[str, Dict[str, Any]] = {
     "PO-2026-8821": get_default_quarantine("PO-2026-8821"),
     "PO-2026-7492": get_default_quarantine("PO-2026-7492"),
-    "PO-2026-6108": get_default_quarantine("PO-2026-6108"),
+    "PO-2026-6104": get_default_quarantine("PO-2026-6104"),
 }
 
 PAYOFF_QUEUE = [
@@ -581,12 +581,13 @@ async def get_wealth_onboarding_dossier(
     payoff = get_payoff_by_id(payoff_id)
     q_state = quarantine_states.get(payoff_id, get_default_quarantine(payoff_id))
     is_quarantined = q_state.get("quarantined", True)
+    pwa_title = f"{payoff.assigned_pwa}, CFP, Senior Private Wealth Advisor" if payoff.assigned_pwa else "Sarah Jenkins, CFP, Senior Private Wealth Advisor"
 
     return {
         "status": "Quarantined" if is_quarantined else "Active / Ready for Advisor Authorship",
         "quarantined": is_quarantined,
         "payoff_id": payoff_id,
-        "assigned_pwa": "Sarah Jenkins, CFP, Senior Private Wealth Advisor",
+        "assigned_pwa": pwa_title,
         "target_client": f"{payoff.primary_guarantor} (85%) & Co-Guarantors (15%)",
         "household_id": f"HH-{payoff.borrower_entity[:8].replace(' ', '').upper()}-4401",
         "staged_kyc_cip": {
@@ -595,8 +596,8 @@ async def get_wealth_onboarding_dossier(
                 {"field": "Full Legal Names", "value": f"{payoff.primary_guarantor} & Spouse", "status": "Verified (Commercial Credit File)"},
                 {"field": "Entity Structure", "value": f"{payoff.borrower_entity} / Family Trust", "status": "Verified (Articles of Org)"},
                 {"field": "Taxpayer Identification", "value": "EIN on file (Commercial Credit Vault)", "status": "Verified"},
-                {"field": "Residential Address", "value": "2410 Bexley Park Rd, Columbus, OH 43209", "status": "Verified"},
-                {"field": "Primary Banking Source", "value": "Huntington Commercial DDA #..4401", "status": "Verified"},
+                {"field": "Residential Address", "value": f"Guarantor File: {payoff.primary_guarantor}, Columbus, OH", "status": "Verified"},
+                {"field": "Primary Banking Source", "value": f"Huntington Commercial DDA #..{payoff_id.split('-')[-1]}", "status": "Verified"},
                 {"field": "Source of Wealth", "value": f"Commercial Real Estate Disposition ({payoff.property_name})", "status": "Pending Closing Settlement"}
             ],
             "pending_advisor_actions": [
@@ -625,7 +626,7 @@ async def get_wealth_onboarding_dossier(
         },
         "ongoing_servicing_dossier": {
             "annual_reviews_automated": True,
-            "advisor_capacity_expansion": "80 relationships → 150 relationships per PWA",
+            "advisor_capacity_expansion": "80 relationships to 150 relationships per PWA",
             "features": [
                 "Automated Quarterly Portfolio Rebalancing Dossier",
                 "Tax-Loss Harvesting Alerting Engine",

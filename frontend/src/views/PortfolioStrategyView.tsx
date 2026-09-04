@@ -23,6 +23,10 @@ export const PortfolioStrategyView: React.FC<PortfolioStrategyViewProps> = ({
 
   const totalAmount = valuation.net_equity_proceeds;
   const ips = data.draft_ips_scaffolding;
+  const clientDisplayName = data.target_client
+    ? data.target_client.replace(' (85%) & Co-Guarantors (15%)', '')
+    : 'Client';
+  const primaryName = clientDisplayName.split(' & ')[0] || clientDisplayName;
 
   return (
     <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12 md:py-16 space-y-12">
@@ -47,7 +51,7 @@ export const PortfolioStrategyView: React.FC<PortfolioStrategyViewProps> = ({
           </h1>
           
           <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-            Fiduciary asset allocation proposal, liquidity schedules, and ongoing review framework for Marcus &amp; Elena Vance.
+            Fiduciary asset allocation proposal, liquidity schedules, and ongoing review framework for {clientDisplayName}.
           </p>
         </div>
 
@@ -77,7 +81,7 @@ export const PortfolioStrategyView: React.FC<PortfolioStrategyViewProps> = ({
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                <span>Deliver Proposal to Marcus Vance</span>
+                <span>Deliver Proposal to {primaryName}</span>
               </>
             )}
           </button>
@@ -93,7 +97,7 @@ export const PortfolioStrategyView: React.FC<PortfolioStrategyViewProps> = ({
                 Fiduciary Proposal Successfully Dispatched
               </div>
               <div className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
-                Delivered to Marcus Vance &amp; Elena Vance secure client portal for digital review and wet signature coordination.
+                Delivered to {clientDisplayName} secure client portal for digital review and wet signature coordination.
               </div>
             </div>
           </div>
