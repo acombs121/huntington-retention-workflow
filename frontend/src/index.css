@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Huntington Bank Official Brand Identity */
+    --hban-green: #006738;
+    --hban-green-dark: #004724;
+    --hban-green-darker: #003319;
+    --hban-green-hover: #1B5630;
+    --hban-green-abundant: #7ECF1C;
+    --hban-green-energy: #A9D42C;
+    --hban-green-light: #CDFA6C;
+    --hban-green-pastel: #E1FFA0;
+    --hban-mint: #E8F5E9;
+    --hban-mint-border: #A7F3D0;
+    --hban-sage: #B8EFE4;
+    --hban-midnight: #012D2A;
+    --hban-charcoal: #0F172A;
+    --hban-grey-800: #394048;
+    --hban-grey-600: #4C4E54;
+    --hban-grey-300: #D5D5D5;
+    --hban-grey-100: #F2F2F2;
+
+    /* Geometry Tokens */
+    --radius-pill: 9999px;
+    --radius-card: 16px;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: 'Mulish', 'Muli', 'Apex New', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #0F172A;
+}
+
+/* Huntington Brand Component Utilities */
+.hban-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: #006738;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  transition: all 167ms cubic-bezier(0.6, 0, 0, 1);
+  box-shadow: 0 2px 4px 0 rgba(0, 103, 56, 0.18);
+  border: 1px solid transparent;
+}
+.hban-btn-primary:hover {
+  background-color: #1B5630;
+  box-shadow: 0 4px 10px 0 rgba(0, 103, 56, 0.28);
+}
+.hban-btn-primary:active {
+  transform: scale(0.98);
+}
+
+.hban-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  color: #006738;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+  border: 1.5px solid #006738;
+  transition: all 167ms cubic-bezier(0.6, 0, 0, 1);
+}
+.hban-btn-secondary:hover {
+  background-color: #E8F5E9;
+  color: #004724;
+}
+
+.hban-card {
+  border-radius: 16px;
+  border: 1px solid #E2E8F0;
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom scrollbars for clean technical appearance */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}

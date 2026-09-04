@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Huntington Horizon | Interactive Customer Demo Script</title>
+  <style>
+    :root {
+      --hban-green: #006738;
+      --hban-green-dark: #004724;
+      --hban-mint: #e8f5e9;
+      --hban-mint-border: #a7f3d0;
+      --slate-900: #0f172a;
+      --slate-800: #1e293b;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+      --white: #ffffff;
+      --bg-body: var(--slate-50);
+      --text-main: var(--slate-900);
+      --card-bg: var(--white);
+      --border-color: var(--slate-200);
+    }
+    body.dark {
+      --bg-body: #0b1320;
+      --text-main: #f8fafc;
+      --card-bg: #1e293b;
+      --border-color: #334155;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 2.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .header-bar h1 { font-size: 2rem; font-weight: 800; color: var(--hban-green); }
+    .header-bar p { color: var(--slate-500); font-size: 0.95rem; }
+    .theme-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .problem-callout {
+      background: var(--card-bg);
+      border-left: 6px solid var(--hban-green);
+      border-radius: 10px;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      border: 1px solid var(--border-color);
+      border-left-width: 6px;
+    }
+    .problem-callout h3 { font-size: 1.25rem; font-weight: 800; color: var(--hban-green); margin-bottom: 0.5rem; }
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .step-badge {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      background: var(--hban-mint);
+      color: var(--hban-green-dark);
+      border: 1px solid var(--hban-mint-border);
+    }
+    .step-card h4 { font-size: 1.2rem; font-weight: 700; color: var(--text-main); }
+    .dim-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+    }
+    @media (max-width: 800px) { .dim-row { grid-template-columns: 1fr; } }
+    .dim-col {
+      background: rgba(0,0,0,0.02);
+      padding: 0.85rem;
+      border-radius: 6px;
+    }
+    body.dark .dim-col { background: rgba(255,255,255,0.03); }
+    .dim-title { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--slate-500); margin-bottom: 0.35rem; }
+    .dim-desc { font-size: 0.85rem; color: var(--text-main); line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <div class="header-bar">
+    <div>
+      <h1>Huntington Horizon Customer Demo Script</h1>
+      <p>10-Minute Executive Presentation Walkthrough & Production Blueprint (v5.2)</p>
+    </div>
+    <button class="theme-btn" onclick="toggleTheme()">Toggle Dark / Light</button>
+  </div>
+
+  <!-- What Problem Does This Solve -->
+  <div class="problem-callout">
+    <h3>What Problem Does This Solve?</h3>
+    <p>
+      Huntington's commercial book generates <strong>$4.5B in annual CRE and middle-market loan payoffs</strong>. Within 48–72 hours of asset closing, ~78% of net equity proceeds ($2M–$10M+) wire out to Wall Street competitors because commercial RMs lack the bandwidth to manually parse credit files (6–8 hrs/deal), wealth advisors are capped at 80 clients, and 1031 exchanges leak to third-party accommodators. <strong>Horizon provides dual-sided capacity leverage</strong>—monitoring 100% of the book, absorbing discovery in seconds, pre-staging wealth onboarding and servicing (expanding advisor capacity to 150 clients), and routing 1031 deposits into institutional escrow with zero net new headcount.
+    </p>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="step-card">
+    <div class="step-header">
+      <h4>Step 1: The Problem & The $4.5B Flight Cliff</h4>
+      <span class="step-badge">00:00 – 01:30</span>
+    </div>
+    <p>Establish the reality of commercial deposit flight and the two-sided bottleneck with executive leadership.</p>
+    <div class="dim-row">
+      <div class="dim-col">
+        <div class="dim-title">Presenter Action</div>
+        <div class="dim-desc">Frame the goal: scaling wealth with existing headcount; cite $4.5B payoffs and 78% flight rate.</div>
+      </div>
+      <div class="dim-col">
+        <div class="dim-title">What is Shown in Demo</div>
+        <div class="dim-desc">Executive hero cards contrasting commercial discovery drag with wealth advisor capacity limits.</div>
+      </div>
+      <div class="dim-col">
+        <div class="dim-title">Production Implementation</div>
+        <div class="dim-desc">BigQuery analytics warehouse tracking historical loan payoffs and core deposit outflow telemetry.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step-card">
+    <div class="step-header">
+      <h4>Step 2: Book-Scale Servicing Ingestion</h4>
+      <span class="step-badge">01:30 – 03:30</span>
+    </div>
+    <p>Demonstrate real-time monitoring across thousands of commercial servicing queues.</p>
+    <div class="dim-row">
+      <div class="dim-col">
+        <div class="dim-title">Presenter Action</div>
+        <div class="dim-desc">Point to Synthetic Capacity Meter (~46 hrs discovery absorbed); show First American Title payoff request at T-12.</div>
+      </div>
+      <div class="dim-col">
+        <div class="dim-title">What is Shown in Demo</div>
+        <div class="dim-desc">Pane 1 Priority Radar with live capacity counter and Pass Tier 2 credit rating badge.</div>
+      </div>
+      <div class="dim-col">
+        <div class="dim-title">Production Implementation</div>
+        <div class="dim-desc">Google Cloud Pub/Sub ingesting AFS/ACBS core servicing events into Cloud Run microservices.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="step-card">
+    <div class="step-header">
+      <h4>Step 3: The "Agentic Proof" Moment (Multimodal Grounding)</h4>
+      <span class="step-badge">03:30 – 06:00</span>
+    </div>
+    <p>Decompose LLC ownership, resolve unstated sale price via grounded NOI capitalization, and adjust live slider.</p>
+    <div class="dim-row">
+      <div class="dim-col">
+        <div class="dim-title">Presenter Action</div>
+        <div class="dim-desc">Click Marcus Vance; adjust Sale Price Slider from $8.5M to $9.0M live; inspect 1031 tax toggle.</div>
+      </div>
+      <div class="dim-col">
+        <div class="dim-title">What is Shown in Demo</div>
+        <div class="dim-desc">Pane 2 household map with green bounding boxes on credit docs; real-time recalculation of net proceeds to $3.35M.</div>
+      </div>
+      <div class="dim-col">
+        <div class="dim-title">Production Implementation</div>
+        <div class="dim-desc">Gemini Enterprise Agent Platform (gemini-3.7-flash) native multimodal parsing; Vertex AI Search grounding.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="step-card">
+    <div class="step-header">
+      <h4>Step 4: Human Banker Call & Wealth Bottleneck Solved</h4>
+      <span class="step-badge">06:00 – 08:30</span>
+    </div>
+    <p>Place warm call, generate title wire form, and toggle to Private Wealth Advisor view.</p>
+    <div class="dim-row">
+      <div class="dim-col">
+        <div class="dim-title">Presenter Action</div>
+        <div class="dim-desc">Click [Approve & Deliver Wire Form]; switch Persona Switcher to Sarah Jenkins (PWA view).</div>
+      </div>
+      <div class="dim-col">
+        <div class="dim-title">What is Shown in Demo</div>
+        <div class="dim-desc">Generated PDF wire form for First American Title; pre-staged KYC/CIP, SEI shell, and quarterly review dossier.</div>
+      </div>
+      <div class="dim-col">
+        <div class="dim-title">Production Implementation</div>
+        <div class="dim-desc">Apigee X API Gateway mTLS routing to SEI Wealth Platform Gateway; DocuSign REST APIs; Cloud Spanner graph.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 5 -->
+  <div class="step-card">
+    <div class="step-header">
+      <h4>Step 5: Institutional Compliance & Financial Payback</h4>
+      <span class="step-badge">08:30 – 10:00</span>
+    </div>
+    <p>Disarm CRO concerns with verified compliance badges and present the interactive sensitivity model to CFO.</p>
+    <div class="dim-row">
+      <div class="dim-col">
+        <div class="dim-title">Presenter Action</div>
+        <div class="dim-desc">Open compliance drawer (FINRA 2040, GLBA, OCC SR 11-7); slide Layer B ROI from 5% ($482k net) to 10% ($2.2M net).</div>
+      </div>
+      <div class="dim-col">
+        <div class="dim-title">What is Shown in Demo</div>
+        <div class="dim-desc">Audit drawer with green verification badges; interactive sensitivity matrix showing payback in 4.3 to 8.6 months.</div>
+      </div>
+      <div class="dim-col">
+        <div class="dim-title">Production Implementation</div>
+        <div class="dim-desc">Cloud KMS customer-managed keys (CMEK); VPC Service Controls perimeter; BigQuery ROI baseline model.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+    }
+  </script>
+</body>
+</html>
