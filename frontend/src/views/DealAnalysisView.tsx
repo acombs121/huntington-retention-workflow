@@ -101,15 +101,21 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
                 </p>
               </div>
             </div>
-
-            <span className="text-xs text-[#006738] dark:text-emerald-400 flex items-center gap-1.5 font-bold uppercase tracking-wider">
-              <CheckCircle2 className="w-4 h-4" />
-              OCR Verified
-            </span>
           </div>
 
           {/* Document Body with Grounded Bounding Boxes */}
           <div className="p-8 text-sm leading-relaxed text-slate-800 dark:text-slate-200 space-y-5 select-text">
+            {/* Automated Pre-Ingestion Cloud DLP Banner */}
+            <div className="p-3.5 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-xs flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-[#006738] dark:text-emerald-300 font-bold">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-[#006738] dark:text-emerald-400" />
+                <span>Automated Pre-Ingestion Cloud DLP Gate: PASSED</span>
+              </div>
+              <span className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:inline">
+                Consumer bureaus, 1040s &amp; CDD purged per GLBA Reg P &bull; Ameriprise Barrier
+              </span>
+            </div>
+
             <div className="text-center font-bold text-xs tracking-widest uppercase text-slate-500 dark:text-slate-400 pb-4 border-b border-slate-200 dark:border-slate-800">
               {deal.title_company.toUpperCase()} &bull; COMMERCIAL ESCROW DEMAND
             </div>
@@ -137,7 +143,7 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
                 <span className="text-xs">Confirmed</span>
               </div>
               <p className="text-xs text-slate-900 dark:text-slate-100">
-                Borrower: <strong>{entityData.borrower_entity.name}</strong>, an Ohio limited liability company, duly organized under the laws of the State of Ohio on April 12, 2018.
+                Borrower: <strong>{entityData.borrower_entity.name}</strong>, {entityData.borrower_entity.jurisdiction || 'an Ohio entity'}, duly organized under the laws of the State of Ohio{entityData.borrower_entity.filing_date ? ` on ${entityData.borrower_entity.filing_date}` : ''}.
               </p>
             </div>
 
@@ -155,7 +161,7 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
                 <span className="text-xs">Confirmed</span>
               </div>
               <p className="text-xs text-slate-900 dark:text-slate-100">
-                Total Required Payoff to The Huntington National Bank as of September 5, 2026: <strong>${deal.existing_debt_upb.toLocaleString()}</strong>, with per diem interest of <strong>${deal.per_diem_interest.toFixed(0)}/day</strong> thereafter through scheduled closing.
+                Total Required Payoff to The Huntington National Bank as of {deal.payoff_statement_date || 'September 5, 2026'}: <strong>${deal.existing_debt_upb.toLocaleString()}</strong>, with per diem interest of <strong>${deal.per_diem_interest.toFixed(0)}/day</strong> thereafter through scheduled closing ({deal.scheduled_closing_date}).
               </p>
             </div>
 
@@ -177,7 +183,12 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
                 <span className="text-xs">Confirmed</span>
               </div>
               <p className="text-xs text-slate-900 dark:text-slate-100">
-                Incumbency Certification: <strong>{entityData.grounded_members?.[0]?.name || 'Managing Member'}</strong>, holding an undivided Managing Membership Interest with sole operating signatory authority for {deal.borrower_entity}.
+                Incumbency Certification: <strong>{entityData.grounded_members?.[0]?.name || deal.primary_guarantor || 'Managing Member'}</strong>, holding an undivided {entityData.grounded_members?.[0]?.ownership_pct || 100}% {entityData.grounded_members?.[0]?.role || 'Managing Membership Interest'} and sole operating signatory authority for {deal.borrower_entity}.
+                {entityData.grounded_members && entityData.grounded_members.length > 1 && (
+                  <span className="block mt-1 text-slate-500 dark:text-slate-400">
+                    Additional grounded members ({entityData.grounded_members.length - 1}): {entityData.grounded_members.slice(1).map(m => `${m.name} (${m.ownership_pct}%)`).join(', ')}.
+                  </span>
+                )}
               </p>
             </div>
 
@@ -206,8 +217,9 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
 
             {/* Member Cards */}
             <div className="space-y-3">
-              {entityData.grounded_members.map((member) => {
+              {entityData.grounded_members?.map((member) => {
                 const isSelected = member.name === selectedMember;
+                const isExcluded = member.exclusion_status && member.exclusion_status.includes('Excluded');
 
                 return (
                   <div
@@ -241,6 +253,12 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
                       {member.role}
                     </div>
 
+                    {isExcluded && (
+                      <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                        {member.exclusion_status}
+                      </div>
+                    )}
+
                     {member.known_hban_balance > 0 && (
                       <div className="mt-2.5 pt-2.5 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-xs">
                         <span className="text-slate-500 dark:text-slate-400">Known HBAN Deposits:</span>
@@ -260,43 +278,80 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div className="flex items-center gap-2.5">
                 <Sparkles className="w-5 h-5 text-[#006738]" />
-                <h2 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white uppercase tracking-wider">
-                  Valuation Grounding
-                </h2>
+                <div>
+                  <h2 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white uppercase tracking-wider">
+                    {deal.unstated_sale_price ? 'Internal Liquidity Triage Heuristic' : 'Executed Purchase & Sale Agreement'}
+                  </h2>
+                  <span className="text-[11px] text-slate-400 font-semibold block">
+                    {deal.unstated_sale_price ? 'OCC Bulletin 2011-12 / SR 11-7 Model Tier 3' : 'OCC Bulletin 2011-12 / Fed SR 11-7 Verified'}
+                  </span>
+                </div>
               </div>
               <span className="text-xs font-bold text-[#006738] dark:text-emerald-400 uppercase tracking-wider">
-                Submarket {(deal.submarket_cap_rate * 100).toFixed(1)}% Cap
+                {deal.unstated_sale_price ? `Submarket ${(deal.submarket_cap_rate * 100).toFixed(1)}% Cap` : 'Contract Verified'}
               </span>
             </div>
 
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5 text-xs">
-              <div className="flex justify-between">
-                <span className="text-slate-500 dark:text-slate-400">Trailing 12M NOI:</span>
-                <span className="font-bold text-slate-900 dark:text-white tabular-nums">
-                  ${deal.noi_trailing_q1.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500 dark:text-slate-400">Submarket Cap Rate:</span>
-                <span className="font-bold text-slate-900 dark:text-white">{(deal.submarket_cap_rate * 100).toFixed(2)}%</span>
-              </div>
-              <div className="pt-2.5 border-t border-slate-200 dark:border-slate-700 flex justify-between text-sm">
-                <span className="font-bold text-slate-900 dark:text-white">Indicative Value:</span>
-                <span className="font-extrabold text-[#006738] dark:text-emerald-400 tabular-nums">
-                  ~${(deal.indicative_valuation / 1000000).toFixed(2)}M
-                </span>
-              </div>
+              {deal.unstated_sale_price ? (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 dark:text-slate-400">Trailing Q1 In-Place NOI:</span>
+                    <span className="font-bold text-slate-900 dark:text-white tabular-nums">
+                      ${deal.noi_trailing_q1.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 dark:text-slate-400">Submarket Benchmark Cap Rate:</span>
+                    <span className="font-bold text-slate-900 dark:text-white">{(deal.submarket_cap_rate * 100).toFixed(2)}%</span>
+                  </div>
+                  <div className="pt-2.5 border-t border-slate-200 dark:border-slate-700 flex justify-between text-sm">
+                    <span className="font-bold text-slate-900 dark:text-white">Indicative Triage Value:</span>
+                    <span className="font-extrabold text-[#006738] dark:text-emerald-400 tabular-nums">
+                      ~${(deal.indicative_valuation / 1000000).toFixed(2)}M
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 dark:text-slate-400">Contract Purchase Price:</span>
+                    <span className="font-bold text-slate-900 dark:text-white tabular-nums">
+                      ${deal.indicative_valuation.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 dark:text-slate-400">In-Place Q1 Trailing NOI:</span>
+                    <span className="font-bold text-slate-900 dark:text-white tabular-nums">
+                      ${deal.noi_trailing_q1.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 dark:text-slate-400">Implied Transaction Cap Rate:</span>
+                    <span className="font-bold text-slate-900 dark:text-white">{(deal.submarket_cap_rate * 100).toFixed(2)}%</span>
+                  </div>
+                  <div className="pt-2.5 border-t border-slate-200 dark:border-slate-700 flex justify-between text-sm">
+                    <span className="font-bold text-slate-900 dark:text-white">Verified Net Proceeds:</span>
+                    <span className="font-extrabold text-[#006738] dark:text-emerald-400 tabular-nums">
+                      ~${(deal.estimated_net_equity / 1000000).toFixed(2)}M
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
 
             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Property valuation modeled from trailing 12-month net operating income against prevailing submarket commercial transaction comparables ({(deal.submarket_cap_rate * 100).toFixed(2)}% cap rate).
+              <strong>Model Governance Notice:</strong>{' '}
+              {deal.unstated_sale_price
+                ? 'Capitalization heuristic modeled strictly for internal relationship triage and deposit capacity sizing. Client-facing valuation is muzzled; commercial RM never asserts property valuation to borrower.'
+                : `Verified executed purchase and sale agreement per Escrow File #${deal.escrow_file_number}. Valuation asserted directly from commercial contract; internal triage heuristic bypassed.`}
             </p>
           </div>
 
           {/* Bottom Next Step Bar */}
           <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-4">
             <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-              Ready to configure wire instructions &amp; retention accounts?
+              Ready to configure borrower settlement routing packet &amp; retention accounts?
             </span>
             <button
               onClick={onProceedToRetention}

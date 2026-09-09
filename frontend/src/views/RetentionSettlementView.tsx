@@ -56,14 +56,18 @@ export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = (
   const midSlider = Math.round((minSlider + maxSlider) / 2 / 50000) * 50000;
 
   const handleCopy = () => {
-    const text = `HUNTINGTON NATIONAL BANK - SETTLEMENT WIRE INSTRUCTIONS
+    const text = `THE HUNTINGTON NATIONAL BANK - BORROWER SETTLEMENT ROUTING PACKET
+DocuSign Envelope ID: ${wireInstructions.docusign_envelope_id || 'ENV-HBAN-20260904-8821'}
+ALTA Pillar 2 Callback Authentication Line: ${wireInstructions.callback_verification_line || '(614) 480-4401 (Direct Banker Authentication Line)'}
+
 Bank: ${wireInstructions.bank_name}
 ABA Routing: ${wireInstructions.aba_routing}
 Account Title: ${wireInstructions.account_title}
 Account Number: ${wireInstructions.account_number}
 Escrow File: ${wireInstructions.escrow_file}
 Net Disbursement: $${valuation.net_equity_proceeds.toLocaleString()}
-Special Instructions: ${wireInstructions.special_instructions}`;
+Special Instructions: ${wireInstructions.special_instructions}
+Authorized Banker: ${wireInstructions.officer_signature}`;
     navigator.clipboard.writeText(text)
       .then(() => {
         setCopied(true);
@@ -101,7 +105,7 @@ Special Instructions: ${wireInstructions.special_instructions}`;
               </span>
             </div>
             <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
-              Configure deposit retention structures, generate Title Company wire instruction letters, and record client consent.
+              Configure deposit retention structures, generate borrower DocuSign routing packets with official bank verification letters, and record client consent.
             </p>
           </div>
 
@@ -141,17 +145,17 @@ Special Instructions: ${wireInstructions.special_instructions}`;
               <PhoneCall className="w-4 h-4 text-[#006738]" />
               Commercial RM Client Call Guide ({wireInstructions?.officer_signature?.split(',')[0] || 'Relationship Manager'} to {wireInstructions?.managing_member || 'Client'})
             </span>
-            <span className="text-xs uppercase font-semibold text-slate-400">Relationship Touchpoint</span>
+            <span className="text-xs uppercase font-semibold text-slate-400">Horizon 2.0 Consultative Script</span>
           </div>
           <div className="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
             <p>
-              <strong>1. Acknowledge Closing:</strong> &quot;{wireInstructions?.managing_member?.split(' ')[0] || 'Client'}, congratulations on going into escrow on {wireInstructions?.property?.split(',')[0] || 'the property'}. We just received the payoff demand from {wireInstructions?.attention?.split(',')[0] || 'the settlement officer'} at {wireInstructions?.title_company || 'Title'}.&quot;
+              <strong>1. Acknowledge Closing:</strong> &quot;{wireInstructions?.managing_member?.split(' ')[0] || 'Client'}, congratulations on going into escrow on {wireInstructions?.property?.split(',')[0] || 'the property'}. We received the payoff demand from {wireInstructions?.attention?.split(',')[0] || 'the settlement officer'} at {wireInstructions?.title_company || 'Title'}.&quot;
             </p>
             <p>
-              <strong>2. Protect Net Proceeds (${(valuation.net_equity_proceeds / 1000000).toFixed(2)}M):</strong> &quot;Rather than letting your ~${(valuation.net_equity_proceeds / 1000000).toFixed(2)}M in net equity sit in a standard escrow checking account, we have pre-staged our {taxStrategy === '1031_exchange' ? 'Huntington 1031 Qualified Escrow Depository' : 'Huntington Commercial Max$aver ICS Sweep'}. That gives you {valuation.yield_apy}% APY with multi-million FDIC passthrough protection.&quot;
+              <strong>2. Protect Net Proceeds (${(valuation.net_equity_proceeds / 1000000).toFixed(2)}M) &amp; Borrower Routing:</strong> &quot;Rather than letting your ~${(valuation.net_equity_proceeds / 1000000).toFixed(2)}M in net equity sit in a standard escrow checking account, we have pre-staged our {taxStrategy === '1031_exchange' ? 'Huntington 1031 Qualified Escrow Depository partnered with IPX1031' : 'Huntington Business Premier ICS Sweep'}. That gives you {valuation.yield_apy}% APY with multi-million FDIC passthrough protection. I am sending our verified Settlement Account Routing Packet directly to you via DocuSign so you can authorize Title, with our official bank verification letter attached for their telephone callback authentication.&quot;
             </p>
             <p>
-              <strong>3. Secure Verbal Consent (GLBA Gate):</strong> &quot;To coordinate smoothly with our Private Wealth group so you don&apos;t have to re-submit financial statements, do I have your permission to share your entity structure with Sarah Jenkins on our Wealth team?&quot;
+              <strong>3. Secure Verbal Consent (GLBA Barrier &amp; Ameriprise Reg R):</strong> &quot;To coordinate smoothly with our Private Wealth group so you don&apos;t have to re-submit financial statements, do I have your permission to share your entity structure with Sarah Jenkins on our Wealth team?&quot;
             </p>
           </div>
         </div>
@@ -168,9 +172,14 @@ Special Instructions: ${wireInstructions.special_instructions}`;
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <Sliders className="w-5 h-5 text-[#006738]" />
-                <h2 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white uppercase tracking-wider">
-                  Indicative Valuation Slider
-                </h2>
+                <div>
+                  <h2 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white uppercase tracking-wider">
+                    Indicative Valuation Slider
+                  </h2>
+                  <span className="text-[11px] text-slate-400 block font-normal">
+                    (Internal Triage Heuristic &mdash; Do Not Assert to Client)
+                  </span>
+                </div>
               </div>
               <span className="text-base font-extrabold text-[#006738] dark:text-emerald-400 tabular-nums">
                 ${(valuation.sale_price / 1000000).toFixed(2)}M
@@ -218,7 +227,7 @@ Special Instructions: ${wireInstructions.special_instructions}`;
             </div>
           </div>
 
-          {/* Card 2: Strategy Fork (Max$aver vs 1031 Escrow) */}
+          {/* Card 2: Strategy Fork (Business Premier ICS vs 1031 Escrow) */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-5">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white uppercase tracking-wider">
@@ -245,11 +254,11 @@ Special Instructions: ${wireInstructions.special_instructions}`;
                     <Landmark className="w-4 h-4 text-[#006738]" />
                   </div>
                   <div className="text-xs text-slate-500 dark:text-slate-400">
-                    Taxable Disposition
+                    Taxable Commercial Retention
                   </div>
                 </div>
                 <div className="mt-4 text-xs text-[#006738] dark:text-emerald-400 font-bold">
-                  Max$aver ICS (4.85% APY)
+                  Business Premier ICS (4.85% APY)
                 </div>
               </button>
 
@@ -268,7 +277,7 @@ Special Instructions: ${wireInstructions.special_instructions}`;
                     <Building className="w-4 h-4 text-[#006738]" />
                   </div>
                   <div className="text-xs text-slate-500 dark:text-slate-400">
-                    Tax-Deferred Safe Harbor
+                    Independent Partner QI Network
                   </div>
                 </div>
                 <div className="mt-4 text-xs text-[#006738] dark:text-emerald-400 font-bold">
@@ -277,29 +286,46 @@ Special Instructions: ${wireInstructions.special_instructions}`;
               </button>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs">
-              <div className="font-bold text-slate-900 dark:text-white">
-                {valuation.strategy_product}
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-900 dark:text-white">
+                  {valuation.strategy_product}
+                </span>
+                {taxStrategy === '1031_exchange' && (
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-100 dark:bg-emerald-950/60 text-[#006738] dark:text-emerald-300 border border-emerald-300">
+                    IPX1031 Partnered
+                  </span>
+                )}
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 {valuation.statutory_basis}
               </p>
+              {taxStrategy === '1031_exchange' && (
+                <div className="pt-2 border-t border-slate-200 dark:border-slate-700 text-[11px] text-amber-800 dark:text-amber-300">
+                  <strong>Treas. Reg. &sect; 1.1031(k)-1(k) Anti-Disqualification Firewall:</strong> In-house DST placement and private wealth securities cross-selling are programmatically blocked during the 180-day window to preserve the routine banking safe harbor.
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Card 3: GLBA Verbal Consent Gate */}
+          {/* Card 3: GLBA Verbal Consent Gate & Ameriprise Regulation R */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white uppercase tracking-wider">
-                GLBA Consent Barrier (15 U.S.C. Sec. 6801)
-              </h2>
+              <div>
+                <h2 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white uppercase tracking-wider">
+                  GLBA Privacy Gate &amp; Ameriprise Barrier
+                </h2>
+                <span className="text-[11px] text-slate-400 block font-medium">
+                  15 U.S.C. &sect; 6801 &bull; SEC Regulation R Networking Arrangement
+                </span>
+              </div>
               <span className={`text-xs font-bold uppercase tracking-wider ${quarantineState.quarantined ? 'text-slate-500' : 'text-[#006738]'}`}>
                 {quarantineState.quarantined ? 'Quarantined' : 'Verified'}
               </span>
             </div>
 
             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Customer privacy regulations prohibit automatic data transfer between commercial credit files and private wealth advisory without affirmative verbal consent.
+              Because Huntington Advisors operates on Ameriprise Financial's platform, the retail broker-dealer is legally a non-affiliated third party. Commercial credit data cannot transfer without affirmative verbal consent. Commercial RM receives 100% hard-dollar commercial deposit FTP credit (zero securities fee splitting under FINRA Rule 2040).
             </p>
 
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
@@ -339,16 +365,21 @@ Special Instructions: ${wireInstructions.special_instructions}`;
 
         </div>
 
-        {/* Right Column: Title Wire Instruction Letter (6 cols) */}
+        {/* Right Column: Borrower Settlement Routing Packet & Bank Verification Letter (6 cols) */}
         <div className="lg:col-span-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm flex flex-col">
           
           {/* Letter Toolbar */}
           <div className="p-6 border-b border-slate-200 dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-800/40 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <FileCheck className="w-5 h-5 text-[#006738]" />
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                Official Title Wire Instruction Letter
-              </h3>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                  Borrower Settlement Routing Packet
+                </h3>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
+                  DocuSign Envelope &bull; ALTA Pillar 2 Bank Verification Letter
+                </span>
+              </div>
             </div>
             
             <button
@@ -356,25 +387,38 @@ Special Instructions: ${wireInstructions.special_instructions}`;
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-300"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-[#006738]" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? 'Copied' : 'Copy Letter'}</span>
+              <span>{copied ? 'Copied' : 'Copy Packet'}</span>
             </button>
           </div>
 
           {/* Letterhead & Official Text */}
           <div className="p-8 text-xs space-y-5 text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 select-text leading-relaxed">
             
+            {/* ALTA Pillar 2 Compliance Banner */}
+            <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-[#A7F3D0] dark:border-emerald-800 text-[11px] text-[#004724] dark:text-emerald-200 space-y-1">
+              <div className="font-bold flex items-center justify-between">
+                <span>ALTA Pillar 2 &amp; UCC Article 4A Execution Standard</span>
+                <span className="font-mono text-[10px] bg-white/80 dark:bg-slate-900 px-2 py-0.5 rounded border border-emerald-300">
+                  {wireInstructions.docusign_envelope_id || 'ENV-HBAN-20260904-8821'}
+                </span>
+              </div>
+              <p>
+                Lenders lack legal standing over net seller proceeds. This routing packet is delivered directly to the borrower via DocuSign to execute as the official Seller Closing Authorization to Title, accompanied by our verified Account Verification Letter for title telephone callback.
+              </p>
+            </div>
+
             <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
               <div className="text-base font-extrabold tracking-widest text-[#006738] uppercase">
                 THE HUNTINGTON NATIONAL BANK
               </div>
               <div className="text-xs text-slate-400 mt-0.5">
-                Commercial Real Estate Capital Services &bull; 17 S. High St., Columbus, OH 43215
+                Commercial Capital Markets &bull; Settlement Operations &bull; 17 S. High St., Columbus, OH 43215
               </div>
             </div>
 
             <div className="flex justify-between text-slate-500 dark:text-slate-400 text-xs">
               <span>Date: {wireInstructions.date}</span>
-              <span>Ref: {wireInstructions.letter_id}</span>
+              <span>Packet Ref: {wireInstructions.letter_id}</span>
             </div>
 
             <div className="space-y-0.5">
@@ -392,7 +436,7 @@ Special Instructions: ${wireInstructions.special_instructions}`;
             {/* Wire Table */}
             <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/40 space-y-2.5 text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-500 dark:text-slate-400">Receiving Bank:</span>
+                <span className="text-slate-500 dark:text-slate-400">Receiving Depository:</span>
                 <span className="font-bold text-slate-900 dark:text-white">{wireInstructions.bank_name}</span>
               </div>
               <div className="flex justify-between">
@@ -419,9 +463,10 @@ Special Instructions: ${wireInstructions.special_instructions}`;
               <strong>Special Instructions:</strong> {wireInstructions.special_instructions}
             </div>
 
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 space-y-0.5">
-              <div>Authorized Signatory: <strong>{wireInstructions.officer_signature}</strong></div>
-              <div>Contact: {wireInstructions.officer_contact}</div>
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 space-y-1">
+              <div>Authorized Banker: <strong>{wireInstructions.officer_signature}</strong></div>
+              <div>Title Callback Authentication Line: <strong>{wireInstructions.callback_verification_line || '(614) 480-4401 (Direct Banker Authentication Line)'}</strong></div>
+              <div className="text-[11px] text-slate-400 mt-1">Official Huntington Bank Account Verification Letter attached to DocuSign envelope for title escrow callback validation.</div>
             </div>
           </div>
         </div>

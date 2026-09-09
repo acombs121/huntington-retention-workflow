@@ -4,7 +4,7 @@ import {
   ArrowLeft,
   CheckCircle2,
   Calendar,
-  Send,
+  ShieldCheck,
   Users,
 } from 'lucide-react';
 
@@ -24,9 +24,9 @@ export const PortfolioStrategyView: React.FC<PortfolioStrategyViewProps> = ({
   const totalAmount = valuation.net_equity_proceeds;
   const ips = data.draft_ips_scaffolding;
   const clientDisplayName = data.target_client
-    ? data.target_client.replace(' (85%) & Co-Guarantors (15%)', '')
+    ? data.target_client.split('(')[0].trim()
     : 'Client';
-  const primaryName = clientDisplayName.split(' & ')[0] || clientDisplayName;
+
 
   return (
     <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12 md:py-16 space-y-12">
@@ -42,20 +42,25 @@ export const PortfolioStrategyView: React.FC<PortfolioStrategyViewProps> = ({
             <span>Return to Wealth Dossier</span>
           </button>
           
-          <div className="text-xs font-bold uppercase tracking-widest text-[#006738] dark:text-[#A7F3D0]">
-            Private Wealth Advisory &bull; Portfolio Allocation
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#006738] dark:text-[#A7F3D0]">
+              Private Wealth Advisory &bull; Portfolio Allocation
+            </span>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+              Administrative Draft Scaffolding for Internal Advisor Review Only
+            </span>
           </div>
           
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Investment Policy &amp; Portfolio Strategy
+            Investment Policy &amp; Portfolio Strategy (Internal Draft Scaffolding)
           </h1>
           
           <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-            Fiduciary asset allocation proposal, liquidity schedules, and ongoing review framework for {clientDisplayName}.
+            Administrative draft scaffolding, liquidity schedules, and ongoing review framework for licensed advisor authorship and client suitability analysis ({clientDisplayName}).
           </p>
         </div>
 
-        {/* Deliver Proposal CTA */}
+        {/* Stage Scaffolding CTA */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 shrink-0">
           <div className="text-right hidden sm:block">
             <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Allocating</div>
@@ -76,15 +81,28 @@ export const PortfolioStrategyView: React.FC<PortfolioStrategyViewProps> = ({
             {delivered ? (
               <>
                 <CheckCircle2 className="w-4 h-4 text-[#006738]" />
-                <span>Delivered to Client Portal</span>
+                <span>Staged for Advisor Authorship</span>
               </>
             ) : (
               <>
-                <Send className="w-4 h-4" />
-                <span>Deliver Proposal to {primaryName}</span>
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Stage Scaffolding for Advisor Review</span>
               </>
             )}
           </button>
+        </div>
+      </div>
+
+      {/* SEC Regulation Best Interest (Reg BI) & Fiduciary Notice */}
+      <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 flex items-start gap-3">
+        <ShieldCheck className="w-5 h-5 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
+        <div className="text-xs text-amber-900 dark:text-amber-200 space-y-1">
+          <div className="font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300">
+            SEC Regulation Best Interest (Reg BI) &amp; Fiduciary Notice
+          </div>
+          <p className="leading-relaxed">
+            This asset allocation is <strong>administrative draft scaffolding only</strong> and does not constitute an investment recommendation or advice. Under SEC Reg BI and FINRA Rule 2111, a licensed Series 7/66/CFP advisor must conduct an independent client risk discovery interview, verify suitability, and author the final Investment Policy Statement prior to client presentation.
+          </p>
         </div>
       </div>
 
@@ -94,15 +112,15 @@ export const PortfolioStrategyView: React.FC<PortfolioStrategyViewProps> = ({
             <CheckCircle2 className="w-5 h-5 text-[#006738] dark:text-emerald-400 shrink-0" />
             <div>
               <div className="text-sm font-bold text-slate-900 dark:text-white">
-                Fiduciary Proposal Successfully Dispatched
+                Administrative Scaffolding Successfully Staged
               </div>
               <div className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
-                Delivered to {clientDisplayName} secure client portal for digital review and wet signature coordination.
+                Staged in SEI Wealth Platform for Sarah Jenkins (CFP) suitability evaluation and formal IPS authorship. Not dispatched to client.
               </div>
             </div>
           </div>
           <span className="text-xs font-bold uppercase tracking-wider text-[#006738] dark:text-emerald-400 bg-white/80 dark:bg-slate-900 px-3 py-1.5 rounded-full border border-[#A7F3D0] shrink-0">
-            Pending Client Signature
+            Pending Advisor Suitability Review
           </span>
         </div>
       )}
@@ -138,7 +156,7 @@ export const PortfolioStrategyView: React.FC<PortfolioStrategyViewProps> = ({
             <div className="w-full h-3 rounded-full overflow-hidden flex bg-slate-100 dark:bg-slate-800">
               <div style={{ width: '50%' }} className="bg-[#006738] h-full" title="50% Fixed Income" />
               <div style={{ width: '35%' }} className="bg-[#7ECF1C] h-full" title="35% Core Equities" />
-              <div style={{ width: '15%' }} className="bg-slate-400 h-full" title="15% Replacement Real Estate" />
+              <div style={{ width: '15%' }} className="bg-slate-400 h-full" title="15% Direct Real Assets & Infrastructure" />
             </div>
             <div className="flex items-center gap-6 pt-2 text-xs font-medium text-slate-600 dark:text-slate-400">
               <div className="flex items-center gap-2">
@@ -151,14 +169,14 @@ export const PortfolioStrategyView: React.FC<PortfolioStrategyViewProps> = ({
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
-                <span>Replacement Real Estate (15%)</span>
+                <span>Direct Real Assets &amp; Infrastructure (15%)</span>
               </div>
             </div>
           </div>
 
           {/* Allocation Breakdown Table */}
           <div className="space-y-4 pt-2">
-            {ips.asset_allocation_scaffold.map((sleeve) => {
+            {(ips?.asset_allocation_scaffold || []).map((sleeve) => {
               const sleeveAmount = (totalAmount * sleeve.target_pct) / 100;
 
               return (
@@ -203,16 +221,16 @@ export const PortfolioStrategyView: React.FC<PortfolioStrategyViewProps> = ({
                 </h3>
               </div>
               <span className="text-xs font-bold text-[#006738] dark:text-emerald-400 bg-[#E8F5E9] dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-[#A7F3D0]">
-                80 to 150 Limit
+                80 to 95–100 Limit
               </span>
             </div>
 
             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Why this does not flood advisors: Automated ongoing servicing removes fiduciary administrative drag, expanding maximum account coverage without new headcount.
+              Why this does not flood advisors: 2x Client Service Associate (CSA) operational leverage (1 CSA : 4 PWAs) and automated servicing expand senior PWA headroom to 95–100 accounts (+25%), while sub-$3M transactional liquidity routes to the Centralized Wealth Advisory Hub.
             </p>
 
             <div className="space-y-3">
-              {data.ongoing_servicing_dossier.features.map((feature, idx) => (
+              {(data?.ongoing_servicing_dossier?.features || []).map((feature, idx) => (
                 <div
                   key={idx}
                   className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700 flex items-start gap-3 text-xs"

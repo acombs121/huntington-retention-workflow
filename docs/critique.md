@@ -14,7 +14,7 @@
 > 
 > **However**, an adversarial review reveals **four critical vulnerabilities** that will trigger immediate pushback from an experienced bank CEO, CFO, CRO, or Google Cloud technical evaluator:
 > 1. **The Post-Day-3 Wealth Capacity Fallacy:** It solves Day 0–3 onboarding friction, but completely ignores Day 3–Year 10 relationship servicing limits.
-> 2. **The 1031 Exchange Blind Spot:** In $2M–$10M commercial real estate, a massive percentage of sellers execute IRC §1031 like-kind exchanges. If Marcus does a 1031, cash cannot touch Huntington Max$aver or SEI without catastrophic tax penalties.
+> 2. **The 1031 Exchange Blind Spot:** In $2M–$10M commercial real estate, a massive percentage of sellers execute IRC §1031 like-kind exchanges. If Marcus does a 1031, cash cannot touch Huntington Business Premier ICS or SEI without catastrophic tax penalties.
 > 3. **Outdated & Underleveraged GCP Stack:** It refers to outdated models (`Gemini 1.5 Pro`) and treats Google Cloud as generic glue (Pub/Sub + Doc AI + Cloud Run) rather than showcasing differentiated enterprise agent capabilities (multimodal grounding, spatial reasoning, Vertex AI Agent Builder, VPC Service Controls).
 > 4. **Information Barrier & Regulatory Landmines (GLBA/FCRA/OCC SR 11-7):** Commercial credit covenants and NOI records are submitted under strict credit-monitoring purposes. Cross-selling wealth management from credit files without an explicit opt-in boundary will trigger severe compliance friction.
 
@@ -32,7 +32,7 @@
 * **What the PRD Claims:** In Pane 3 ([PRD.md:115](file:///Users/alexcombs/Projects/huntington-horizon/PRD.md#L115)), the PRD casually states `• 1031 Exchange Flag: NO`.
 * **The Reality:** In Midwest commercial real estate dispositions between $5M and $20M, **over 50–65% of sellers execute an IRC §1031 Like-Kind Exchange** to defer massive capital gains taxes and depreciation recapture.
 * **The Failure Mode:** If Marcus Vance intends to do a 1031 exchange:
-  1. He **cannot** let the $2.9M net equity wire into Huntington Max$aver or SEI. Under IRS rules, if the seller takes constructive receipt of the funds, the entire tax deferral is disqualified.
+  1. He **cannot** let the $2.9M net equity wire into Huntington Business Premier ICS or SEI. Under IRS rules, if the seller takes constructive receipt of the funds, the entire tax deferral is disqualified.
   2. The net proceeds **must wire directly to a Qualified Intermediary (QI) escrow account**.
   3. If Greg Miller calls Marcus pitching a Treasury sweep without knowing Marcus is in a 1031 identification period, Greg looks uninformed, and Huntington loses credibility.
 * **Remediation:** Turn this weakness into a competitive advantage:
@@ -40,7 +40,7 @@
   - If 1031 is YES: Instead of a generic sweep, Horizon stages a **Huntington Escrow / Qualified Intermediary (QI) Deposit Solution** or introduces Huntington’s **Delaware Statutory Trust (DST) / 1031 Advisory Desk**, preserving the deposit within Huntington’s institutional custody during the 180-day exchange window.
 
 ### Gap 2.3: The Title Settlement Wire Instructions Disconnect
-* **What the PRD Claims:** Net proceeds settle into Marcus’s Max$aver account on Day T-0 (§2 Step 7).
+* **What the PRD Claims:** Net proceeds settle into Marcus’s Business Premier ICS account on Day T-0 (§2 Step 7).
 * **The Reality:** Title companies (like First American Title) disburse seller net proceeds based strictly on the **Seller’s Closing Settlement Disbursement Form**, which sellers typically execute at T-3 to T-1. If Marcus has a personal wealth account at J.P. Morgan or Morgan Stanley, his default action is to write their wiring instructions on the title company form.
 * **The Failure Mode:** Once the title company releases the Fedwire at closing, the money is gone. T-12 is the only window to change those wire instructions.
 * **Remediation:** The PRD should explicitly specify that the primary conversion goal of the T-12 banker call is delivering an automated, pre-filled **Huntington Verified Settlement Wire Instruction Letter** directly to First American Title, locking in Huntington as the closing disbursement destination.
@@ -97,7 +97,7 @@ Current PRD Stack:
      - *Action 3:* If debt was refinanced recently, look at debt-yield constraints.
      - *Action 4:* Evaluate conflicting signals (e.g., borrower address doesn't match Secretary of State filing) and proactively surface an Incumbency Discrepancy Flag.
   2. **Bi-Directional Synchronized State (Human-in-the-Loop Feedback Loop):** In Pane 3, there is a slider: `[Slider: Adjust Sale Price]`. When the RM talks to Marcus and Marcus says, *"Actually Greg, we closed at $9.1M, not $8.5M"*, the RM adjusts the slider.
-     - **The Agentic Response:** The agent should immediately, dynamically recalculate net proceeds, adjust the Max$aver ICS allocation to $3.5M, re-tier the SEI Wealth asset allocation model, and send an updated draft memo to Sarah Jenkins within seconds.
+     - **The Agentic Response:** The agent should immediately, dynamically recalculate net proceeds, adjust the Business Premier ICS allocation to $3.5M, re-tier the SEI Wealth asset allocation model, and send an updated draft memo to Sarah Jenkins within seconds.
 
 ---
 
@@ -146,7 +146,7 @@ The PRD has good disclaimers in §5, but an adversarial review reveals severe re
 * **The PRD Claim:** Section 1.1 states: *"...routinely wire out within 48–72 hours"*, but §2 Step 7 claims Marcus transitions $2.0M into his SEI account on **Day T+10**, leaving $900k in commercial liquidity.
 * **The Challenge:** If funds flee within 48–72 hours, how does Marcus wait until Day T+10 to fund the SEI trust?
 * **The Resolution:** The PRD's secret weapon is the **Two-Tier Shield**:
-  - *Tier 1 (Day T-0):* The Max$aver ICS sweep locks the funds on Day 0 with FDIC multi-million dollar coverage and 4.85% yield, **killing the immediate 48-hour flight urgency**.
+  - *Tier 1 (Day T-0):* The Business Premier ICS sweep locks the funds on Day 0 with FDIC multi-million dollar coverage and 4.85% yield, **killing the immediate 48-hour flight urgency**.
   - *Tier 2 (Day T+10):* The wealth onboarding completes at a comfortable pace.
   - *Action:* Make this specific timing dynamic much sharper in the text of §1.1 and §2 Step 7.
 

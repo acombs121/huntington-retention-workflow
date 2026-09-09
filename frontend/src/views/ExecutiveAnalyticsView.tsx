@@ -12,14 +12,17 @@ import {
   Calculator,
   Building2,
   Cpu,
+  ArrowLeft,
 } from 'lucide-react';
 
 interface ExecutiveAnalyticsViewProps {
   capacityMeter: CapacityMeter;
+  onBackToPipeline?: () => void;
 }
 
 export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
   capacityMeter,
+  onBackToPipeline,
 }) => {
   const [activeTab, setActiveTab] = useState<'kpis' | 'sensitivity' | 'governance'>('kpis');
   const [captureRate, setCaptureRate] = useState<number>(10);
@@ -30,12 +33,12 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
   const atRiskFlight = bookVolume * flightRate;
   const retainedLiquidity = bookVolume * (captureRate / 100);
 
-  // Tier 1: Treasury ICS & 1031 Escrow (60% @ 85 bps Net NIM)
-  const tier1Liquidity = retainedLiquidity * 0.60;
+  // Tier 1: Treasury ICS & 1031 Escrow (65% @ 85 bps Net NIM)
+  const tier1Liquidity = retainedLiquidity * 0.65;
   const tier1Nim = tier1Liquidity * 0.0085;
 
-  // Tier 2: Wealth AUM (40% @ 65 bps Advisory Fee)
-  const tier2Aum = retainedLiquidity * 0.40;
+  // Tier 2: Wealth AUM (35% @ 65 bps Advisory Fee)
+  const tier2Aum = retainedLiquidity * 0.35;
   const tier2Fee = tier2Aum * 0.0065;
 
   const grossAnnualValue = tier1Nim + tier2Fee;
@@ -49,6 +52,15 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
       {/* Swiss Editorial Header */}
       <div className="border-b border-slate-200 dark:border-slate-800 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-3 max-w-3xl">
+          {onBackToPipeline && (
+            <button
+              onClick={onBackToPipeline}
+              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500 hover:text-[#006738] dark:text-slate-400 dark:hover:text-[#A7F3D0] transition mb-1"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Return to Payoff Pipeline</span>
+            </button>
+          )}
           <div className="text-xs font-bold uppercase tracking-widest text-[#006738] dark:text-[#A7F3D0]">
             Executive Analytics &bull; Portfolio Governance
           </div>
@@ -110,7 +122,7 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
             {capacityMeter.book_scale_volume}
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-            Annual commercial payoffs. 100% automated payoff request capture.
+            1,400 branches in 21 states &bull; Top-2 SBA 7(a) lender. 100% automated payoff capture.
           </p>
           <div className="pt-3 border-t border-slate-100 dark:border-slate-800 text-xs font-semibold text-rose-600 dark:text-rose-400">
             ~78% flight cliff within 72h
@@ -141,13 +153,13 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
             <Users className="w-4 h-4 text-[#006738]" />
           </div>
           <div className="text-3xl font-extrabold text-[#006738] dark:text-[#A7F3D0] tabular-nums tracking-tight">
-            80 to 150 accounts
+            80 to 95–100 accounts
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-            Ongoing servicing automated, enabling advisor capacity expansion.
+            2x CSA operational leverage (1 CSA : 4 PWAs); sub-$3M routed to Centralized Wealth Hub.
           </p>
           <div className="pt-3 border-t border-slate-100 dark:border-slate-800 text-xs font-semibold text-[#006738] dark:text-emerald-400">
-            Zero net new headcount
+            +25% capacity &bull; zero net headcount
           </div>
         </div>
 
@@ -164,7 +176,7 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
             Automated screening against Pass Tier 1/2 credit and KYC thresholds.
           </p>
           <div className="pt-3 border-t border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500">
-            FINRA 2040 compliant triage
+            Ameriprise Reg R &amp; FINRA 2040 compliant
           </div>
         </div>
 
@@ -312,7 +324,7 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Tier 1: 60% of captured liquidity routed into Huntington Commercial ICS Sweeps or 1031 Qualified Escrow Depositories at 85 bps Net NIM before 72h flight occurs.
+                  Tier 1: 65% of captured liquidity routed into Huntington Commercial ICS Sweeps or 1031 Qualified Escrow Depositories at 85 bps Net NIM before 72h flight occurs.
                 </p>
                 <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3 text-xs">
                   <div className="flex justify-between">
@@ -324,7 +336,7 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
                     <span className="font-bold text-slate-900 dark:text-white tabular-nums">{captureRate.toFixed(1)}%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500 font-medium">Tier 1 Retained (60%):</span>
+                    <span className="text-slate-500 font-medium">Tier 1 Retained (65%):</span>
                     <span className="font-bold text-[#006738] dark:text-emerald-400 tabular-nums">${(tier1Liquidity / 1000000).toFixed(1)}M</span>
                   </div>
                   <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between font-bold text-sm">
@@ -346,7 +358,7 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Tier 2: 40% of captured liquidity converted into fee-generating Private Wealth AUM at 65 bps without exceeding 150-account advisor capacity limits.
+                  Tier 2: 35% of captured liquidity converted into fee-generating Private Wealth AUM at 65 bps with 2x CSA operational leverage (80 &rarr; 95&ndash;100 accounts; sub-$3M routed to Centralized Wealth Hub).
                 </p>
                 <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3 text-xs">
                   <div className="flex justify-between">
@@ -354,12 +366,12 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
                     <span className="font-bold text-slate-900 dark:text-white tabular-nums">${(retainedLiquidity / 1000000).toFixed(1)}M</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500 font-medium">Wealth Allocation (40%):</span>
+                    <span className="text-slate-500 font-medium">Wealth Allocation (35%):</span>
                     <span className="font-bold text-slate-900 dark:text-white tabular-nums">${(tier2Aum / 1000000).toFixed(1)}M</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500 font-medium">Advisor Capacity Headroom:</span>
-                    <span className="font-bold text-[#006738] dark:text-emerald-400 tabular-nums">80 &rarr; 150 Accounts</span>
+                    <span className="font-bold text-[#006738] dark:text-emerald-400 tabular-nums">80 &rarr; 95–100 Accounts (2x CSA Leverage)</span>
                   </div>
                   <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between font-bold text-sm">
                     <span>Advisory Fee (65 bps):</span>
@@ -492,29 +504,29 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
                 Chief Risk Officer (CRO) Compliance Matrix
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Statutory and regulatory audit clearance across four institutional domains.
+                Statutory and regulatory audit clearance across six institutional defense domains.
               </p>
             </div>
             <span className="text-xs font-bold uppercase tracking-wider text-[#006738] dark:text-emerald-400 bg-[#E8F5E9] dark:bg-emerald-950/60 px-3 py-1.5 rounded-full border border-[#A7F3D0] flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-[#006738]" />
-              100% Audit Cleared
+              6 of 6 Audit Cleared
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             
             {/* Reg 1 */}
             <div className="p-6 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-slate-900 dark:text-white">
-                  FINRA Rule 2040 (Non-Fee Splitting)
+                  ALTA Pillar 2 &amp; UCC Article 4A
                 </span>
                 <span className="text-xs font-bold uppercase tracking-wider text-[#006738] dark:text-emerald-400 bg-[#E8F5E9] dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-[#A7F3D0]">
                   PASSED
                 </span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                Guarantees commercial bankers receive no securities referral commissions or transaction-based compensation. Shadow credit is applied strictly to commercial deposit retention.
+                Bank delivers verified routing packet directly to borrower via DocuSign; borrower submits as Seller Closing Authorization to title. Title executes dual-call verification to (614) 480-4401, eliminating lender standing liability and wire fraud risks.
               </p>
             </div>
 
@@ -522,14 +534,14 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
             <div className="p-6 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-slate-900 dark:text-white">
-                  GLBA Sec. 502(e) &amp; 12 C.F.R. Sec. 1016.11
+                  GLBA Pre-Ingestion DLP &amp; FCRA &sect; 604
                 </span>
                 <span className="text-xs font-bold uppercase tracking-wider text-[#006738] dark:text-emerald-400 bg-[#E8F5E9] dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-[#A7F3D0]">
                   PASSED
                 </span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                Technical privacy firewall prevents cross-division customer data leakage. Data remains quarantined until RM records client verbal opt-in during closing touchpoint.
+                Automated Cloud DLP scrubs non-guarantor PII prior to pipeline ingestion (e.g. Elena Vance excluded from wealth profiling per GLBA Reg P &amp; FCRA &sect; 604). Data quarantined until RM records verbal opt-in at payoff closing.
               </p>
             </div>
 
@@ -537,14 +549,14 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
             <div className="p-6 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-slate-900 dark:text-white">
-                  IRC Sec. 1031 &amp; Treas. Reg. Sec. 1.1031(k)-1(g)(3)
+                  SEC Reg R &amp; FINRA 2040 (Ameriprise)
                 </span>
                 <span className="text-xs font-bold uppercase tracking-wider text-[#006738] dark:text-emerald-400 bg-[#E8F5E9] dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-[#A7F3D0]">
                   PASSED
                 </span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                Automated 1031 detector prevents disqualifying constructive receipt by routing exchange proceeds into a Huntington Qualified Escrow Depository rather than operating checking.
+                Huntington Advisors operates on Ameriprise platform via SEC Regulation R Networking Arrangement. Non-registered commercial RMs receive deposit FTP credit only; zero securities commissions or fee splitting under FINRA Rule 2040.
               </p>
             </div>
 
@@ -552,14 +564,44 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
             <div className="p-6 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-slate-900 dark:text-white">
-                  OCC Bulletin 2011-12 (SR 11-7)
+                  IRC &sect; 1031 Safe Harbor (Treas. Reg. 1.1031)
                 </span>
                 <span className="text-xs font-bold uppercase tracking-wider text-[#006738] dark:text-emerald-400 bg-[#E8F5E9] dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-[#A7F3D0]">
                   PASSED
                 </span>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                Model Risk Management (MRM): Output is legally designated as relationship triage prioritization and administrative document drafting, not automated credit underwriting.
+                Partnered with independent national Qualified Intermediary (IPX1031). Bank acts strictly as Qualified Escrow Depository while programmatically firewalling in-house DST securities placement to preserve safe harbor under Treas. Reg. &sect; 1.1031(k)-1(k).
+              </p>
+            </div>
+
+            {/* Reg 5 */}
+            <div className="p-6 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold text-slate-900 dark:text-white">
+                  OCC Bulletin 2011-12 / SR 11-7 (Tier 3)
+                </span>
+                <span className="text-xs font-bold uppercase tracking-wider text-[#006738] dark:text-emerald-400 bg-[#E8F5E9] dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-[#A7F3D0]">
+                  PASSED
+                </span>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                Output is legally designated as internal operational triage heuristic and administrative drafting, not automated appraisal or underwriting. Client-facing valuation displays are muzzled to prevent lender liability.
+              </p>
+            </div>
+
+            {/* Reg 6 */}
+            <div className="p-6 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold text-slate-900 dark:text-white">
+                  SEI Wealth Platform &amp; SEI Data Cloud
+                </span>
+                <span className="text-xs font-bold uppercase tracking-wider text-[#006738] dark:text-emerald-400 bg-[#E8F5E9] dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-[#A7F3D0]">
+                  PASSED
+                </span>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                Huntington Private Bank integration via SEI Data Cloud (Snowflake Secure Data Sharing Zero-ETL). Verified entity topologies stream directly into Private Bank IPS modeling without legacy on-premise Trust 3000 batch files.
               </p>
             </div>
 

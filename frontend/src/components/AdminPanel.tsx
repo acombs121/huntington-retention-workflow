@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, X, ExternalLink, Palette, FileText, Layers, Server, ShieldCheck, Cpu, User, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Settings, X, ExternalLink, Palette, FileText, Layers, Server, ShieldCheck, Cpu, User, RefreshCw, CheckCircle2, TrendingUp, ArrowRight } from 'lucide-react';
 
 interface SystemHealth {
   status: string;
@@ -20,6 +20,8 @@ export interface AdminPanelProps {
   brandKitUrl?: string;
   demoScriptUrl?: string;
   overviewUrl?: string;
+  citationsUrl?: string;
+  onViewExecutive?: () => void;
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({
@@ -27,6 +29,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   brandKitUrl = '/brand_kit.html',
   demoScriptUrl = '/demo_script.html',
   overviewUrl = '/overview.html',
+  citationsUrl = '/citations.html',
+  onViewExecutive,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [health, setHealth] = useState<SystemHealth | null>(null);
@@ -178,6 +182,45 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       </div>
                       <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-[#006738] transition" />
                     </a>
+
+                    <a
+                      href={citationsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-800 hover:border-[#006738] dark:hover:border-[#006738] bg-slate-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 transition group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-md bg-white dark:bg-slate-700 text-[#006738] shadow-sm">
+                          <ShieldCheck className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="font-semibold text-slate-900 dark:text-white">Citations &amp; Evidence</div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400">Verified SEC filings, statutory safe harbors &amp; benchmarks</div>
+                        </div>
+                      </div>
+                      <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-[#006738] transition" />
+                    </a>
+
+                    {onViewExecutive && (
+                      <button
+                        onClick={() => {
+                          onViewExecutive();
+                          setIsOpen(false);
+                        }}
+                        className="w-full text-left flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-800 hover:border-[#006738] dark:hover:border-[#006738] bg-slate-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 transition group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-md bg-white dark:bg-slate-700 text-[#006738] shadow-sm">
+                            <TrendingUp className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-slate-900 dark:text-white">Executive Analytics &amp; Sensitivity</div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400">ROI model, $1.25M run-rate defense &amp; CRO matrix</div>
+                          </div>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-[#006738] transition" />
+                      </button>
+                    )}
                   </div>
                 </div>
 

@@ -243,6 +243,21 @@
       line-height: 1.6;
       margin-bottom: 2rem;
     }
+    .hero-enterprise-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--hban-green-light);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.5rem;
+    }
+    .hero-enterprise-meta .dot {
+      color: rgba(255, 255, 255, 0.4);
+    }
     .hero-stats-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -764,7 +779,13 @@
       font-weight: 700;
     }
 
-    /* Reg BI Callout */
+    /* Institutional Governance & Guardrails */
+    .guardrail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
     .guardrail-callout {
       background-color: var(--slate-100);
       border: 1px solid var(--slate-300);
@@ -1613,7 +1634,7 @@
           <a href="#demoflow">Operating Workflow</a>
           <a href="#architecture">Architecture</a>
           <a href="#roi">Financial ROI</a>
-          <span class="version-pill">v5.2 Production Enterprise</span>
+          <span class="version-pill">v6.0 Horizon 2.0</span>
         </nav>
         
         <!-- Mandatory Gear Icon Trigger (Cloud Run Demo Skill §1.5) -->
@@ -1631,11 +1652,14 @@
 
     <!-- Hero Section -->
     <section class="hero">
-      <div class="hero-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-        Executive Committee Strategic Operating Model
-      </div>
       <h1>Scaling Huntington's Wealth Management Franchise with Existing Headcount</h1>
+      <div class="hero-enterprise-meta">
+        <span>Top-2 National SBA 7(a) Lender</span>
+        <span class="dot">•</span>
+        <span>1,400 Branches Across 21 States</span>
+        <span class="dot">•</span>
+        <span>SEI Data Cloud &amp; Ameriprise Wealth Ecosystem</span>
+      </div>
       <p class="hero-lead">
         Huntington cannot scale wealth management by asking bankers to work harder. The barrier is physical human capacity against an un-monitorable commercial book. Powered by the <strong>Gemini Enterprise Agent Platform (fka Vertex AI Platform)</strong>, <strong>Huntington Horizon</strong> provides dual-sided capacity leverage—monitoring the entire book, absorbing manual discovery for Commercial RMs, pre-staging onboarding and servicing for Private Wealth Advisors, and safeguarding both taxable cash-out and IRC §1031 exchange liquidity.
       </p>
@@ -1643,19 +1667,19 @@
       <div class="hero-stats-row">
         <div class="hero-stat-card">
           <div class="stat-number">$4.5 Billion</div>
-          <div class="stat-label">Annual CRE & Mid-Market Payoffs</div>
+          <div class="stat-label">Annual CRE &amp; Mid-Market Payoffs</div>
         </div>
         <div class="hero-stat-card">
           <div class="stat-number stat-highlight">~78% Flight</div>
           <div class="stat-label">Deposits Leaving Within 48–72 Hrs</div>
         </div>
         <div class="hero-stat-card">
-          <div class="stat-number">~7 hrs → 4 min</div>
+          <div class="stat-number">~7 hrs &rarr; 4 min</div>
           <div class="stat-label">Commercial RM Discovery Absorbed</div>
         </div>
         <div class="hero-stat-card">
-          <div class="stat-number stat-highlight">80 → 150 Accounts</div>
-          <div class="stat-label">Advisor Ongoing Capacity Expanded</div>
+          <div class="stat-number stat-highlight">80 &rarr; 95–100 Accounts</div>
+          <div class="stat-label">Advisor Capacity (2x CSA Leverage)</div>
         </div>
       </div>
     </section>
@@ -1664,9 +1688,9 @@
     <section id="problem" class="problem-section">
       <div class="section-header">
         <div class="section-eyebrow">Part 1: The Challenge</div>
-        <h2 class="section-title">The Business Problem: A Two-Sided Bottleneck & 1031 Flight</h2>
+        <h2 class="section-title">The Business Problem: A Two-Sided Bottleneck &amp; 1031 Flight</h2>
         <p class="section-desc">
-          Huntington's commercial book experiences $4.5B in annual loan payoffs. Each represents an urgent liquidity event. Today, manual bandwidth limitations across both lines of business create an unavoidable deposit leakage point.
+          Huntington's commercial book experiences $4.5B in annual loan payoffs across its 1,400-branch, 21-state footprint as a top-2 national SBA 7(a) lender. Each payoff represents an urgent liquidity event. Today, manual bandwidth limitations across both commercial banking and wealth management create an unavoidable deposit leakage point.
         </p>
       </div>
 
@@ -1700,7 +1724,7 @@
             <span class="eq-label">Net Liquid Equity</span>
             <span class="eq-val">$2,900,000 Cash Event</span>
           </div>
-          <div class="equation-op">➔</div>
+          <div class="equation-op">&rarr;</div>
           <div class="equation-item">
             <span class="eq-label">Borrower Tax Decision</span>
             <span class="eq-val">40% Cash-Out vs. 60% 1031 Roll</span>
@@ -1722,9 +1746,9 @@
               </div>
               <ul class="fork-steps">
                 <li><strong>The Flight Risk:</strong> Commercial proceeds settle into a low-yielding operating checking account; historical Treasury data proves ~78% wires away to Wall Street wirehouses within 5 business days without proactive intervention.</li>
-                <li><strong>Day 0 Capture:</strong> Horizon pre-stages <strong>Huntington Max$aver ICS</strong> (4.85% APY, multi-million FDIC insurance via IntraFi reciprocal network), securing title wire routing instructions before closing.</li>
+                <li><strong>Day 0 Capture:</strong> Horizon pre-stages <strong>Huntington Business Premier ICS</strong> (4.85% APY, multi-million FDIC insurance via IntraFi reciprocal network), delivering verified routing instructions directly to the borrower via DocuSign before closing.</li>
                 <li><strong>Day 10 Outcome:</strong> Automated fiduciary onboarding into <strong>Huntington SEI Wealth Management</strong>: $2.0M AUM Family Trust + $900k Commercial Operating Reserves.</li>
-                <li><strong>Capacity Impact:</strong> Automated client dossier and ongoing review packs expand Private Wealth Advisor book capacity from <strong>80 to 150 accounts</strong> with zero new headcount.</li>
+                <li><strong>Capacity Impact:</strong> Automated client dossier and ongoing review packs expand Private Wealth Advisor book capacity from <strong>80 to 95–100 accounts</strong> (+20–25%) via 2x CSA operational leverage, routing sub-$3M transactional accounts to the Centralized Wealth Advisory Hub.</li>
               </ul>
             </div>
           </div>
@@ -1744,7 +1768,7 @@
               <ul class="fork-steps">
                 <li><strong>The IRS Rule:</strong> Under Treas. Reg. § 1.1031(k)-1(k), the client <em>cannot touch the funds</em> (constructive receipt voids tax deferral). Huntington cannot act directly as the Qualified Intermediary (QI) due to disqualified person rules.</li>
                 <li><strong>The Flight Risk:</strong> Without an institutional custody integration, 100% of exchange proceeds legally wire out to external third-party exchange accommodators.</li>
-                <li><strong>Horizon Solution:</strong> Horizon detects 1031 intent early in contract riders and routes wire instructions to the <strong>Huntington 1031 Qualified Escrow Depository (Partner QI Network)</strong> under Treas. Reg. § 1.1031(k)-1(g)(3).</li>
+                <li><strong>Horizon Solution:</strong> Horizon detects 1031 intent early in contract riders and routes wire instructions to the <strong>Huntington 1031 Qualified Escrow Depository (Partnered with IPX1031)</strong> under Treas. Reg. § 1.1031(k)-1(g)(3), programmatically firewalling in-house DST securities cross-sell under § 1.1031(k)-1(k).</li>
                 <li><strong>Capacity Impact:</strong> Retains the <strong>$2.9M institutional deposit for 180 days</strong>, delivers 4.75% escrow yield, and pre-qualifies Huntington Commercial Lending to originate the replacement mortgage.</li>
               </ul>
             </div>
@@ -1802,9 +1826,9 @@
       <div class="flight-banner">
         <div class="flight-banner-icon">§</div>
         <div class="flight-banner-text">
-          <h4>The 48–72 Hour Deposit Flight Cliff & Title Wire Routing</h4>
+          <h4>The 48–72 Hour Deposit Flight Cliff &amp; Borrower Settlement Routing</h4>
           <p>
-            When a commercial borrower sells an asset, net equity proceeds ($2M–$10M+) settle into an operating account. Historical Treasury data proves that <strong>~78% of these funds wire out to competitors within 5 business days</strong> unless an immediate, high-yield, FDIC-insured structure (Max$aver ICS or 1031 Qualified Escrow Depository) is pre-staged and delivered to the title company before closing.
+            When a commercial borrower sells an asset, net equity proceeds ($2M–$10M+) settle into an operating account. Historical Treasury data proves that <strong>~78% of these funds wire out to competitors within 5 business days</strong> unless an immediate, high-yield, FDIC-insured structure (Business Premier ICS or 1031 Qualified Escrow Depository) is pre-staged and delivered directly to the borrower via DocuSign to authorize title before closing.
           </p>
         </div>
       </div>
@@ -1855,7 +1879,7 @@
             <tr>
               <td><strong>Commercial RM Discovery</strong></td>
               <td class="badge-today">~6–8 hours per deal across 3 siloed systems</td>
-              <td class="badge-horizon"><strong>~4 minutes total:</strong> Gemini multimodal entity resolution + automated Title Wire Instruction Form</td>
+              <td class="badge-horizon"><strong>~4 minutes total:</strong> Gemini multimodal entity resolution + automated Borrower Settlement Routing Packet</td>
             </tr>
             <tr>
               <td><strong>Messy Real-World Pricing</strong></td>
@@ -1868,27 +1892,59 @@
               <td class="badge-horizon"><strong>Native 1031 Detection:</strong> Automatic routing to Huntington 1031 Qualified Escrow Depository (Partner QI Network, yielding 4.75%)</td>
             </tr>
             <tr>
-              <td><strong>Wealth Advisor Intake & Servicing</strong></td>
+              <td><strong>Wealth Advisor Intake &amp; Servicing</strong></td>
               <td class="badge-today">~4–6 hrs onboarding (2–3 weeks elapsed); capped at 80 clients</td>
-              <td class="badge-horizon"><strong>~3-day onboarding:</strong> Pre-filled KYC/CIP, SEI shell, draft IPS, & ongoing review dossiers expanding capacity to <strong>150 clients</strong></td>
+              <td class="badge-horizon"><strong>~3-day onboarding:</strong> Pre-filled KYC/CIP, SEI Data Cloud shell, draft IPS, &amp; ongoing review dossiers expanding capacity to <strong>95–100 clients (2x CSA leverage)</strong></td>
             </tr>
             <tr>
               <td><strong>Compliance & Risk</strong></td>
               <td class="badge-today">Manual checks; risk of fee-splitting violations or bad credits</td>
-              <td class="badge-horizon"><strong>Exclusion Sentry Tool:</strong> Pass rating (Tier 2), FINRA 2040 100% Shadow Deposit Credit, GLBA Quarantined Consent Gate</td>
+              <td class="badge-horizon"><strong>Exclusion Sentry Tool:</strong> Pass rating (Tier 2), FINRA 2040 100% Deposit FTP Credit, GLBA Quarantined Consent Gate</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Reg BI Guardrail Box -->
-      <div class="guardrail-callout">
-        <div class="guardrail-icon">§</div>
-        <div class="guardrail-text">
-          <h5>Institutional Governance: Reg BI & Fiduciary Boundary</h5>
-          <p>
-            Horizon generates <strong>administrative scaffolding only</strong>. It never renders investment advice or suitability determinations. All pre-filled KYC entries, SEI model portfolios, and draft IPS structures require mandatory review and authorship by licensed Series 7/66/CFP advisors before client presentation.
-          </p>
+      <!-- Institutional Governance & Regulatory Architecture Grid -->
+      <div class="guardrail-grid">
+        <div class="guardrail-callout">
+          <div class="guardrail-icon">&sect;</div>
+          <div class="guardrail-text">
+            <h5>Institutional Governance: Reg BI &amp; Fiduciary Boundary</h5>
+            <p>
+              Horizon generates <strong>administrative scaffolding only</strong>. It never renders investment advice or suitability determinations. Pre-filled KYC entries, SEI model allocations, and draft IPS structures require mandatory review and authorship by licensed Series 7/66/CFP advisors before client presentation.
+            </p>
+          </div>
+        </div>
+
+        <div class="guardrail-callout">
+          <div class="guardrail-icon">R</div>
+          <div class="guardrail-text">
+            <h5>Ameriprise Partnership &amp; Regulation R Networking</h5>
+            <p>
+              Huntington Advisors operates on Ameriprise's broker-dealer platform (announced Feb 4, 2026). The retail channel is a non-affiliated third party for GLBA privacy purposes. The referral program is a strict <strong>Regulation R networking arrangement</strong> (12 CFR Part 218): Commercial RMs receive deposit FTP credit only, with strictly zero securities commissions or fee-splitting under FINRA Rule 2040.
+            </p>
+          </div>
+        </div>
+
+        <div class="guardrail-callout">
+          <div class="guardrail-icon">&#9881;</div>
+          <div class="guardrail-text">
+            <h5>SEI Wealth Platform &amp; Snowflake Zero-ETL Data Cloud</h5>
+            <p>
+              Huntington Private Bank is migrating to the SEI Wealth Platform (announced March 31, 2026). Horizon integrates natively via <strong>SEI Data Cloud via Snowflake Secure Data Sharing (Zero-ETL architecture)</strong>, provisioning custodial shells and synchronizing real-time estate and trust topologies without brittle legacy on-premise Trust 3000 batch files.
+            </p>
+          </div>
+        </div>
+
+        <div class="guardrail-callout">
+          <div class="guardrail-icon">&#9670;</div>
+          <div class="guardrail-text">
+            <h5>ALTA Pillar 2 &amp; UCC 4A Wire Fraud Protection</h5>
+            <p>
+              Commercial lenders lack legal standing to instruct title escrow agents directly. Horizon delivers a formal <strong>DocuSign Settlement Routing Packet</strong> directly to the borrower for seller authorization, backed by Huntington's official bank verification letter and direct telephone callback line at <strong>(614) 480-4401</strong>.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -1941,7 +1997,7 @@
               <div class="step-title">Multimodal Entity Resolution & Guarantor Mapping</div>
               <span class="step-persona persona-agent">Gemini 3.7 Flash</span>
             </div>
-            <p>Powered by the <strong>Gemini Enterprise Agent Platform</strong>, Horizon inspects raw credit documents (Incumbency Certificate & Guaranty Agreement), resolving <code>Vance Riverfront Properties IV, LLC</code> to <strong>Marcus Vance (85%)</strong> and <strong>Elena Vance (15%)</strong> with pixel-level bounding boxes.</p>
+            <p>Powered by the <strong>Gemini Enterprise Agent Platform</strong>, Horizon inspects raw credit documents (Incumbency Certificate &amp; Guaranty Agreement), resolving <code>Vance Riverfront Properties IV, LLC</code> to <strong>Marcus Vance (85%)</strong> and <strong>Elena Vance (15%)</strong> with pixel-level bounding boxes (Elena Vance programmatically excluded from profiling as non-guarantor under GLBA Reg P &amp; FCRA § 604).</p>
             
             <div class="step-dimensions-grid">
               <div class="dim-box">
@@ -1997,16 +2053,16 @@
               <div class="step-title">Automated Risk & Compliance Screening (Exclusion Sentry)</div>
               <span class="step-persona persona-agent">Deterministic Cloud Run Tool</span>
             </div>
-            <p>Before any banker's time is requested, Horizon validates that credit risk is <strong>Pass (Rating 2)</strong> and configures <strong>FINRA Rule 2040 compliance</strong>: RM receives 100% Shadow Deposit Credit on their cost-of-funds scorecard with zero securities fee-splitting.</p>
+            <p>Before any banker's time is requested, Horizon validates that credit risk is <strong>Pass (Rating 2)</strong> and configures <strong>FINRA Rule 2040 compliance</strong>: RM receives 100% Deposit FTP Credit on their cost-of-funds scorecard with zero securities fee-splitting.</p>
             
             <div class="step-dimensions-grid">
               <div class="dim-box">
                 <div class="dim-label">Presenter Action</div>
-                <div class="dim-text">Opens compliance drawer; demonstrates deterministic credit risk checks and non-fee-splitting verification.</div>
+                <div class="dim-text">Navigates to Corporate Governance (CRO Defense); demonstrates deterministic credit risk checks, GLBA DLP sentry, and non-fee-splitting verification.</div>
               </div>
               <div class="dim-box">
                 <div class="dim-label">What is Shown in Demo</div>
-                <div class="dim-text">Green badges for Pass Rating 2, FINRA 2040 Shadow Credit, and GLBA Quarantined Consent Gate.</div>
+                <div class="dim-text">Green badges for Pass Rating 2, FINRA 2040 Deposit FTP Credit, and GLBA Quarantined Consent Gate.</div>
               </div>
               <div class="dim-box">
                 <div class="dim-label">Production Implementation</div>
@@ -2022,23 +2078,23 @@
           <div class="step-content">
             <div class="step-header">
               <span class="step-timing">Day T-12 • 06:45 in Demo</span>
-              <div class="step-title">High-Value Human Call & Title Wire Form Delivery</div>
+              <div class="step-title">High-Value Human Call &amp; Borrower-Directed Routing (ALTA Pillar 2)</div>
               <span class="step-persona persona-rm">Greg Miller (Commercial RM)</span>
             </div>
-            <p>RM Greg Miller places a 4-minute warm call: <em>"Marcus, congratulations on getting Riverfront under contract. Let's make sure that $2.9M net proceeds works immediately for you upon closing. I'd like to bring in Sarah Jenkins to structure our 4.85% Treasury sweep and send First American Title our verified settlement wire instructions."</em> Greg clicks <strong>[Approve & Deliver Wire Form]</strong>.</p>
+            <p>RM Greg Miller places a 4-minute warm call: <em>"Marcus, congratulations on getting Riverfront under contract. Let's make sure that $2.9M net proceeds is safely retained. Under ALTA Pillar 2 wire fraud rules, First American Title requires direct seller authorization. I will deliver our verified Huntington Settlement Routing Packet directly to you via DocuSign so you can authorize title, backed by our official bank verification letter for title's telephone callback authentication on (614) 480-4401."</em> Greg records Marcus's affirmative verbal consent to lift the GLBA Privacy Gate.</p>
             
             <div class="step-dimensions-grid">
               <div class="dim-box">
                 <div class="dim-label">Presenter Action</div>
-                <div class="dim-text">Reviews briefing talk track; clicks [Approve & Deliver Wire Form] to generate title settlement document.</div>
+                <div class="dim-text">Reviews briefing talk track; inspects live DocuSign routing packet; clicks [Record Client Opt-In] to lift GLBA Privacy Gate.</div>
               </div>
               <div class="dim-box">
                 <div class="dim-label">What is Shown in Demo</div>
-                <div class="dim-text">Pre-filled Huntington Verified Wire Instruction Form generated as PDF ready for First American Title.</div>
+                <div class="dim-text">Live DocuSign routing packet (Envelope ENV-HBAN-20260904-8821) with official bank verification letter and callback line (614) 480-4401.</div>
               </div>
               <div class="dim-box">
                 <div class="dim-label">Production Implementation</div>
-                <div class="dim-text">Apigee X API Gateway delivering authenticated payload to title settlement coordination queues.</div>
+                <div class="dim-text">DocuSign REST APIs and Apigee X API Gateway delivering authenticated payload directly to borrower.</div>
               </div>
             </div>
           </div>
@@ -2050,10 +2106,10 @@
           <div class="step-content">
             <div class="step-header">
               <span class="step-timing">Day T-8 • 07:30 in Demo</span>
-              <div class="step-title">Wealth Capacity Leverage: Onboarding & Ongoing Servicing</div>
+              <div class="step-title">Wealth Capacity Leverage: Onboarding &amp; Ongoing Servicing</div>
               <span class="step-persona persona-pwa">Sarah Jenkins (Private Wealth Advisor)</span>
             </div>
-            <p>The demo toggles to Sarah Jenkins. Horizon does not dump a raw lead. It delivers an <strong>80% pre-staged onboarding package</strong> (KYC/CIP, SEI custodial shell, draft IPS) plus an <strong>Automated Quarterly Review Dossier</strong> template—expanding Sarah's client capacity from 80 to 150 relationships.</p>
+            <p>The demo toggles to Sarah Jenkins. Horizon does not dump a raw lead. It delivers an <strong>80% pre-staged onboarding package</strong> (KYC/CIP, SEI Data Cloud custodial shell via Snowflake Zero-ETL, draft IPS scaffolding) plus an <strong>Automated Quarterly Review Dossier</strong> template—expanding Sarah's client capacity from 80 to 95–100 relationships via 2x CSA operational leverage.</p>
             
             <div class="step-dimensions-grid">
               <div class="dim-box">
@@ -2062,11 +2118,11 @@
               </div>
               <div class="dim-box">
                 <div class="dim-label">What is Shown in Demo</div>
-                <div class="dim-text">Pre-filled KYC/CIP entries, staged SEI shell, draft IPS framework, and ongoing review dossier template.</div>
+                <div class="dim-text">Pre-filled KYC/CIP entries, staged SEI Data Cloud shell, draft IPS framework, and ongoing review dossier template.</div>
               </div>
               <div class="dim-box">
                 <div class="dim-label">Production Implementation</div>
-                <div class="dim-text">Apigee X routing to SEI Wealth Platform Gateway; Cloud Spanner persistent household topology.</div>
+                <div class="dim-text">SEI Data Cloud via Snowflake Secure Data Sharing (Zero-ETL); Cloud Spanner persistent household topology.</div>
               </div>
             </div>
           </div>
@@ -2081,7 +2137,7 @@
               <div class="step-title">Dual-Path Deposit Retention: 100% Retained at Closing</div>
               <span class="step-persona persona-client">Client & Treasury Platform</span>
             </div>
-            <p><strong>Path A (Cash Out):</strong> On Day T-0, $2.9M settles directly into Marcus's commercial <strong>Max$aver Insured Cash Sweep (ICS)</strong> yielding 4.85% with multi-million-dollar FDIC insurance. On Day T+10, $2.0M transitions to an SEI discretionary family trust, retaining $900k in commercial liquidity.</p>
+            <p><strong>Path A (Cash Out):</strong> On Day T-0, $2.9M settles directly into Marcus's commercial <strong>Business Premier Insured Cash Sweep (ICS)</strong> yielding 4.85% with multi-million-dollar FDIC insurance. On Day T+10, $2.0M transitions to an SEI discretionary family trust, retaining $900k in commercial liquidity.</p>
             <p><strong>Path B (1031 Exchange):</strong> If 1031 intent is flagged, proceeds route directly into the <strong>Huntington 1031 Qualified Escrow Depository (Partner QI Network)</strong> (yielding 4.75%) under Treas. Reg. § 1.1031(k)-1(g)(3) during the 180-day window.</p>
             
             <div class="step-dimensions-grid">
@@ -2315,15 +2371,21 @@
                 </div>
                 <div class="arch-node">
                   <span class="node-badge badge-cloud">Wealth Platform</span>
-                  <div class="node-title">SEI Wealth Platform Gateway</div>
-                  <div class="node-tech">REST / FIX Integration</div>
-                  <div class="node-desc">Provisions staged account shells, model allocations, and custodial trust accounts.</div>
+                  <div class="node-title">SEI Data Cloud (Snowflake Zero-ETL)</div>
+                  <div class="node-tech">Snowflake Secure Sharing &bull; SEI Gateway</div>
+                  <div class="node-desc">Provisions staged account shells, model allocations, and custodial trust accounts without legacy batch files.</div>
                 </div>
                 <div class="arch-node">
-                  <span class="node-badge badge-cloud">1031 Custody</span>
-                  <div class="node-title">1031 Escrow & DocuSign Gateway</div>
-                  <div class="node-tech">Dual-ID Immutable Log</div>
-                  <div class="node-desc">Delivers Max$aver ICS and 1031 Escrow signature packets, recording tamper-evident audit logs.</div>
+                  <span class="node-badge badge-cloud">Broker-Dealer Network</span>
+                  <div class="node-title">Ameriprise Financial Platform</div>
+                  <div class="node-tech">Regulation R Networking &bull; 12 CFR Part 218</div>
+                  <div class="node-desc">Enforces deposit FTP credit only; strictly firewalls securities fee-splitting under FINRA Rule 2040.</div>
+                </div>
+                <div class="arch-node">
+                  <span class="node-badge badge-cloud">Settlement Integrity</span>
+                  <div class="node-title">ALTA Pillar 2 DocuSign Gateway</div>
+                  <div class="node-tech">DocuSign REST API &bull; Callback (614) 480-4401</div>
+                  <div class="node-desc">Delivers authenticated Borrower Settlement Routing Packet; title verifies via direct banker callback line.</div>
                 </div>
               </div>
             </div>
@@ -2338,7 +2400,7 @@
         <div class="section-eyebrow">Part 5: Financial Justification</div>
         <h2 class="section-title">The Business Case: Sensitivity & Payback</h2>
         <p class="section-desc">
-          Horizon's economics rest on conservative assumptions: a $4.5B annual payoff pool, 78% historical flight rate, a blended 77 bps capture margin (Tier 1 Treasury ICS & 1031 Escrow at 85 bps; Tier 2 Wealth AUM at 65 bps), and an annual enterprise cloud run-rate of $1.25M.
+          Horizon's economics rest on conservative assumptions: a $4.5B annual payoff pool, 78% historical flight rate, a blended 78.0 bps capture margin (65% Tier 1 Treasury ICS &amp; 1031 Escrow at 85 bps; 35% Tier 2 Wealth AUM at 65 bps), and an annual enterprise cloud run-rate of $1.25M.
         </p>
       </div>
 
@@ -2348,7 +2410,7 @@
             <tr>
               <th>Retention Scenario</th>
               <th>Retained Liquidity</th>
-              <th>Blended Value (77 bps)</th>
+              <th>Blended Value (78.0 bps)</th>
               <th>Operating Cost</th>
               <th>Net Annual ROI</th>
               <th>Breakeven Payback</th>
@@ -2358,33 +2420,38 @@
             <tr>
               <td><strong>5% Floor (Ultra-Conservative)</strong></td>
               <td>$225,000,000</td>
-              <td>$1,732,500 / yr</td>
+              <td>$1,755,000 / yr</td>
               <td>($1,250,000)</td>
-              <td class="roi-highlight">+$482,500 / yr</td>
-              <td><strong>8.6 Months</strong></td>
+              <td class="roi-highlight">+$505,000 / yr</td>
+              <td><strong>8.5 Months</strong></td>
             </tr>
             <tr>
               <td><strong>10% Target (Conservative)</strong></td>
               <td>$450,000,000</td>
-              <td>$3,465,000 / yr</td>
+              <td>$3,510,000 / yr</td>
               <td>($1,250,000)</td>
-              <td class="roi-highlight">+$2,215,000 / yr</td>
+              <td class="roi-highlight">+$2,260,000 / yr</td>
               <td><strong>4.3 Months</strong></td>
             </tr>
             <tr>
               <td><strong>15% Goal (Executive Target)</strong></td>
               <td>$675,000,000</td>
-              <td>$5,197,500 / yr</td>
+              <td>$5,265,000 / yr</td>
               <td>($1,250,000)</td>
-              <td class="roi-highlight">+$3,947,500 / yr</td>
+              <td class="roi-highlight">+$4,015,000 / yr</td>
               <td><strong>2.9 Months</strong></td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div style="font-size: 0.85rem; color: var(--slate-500); margin-top: 1rem;">
-        * Note: Capturing 2.5% of at-risk commercial credits from refinancing away represents ~$1.35M in additional preserved commercial loan NIM, treated as un-modeled upside.
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--slate-500); margin-top: 1rem; border-top: 1px solid var(--slate-200); padding-top: 0.75rem;">
+        <div>
+          * Note: Capturing 2.5% of at-risk commercial credits from refinancing away represents ~$1.35M in additional preserved commercial loan NIM, treated as un-modeled upside.
+        </div>
+        <div>
+          <a href="citations.html" target="_blank" style="color: var(--hban-green-dark); font-weight: 700; text-decoration: underline;">View Authoritative Citations &amp; Evidence Registry &rarr;</a>
+        </div>
       </div>
     </section>
 
@@ -2394,14 +2461,14 @@
   <div id="admin-overlay" class="admin-drawer-overlay" onclick="toggleAdminPanel()"></div>
   <div id="admin-drawer" class="admin-drawer">
     <div class="admin-drawer-header">
-      <div class="admin-drawer-title">Horizon Admin & Telemetry</div>
-      <button class="admin-close-btn" onclick="toggleAdminPanel()" aria-label="Close Admin Panel">✕</button>
+      <div class="admin-drawer-title">Horizon Admin &amp; Telemetry</div>
+      <button class="admin-close-btn" onclick="toggleAdminPanel()" aria-label="Close Admin Panel">&times;</button>
     </div>
     <div class="admin-drawer-body">
       
       <!-- Diagnostic Telemetry -->
       <div>
-        <div class="admin-section-label">Runtime Telemetry & Architecture</div>
+        <div class="admin-section-label">Runtime Telemetry &amp; Architecture</div>
         <div class="telemetry-badge-card">
           <div class="telemetry-item">
             <span class="telemetry-key">AI Platform</span>
@@ -2454,9 +2521,15 @@
               <p>Presenter click-path, customer problem, and production implementation mapping.</p>
             </div>
           </a>
+          <a href="citations.html" class="admin-nav-card" target="_blank">
+            <div class="admin-nav-info">
+              <h4>Citations &amp; Evidence Registry &nearr;</h4>
+              <p>Verified SEC filings, statutory safe harbors, and empirical benchmarks.</p>
+            </div>
+          </a>
           <a href="huntington-horizon.pdf" class="admin-nav-card" target="_blank">
             <div class="admin-nav-info">
-              <h4>PRD Specification v5.2 (PDF) ↗</h4>
+              <h4>PRD Specification v6.0 (PDF) &nearr;</h4>
               <p>Full executive blueprint, regulatory boundaries, and financial model.</p>
             </div>
           </a>
@@ -2472,7 +2545,7 @@
       Huntington Bancshares Incorporated • Huntington Horizon Project
     </div>
     <div>
-      Internal Working Document & Cloud Run Monostack Blueprint (Version 5.2) • Dual-Sided Capacity Leverage Thesis
+      Internal Working Document &amp; Cloud Run Monostack Blueprint (Version 6.0 - Horizon 2.0) • Dual-Sided Capacity Leverage Thesis
     </div>
   </footer>
 

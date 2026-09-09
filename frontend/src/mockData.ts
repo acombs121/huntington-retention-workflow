@@ -7,7 +7,10 @@ export const initialCapacityMeter: CapacityMeter = {
   wealth_admin_absorbed_hrs: 18.5,
   active_machine_inferences: 3,
   book_scale_volume: "$4.50 Billion",
-  historical_flight_risk_rate: "78%"
+  historical_flight_risk_rate: "78%",
+  branch_network_count: "1,400 Branches (21 States)",
+  sba_ranking: "Top-2 National SBA 7(a) Lender",
+  csa_leverage_ratio: "2x CSA Leverage (1 CSA : 4 PWAs)"
 };
 
 export const initialPayoffQueue: PayoffItem[] = [
@@ -38,7 +41,10 @@ export const initialPayoffQueue: PayoffItem[] = [
     known_hban_balances: 2100000.00,
     total_hban_position: 5002700.00,
     tax_strategy_detected: "Taxable Cash-Out (1031 Eligible)",
-    status: "Staged for Call"
+    loan_type: "Commercial Real Estate Loan / T-14 Payoff Demand",
+    status: "Staged for Call",
+    managing_member: "Marcus Vance",
+    primary_guarantor: "Marcus Vance"
   },
   {
     id: "PO-2026-7492",
@@ -67,7 +73,10 @@ export const initialPayoffQueue: PayoffItem[] = [
     known_hban_balances: 890000.00,
     total_hban_position: 2478250.00,
     tax_strategy_detected: "IRC Sec. 1031 Exchange (QI Routed)",
-    status: "Document Parsing Complete"
+    loan_type: "SBA 7(a) Commercial Loan / T-120 Surveillance",
+    status: "Document Parsing Complete",
+    managing_member: "Arthur Pendelton",
+    primary_guarantor: "Arthur Pendelton"
   },
   {
     id: "PO-2026-6104",
@@ -96,7 +105,10 @@ export const initialPayoffQueue: PayoffItem[] = [
     known_hban_balances: 1450000.00,
     total_hban_position: 3672600.00,
     tax_strategy_detected: "Taxable Cash-Out",
-    status: "Monitoring Queue"
+    loan_type: "Healthcare Practice Facility Loan / T-45 Watchlist",
+    status: "Monitoring Queue",
+    managing_member: "Dr. Robert Vance, MD",
+    primary_guarantor: "Dr. Robert Vance, MD"
   }
 ];
 
@@ -107,6 +119,7 @@ export const initialEntityResolution: EntityResolutionData = {
   total_pages: 14,
   inspected_page: 11,
   resolution_timestamp: "2026-09-04T14:15:00Z",
+  dlp_status: "PASSED: Consumer credit bureaus, personal 1040s, and FinCEN CDD records purged pre-ingestion under GLBA Reg P & FCRA § 604.",
   borrower_entity: {
     name: "Vance Riverfront Properties IV, LLC",
     jurisdiction: "Ohio Limited Liability Company",
@@ -120,6 +133,7 @@ export const initialEntityResolution: EntityResolutionData = {
       ownership_pct: 85.0,
       is_guarantor: true,
       is_signatory: true,
+      exclusion_status: "Included / Full Commercial Profiling",
       known_hban_accounts: ["Commercial DDA #..4401", "Operating Reserve #..9182"],
       known_hban_balance: 2100000.00,
       bounding_box: {
@@ -132,18 +146,19 @@ export const initialEntityResolution: EntityResolutionData = {
     },
     {
       name: "Elena Vance",
-      role: "Member / Spouse (Joint Household)",
+      role: "Member / 15% Equity Owner (Non-Guarantor)",
       ownership_pct: 15.0,
-      is_guarantor: true,
+      is_guarantor: false,
       is_signatory: false,
-      known_hban_accounts: ["Joint Relationship Profile #JH-7712"],
+      exclusion_status: "Excluded from Wealth Profiling (Non-Guarantor / GLBA Reg P & FCRA § 604)",
+      known_hban_accounts: ["Joint Relationship Profile #JH-7712 (Quarantined)"],
       known_hban_balance: 0.00,
       bounding_box: {
         ymin: 330,
         xmin: 120,
         ymax: 390,
         xmax: 680,
-        text_snippet: "Elena Vance, holding a 15% non-managing Membership Interest, consenting spouse and joint guarantor..."
+        text_snippet: "Elena Vance, holding a 15% non-managing equity interest. Non-guarantor; programmatically excluded from profiling under GLBA Reg P and FCRA § 604."
       }
     },
     {
@@ -152,6 +167,7 @@ export const initialEntityResolution: EntityResolutionData = {
       ownership_pct: 0.0,
       is_guarantor: false,
       is_signatory: false,
+      exclusion_status: "Fiduciary Entity / Staged for Estate Review",
       known_hban_accounts: [],
       known_hban_balance: 0.00,
       bounding_box: {
@@ -169,7 +185,7 @@ export const initialEntityResolution: EntityResolutionData = {
     grounding_source: "Credit Vault Doc #CC-8821 trailing Q1 in-place NOI: $637,500.00",
     submarket_grounding: "Franklin County Q1 2026 Appraisal Benchmark cap rate: 7.50% (grounded dynamically via Vertex AI Search against internal commercial appraisal benchmarks).",
     capitalization_formula: "NOI / Cap Rate = $637,500 / 0.075 = $8,500,000.00 Indicative Triage Valuation.",
-    occ_sr11_7_notice: "Designated strictly as 'Indicative Triage Estimate for Relationship Prioritization' per OCC Bulletin 2011-12 / Fed SR 11-7."
+    occ_sr11_7_notice: "Designated strictly as 'Internal Liquidity Triage Heuristic for Relationship Prioritization' (OCC Bulletin 2011-12 / SR 11-7 Tier 3). Client-facing property valuation muzzled."
   }
 };
 
@@ -183,10 +199,10 @@ export const initialValuation: ValuationData = {
   known_hban_balances: 2100000.00,
   total_resolvable_position: 5002700.00,
   strategy_type: "Taxable Liquidity Event (Cash-Out)",
-  strategy_product: "Huntington Commercial Max$aver Insured Cash Sweep (ICS)",
+  strategy_product: "Huntington Business Premier Insured Cash Sweep (ICS)",
   yield_apy: 4.85,
-  statutory_basis: "12 U.S.C. Sec. 1831f (EGRRCPA Sec. 202 Reciprocal Deposits); Multi-Million FDIC Insurance via IntraFi Network.",
-  routing_destination: "Huntington Max$aver Commercial ICS (Acct: HBAN-ICS-4401)",
+  statutory_basis: "12 U.S.C. Sec. 1831f (EGRRCPA Sec. 202 Reciprocal Deposits); Multi-Million FDIC Insurance via IntraFi Network; Commercial RM Deposit FTP Credit.",
+  routing_destination: "Huntington Business Premier Commercial ICS (Acct: HBAN-ICS-4401)",
   deposit_credit_pct: 100.0,
   finra_rule_2040_compliant: true,
   occ_sr11_7_designation: "Relationship Prioritization Triage Estimate"
@@ -198,7 +214,7 @@ export const initialQuarantineState: QuarantineState = {
   recorded_by: null,
   consent_timestamp: null,
   audit_hash: "SHA256-GLBA-HBAN-99418-PENDING",
-  compliance_notes: "Awaiting Commercial RM verbal opt-in during T-12 client touchpoint per 15 U.S.C. Sec. 6801 (GLBA) and 12 C.F.R. Sec. 1016.11."
+  compliance_notes: "Awaiting Commercial RM verbal opt-in during T-12 client touchpoint per 15 U.S.C. Sec. 6801 (GLBA), 12 C.F.R. Sec. 1016.11, and SEC Regulation R Networking Arrangement (Ameriprise platform)."
 };
 
 export const initialWireInstructions: WireInstructionData = {
@@ -213,62 +229,61 @@ export const initialWireInstructions: WireInstructionData = {
   managing_member: "Marcus Vance",
   bank_name: "The Huntington National Bank",
   aba_routing: "044000024",
-  account_title: "Vance Riverfront Properties IV LLC / Max$aver ICS Sweep",
+  account_title: "Vance Riverfront Properties IV LLC / Business Premier ICS Sweep",
   account_number: "HBAN-4401-9921-00",
-  special_instructions: "Disburse net seller equity directly into Huntington Max$aver ICS Sweep for FDIC passthrough protection.",
+  special_instructions: "Disburse net seller equity directly into Huntington Business Premier ICS Sweep for FDIC passthrough protection. Pre-filled Seller Closing Authorization delivered via DocuSign to borrower with Bank Verification Letter.",
   indicative_net_disbursement: 2902700.00,
   officer_signature: "Greg Miller, Vice President, Commercial Real Estate",
-  officer_contact: "greg.miller@huntington.com | (614) 480-4401"
+  officer_contact: "greg.miller@huntington.com | (614) 480-4401",
+  packet_type: "Borrower Settlement Routing Packet & Official Bank Verification Letter",
+  docusign_envelope_id: "ENV-HBAN-20260904-8821",
+  delivery_channel: "Borrower Direct Execution (DocuSign Envelope) -> Seller Authorization to Title",
+  alta_pillar_2_compliant: true,
+  callback_verification_line: "(614) 480-4401 (Direct Banker Authentication Line)",
+  independent_qi_partner: null
 };
 
 export const initialWealthOnboarding: WealthOnboardingData = {
   status: "Quarantined",
   quarantined: true,
   assigned_pwa: "Sarah Jenkins, CFP, Senior Private Wealth Advisor",
-  target_client: "Marcus Vance (85%) & Elena Vance (15%)",
-  household_id: "HH-VANCE-4401",
+  target_client: "[QUARANTINED] Commercial Guarantor Profile (Affirmative Opt-In Required Under GLBA Reg P & FCRA § 604)",
+  household_id: "HH-QUARANTINED-PENDING-CONSENT",
   staged_kyc_cip: {
-    completion_percentage: 82,
+    completion_percentage: 0,
     verified_fields: [
-      { field: "Full Legal Names", value: "Marcus Vance & Elena Vance", status: "Verified (Commercial Credit File)" },
-      { field: "Entity Structure", value: "Ohio Single-Asset LLC / Vance 2018 Family Trust", status: "Verified (Articles of Org)" },
-      { field: "Taxpayer Identification", value: "EIN on file (Credit Vault #CC-8821)", status: "Verified" },
-      { field: "Residential Address", value: "2410 Bexley Park Rd, Columbus, OH 43209", status: "Verified" },
-      { field: "Primary Banking Source", value: "Huntington Commercial DDA #..4401", status: "Verified" },
-      { field: "Source of Wealth", value: "Commercial Real Estate Disposition (Riverfront Commons)", status: "Pending Closing Settlement" }
+      { field: "Client Nonpublic Personal Information (NPI)", value: "[QUARANTINED - Firewalled at Commercial Bank Perimeter Pending Client Opt-In]", status: "Quarantined" },
+      { field: "Taxpayer Identification & CDD", value: "[QUARANTINED UNDER GLBA REG P & FCRA § 604]", status: "Quarantined" },
+      { field: "Residential & Banking Coordinates", value: "[QUARANTINED - Commercial Credit Vault Firewalled]", status: "Quarantined" }
     ],
     pending_advisor_actions: [
-      "Reg BI Suitability Evaluation",
-      "FINRA Rule 2111 Risk Profile Questionnaire",
-      "Final Wet/Digital Client Signature on Custodial Disclosures"
+      "Commercial RM must document affirmative verbal opt-in consent from primary guarantor",
+      "Execute GLBA Regulation P customer privacy disclosure",
+      "Complete Reg BI Suitability Evaluation & FINRA Rule 2111 Risk Profile Questionnaire"
     ]
   },
   sei_custodial_shell: {
-    shell_id: "SEI-WP-HBAN-99418",
-    account_title: "Marcus Vance & Elena Vance Joint Tenancy with Rights of Survivorship (JTWROS)",
-    custodian: "SEI Private Trust Company / Huntington Wealth Services",
-    clearing_status: "Staged Pending Consent",
+    shell_id: "SEI-WP-HBAN-8821 (Locked)",
+    account_title: "[QUARANTINED] Pending Client Opt-In Consent",
+    custodian: "SEI Wealth Platform (SEI Data Cloud / Snowflake Zero-ETL) / Huntington Private Bank",
+    clearing_status: "Locked Pending Consent (Snowflake Zero-ETL Data Share Quarantined)",
     cash_depository_link: "Huntington National Bank FDIC Pass-Through Sweep"
   },
   draft_ips_scaffolding: {
-    mandate: "Conservative Capital Preservation & Liquidity Bridge",
-    horizon: "Medium-to-Long Term (Post-Disposition)",
-    liquidity_reserve_sleeve: "$500,000 in Ultra-Short Treasury / Huntington ICS",
-    asset_allocation_scaffold: [
-      { asset_class: "Short-Duration Fixed Income & Treasuries", target_pct: 50, rationale: "Capital preservation against reinvestment timeline" },
-      { asset_class: "Dividend Growth & Core Equities", target_pct: 35, rationale: "Inflation hedge & tax-efficient cash flow" },
-      { asset_class: "Sec. 1031 DST Replacement Real Estate", target_pct: 15, rationale: "Tax deferral preservation if Path B chosen" }
-    ],
-    fiduciary_disclaimer: "Draft administrative scaffolding only. Must be authored, reviewed, and finalized by Series 7/66/CFP licensed advisor under Reg BI."
+    mandate: "[WITHHELD PENDING ADVISOR SUITABILITY REVIEW]",
+    horizon: "Unstated",
+    liquidity_reserve_sleeve: "$0.00 (Locked)",
+    asset_allocation_scaffold: [],
+    fiduciary_disclaimer: "Scaffolding withheld. Under SEC Reg BI and GLBA, asset allocation scaffolding is unlocked only after affirmative client opt-in and licensed advisor risk discovery."
   },
   ongoing_servicing_dossier: {
-    annual_reviews_automated: true,
-    advisor_capacity_expansion: "80 relationships -> 150 relationships per PWA",
+    annual_reviews_automated: false,
+    advisor_capacity_expansion: "80 relationships to 95-100 relationships per PWA (2x CSA operational leverage; sub-$3M routed to Centralized Wealth Hub)",
     features: [
-      "Automated Quarterly Portfolio Rebalancing Dossier",
-      "Tax-Loss Harvesting Alerting Engine",
-      "Fiduciary Annual Meeting Preparation Briefing",
-      "Real-time Estate Plan & Trust Topology Sync"
+      "Automated Quarterly Portfolio Rebalancing Dossier (Locked)",
+      "Tax-Loss Harvesting Alerting Engine (Locked)",
+      "Fiduciary Annual Meeting Preparation Briefing (Locked)",
+      "Real-time Estate Plan & Trust Topology Sync via SEI Data Cloud (Locked)"
     ]
   }
 };

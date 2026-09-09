@@ -6,12 +6,14 @@ interface PayoffPipelineViewProps {
   items: PayoffItem[];
   selectedId: string;
   onSelectDeal: (id: string) => void;
+  onViewExecutive?: () => void;
 }
 
 export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
   items,
   selectedId,
   onSelectDeal,
+  onViewExecutive,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterMode, setFilterMode] = useState<'all' | 'high_urgency' | 'pass_tier'>('all');
@@ -23,7 +25,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
       item.id.toLowerCase().includes(searchTerm.toLowerCase());
 
     if (!matchesSearch) return false;
-    if (filterMode === 'high_urgency') return item.days_to_close <= 14;
+    if (filterMode === 'high_urgency') return item.days_to_close > 0 && item.days_to_close <= 14;
     if (filterMode === 'pass_tier') return item.credit_risk_rating.toLowerCase().includes('pass');
     return true;
   });
@@ -37,14 +39,34 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
       <div className="border-b border-slate-200 dark:border-slate-800 pb-10">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
           <div className="max-w-3xl space-y-3">
-            <span className="text-xs uppercase font-bold tracking-widest text-[#006738] dark:text-emerald-400 block">
-              Commercial Banking &bull; Liquidity Surveillance
-            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs uppercase font-bold tracking-widest text-[#006738] dark:text-emerald-400 block">
+                Commercial Banking &bull; Liquidity Surveillance
+              </span>
+              <span className="text-slate-300 dark:text-slate-700">&bull;</span>
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                1,400 Branches (21 States)
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-[#E8F5E9] dark:bg-emerald-950/60 text-[#006738] dark:text-emerald-300 border border-[#A7F3D0] dark:border-emerald-800">
+                Top-2 SBA 7(a) Lender
+              </span>
+              {onViewExecutive && (
+                <>
+                  <span className="text-slate-300 dark:text-slate-700">&bull;</span>
+                  <button
+                    onClick={onViewExecutive}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-white dark:bg-slate-800 text-[#006738] dark:text-[#A7F3D0] border border-slate-200 dark:border-slate-700 hover:border-[#006738] transition shadow-xs"
+                  >
+                    <span>Executive ROI &amp; Governance &rarr;</span>
+                  </button>
+                </>
+              )}
+            </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
               Commercial Payoff Pipeline
             </h1>
             <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
-              Surveillance on active payoff demands, upcoming loan maturities, and deposit retention opportunities across Huntington commercial relationships.
+              Dual-horizon surveillance tracking T-120 loan maturities, tenant estoppel requests, and inbound title payoff demands across Huntington commercial relationships.
             </p>
           </div>
 
@@ -141,14 +163,14 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
               {filteredItems.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 px-6 text-center text-slate-500 dark:text-slate-400 text-sm">
+                  <td colSpan={6} className="py-12 px-6 text-center text-slate-500 dark:text-slate-400 text-sm">
                     No commercial payoff events match the active filter criteria.
                   </td>
                 </tr>
               ) : (
                 filteredItems.map((item) => {
                   const isSelected = item.id === selectedId;
-                  const isUrgent = item.days_to_close <= 2;
+                  const isUrgent = item.days_to_close > 0 && item.days_to_close <= 14;
 
                 return (
                   <tr
@@ -167,11 +189,16 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
                           <Building2 className="w-5 h-5" />
                         </div>
                         <div>
-                          <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2.5 text-base">
+                          <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2.5 text-base flex-wrap">
                             <span>{item.borrower_entity}</span>
                             {item.id === 'PO-2026-8821' && (
                               <span className="px-2.5 py-0.5 rounded-full text-xs uppercase font-bold tracking-wider bg-[#E8F5E9] dark:bg-emerald-950/60 text-[#006738] dark:text-emerald-300 border border-[#A7F3D0] dark:border-emerald-800">
                                 Intercepted
+                              </span>
+                            )}
+                            {item.loan_type && (
+                              <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                {item.loan_type}
                               </span>
                             )}
                           </div>

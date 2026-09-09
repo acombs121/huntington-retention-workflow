@@ -50,7 +50,7 @@ Horizon gives a **fixed team the reach of a much larger one** by having an intel
 │ • Identifies 1031 vs Cash    │ • Pre-fills KYC, SEI shell, IPS  │ • Ongoing servicing automated │
 │ • Manual work never staffed  │ • Quarantines pending consent    │ • Same headcount, larger book │
 └────────────────[Dual Retention Shield] ◄── [RM Call & Wire Form (T-12)] ◄── [Qualified Queue + Quarantined Staging]
- ├─ Taxable: Max$aver ICS        (~4 min call)                     │
+ ├─ Taxable: Business Premier ICS (~4 min call)                     │
  └─ 1031: Qualified Escrow Depository                              ▼
                                                 [PWA Onboarding & Ongoing Servicing]
                                                 (KYC, SEI Shell, IPS, Quarterly Dossiers)
@@ -103,15 +103,11 @@ Horizon gives a **fixed team the reach of a much larger one** by having an intel
 
 ### Step 7: Dual-Path Liquidity Retention Activation (Day T-0 to T+10)
 * **Path A (Taxable Cash Out — Marcus Vance Scenario):**
-  - **Day T-2:** Marcus executes the DocuSign pre-onboarding packet for the **Huntington Max$aver ICS Sweep**.
-  - **Day T-0 (Closing):** Wire settles directly into Marcus's commercial Max$aver account backed by **Insured Cash Sweep (ICS)**, providing multi-million-dollar FDIC insurance and 4.85% yield. **The 48-hour flight trigger is completely neutralized on Day 0.**
+  - **Day T-2:** Marcus executes the DocuSign pre-onboarding packet for the **Huntington Business Premier ICS Sweep**.
+  - **Day T-0 (Closing):** Wire settles directly into Marcus's commercial Business Premier ICS account backed by **Insured Cash Sweep (ICS)**, providing multi-million-dollar FDIC insurance and 4.85% yield. **The 48-hour flight trigger is completely neutralized on Day 0.**
   - **Day T+10 (Wealth Advisory):** With liquidity secured, Sarah completes full fiduciary discovery. Marcus transitions $2.0M into his discretionary **SEI Wealth Platform** Family Trust account, leaving $900k in commercial operating reserves.
 * **Path B (IRC §1031 Exchange Alternate Path):**
-  - If Marcus flags 1031 intent, funds cannot touch Max$aver. Horizon routes the wire instructions to the **Huntington 1031 Qualified Escrow Depository (Partner QI Network)** under Treas. Reg. § 1.1031(k)-1(g)(3).
-  - Proceeds are held under institutional escrow yielding 4.75% during the statutory 45-day identification / 180-day closing window, while referring Marcus to Huntington's **Delaware Statutory Trust (DST) / 1031 Advisory Desk**—retaining $2.9M in institutional deposits that would otherwise be wired to external exchange accommodators.*
-  - **Day T+10 (Wealth Advisory):** With liquidity secured, Sarah completes full fiduciary discovery. Marcus transitions $2.0M into his discretionary **SEI Wealth Platform** Family Trust account, leaving $900k in commercial operating reserves.
-* **Path B (IRC §1031 Exchange Alternate Path):**
-  - If Marcus flags 1031 intent, funds cannot touch Max$aver. Horizon routes the wire instructions to the **Huntington 1031 Qualified Intermediary (QI) Escrow Custody Account**.
+  - If Marcus flags 1031 intent, funds cannot touch Business Premier ICS. Horizon routes the wire instructions to the **Huntington 1031 Qualified Escrow Depository (Partner QI Network)** under Treas. Reg. § 1.1031(k)-1(g)(3).
   - Proceeds are held under institutional escrow yielding 4.75% during the statutory 45-day identification / 180-day closing window, while referring Marcus to Huntington's **Delaware Statutory Trust (DST) / 1031 Advisory Desk**—retaining $2.9M in institutional deposits that would otherwise be wired to external exchange accommodators.
 
 ---
@@ -185,7 +181,7 @@ Rather than running multi-hop OCR through Document AI and passing text dumps to 
 The LLM is strictly confined to unstructured document understanding, contextual planning, and narrative drafting. All financial arithmetic and regulatory filtering are executed by deterministic code:
 * `CalculatorTool.compute_payoff()`: Calculates exact UPB per diem interest based on contractual day counts.
 * `CalculatorTool.capitalize_noi()`: Computes indicative valuation (NOI ÷ cap rate) and net equity proceeds; inputs are grounded by Vertex AI Search, arithmetic is executed by deterministic code.
-* `TenThirtyOneDetectorTool.evaluate()`: Scans title exhibits for Section 1031 exchange provisions, toggling the settlement routing between Max$aver ICS and QI Escrow Custody.
+* `TenThirtyOneDetectorTool.evaluate()`: Scans title exhibits for Section 1031 exchange provisions, toggling the settlement routing between Business Premier ICS and QI Escrow Custody.
 * `ExclusionSentryTool.screen()`: Evaluates objective regulatory risk ratings and minimum liquidity hurdles under strict ECOA/Reg B deterministic parameters.
 
 ### 4.3 Cloud Run Prototype Monostack & Security Implementation

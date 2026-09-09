@@ -90,7 +90,7 @@ def get_default_quarantine(payoff_id: str) -> Dict[str, Any]:
         "recorded_by": None,
         "consent_timestamp": None,
         "audit_hash": f"SHA256-GLBA-HBAN-{payoff_id}-PENDING",
-        "compliance_notes": f"Awaiting Commercial RM verbal opt-in for {payoff_id} per 15 U.S.C. § 6801 (GLBA) and 12 C.F.R. § 1016.11."
+        "compliance_notes": f"Awaiting Commercial RM verbal opt-in for {payoff_id} per 15 U.S.C. § 6801 (GLBA), 12 C.F.R. § 1016.11, and SEC Regulation R Networking Arrangement (Ameriprise platform)."
     }
 
 quarantine_states: Dict[str, Dict[str, Any]] = {
@@ -129,6 +129,7 @@ PAYOFF_QUEUE = [
         "managing_member": "Marcus Vance",
         "primary_guarantor": "Marcus Vance",
         "tax_strategy_detected": "Taxable Cash-Out (1031 Eligible)",
+        "loan_type": "Commercial Real Estate Loan / T-14 Payoff Demand",
         "status": "Staged for Call"
     },
     {
@@ -157,9 +158,10 @@ PAYOFF_QUEUE = [
         "estimated_net_equity": 1588250.00,
         "known_hban_balances": 890000.00,
         "total_hban_position": 2478250.00,
-        "managing_member": "Thomas Buckeye",
-        "primary_guarantor": "Thomas Buckeye",
+        "managing_member": "Arthur Pendelton",
+        "primary_guarantor": "Arthur Pendelton",
         "tax_strategy_detected": "IRC §1031 Exchange (QI Routed)",
+        "loan_type": "SBA 7(a) Commercial Loan / T-120 Surveillance",
         "status": "Document Parsing Complete"
     },
     {
@@ -191,16 +193,19 @@ PAYOFF_QUEUE = [
         "managing_member": "Dr. Robert Miller",
         "primary_guarantor": "Dr. Robert Miller",
         "tax_strategy_detected": "Taxable Cash-Out",
+        "loan_type": "Healthcare Practice Facility Loan / T-45 Watchlist",
         "status": "Monitoring Queue"
     }
 ]
 
 
 def get_payoff_by_id(payoff_id: str) -> PayoffStatement:
-    """Adapts in-memory payoff queue items to the canonical PayoffStatement domain model with safe fallback."""
+    """Adapts in-memory payoff queue items to the canonical PayoffStatement domain model."""
     if not PAYOFF_QUEUE:
         raise HTTPException(status_code=404, detail="Payoff queue is empty")
-    raw = next((p for p in PAYOFF_QUEUE if p["id"] == payoff_id), PAYOFF_QUEUE[0])
+    raw = next((p for p in PAYOFF_QUEUE if p["id"] == payoff_id), None)
+    if not raw:
+        raise HTTPException(status_code=404, detail=f"Payoff deal '{payoff_id}' not found.")
     return PayoffStatement(**{k: v for k, v in raw.items() if k in PayoffStatement.model_fields})
 
 
@@ -221,10 +226,10 @@ class GenerateResponse(BaseModel):
 class ValuationRequest(BaseModel):
     payoff_id: Optional[str] = Field(default="PO-2026-8821")
     sale_price: float = Field(default=8500000.00, ge=500000.00, le=50000000.00)
-    noi: float = Field(default=637500.00)
-    cap_rate: float = Field(default=0.075)
-    debt_payoff: float = Field(default=5214800.00)
-    closing_cost_rate: float = Field(default=0.045)
+    noi: float = Field(default=637500.00, gt=0)
+    cap_rate: float = Field(default=0.075, gt=0, le=1.0)
+    debt_payoff: float = Field(default=5214800.00, ge=0)
+    closing_cost_rate: float = Field(default=0.045, ge=0, le=1.0)
     tax_strategy: str = Field(default="cash_out", pattern="^(cash_out|1031_exchange)$")
 
 class ValuationResponse(BaseModel):
@@ -249,7 +254,7 @@ class QuarantineToggleRequest(BaseModel):
     payoff_id: Optional[str] = "PO-2026-8821"
     verbal_consent_recorded: bool
     recorded_by: str = "Greg Miller (Commercial RM)"
-    client_notes: Optional[str] = "Borrower affirmed willingness to review Huntington Max$aver ICS and Private Wealth advisory options."
+    client_notes: Optional[str] = "Borrower affirmed willingness to review Huntington Business Premier ICS and Private Wealth advisory options."
 
 
 # =====================================================================
@@ -265,7 +270,7 @@ async def health_check() -> Dict[str, Any]:
         "region": gcp_region,
         "model": gemini_model,
         "service": "huntington-horizon",
-        "version": "5.2.0",
+        "version": "6.0.0",
         "iap_native": True,
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
@@ -298,7 +303,10 @@ async def get_payoff_queue(
             "wealth_admin_absorbed_hrs": 18.5,
             "active_machine_inferences": 3,
             "book_scale_volume": "$4.50 Billion",
-            "historical_flight_risk_rate": "78%"
+            "historical_flight_risk_rate": "78%",
+            "branch_network_count": "1,400 Branches (21 States)",
+            "sba_ranking": "Top-2 National SBA 7(a) Lender",
+            "csa_leverage_ratio": "2x CSA Leverage (1 CSA : 4 PWAs)"
         },
         "payoff_items": items
     }
@@ -313,7 +321,9 @@ async def get_entity_resolution(
     Provides Gemini 3.7 Flash multimodal document extraction returning
     borrower-specific LLC ownership topology, bounding boxes, and document grounding.
     """
-    deal = next((p for p in PAYOFF_QUEUE if p["id"] == payoff_id), PAYOFF_QUEUE[0])
+    deal = next((p for p in PAYOFF_QUEUE if p["id"] == payoff_id), None)
+    if not deal:
+        raise HTTPException(status_code=404, detail=f"Payoff deal '{payoff_id}' not found.")
     now_iso = datetime.now(timezone.utc).isoformat()
 
     if deal["id"] == "PO-2026-7492":
@@ -324,6 +334,7 @@ async def get_entity_resolution(
             "total_pages": 18,
             "inspected_page": 8,
             "resolution_timestamp": now_iso,
+            "dlp_status": "PASSED: Corporate credit agreement; personal financial records and consumer credit data purged pre-ingestion under GLBA Reg P & FCRA § 604.",
             "borrower_entity": {
                 "name": deal["borrower_entity"],
                 "jurisdiction": "Ohio Corporation",
@@ -337,6 +348,7 @@ async def get_entity_resolution(
                     "ownership_pct": 70.0,
                     "is_guarantor": True,
                     "is_signatory": True,
+                    "exclusion_status": "Included / Full Commercial Profiling",
                     "known_hban_accounts": ["Commercial DDA #..1102", "Treasury Repo #..7721"],
                     "known_hban_balance": deal["known_hban_balances"],
                     "bounding_box": {
@@ -350,6 +362,7 @@ async def get_entity_resolution(
                     "ownership_pct": 30.0,
                     "is_guarantor": True,
                     "is_signatory": True,
+                    "exclusion_status": "Included / Full Commercial Profiling",
                     "known_hban_accounts": ["Commercial Savings #..3309"],
                     "known_hban_balance": 0.00,
                     "bounding_box": {
@@ -375,6 +388,7 @@ async def get_entity_resolution(
             "total_pages": 12,
             "inspected_page": 5,
             "resolution_timestamp": now_iso,
+            "dlp_status": "PASSED: Medical facility credit agreement; physician personal credit data purged pre-ingestion under GLBA Reg P & FCRA § 604.",
             "borrower_entity": {
                 "name": deal["borrower_entity"],
                 "jurisdiction": "Ohio Limited Liability Company",
@@ -388,6 +402,7 @@ async def get_entity_resolution(
                     "ownership_pct": 55.0,
                     "is_guarantor": True,
                     "is_signatory": True,
+                    "exclusion_status": "Included / Full Commercial Profiling",
                     "known_hban_accounts": ["Medical Practice Operating DDA #..9012"],
                     "known_hban_balance": deal["known_hban_balances"],
                     "bounding_box": {
@@ -401,6 +416,7 @@ async def get_entity_resolution(
                     "ownership_pct": 45.0,
                     "is_guarantor": True,
                     "is_signatory": False,
+                    "exclusion_status": "Included / Full Commercial Profiling",
                     "known_hban_accounts": ["Physician Reserve #..8814"],
                     "known_hban_balance": 0.00,
                     "bounding_box": {
@@ -427,6 +443,7 @@ async def get_entity_resolution(
         "total_pages": 14,
         "inspected_page": 11,
         "resolution_timestamp": now_iso,
+        "dlp_status": "PASSED: Consumer credit bureaus, personal 1040s, and FinCEN CDD records purged pre-ingestion under GLBA Reg P & FCRA § 604.",
         "borrower_entity": {
             "name": deal["borrower_entity"],
             "jurisdiction": "Ohio Limited Liability Company",
@@ -440,6 +457,7 @@ async def get_entity_resolution(
                 "ownership_pct": 85.0,
                 "is_guarantor": True,
                 "is_signatory": True,
+                "exclusion_status": "Included / Full Commercial Profiling",
                 "known_hban_accounts": ["Commercial DDA #..4401", "Operating Reserve #..9182"],
                 "known_hban_balance": deal["known_hban_balances"],
                 "bounding_box": {
@@ -449,15 +467,16 @@ async def get_entity_resolution(
             },
             {
                 "name": "Elena Vance",
-                "role": "Member / Spouse (Joint Household)",
+                "role": "Member / 15% Equity Owner (Non-Guarantor)",
                 "ownership_pct": 15.0,
-                "is_guarantor": True,
+                "is_guarantor": False,
                 "is_signatory": False,
-                "known_hban_accounts": ["Joint Relationship Profile #JH-7712"],
+                "exclusion_status": "Excluded from Wealth Profiling (Non-Guarantor / GLBA Reg P & FCRA § 604)",
+                "known_hban_accounts": ["Joint Relationship Profile #JH-7712 (Quarantined)"],
                 "known_hban_balance": 0.00,
                 "bounding_box": {
                     "ymin": 330, "xmin": 120, "ymax": 390, "xmax": 680,
-                    "text_snippet": "Elena Vance, holding a 15% non-managing Membership Interest, consenting spouse and joint guarantor..."
+                    "text_snippet": "Elena Vance, holding a 15% non-managing equity interest. Non-guarantor; programmatically excluded from profiling under GLBA Reg P and FCRA § 604."
                 }
             },
             {
@@ -466,6 +485,7 @@ async def get_entity_resolution(
                 "ownership_pct": 0.0,
                 "is_guarantor": False,
                 "is_signatory": False,
+                "exclusion_status": "Fiduciary Entity / Staged for Estate Review",
                 "known_hban_accounts": [],
                 "known_hban_balance": 0.00,
                 "bounding_box": {
@@ -480,7 +500,7 @@ async def get_entity_resolution(
             "grounding_source": f"Credit Vault Doc #CC-8821 trailing Q1 in-place NOI: ${deal['noi_trailing_q1']:,.2f}",
             "submarket_grounding": f"Franklin County Q1 2026 Appraisal Benchmark cap rate: {deal['submarket_cap_rate']*100:.2f}%.",
             "capitalization_formula": f"NOI ÷ Cap Rate = ${deal['noi_trailing_q1']:,.2f} ÷ {deal['submarket_cap_rate']} = ${deal['indicative_valuation']:,.2f} Indicative Triage Valuation.",
-            "occ_sr11_7_notice": "Designated strictly as 'Indicative Triage Estimate for Relationship Prioritization' per OCC Bulletin 2011-12 / Fed SR 11-7."
+            "occ_sr11_7_notice": "Designated strictly as 'Internal Liquidity Triage Heuristic for Relationship Prioritization' (OCC Bulletin 2011-12 / SR 11-7 Tier 3). Client-facing property valuation muzzled."
         }
     }
 
@@ -515,6 +535,7 @@ async def get_quarantine_status(
     user: Dict[str, Any] = Depends(get_authenticated_user)
 ) -> Dict[str, Any]:
     """Returns the current status of the GLBA Quarantined Consent Gate for a specific deal."""
+    get_payoff_by_id(payoff_id)
     if payoff_id not in quarantine_states:
         quarantine_states[payoff_id] = get_default_quarantine(payoff_id)
     return quarantine_states[payoff_id]
@@ -530,6 +551,7 @@ async def toggle_quarantine_status(
     unlocking the staged wealth management onboarding package.
     """
     target_id = req.payoff_id or "PO-2026-8821"
+    get_payoff_by_id(target_id)
     now_iso = datetime.now(timezone.utc).isoformat()
     
     if req.verbal_consent_recorded:
@@ -552,8 +574,8 @@ async def toggle_quarantine_status(
 @app.get("/api/wire-instructions")
 async def get_wire_instructions(
     payoff_id: str = Query("PO-2026-8821"),
-    strategy: str = Query("cash_out"),
-    sale_price: float = Query(8500000.00),
+    strategy: str = Query("cash_out", pattern="^(cash_out|1031_exchange)$"),
+    sale_price: float = Query(8500000.00, gt=0),
     user: Dict[str, Any] = Depends(get_authenticated_user)
 ) -> Dict[str, Any]:
     """
@@ -579,21 +601,73 @@ async def get_wealth_onboarding_dossier(
     KYC/CIP, SEI Custodial Shell, Draft IPS framework, and Automated Quarterly Review Dossier.
     """
     payoff = get_payoff_by_id(payoff_id)
+    if not payoff.credit_risk_rating.lower().startswith("pass"):
+        raise HTTPException(
+            status_code=422,
+            detail=f"Wealth onboarding rejected: Loan risk rating '{payoff.credit_risk_rating}' violates OCC SR 11-7 model risk governance (Pass rating required)."
+        )
     q_state = quarantine_states.get(payoff_id, get_default_quarantine(payoff_id))
     is_quarantined = q_state.get("quarantined", True)
     pwa_title = f"{payoff.assigned_pwa}, CFP, Senior Private Wealth Advisor" if payoff.assigned_pwa else "Sarah Jenkins, CFP, Senior Private Wealth Advisor"
 
+    if is_quarantined:
+        return {
+            "status": "Quarantined",
+            "quarantined": True,
+            "payoff_id": payoff_id,
+            "assigned_pwa": pwa_title,
+            "target_client": "[QUARANTINED] Commercial Guarantor Profile (Affirmative Opt-In Required Under GLBA Reg P & FCRA § 604)",
+            "household_id": "HH-QUARANTINED-PENDING-CONSENT",
+            "staged_kyc_cip": {
+                "completion_percentage": 0,
+                "verified_fields": [
+                    {"field": "Client Nonpublic Personal Information (NPI)", "value": "[QUARANTINED - Firewalled at Commercial Bank Perimeter Pending Client Opt-In]", "status": "Quarantined"},
+                    {"field": "Taxpayer Identification & CDD", "value": "[QUARANTINED UNDER GLBA REG P & FCRA § 604]", "status": "Quarantined"},
+                    {"field": "Residential & Banking Coordinates", "value": "[QUARANTINED - Commercial Credit Vault Firewalled]", "status": "Quarantined"}
+                ],
+                "pending_advisor_actions": [
+                    "Commercial RM must document affirmative verbal opt-in consent from primary guarantor",
+                    "Execute GLBA Regulation P customer privacy disclosure",
+                    "Complete Reg BI Suitability Evaluation & FINRA Rule 2111 Risk Profile Questionnaire"
+                ]
+            },
+            "sei_custodial_shell": {
+                "shell_id": f"SEI-WP-HBAN-{payoff_id.split('-')[-1]} (Locked)",
+                "account_title": "[QUARANTINED] Pending Client Opt-In Consent",
+                "custodian": "SEI Wealth Platform (SEI Data Cloud / Snowflake Zero-ETL) / Huntington Private Bank",
+                "clearing_status": "Locked Pending Consent (Snowflake Zero-ETL Data Share Quarantined)",
+                "cash_depository_link": "Huntington National Bank FDIC Pass-Through Sweep"
+            },
+            "draft_ips_scaffolding": {
+                "mandate": "[WITHHELD PENDING ADVISOR SUITABILITY REVIEW]",
+                "horizon": "Unstated",
+                "liquidity_reserve_sleeve": "$0.00 (Locked)",
+                "asset_allocation_scaffold": [],
+                "fiduciary_disclaimer": "Scaffolding withheld. Under SEC Reg BI and GLBA, asset allocation scaffolding is unlocked only after affirmative client opt-in and licensed advisor risk discovery."
+            },
+            "ongoing_servicing_dossier": {
+                "annual_reviews_automated": False,
+                "advisor_capacity_expansion": "80 relationships to 95-100 relationships per PWA (2x CSA operational leverage; sub-$3M routed to Centralized Wealth Hub)",
+                "features": [
+                    "Automated Quarterly Portfolio Rebalancing Dossier (Locked)",
+                    "Tax-Loss Harvesting Alerting Engine (Locked)",
+                    "Fiduciary Annual Meeting Preparation Briefing (Locked)",
+                    "Real-time Estate Plan & Trust Topology Sync via SEI Data Cloud (Locked)"
+                ]
+            }
+        }
+
     return {
-        "status": "Quarantined" if is_quarantined else "Active / Ready for Advisor Authorship",
-        "quarantined": is_quarantined,
+        "status": "Active / Ready for Advisor Authorship",
+        "quarantined": False,
         "payoff_id": payoff_id,
         "assigned_pwa": pwa_title,
-        "target_client": f"{payoff.primary_guarantor} (85%) & Co-Guarantors (15%)",
+        "target_client": f"{payoff.primary_guarantor} (Non-guarantor co-owners excluded pending affirmative opt-in)",
         "household_id": f"HH-{payoff.borrower_entity[:8].replace(' ', '').upper()}-4401",
         "staged_kyc_cip": {
             "completion_percentage": 82,
             "verified_fields": [
-                {"field": "Full Legal Names", "value": f"{payoff.primary_guarantor} & Spouse", "status": "Verified (Commercial Credit File)"},
+                {"field": "Full Legal Names", "value": f"{payoff.primary_guarantor} (Guarantor Profile)", "status": "Verified (Commercial Credit File)"},
                 {"field": "Entity Structure", "value": f"{payoff.borrower_entity} / Family Trust", "status": "Verified (Articles of Org)"},
                 {"field": "Taxpayer Identification", "value": "EIN on file (Commercial Credit Vault)", "status": "Verified"},
                 {"field": "Residential Address", "value": f"Guarantor File: {payoff.primary_guarantor}, Columbus, OH", "status": "Verified"},
@@ -608,9 +682,9 @@ async def get_wealth_onboarding_dossier(
         },
         "sei_custodial_shell": {
             "shell_id": f"SEI-WP-HBAN-{payoff_id.split('-')[-1]}",
-            "account_title": f"{payoff.primary_guarantor} Joint Tenancy with Rights of Survivorship (JTWROS)",
-            "custodian": "SEI Private Trust Company / Huntington Wealth Services",
-            "clearing_status": "Staged Pending Consent" if is_quarantined else "Active Staged Shell",
+            "account_title": f"{payoff.primary_guarantor} Individual Wealth Management Account (SEI Data Cloud)",
+            "custodian": "SEI Wealth Platform (SEI Data Cloud / Snowflake Zero-ETL) / Huntington Private Bank",
+            "clearing_status": "Active Staged Shell (Snowflake Zero-ETL Connected)",
             "cash_depository_link": "Huntington National Bank FDIC Pass-Through Sweep"
         },
         "draft_ips_scaffolding": {
@@ -620,18 +694,18 @@ async def get_wealth_onboarding_dossier(
             "asset_allocation_scaffold": [
                 {"asset_class": "Short-Duration Fixed Income & Treasuries", "target_pct": 50, "rationale": "Capital preservation against reinvestment timeline"},
                 {"asset_class": "Dividend Growth & Core Equities", "target_pct": 35, "rationale": "Inflation hedge & tax-efficient cash flow"},
-                {"asset_class": "1031 DST Replacement Commercial Real Estate", "target_pct": 15, "rationale": "Tax deferral preservation if Path B chosen"}
+                {"asset_class": "Direct Real Assets & Infrastructure Sleeve", "target_pct": 15, "rationale": "Inflation hedge & income; in-house DST securities firewalled per IRC § 1031 safe harbor"}
             ],
             "fiduciary_disclaimer": "Draft administrative scaffolding only. Must be authored, reviewed, and finalized by Series 7/66/CFP licensed advisor under Reg BI."
         },
         "ongoing_servicing_dossier": {
             "annual_reviews_automated": True,
-            "advisor_capacity_expansion": "80 relationships to 150 relationships per PWA",
+            "advisor_capacity_expansion": "80 relationships to 95-100 relationships per PWA (2x CSA operational leverage; sub-$3M routed to Centralized Wealth Hub)",
             "features": [
                 "Automated Quarterly Portfolio Rebalancing Dossier",
                 "Tax-Loss Harvesting Alerting Engine",
                 "Fiduciary Annual Meeting Preparation Briefing",
-                "Real-time Estate Plan & Trust Topology Sync"
+                "Real-time Estate Plan & Trust Topology Sync via SEI Data Cloud"
             ]
         }
     }
@@ -669,8 +743,9 @@ async def generate_agent_response(
             "from First American Title this morning. Before Karen finalizes the disbursement instructions, I wanted to "
             "make sure your proceeds are sheltered. Depending on whether you're taking taxable cash-out or executing an "
             "IRC §1031 exchange, we have Huntington Treasury ICS yielding 4.85% with multi-million FDIC insurance, or our "
-            "1031 Qualified Escrow Depository yielding 4.75% so you don't breach constructive receipt. Let me send over "
-            "our pre-filled Settlement Wire Instructions directly to First American Title.'"
+            "1031 Qualified Escrow Depository partnered with IPX1031 yielding 4.75% so you don't breach constructive receipt. "
+            "I'll deliver our verified Settlement Account Routing Packet directly to you via DocuSign so you can authorize "
+            "First American Title, backed by our official bank verification letter for title's telephone callback authentication.'"
         )
         return GenerateResponse(
             response=script,

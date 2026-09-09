@@ -21,8 +21,9 @@ export const WealthQueueView: React.FC<WealthQueueViewProps> = ({
 }) => {
   const isUnlocked = !quarantineState.quarantined;
   const clientName = wealthOnboarding?.target_client
-    ? wealthOnboarding.target_client.replace(' (85%) & Co-Guarantors (15%)', '')
-    : deal?.primary_guarantor || 'Marcus Vance & Elena Vance';
+    ? wealthOnboarding.target_client.split('(')[0].trim()
+    : deal?.primary_guarantor || 'Marcus Vance';
+
   const propertyName = deal?.property_name || 'Commercial Property';
   const commercialRM = deal?.commercial_rm || 'Greg Miller';
   const borrowerEntity = deal?.borrower_entity || 'Commercial Entity';

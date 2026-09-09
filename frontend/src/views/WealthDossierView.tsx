@@ -21,6 +21,8 @@ export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
   onBackToQueue,
   onProceedToStrategy,
 }) => {
+  const clientDisplayName = data.target_client ? data.target_client.split('(')[0].trim() : 'Client';
+
   return (
     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12 md:py-16 space-y-12">
       
@@ -41,7 +43,7 @@ export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
             </span>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
-                Onboarding Dossier: {data.target_client}
+                Onboarding Dossier: {clientDisplayName}
               </h1>
               <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#E8F5E9] dark:bg-emerald-950/60 text-[#006738] dark:text-emerald-300 border border-[#A7F3D0] dark:border-emerald-800">
                 Household: {data.household_id}
@@ -104,7 +106,7 @@ export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
           </div>
 
           <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
-            {data.staged_kyc_cip.verified_fields.map((field) => (
+            {data.staged_kyc_cip?.verified_fields?.map((field) => (
               <div key={field.field} className="p-5 flex items-center justify-between gap-4">
                 <div className="min-w-0 pr-2">
                   <span className="text-slate-400 block text-xs uppercase font-semibold tracking-wider">{field.field}</span>
@@ -130,7 +132,7 @@ export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
               <div className="flex items-center gap-2.5">
                 <Building className="w-5 h-5 text-[#006738]" />
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                  SEI Trust 3000 Custodial Shell
+                  SEI Wealth Platform (SEI Data Cloud) Custodial Shell
                 </h3>
               </div>
               <span className="text-xs font-bold text-[#006738] dark:text-emerald-400 uppercase tracking-wider">
@@ -141,17 +143,17 @@ export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5 text-xs">
               <div className="flex justify-between">
                 <span className="text-slate-400">Shell ID:</span>
-                <span className="font-bold text-slate-900 dark:text-white">{data.sei_custodial_shell.shell_id}</span>
+                <span className="font-bold text-slate-900 dark:text-white">{data.sei_custodial_shell?.shell_id}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-400">Account Title:</span>
                 <span className="font-bold text-slate-900 dark:text-white text-right max-w-[200px] truncate">
-                  {data.sei_custodial_shell.account_title}
+                  {data.sei_custodial_shell?.account_title}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-400">Custodian:</span>
-                <span className="font-bold text-slate-900 dark:text-white">{data.sei_custodial_shell.custodian}</span>
+                <span className="font-bold text-slate-900 dark:text-white">{data.sei_custodial_shell?.custodian}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-400">Cash Depository:</span>
@@ -175,7 +177,7 @@ export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
             </div>
 
             <div className="space-y-2.5 text-xs">
-              {data.staged_kyc_cip.pending_advisor_actions.map((action, idx) => (
+              {data.staged_kyc_cip?.pending_advisor_actions?.map((action, idx) => (
                 <div key={idx} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700 flex items-center gap-3">
                   <div className="w-5 h-5 rounded-full border border-slate-300 dark:border-slate-600 flex items-center justify-center text-xs text-slate-600 font-bold">
                     {idx + 1}

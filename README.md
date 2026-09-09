@@ -1,25 +1,30 @@
 # Huntington Horizon: Intelligent Liquidity Orchestration
 
-Production-grade, interactive full-stack Google Cloud Run application for **Huntington Horizon: Intelligent Liquidity Orchestration**. Built strictly in accordance with the **Google Cloud Run Demo Standard** (`/cloud-run-demo`), the approved **Huntington Bank Corporate Design Specification** ([`docs/DESIGN.md`](docs/DESIGN.md), `brand_kit.html`), and **Functional Specifications** ([`docs/PRD.md`](docs/PRD.md), [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)).
+Production-grade, interactive full-stack Google Cloud Run application for **Huntington Horizon: Intelligent Liquidity Orchestration** (v6.0 - Horizon 2.0). Built strictly in accordance with the **Google Cloud Run Demo Standard** (`/cloud-run-demo`), the approved **Huntington Bank Corporate Design Specification** ([`docs/DESIGN.md`](docs/DESIGN.md), `brand_kit.html`), and **Functional Specifications** ([`docs/PRD.md`](docs/PRD.md), [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)).
 
 ---
 
 ## 1. Executive Summary & Core Thesis
 
-Huntington cannot scale its wealth management franchise simply by asking bankers to work harder. The commercial loan book experiences **$4.5B in annual CRE and middle-market loan payoffs**, with **~78% of net liquidity wiring out to external competitors within 48–72 hours**.
+Huntington is a **top-2 national SBA 7(a) lender** operating **1,400 branches across 21 states**. However, the bank cannot scale its wealth management franchise simply by asking commercial bankers to work harder. The commercial loan book experiences **$4.5B in annual CRE, SBA 7(a), and middle-market loan payoffs**, with **~78% of net liquidity wiring out to external competitors within 48–72 hours**.
 
 ### The Two-Sided Capacity Bottleneck
 1. **Commercial Side:** Commercial RMs focus on loan production and lack the bandwidth for 6–8 hours of manual discovery, entity resolution, and valuation across siloed systems per deal.
-2. **Wealth Side (Onboarding & Ongoing Servicing):** Manual onboarding takes 2–3 weeks, and ongoing fiduciary servicing caps Private Wealth Advisors (PWAs) at ~80–100 accounts. Flooding advisors with leads trades a commercial bottleneck for an acute wealth bottleneck.
+2. **Wealth Side (Onboarding & Servicing Limits):** Manual onboarding takes 2–3 weeks, and ongoing fiduciary servicing caps Private Wealth Advisors (PWAs) at ~80 accounts unassisted (expanded to 95–100 accounts via 2x Client Service Associate leverage under Horizon). Flooding advisors with leads trades a commercial bottleneck for an acute wealth bottleneck.
 3. **The 1031 Exchange Leakage:** 50–65% of commercial property dispositions execute an IRC §1031 like-kind exchange. If funds touch commercial operating checking, tax deferral is voided, forcing funds to leak to third-party Qualified Intermediaries (QIs).
+4. **Institutional Operating Realities:** 
+   - **Ameriprise Retail Channel:** Huntington Advisors operates on Ameriprise's platform (announced Feb 4, 2026), making the retail channel a non-affiliated third party under SEC Regulation R networking arrangements (bankers receive deposit FTP credit only; zero securities fee-splitting per FINRA Rule 2040).
+   - **SEI Wealth Platform & SEI Data Cloud:** Huntington Private Bank is migrating to the SEI Wealth Platform (announced March 31, 2026), integrating with SEI Data Cloud via Snowflake Secure Data Sharing (Zero-ETL).
+   - **ALTA Pillar 2 & Title Reality:** Lenders possess zero legal standing to direct settlement disbursements; the bank delivers verified routing packets directly to the borrower via DocuSign to authorize title, backed by a direct banker callback line `(614) 480-4401`.
 
 ### The Solution: Dual-Sided Agentic Capacity Leverage
 Powered by the **Gemini Enterprise Agent Platform (fka Vertex AI Platform)** running `gemini-3.7-flash`:
-- **Monitors 100% of the $4.5B book** for title payoff statement requests in real time.
-- **Absorbs Commercial Discovery**: Extracts borrowing LLCs to beneficial owners with verified document grounding, resolving unstated contract sale prices via trailing NOI grounded by Vertex AI Search (~7 hrs → 4 min).
-- **Automates Wealth Scaffolding**: Pre-stages KYC/CIP, SEI custodial shell, and draft IPS behind a **GLBA Quarantined Consent Gate**, and automates ongoing quarterly review dossiers (expanding advisor capacity from 80 to 150 accounts).
-- **Safeguards 1031 Exchange Liquidity**: Automatically routes exchange proceeds to the **Huntington 1031 Qualified Escrow Depository (Partner QI Network)** under Treas. Reg. § 1.1031(k)-1(g)(3), preserving deposits on balance sheet for 180 days.
-- **Zero Net New Headcount**: Scales the franchise across both Commercial and Wealth with existing staff.
+- **Monitors 100% of the $4.5B book** for title payoff statement requests in real time across commercial CRE and SBA 7(a) portfolios.
+- **Absorbs Commercial Discovery**: Extracts borrowing LLCs to beneficial owners with automated Pre-Ingestion Cloud DLP purging non-guarantors (GLBA Reg P / FCRA § 604) and resolves unstated contract prices via trailing NOI grounded in credit vaults (~7 hrs → 4 min).
+- **Automates Wealth Scaffolding**: Pre-stages KYC/CIP, SEI Data Cloud custodial shells, and draft IPS behind a **GLBA Quarantined Consent Gate**, and automates ongoing quarterly review dossiers (expanding advisor capacity from 80 to 95–100 accounts via 2x CSA operational leverage, with sub-$3M routed to the Centralized Wealth Hub).
+- **Safeguards 1031 Exchange Liquidity**: Automatically routes exchange proceeds to the **Huntington 1031 Qualified Escrow Depository (Partnered with IPX1031)** under Treas. Reg. § 1.1031(k)-1(g)(3), preserving deposits on balance sheet while firewalled from in-house securities per Treas. Reg. § 1.1031(k)-1(k).
+- **Zero Net New Headcount**: Scales the franchise across both Commercial and Wealth with existing staff, delivering 78.0 bps blended net revenue yield ($1,755,000 gross annual value; $505,000 net ROI at 5% capture).
+
 
 ---
 
@@ -68,16 +73,16 @@ huntington-horizon/
 │   ├── src/views/               # 7 production workflow views across Commercial & Wealth personas
 │   └── src/components/          # Swiss editorial design components, Header, AdminPanel
 ├── docs/                        # Consolidated specifications, architecture & audit reports
-│   ├── PRD.md                   # Full functional & regulatory specification (v5.2)
+│   ├── PRD.md                   # Full functional & regulatory specification (v6.0 - Horizon 2.0)
 │   ├── DEMO_SCRIPT.md           # Presenter click-path & 10-minute executive briefing
 │   ├── DESIGN.md                # Huntington Bank corporate design tokens & palette
 │   ├── CONTEXT.md               # Ubiquitous domain language & data invariants
 │   ├── AUDIT_REPORT.md          # Architectural baseline validation
 │   ├── critique.md              # Adversarial pre-mortem review
 │   └── huntington-horizon.pdf   # Compiled executive whitepaper & architecture blueprint
-├── tests/                       # 15 automated unit and integration tests (pytest)
-│   ├── unit/                    # Liquidity engine invariant tests (net equity, floor, 1031)
-│   └── integration/             # FastAPI endpoint tests (IAP, quarantine, valuation, onboarding)
+├── tests/                       # 19 automated unit and integration tests (pytest)
+│   ├── unit/                    # Liquidity engine invariant tests (net equity, floor, 1031, ALTA Pillar 2)
+│   └── integration/             # FastAPI endpoint tests (IAP, quarantine, valuation, onboarding, 404/422 validations)
 ├── main.py                      # FastAPI orchestrator, Gemini integration & hardened SPA router
 ├── iap_jwt_middleware.py        # Cryptographic IAP token verification with cert caching
 ├── deploy.sh / destroy.sh       # Cloud Run deployment and safe teardown automation
@@ -130,12 +135,12 @@ Run both the FastAPI backend and Vite frontend proxy concurrently bound strictly
 - **Workflow & Operating Guide**: `http://127.0.0.1:5173/demo_script.html` (or `http://127.0.0.1:8080/demo_script.html`)
 
 ### Verification & Test Commands
-- **Automated Test Suites (15 Unit & Integration Tests)**:
+- **Automated Test Suites (19 Unit & Integration Tests)**:
   ```bash
   source .venv/bin/activate && pytest -v
   npm --prefix frontend test
   ```
-  Executes 15 backend tests verifying valuation formulas, statutory routing invariants, deal-isolated GLBA quarantine status, 64-character SHA-256 audit hashes, and deal-parameterized wealth onboarding, alongside frontend TypeScript checks (`tsc -b`).
+  Executes 19 backend tests verifying valuation formulas, statutory routing invariants, ALTA Pillar 2 DocuSign metadata, deal-isolated GLBA quarantine status, 64-character SHA-256 audit hashes, and deal-parameterized wealth onboarding, alongside frontend TypeScript checks (`tsc -b`).
 - **Backend Import & Boot**:
   ```bash
   source .venv/bin/activate
@@ -156,10 +161,10 @@ Run both the FastAPI backend and Vite frontend proxy concurrently bound strictly
 
 | Endpoint | Method | Description |
 | :--- | :---: | :--- |
-| `/api/health` | GET | Diagnostic telemetry (Platform, Model, Project, Service, IAP status). |
+| `/api/health` | GET | Diagnostic telemetry (Platform, Model, Project, Service, IAP status, Version 6.0.0). |
 | `/api/user` | GET | Authenticated Google / IAP user profile (`developer@google.com` locally). |
 | `/api/payoffs` | GET | Inbound commercial servicing queue items with Synthetic Capacity Meter. |
-| `/api/entity-resolution` | GET | Multimodal document extraction with verified entity records parameterized by `payoff_id`. |
+| `/api/entity-resolution` | GET | Multimodal document extraction with verified entity records, DLP status, and non-guarantor exclusion. |
 | `/api/valuation` | POST | Deterministic valuation calculator, loan payoff, net proceeds, and yield math. |
 | `/api/quarantine` | GET/POST | Deal-partitioned GLBA compliance gate with cryptographic 64-character SHA-256 audit hashing. |
 | `/api/wire-instructions` | GET | Verified Title Settlement Wire Instructions dynamically formatted by tax strategy and net proceeds. |
@@ -172,12 +177,12 @@ Run both the FastAPI backend and Vite frontend proxy concurrently bound strictly
 
 Detailed in [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) and viewable interactively at `/demo_script.html`:
 
-1. **Step 1 (00:00–01:30) - The Problem & The $4.5B Flight Cliff**: Review the two-sided capacity bottleneck: Commercial discovery drag (~7 hrs) vs. Wealth onboarding/servicing capacity limit (80 accounts).
+1. **Step 1 (00:00–01:30) - The Problem & The $4.5B Flight Cliff**: Review the two-sided capacity bottleneck: Commercial discovery drag (~7 hrs) vs. Wealth onboarding/servicing capacity limit (80 accounts unassisted -> 95–100 accounts with Horizon CSA leverage).
 2. **Step 2 (01:30–03:30) - Commercial Payoff Surveillance**: Inspect the commercial loan payoff queue. Review Riverfront Commercial Commons at T-12 days with imminent 78% flight risk.
 3. **Step 3 (03:30–06:00) - Credit & Title Verification**: Select Marcus Vance. Gemini 3.7 Flash decomposes `Vance Riverfront Properties IV, LLC` with verified entity grounding on scanned credit certificates. Resolve unstated contract sale price via trailing NOI ($637.5k) capitalized at 7.50% cap rate grounded via Vertex AI Search. Adjust the **Sale Price Slider** live from $8.5M to $9.0M, dynamically recalculating net proceeds to $3.35M.
-4. **Step 4 (06:00–08:30) - Deposit Retention & Wealth Referral**: Review Greg Miller's relationship call guide. Configure Huntington 1031 Qualified Escrow Depository or Commercial Max$aver sweep. Record GLBA verbal consent, generate title wire instructions, and hand off to Private Wealth Advisor Sarah Jenkins.
+4. **Step 4 (06:00–08:30) - Deposit Retention & Wealth Referral**: Review Greg Miller's relationship call guide. Configure Huntington 1031 Qualified Escrow Depository or Commercial Business Premier ICS sweep. Record GLBA verbal consent, generate Borrower Settlement Routing Packet, and hand off to Private Wealth Advisor Sarah Jenkins.
 5. **Step 5 (08:30–09:15) - Institutional Guardrails (CRO Defense)**: Review regulatory compliance checks for FINRA Rule 2040, GLBA Quarantined Consent Gate, OCC SR 11-7 Triage Designation, and IRC §1031 Qualified Escrow Safe Harbor.
-6. **Step 6 (09:15–10:00) - Financial ROI & Capacity Economics**: Slide the Retention Capture Slider from 5% ($482.5k net ROI, 8.6 mo payback) to 10% ($2.2M net ROI, 4.3 mo payback). Review the componentized $1.25M enterprise run-rate defense.
+6. **Step 6 (09:15–10:00) - Financial ROI & Capacity Economics**: Slide the Retention Capture Slider from 5% ($505,000 net ROI, 8.5 mo payback) to 10% ($2,260,000 net ROI, 4.3 mo payback) based on 78.0 bps blended net revenue yield (65% Tier 1 @ 85 bps, 35% Tier 2 @ 65 bps). Review the componentized $1.25M enterprise run-rate defense.
 
 ---
 
@@ -219,4 +224,4 @@ Following rigorous adversarial reviews conducted via independent auditor subagen
 6. **Strict Visual & Code Quality Standards**: Enforces a strict zero-emoji ASCII standard across all frontend source files, validated continuously via automated CI scripts.
 
 ---
-*Huntington Horizon v5.2 — Proving dual-sided agentic capacity leverage: scaling wealth management with existing headcount across both Commercial and Wealth.*
+*Huntington Horizon v6.0 (Horizon 2.0) — Proving dual-sided agentic capacity leverage: scaling wealth management with existing headcount across both Commercial and Wealth.*

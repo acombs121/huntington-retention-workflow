@@ -4,12 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Huntington Horizon | Brand Kit & Design Tokens</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --hban-green: #006738;
       --hban-green-dark: #004724;
       --hban-green-darker: #003319;
       --hban-green-light: #00884a;
+      --hban-lime: #7ecf1c;
       --hban-mint: #e8f5e9;
       --hban-mint-border: #a7f3d0;
       --slate-900: #0f172a;
@@ -36,7 +40,7 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-family: 'Mulish', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       background-color: var(--bg-body);
       color: var(--text-main);
       line-height: 1.6;
@@ -163,7 +167,7 @@
   <div class="header-bar">
     <div class="title-area">
       <h1>Huntington Horizon Brand Kit</h1>
-      <p>Official Design Tokens, Colors, and Interactive Primitives (Version 5.2)</p>
+      <p>Official Design Tokens, Colors, and Interactive Primitives (Version 6.0 - Horizon 2.0)</p>
     </div>
     <button class="theme-btn" onclick="toggleTheme()">Toggle Dark / Light</button>
   </div>
@@ -174,12 +178,16 @@
       <h2>Huntington Corporate Palette</h2>
       <div class="swatches-grid">
         <div class="swatch">
+          <div class="swatch-color" style="background: #004724;"></div>
+          <div class="swatch-info"><div class="swatch-name">Deep Forest</div><div class="swatch-hex">#004724</div></div>
+        </div>
+        <div class="swatch">
           <div class="swatch-color" style="background: #006738;"></div>
           <div class="swatch-info"><div class="swatch-name">HBAN Green</div><div class="swatch-hex">#006738</div></div>
         </div>
         <div class="swatch">
-          <div class="swatch-color" style="background: #004724;"></div>
-          <div class="swatch-info"><div class="swatch-name">Deep Forest</div><div class="swatch-hex">#004724</div></div>
+          <div class="swatch-color" style="background: #7ecf1c;"></div>
+          <div class="swatch-info"><div class="swatch-name">Abundant Green</div><div class="swatch-hex">#7ECF1C</div></div>
         </div>
         <div class="swatch">
           <div class="swatch-color" style="background: #e8f5e9;"></div>

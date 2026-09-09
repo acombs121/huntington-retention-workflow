@@ -202,7 +202,7 @@ export function useRetentionWorkflow(): {
         }
       });
 
-    // 2. Fetch synchronized First American Title wire instructions from backend
+    // 2. Fetch synchronized Borrower Settlement Routing Packet from backend
     fetch(
       `/api/wire-instructions?payoff_id=${selectedPayoffId}&strategy=${taxStrategy}&sale_price=${salePrice}`,
       { signal: controller.signal }
@@ -218,7 +218,7 @@ export function useRetentionWorkflow(): {
       })
       .catch((err) => {
         if (err.name !== 'AbortError') {
-          setError(`Wire instruction error: ${err.message || 'Failed to generate title wire instructions'}`);
+          setError(`Wire instruction error: ${err.message || 'Failed to generate Borrower Settlement Routing Packet'}`);
         }
       });
 

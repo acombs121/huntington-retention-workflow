@@ -65,6 +65,7 @@ export const App: React.FC = () => {
         onViewChange={setActiveView}
         isDark={isDark}
         onToggleTheme={toggleTheme}
+        isQuarantined={state.quarantineState?.quarantined}
       />
 
       {/* 2. Main Focused Workspace: Exactly ONE Thing Each Page Does */}
@@ -92,6 +93,7 @@ export const App: React.FC = () => {
             items={state.payoffItems}
             selectedId={state.selectedPayoffId}
             onSelectDeal={handleSelectDeal}
+            onViewExecutive={() => setActiveView('executive')}
           />
         )}
 
@@ -136,23 +138,54 @@ export const App: React.FC = () => {
         )}
 
         {activeView === 'wealth_dossier' && (
-          <WealthDossierView
-            data={state.wealthOnboarding}
-            onBackToQueue={() => setActiveView('wealth_queue')}
-            onProceedToStrategy={() => setActiveView('wealth_strategy')}
-          />
+          state.quarantineState?.quarantined ? (
+            <WealthQueueView
+              deal={state.selectedDeal}
+              wealthOnboarding={state.wealthOnboarding}
+              quarantineState={state.quarantineState}
+              valuation={state.valuation}
+              onOpenDossier={() => setActiveView('wealth_dossier')}
+              onSwitchToCommercial={() => {
+                setPersona('commercial_rm');
+                setActiveView('retention');
+              }}
+            />
+          ) : (
+            <WealthDossierView
+              data={state.wealthOnboarding}
+              onBackToQueue={() => setActiveView('wealth_queue')}
+              onProceedToStrategy={() => setActiveView('wealth_strategy')}
+            />
+          )
         )}
 
         {activeView === 'wealth_strategy' && (
-          <PortfolioStrategyView
-            data={state.wealthOnboarding}
-            valuation={state.valuation}
-            onBackToDossier={() => setActiveView('wealth_dossier')}
-          />
+          state.quarantineState?.quarantined ? (
+            <WealthQueueView
+              deal={state.selectedDeal}
+              wealthOnboarding={state.wealthOnboarding}
+              quarantineState={state.quarantineState}
+              valuation={state.valuation}
+              onOpenDossier={() => setActiveView('wealth_dossier')}
+              onSwitchToCommercial={() => {
+                setPersona('commercial_rm');
+                setActiveView('retention');
+              }}
+            />
+          ) : (
+            <PortfolioStrategyView
+              data={state.wealthOnboarding}
+              valuation={state.valuation}
+              onBackToDossier={() => setActiveView('wealth_dossier')}
+            />
+          )
         )}
 
         {activeView === 'executive' && (
-          <ExecutiveAnalyticsView capacityMeter={state.capacityMeter} />
+          <ExecutiveAnalyticsView
+            capacityMeter={state.capacityMeter}
+            onBackToPipeline={() => setActiveView('pipeline')}
+          />
         )}
       </main>
 

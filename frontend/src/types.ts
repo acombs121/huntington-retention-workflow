@@ -8,6 +8,9 @@ export interface CapacityMeter {
   active_machine_inferences: number;
   book_scale_volume: string;
   historical_flight_risk_rate: string;
+  branch_network_count?: string;
+  sba_ranking?: string;
+  csa_leverage_ratio?: string;
 }
 
 export interface PayoffItem {
@@ -40,6 +43,7 @@ export interface PayoffItem {
   status: string;
   managing_member?: string;
   primary_guarantor?: string;
+  loan_type?: string;
 }
 
 export interface BoundingBox {
@@ -59,6 +63,7 @@ export interface GroundedMember {
   known_hban_accounts: string[];
   known_hban_balance: number;
   bounding_box: BoundingBox;
+  exclusion_status?: string;
 }
 
 export interface EntityResolutionData {
@@ -68,6 +73,7 @@ export interface EntityResolutionData {
   total_pages: number;
   inspected_page: number;
   resolution_timestamp: string;
+  dlp_status?: string;
   borrower_entity: {
     name: string;
     jurisdiction: string;
@@ -131,6 +137,12 @@ export interface WireInstructionData {
   indicative_net_disbursement: number;
   officer_signature: string;
   officer_contact: string;
+  packet_type?: string;
+  docusign_envelope_id?: string;
+  delivery_channel?: string;
+  alta_pillar_2_compliant?: boolean;
+  callback_verification_line?: string;
+  independent_qi_partner?: string | null;
 }
 
 export interface KYCField {

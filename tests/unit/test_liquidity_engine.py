@@ -61,22 +61,22 @@ def test_explicit_sale_price_override(default_payoff: PayoffStatement):
 
 def test_statutory_depository_cash_out_route(default_payoff: PayoffStatement):
     """
-    Default cash-out strategy routes into Huntington Commercial Max$aver ICS with 4.85% APY
+    Default cash-out strategy routes into Huntington Business Premier ICS with 4.85% APY
     and 12 U.S.C. § 1831f statutory reciprocal deposit backing.
     """
     assessment = LiquidityEngine.assess(default_payoff, tax_strategy="cash_out")
 
     route = assessment.depository_route
     assert "Cash-Out" in route.strategy_type
-    assert "Max$aver" in route.strategy_product
+    assert "Business Premier" in route.strategy_product
     assert route.yield_apy == 4.85
     assert "1831f" in route.statutory_basis
     assert route.finra_rule_2040_compliant is True
 
     wire = assessment.settlement_wire
-    assert "Max$aver ICS Sweep" in wire.account_title
+    assert "Business Premier ICS Sweep" in wire.account_title
     assert wire.account_number == "HBAN-4401-9921-00"
-    assert "Max$aver" in wire.special_instructions
+    assert "Business Premier" in wire.special_instructions
 
 
 def test_statutory_depository_1031_exchange_route(default_payoff: PayoffStatement):
@@ -144,3 +144,38 @@ def test_legacy_valuation_dict_compatibility(default_payoff: PayoffStatement):
     assert set(legacy_dict.keys()) == expected_keys
     assert legacy_dict["sale_price"] == 8500000.00
     assert legacy_dict["net_equity_proceeds"] == 2902700.00
+
+
+def test_alta_pillar_2_wire_packet_compliance(default_payoff: PayoffStatement):
+    """
+    Verifies ALTA Pillar 2 DocuSign delivery packet metadata and independent QI routing.
+    """
+    cash_out_assessment = LiquidityEngine.assess(default_payoff, tax_strategy="cash_out")
+    co_wire = cash_out_assessment.settlement_wire
+    assert co_wire.alta_pillar_2_compliant is True
+    assert "Borrower Settlement Routing Packet" in co_wire.packet_type
+    assert co_wire.docusign_envelope_id.startswith("ENV-HBAN-")
+    assert co_wire.callback_verification_line == "(614) 480-4401 (Direct Banker Authentication Line)"
+    assert co_wire.independent_qi_partner is None
+
+    qi_assessment = LiquidityEngine.assess(default_payoff, tax_strategy="1031_exchange")
+    qi_wire = qi_assessment.settlement_wire
+    assert qi_wire.alta_pillar_2_compliant is True
+    assert qi_wire.independent_qi_partner == "IPX1031 (Investment Property Exchange Services, Inc.)"
+    assert qi_wire.account_title == f"IPX1031 as QI for {default_payoff.seller_entity} / Huntington 1031 Escrow"
+
+
+def test_input_validation_boundary_conditions(default_payoff: PayoffStatement):
+    """
+    Verifies that the LiquidityEngine enforces positive price overrides and valid tax strategies.
+    """
+    with pytest.raises(ValueError, match="Sale price override must be positive"):
+        LiquidityEngine.assess(default_payoff, sale_price=-50000.00)
+
+    with pytest.raises(ValueError, match="Sale price override must be positive"):
+        LiquidityEngine.assess(default_payoff, sale_price=0.0)
+
+    with pytest.raises(ValueError, match="Unsupported tax strategy"):
+        LiquidityEngine.assess(default_payoff, tax_strategy="offshore_haven")
+
+

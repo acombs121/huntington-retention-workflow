@@ -74,7 +74,8 @@ class StatutoryDepositoryRoute(BaseModel):
 
 class SettlementWireInstruction(BaseModel):
     """
-    Verified bank wire authorization letter delivered to title escrow officer.
+    Verified bank settlement account routing packet delivered to borrower for seller title authorization,
+    accompanied by official bank verification letter for ALTA Pillar 2 callback authentication.
     """
     letter_id: str
     date: str
@@ -93,6 +94,12 @@ class SettlementWireInstruction(BaseModel):
     indicative_net_disbursement: float
     officer_signature: str
     officer_contact: str
+    packet_type: str = "Borrower Settlement Routing Packet & Official Bank Verification Letter"
+    docusign_envelope_id: str = "ENV-HBAN-20260904-8821"
+    delivery_channel: str = "Borrower Direct Execution (DocuSign Envelope) -> Seller Authorization to Title"
+    alta_pillar_2_compliant: bool = True
+    callback_verification_line: str = "(614) 480-4401 (Direct Banker Authentication Line)"
+    independent_qi_partner: Optional[str] = None
 
 
 class LiquidityAssessment(BaseModel):
