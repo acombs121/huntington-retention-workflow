@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Huntington Horizon 2.0 | Customer Demo Script & Production Blueprint (v6.0)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      /* Huntington Corporate Palette */
+      --hban-green: #006738;
+      --hban-green-dark: #004724;
+      --hban-green-darker: #003319;
+      --hban-green-midnight: #012D2A;
+      --hban-green-abundant: #7ECF1C;
+      --hban-mint: #E8F5E9;
+      --hban-mint-border: #A7F3D0;
+      --hban-sage: #B8EFE4;
+
+      /* Semantic Status Light */
+      --semantic-good: #2F6B4F;
+      --semantic-warn: #9A6A12;
+      --semantic-crit: #9C3B2E;
+      --semantic-accent: #1E5A45;
+
+      /* Surfaces (Light Chalk) */
+      --bg-body: #F6F7F4;
+      --surface: #FFFFFF;
+      --surface-2: #EEF1EC;
+      --surface-3: #E3E8E2;
+      --ink: #16211D;
+      --ink-2: #3F4A45;
+      --ink-3: #6B7570;
+      --ink-4: #98A390;
+      --border-color: #E2E8F0;
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-hero: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    }
+
+    body.dark {
+      /* Surfaces (Dark Pitch Pine Forest) */
+      --bg-body: #0E1412;
+      --surface: #151D1A;
+      --surface-2: #182521;
+      --surface-3: #22302A;
+      --ink: #F2F5F1;
+      --ink-2: #C6D0CA;
+      --ink-3: #8F9C95;
+      --ink-4: #66736C;
+      --border-color: #263832;
+
+      /* Semantic Status Dark */
+      --semantic-good: #7FD1A9;
+      --semantic-warn: #E38341;
+      --semantic-crit: #E5736A;
+      --semantic-accent: #7FD1A9;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Mulish', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-body);
+      color: var(--ink);
+      line-height: 1.6;
+      padding: 2.5rem;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2rem;
+      padding-bottom: 1.75rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .brand-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--hban-green);
+      margin-bottom: 0.25rem;
+    }
+    body.dark .brand-eyebrow { color: var(--semantic-accent); }
+
+    .title-area h1 {
+      font-size: 2.25rem;
+      font-weight: 900;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .title-area h1 span.green-mark { color: var(--hban-green); }
+    body.dark .title-area h1 span.green-mark { color: var(--semantic-accent); }
+
+    .title-area p {
+      color: var(--ink-3);
+      font-size: 0.95rem;
+      margin-top: 0.35rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .version-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: var(--surface-2);
+      color: var(--ink-2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border-color);
+      font-variant-numeric: tabular-nums;
+    }
+    .theme-btn {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--ink);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .theme-btn:hover {
+      background: var(--surface-2);
+      border-color: var(--hban-green);
+    }
+
+    /* Executive Problem Callout */
+    .problem-callout {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-left: 6px solid var(--hban-green);
+      border-radius: 14px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow-card);
+    }
+    body.dark .problem-callout {
+      border-left-color: var(--semantic-accent);
+    }
+    .problem-callout h3 {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--hban-green);
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+    body.dark .problem-callout h3 {
+      color: var(--semantic-accent);
+    }
+    .problem-callout p {
+      font-size: 0.92rem;
+      color: var(--ink-2);
+      line-height: 1.7;
+    }
+
+    /* Step Timeline Flow */
+    .timeline-nav {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+      padding: 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    @media (max-width: 960px) {
+      .timeline-nav { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    }
+    .timeline-step {
+      padding: 0.5rem 0.65rem;
+      border-radius: 8px;
+      background: var(--surface-2);
+      text-decoration: none;
+      color: var(--ink-2);
+      transition: all 0.15s;
+      border: 1px solid var(--border-color);
+    }
+    .timeline-step:hover {
+      background: var(--hban-mint);
+      border-color: var(--hban-mint-border);
+      color: var(--hban-green-dark);
+    }
+    body.dark .timeline-step:hover {
+      background: rgba(127, 209, 169, 0.15);
+      border-color: var(--semantic-accent);
+      color: var(--semantic-accent);
+    }
+    .step-num {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--hban-green);
+      display: block;
+    }
+    body.dark .step-num { color: var(--semantic-accent); }
+    .step-time {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--ink-3);
+      font-variant-numeric: tabular-nums;
+    }
+    .step-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 0.1rem;
+    }
+
+    /* Pre-Flight Checklist Card */
+    .checklist-card {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .checklist-card h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem 1.5rem;
+    }
+    @media (max-width: 768px) { .checklist-grid { grid-template-columns: 1fr; } }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 0.85rem;
+      color: var(--ink-2);
+    }
+    .check-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--hban-green);
+      cursor: pointer;
+    }
+
+    /* Step Cards */
+    .step-card {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-card);
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .step-header h4 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+    .step-badge {
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      background: var(--hban-mint);
+      color: var(--hban-green-dark);
+      border: 1px solid var(--hban-mint-border);
+      font-variant-numeric: tabular-nums;
+    }
+    body.dark .step-badge {
+      background: rgba(127, 209, 169, 0.12);
+      color: var(--semantic-accent);
+      border-color: rgba(127, 209, 169, 0.3);
+    }
+    .step-summary {
+      font-size: 0.9rem;
+      color: var(--ink-2);
+      font-style: italic;
+      margin-bottom: 1.25rem;
+    }
+
+    /* 3-Column Execution Dimension */
+    .dim-row {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 900px) { .dim-row { grid-template-columns: 1fr; } }
+    .dim-col {
+      background: var(--surface-2);
+      border: 1px solid var(--border-color);
+      padding: 1.1rem;
+      border-radius: 10px;
+    }
+    .dim-title {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--hban-green);
+      margin-bottom: 0.45rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    body.dark .dim-title { color: var(--semantic-accent); }
+    .dim-desc {
+      font-size: 0.85rem;
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    .dim-desc ul {
+      margin-left: 1.15rem;
+      margin-top: 0.35rem;
+    }
+    .dim-desc li {
+      margin-bottom: 0.35rem;
+    }
+    .script-quote {
+      border-left: 3px solid var(--hban-green);
+      padding-left: 0.65rem;
+      margin-top: 0.4rem;
+      font-style: italic;
+      color: var(--ink-2);
+    }
+    body.dark .script-quote {
+      border-left-color: var(--semantic-accent);
+    }
+
+    /* Executive Q&A Section */
+    .qa-card {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow-card);
+    }
+    .qa-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .qa-item {
+      padding: 1.1rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .qa-item:last-child {
+      border-bottom: none;
+    }
+    .qa-q {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 0.45rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .qa-q span.q-badge {
+      font-size: 0.68rem;
+      font-weight: 800;
+      background: var(--hban-green);
+      color: #FFF;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      shrink: 0;
+    }
+    body.dark .qa-q span.q-badge {
+      background: var(--semantic-accent);
+      color: #0E1412;
+    }
+    .qa-a {
+      font-size: 0.88rem;
+      color: var(--ink-2);
+      line-height: 1.6;
+      padding-left: 1.85rem;
+    }
+  </style>
+</head>
