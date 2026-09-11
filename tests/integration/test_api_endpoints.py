@@ -281,6 +281,24 @@ def test_payoffs_queue_endpoint():
     assert data["payoff_items"][0]["id"] == "PO-2026-8821"
 
 
+def test_capacity_meter_reconciles_with_the_visible_queue():
+    """
+    Every counter on the telemetry strip must be checkable against what is on
+    screen. The payload previously advertised 6 qualified deals against a
+    3-row queue, which a board member could disprove by counting.
+    """
+    data = client.get("/api/payoffs").json()
+    meter = data["capacity_meter"]
+    staged = len(data["payoff_items"])
+
+    assert meter["qualified_and_staged"] == staged
+    assert meter["active_machine_inferences"] == staged
+    # 4-6 banker-hour manual band per liquidity event, 5 hr midpoint.
+    assert meter["manual_discovery_absorbed_hrs"] == pytest.approx(staged * 5.0)
+    # $33.298B target CRE book / $3.0M average commercial loan size.
+    assert meter["screened_events_book"] == 11099
+
+
 def test_invalid_deal_id_returns_404():
     """Verifies that non-existent deal IDs return HTTP 404 across all endpoints."""
     invalid_id = "PO-INVALID-9999"

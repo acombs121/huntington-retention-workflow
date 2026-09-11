@@ -227,9 +227,12 @@ export const detectionReasoningTraces: Record<string, DetectionReasoningTrace> =
 };
 
 export const initialCapacityMeter: CapacityMeter = {
-  screened_events_book: 2140,
-  qualified_and_staged: 6,
-  manual_discovery_absorbed_hrs: 46.2,
+  // Derived: $33.298B target CRE book / $3.0M average commercial loan size.
+  screened_events_book: 11099,
+  // Matches the three deals actually present in the payoff queue below.
+  qualified_and_staged: 3,
+  // 3 events x the 5 hr midpoint of the verified 4-6 hr manual band.
+  manual_discovery_absorbed_hrs: 15.0,
   wealth_admin_absorbed_hrs: 18.5,
   active_machine_inferences: 3,
   // Verified: 10-Q Table 8 CRE less the Call Report small-business tranche, plus

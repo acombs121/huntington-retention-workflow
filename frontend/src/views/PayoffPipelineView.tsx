@@ -183,6 +183,26 @@ function formatCreditTier(rating: string): string {
   return rating.replace(/^pass\s*\(?/i, '').replace(/\)$/, '').trim() || rating;
 }
 
+/**
+ * Manual-effort band for a single commercial liquidity event, in banker hours.
+ * Mirrors CAPACITY_BAND_HOURS in lib/assumptions.ts, which the Executive
+ * Analytics capacity case and the Admin Panel dials both read from.
+ */
+const MANUAL_HRS_LOW = 4;
+const MANUAL_HRS_HIGH = 6;
+const MANUAL_HRS_MID = (MANUAL_HRS_LOW + MANUAL_HRS_HIGH) / 2;
+
+/** Payoff demand, title commitment, incumbency cert, operating agreement, rent roll. */
+const DOCS_PER_EVENT = 5;
+
+/**
+ * Fallback facility count when the API has not responded yet.
+ * Derived: $33.298B target CRE book (10-Q Table 8 CRE less the RC-C Part II
+ * small-business tranche, plus RC-C Part I owner-occupied) / $3.0M average
+ * commercial loan size = 11,099 facilities.
+ */
+const DERIVED_FACILITY_COUNT = 11099;
+
 interface PayoffPipelineViewProps {
   items: PayoffItem[];
   selectedId: string;
@@ -198,7 +218,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
   onSelectDeal,
   onSetSelectedDeal,
   userName,
-  scannedCount = 2140,
+  scannedCount = DERIVED_FACILITY_COUNT,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterMode, setFilterMode] = useState<'all' | 'high_urgency' | 'pass_tier'>('all');
@@ -263,6 +283,12 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
 
   const totalPrincipal = items.reduce((sum, item) => sum + item.existing_debt_upb, 0);
 
+  // Every number in the telemetry stat strip derives from the queue itself, so the
+  // panel can never drift from the table a board member is looking at.
+  const stagedCount = items.length;
+  const ocrFileCount = stagedCount * DOCS_PER_EVENT;
+  const absorbedHours = stagedCount * MANUAL_HRS_MID;
+
   return (
     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12 md:py-16 space-y-12">
       
@@ -274,7 +300,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
               Good Morning, {displayName}
             </h1>
             <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-              <span className="font-semibold text-slate-900 dark:text-white">{scannedCount.toLocaleString()} relationships</span> scanned overnight,{' '}
+              <span className="font-semibold text-slate-900 dark:text-white">{scannedCount.toLocaleString()} commercial facilities</span> scanned overnight,{' '}
               <span className="font-semibold text-[#006738] dark:text-emerald-400">{urgentCount} require your attention</span>.
             </p>
           </div>
@@ -449,33 +475,17 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
 
                     {/* Action */}
                     <td className="py-5 px-6 sm:px-8 text-center whitespace-nowrap align-middle">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSignalGraphDealId(item.id);
-                            onSetSelectedDeal?.(item.id);
-                            setIsSignalGraphOpen(true);
-                          }}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-xs transition active:scale-[0.98] cursor-pointer"
-                          title={`Inspect Spanner Grounding Graph for ${item.borrower_entity}`}
-                        >
-                          <GitGraph className="w-3.5 h-3.5 text-[#006738] dark:text-emerald-400" />
-                          <span>Graph</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onSelectDeal(item.id);
-                          }}
-                          className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide bg-[#006738] hover:bg-[#1B5630] text-white shadow-sm transition active:scale-[0.98] whitespace-nowrap cursor-pointer"
-                        >
-                          <span>Inspect</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectDeal(item.id);
+                        }}
+                        className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide bg-[#006738] hover:bg-[#1B5630] text-white shadow-sm transition active:scale-[0.98] whitespace-nowrap cursor-pointer"
+                      >
+                        <span>Inspect</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
                     </td>
                   </tr>
                 );
@@ -525,7 +535,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
                 <div className="text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">
                   {scannedCount.toLocaleString()}
                 </div>
-                <div className="text-[11px] text-slate-400 mt-0.5">AFS Core &amp; nCino Commercial</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Core servicing &amp; commercial LOS feeds</div>
               </div>
 
               <div>
@@ -534,7 +544,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
                   <Layers className="w-3.5 h-3.5 text-[#006738] dark:text-emerald-400" />
                 </div>
                 <div className="text-2xl font-extrabold text-[#006738] dark:text-emerald-400 tabular-nums">
-                  3 Staged
+                  {stagedCount} Staged
                 </div>
                 <div className="text-[11px] text-slate-400 mt-0.5">1 Sale, 1 &sect;1031, 1 Refi</div>
               </div>
@@ -545,7 +555,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
                   <FileText className="w-3.5 h-3.5 text-[#006738] dark:text-emerald-400" />
                 </div>
                 <div className="text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">
-                  14 Files
+                  {ocrFileCount} Files
                 </div>
                 <div className="text-[11px] text-slate-400 mt-0.5">Gemini 3.7 Flash Grounding</div>
               </div>
@@ -556,27 +566,12 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
                   <Clock className="w-3.5 h-3.5 text-[#006738] dark:text-emerald-400" />
                 </div>
                 <div className="text-2xl font-extrabold text-[#006738] dark:text-emerald-400 tabular-nums">
-                  ~46 Hours
+                  ~{absorbedHours} Hours
                 </div>
-                <div className="text-[11px] text-slate-400 mt-0.5">Synthetic Capacity Leverage</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">
+                  {stagedCount} events &times; {MANUAL_HRS_LOW}&ndash;{MANUAL_HRS_HIGH} hr manual baseline
+                </div>
               </div>
-            </div>
-
-            {/* Spanner Graph Grounding Console Trigger Banner */}
-            <div className="bg-white dark:bg-slate-800/90 rounded-xl px-6 py-4 border border-slate-200 dark:border-slate-700 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
-                Google Cloud Spanner Graph Grounding
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setSignalGraphDealId(selectedId || 'PO-2026-8821');
-                  setIsSignalGraphOpen(true);
-                }}
-                className="px-5 py-2 rounded-full text-xs font-bold tracking-wide bg-[#006738] hover:bg-[#1B5630] text-white shadow-sm transition active:scale-[0.98] whitespace-nowrap cursor-pointer shrink-0"
-              >
-                Inspect Spanner Grounding Graph
-              </button>
             </div>
 
             {/* Trace Logs Terminal Box */}
@@ -587,10 +582,10 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
               </div>
               <div className="leading-relaxed space-y-1.5 pt-1 text-[11.5px]">
                 <div><span className="text-slate-500">[03:41:02.104]</span> <span className="font-bold text-[#7FD1A9]">[INGESTION_AGENT]</span> Connecting to AFS Core Level 3 via Pub/Sub queue <code>afs.servicing.events</code>...</div>
-                <div><span className="text-slate-500">[03:41:04.281]</span> <span className="font-bold text-[#7FD1A9]">[INGESTION_AGENT]</span> Retrieved 2,140 active loan facilities across 1,400 branch directories.</div>
+                <div><span className="text-slate-500">[03:41:04.281]</span> <span className="font-bold text-[#7FD1A9]">[INGESTION_AGENT]</span> Retrieved {scannedCount.toLocaleString()} active commercial facilities across 1,400 branch directories.</div>
                 <div><span className="text-slate-500">[03:41:18.940]</span> <span className="font-bold text-[#7FD1A9]">[DETECTION_AGENT]</span> Fusing Fedwire clearing telemetry &amp; title insurance payoff demand queue...</div>
-                <div><span className="text-slate-500">[03:41:22.015]</span> <span className="font-bold text-[#7FD1A9]">[DETECTION_AGENT]</span> 2,137 non-event facilities confirmed (scheduled amortization, routine servicing).</div>
-                <div><span className="text-slate-500">[03:41:24.320]</span> <span className="font-bold text-[#E38341]">[CLASSIFICATION_AGENT]</span> Flagged 3 active payoff demands requiring liquidity event triage:</div>
+                <div><span className="text-slate-500">[03:41:22.015]</span> <span className="font-bold text-[#7FD1A9]">[DETECTION_AGENT]</span> {(scannedCount - stagedCount).toLocaleString()} non-event facilities confirmed (scheduled amortization, routine servicing).</div>
+                <div><span className="text-slate-500">[03:41:24.320]</span> <span className="font-bold text-[#E38341]">[CLASSIFICATION_AGENT]</span> Flagged {stagedCount} active payoff demands requiring liquidity event triage:</div>
                 <div className="pl-6 text-slate-400">&bull; PO-2026-8821 ($5,180,000 UPB, First American Title, T-12 days)</div>
                 <div className="pl-6 text-slate-400">&bull; PO-2026-7492 ($1,405,000 UPB, Chicago Title, T-24 days)</div>
                 <div className="pl-6 text-slate-400">&bull; PO-2026-6104 ($3,210,000 UPB, Commonwealth Land Title, T-45 days)</div>

@@ -79,6 +79,28 @@ except Exception as e:
 
 
 # =====================================================================
+# Derived Operating Constants
+#
+# These mirror frontend/src/lib/assumptions.ts so the API payload and the
+# on-screen model agree at default settings.
+# =====================================================================
+
+# Target CRE book: 10-Q Table 8 CRE ($23.457B) less the Call Report RC-C
+# Part II small-business tranche ($3.490B), plus RC-C Part I owner-occupied
+# CRE ($13.331B) = $33.298B.
+TARGET_BOOK_USD = 33.298e9
+
+# Average commercial loan size. ESTIMATE -- adjustable via the Admin Panel.
+AVG_LOAN_SIZE_USD = 3.0e6
+
+# Facilities the nightly run screens across the target book.
+SCREENED_FACILITY_COUNT = int(TARGET_BOOK_USD // AVG_LOAN_SIZE_USD)  # 11,099
+
+# Midpoint of the 4-6 banker-hour manual effort band per liquidity event.
+MANUAL_HRS_PER_EVENT = 5.0
+
+
+# =====================================================================
 # In-Memory State & Domain Data
 # =====================================================================
 
@@ -1166,19 +1188,27 @@ async def get_payoff_queue(
 ) -> Dict[str, Any]:
     """
     Returns the inbound commercial servicing payoff queue with Synthetic Capacity metrics.
-    Demonstrates human-impossible scale: 2,140 screened, 6 qualified.
+    Demonstrates human-impossible scale: ~11,100 facilities screened nightly,
+    3 qualified and staged.
     """
     items = PAYOFF_QUEUE
     if priority:
         items = [p for p in items if priority.lower() in p["priority_tier"].lower()]
-    
+
+    # Self-reconciling: a board member can count the rows in the queue, so these
+    # counters are derived from it rather than hardcoded.
+    staged = len(PAYOFF_QUEUE)
+
     return {
         "capacity_meter": {
-            "screened_events_book": 2140,
-            "qualified_and_staged": 6,
-            "manual_discovery_absorbed_hrs": 46.2,
+            # Derived: $33.298B target CRE book / $3.0M average commercial loan
+            # size. The prior 2,140 was unsourced and understated the book by 5x.
+            "screened_events_book": SCREENED_FACILITY_COUNT,
+            "qualified_and_staged": staged,
+            # Verified 4-6 hr manual band per liquidity event; 5 hr midpoint.
+            "manual_discovery_absorbed_hrs": round(staged * MANUAL_HRS_PER_EVENT, 1),
             "wealth_admin_absorbed_hrs": 18.5,
-            "active_machine_inferences": 3,
+            "active_machine_inferences": staged,
             # Verified: 10-Q Table 8 CRE ($23.457B) less the Call Report RC-C Part II
             # small-business tranche ($3.490B), plus RC-C Part I owner-occupied ($13.331B).
             # The prior "$4.50 Billion" was unsourced and conflated the book with payoffs.

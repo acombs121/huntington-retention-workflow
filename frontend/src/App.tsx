@@ -99,7 +99,7 @@ export const App: React.FC = () => {
             selectedId={state.selectedPayoffId}
             onSelectDeal={handleSelectDeal}
             onSetSelectedDeal={actions.selectDeal}
-            scannedCount={state.capacityMeter?.screened_events_book || 2140}
+            scannedCount={state.capacityMeter?.screened_events_book}
             userName={state.selectedDeal?.commercial_rm?.split(' ')[0] || 'Greg'}
           />
         )}

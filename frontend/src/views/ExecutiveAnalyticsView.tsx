@@ -215,7 +215,8 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
             <ShieldCheck className="w-4 h-4 text-[#006738]" />
           </div>
           <div className="text-3xl font-extrabold text-slate-900 dark:text-white tabular-nums tracking-tight">
-            2,140 to 6 qualified
+            {capacityMeter.screened_events_book.toLocaleString()} to{' '}
+            {capacityMeter.qualified_and_staged} qualified
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
             Automated screening against Pass Tier 1/2 credit and KYC thresholds.
@@ -671,7 +672,7 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
                       $15,000
                     </td>
                     <td className="py-3.5 px-4 text-slate-600 dark:text-slate-300 leading-relaxed">
-                      ~2,140 document ingestion inferences, grounding queries, and embeddings.
+                      ~12,500 multimodal document inferences/yr (&asymp;2,500 liquidity events &times; 5 docs), grounding queries, and embeddings.
                     </td>
                   </tr>
                   <tr className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">

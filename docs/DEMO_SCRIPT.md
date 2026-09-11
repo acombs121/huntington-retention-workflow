@@ -75,11 +75,11 @@ flowchart LR
 
 - **Presenter Action**:
   1. Switch to the embedded Salesforce FSC 3-pane console.
-  2. Point to the **Operational Capacity Metrics** in Pane 1: *"1,400 branches monitored, 2,140 events screened, 6 qualified commercial leads, 2x CSA leverage active."*
+  2. Point to the **Operational Capacity Metrics** in Pane 1: *"1,400 branches monitored, 11,099 commercial facilities screened overnight, 3 qualified commercial leads, 2x CSA leverage active."*
   3. Explain the upstream surveillance: *"We don't wait for the payoff demand. Horizon screens loan facility maturities at T-120 and T-90, and flags tenant estoppel requests at T-60 so bankers engage during transaction planning."*
   4. Highlight First American Title's payoff demand on Riverfront Commercial Commons surfacing at T-12:
      - *"When the payoff demand arrived from First American, it didn't wait in a loan ops inbox. Horizon ingested the inbound eFax via Microsoft Graph API and RightFax, extracting the loan account and borrower LLC 72 hours before loan ops keyed the quote into AFS."*
-  5. Expand the telemetry container and click **[Inspect Spanner Grounding Graph]**:
+  5. Click the deal's **confidence score** to open the reasoning trace, then click **[Spanner Graph]** in its footer:
      - *"How does the agent know with 94% certainty that this is an outright commercial cash-out sale rather than a loan refi or a 1031 exchange? It doesn't guess. Horizon queries our Google Cloud Spanner Knowledge Graph via native ISO GQL. Notice the connected nodes: First American Title links to Note #CC-8821, which maps to Vance Riverfront Properties IV, LLC and primary guarantor Marcus Vance. The graph audits nCino for replacement debt (none found), identifies direct wire disbursement to commercial checking DDA #..4401, and verifies zero Qualified Intermediary (QI) involvement. Notice Elena Vance is quarantined with a GLBA Title V privacy badge. This multi-source graph traversal is why the AI achieves institutional signal fidelity."*
 - **What is Shown in the Demo**:
   - Pane 1 Priority Radar with live capacity counter, Pass Tier 2 credit rating badge, scheduled payoff countdown (14 days to close), and global obligor MDM screening pass.
