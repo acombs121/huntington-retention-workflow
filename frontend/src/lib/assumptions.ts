@@ -181,8 +181,13 @@ export const ASSUMPTION_META: Record<NumericAssumptionKey, InputMeta> = {
   },
   tier2Bps: {
     label: 'Tier 2 Advisory Fee',
-    provenance: 'estimate',
-    source: 'Internal estimate for the blended managed-money fee on retained wealth AUM.',
+    provenance: 'derived',
+    source:
+      'HNB Call Report Schedule RC-T, quarter ended 2026-06-30. Fiduciary income for personal ' +
+      'trust and agency ($44.581M) plus investment management and investment advisory ($56.187M) ' +
+      'is year-to-date at six months; annualized to $201.5M. Divided by the managed assets in ' +
+      'those same two categories ($10.653B + $20.008B = $30.661B) gives 65.7 bps. The model ' +
+      'holds 65.0 bps, 1.1% conservative to the filed figure.',
     min: 0.0,
     max: 0.02,
     step: 0.0005,

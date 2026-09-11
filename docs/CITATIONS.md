@@ -123,6 +123,81 @@ That places **$13.33B outside the book Horizon claims to monitor** — and it is
 
 ---
 
+## 2b. Verified Wealth Reference — HNB Call Report Schedule RC-T
+
+**Source:** The Huntington National Bank, FFIEC Call Report **Schedule RC-T,
+Fiduciary and Related Services**, quarter ended **2026-06-30** (updated
+2026-07-30). Local copy: [`docs/rct.md`](./rct.md). Amounts in USD thousands as
+filed. Note this is the **bank** (HNB); the 10-Q is the **holding company**
+(HBAN).
+
+### Reconciles the 10-Q "total trust assets" line
+
+The 10-Q gives a single unexplained number. RC-T decomposes it:
+
+| RC-T line | Amount |
+| :--- | ---: |
+| Total fiduciary accounts — managed | $39.79B |
+| Total fiduciary accounts — non-managed | $7.23B |
+| Custody and safekeeping accounts | $21.84B |
+| **Total** | **$68.86B** |
+| 10-Q Table 24, total trust assets (eop) | **$68.90B** |
+
+Ties to $0.04B. **"Total trust assets" = all fiduciary accounts (managed and
+non-managed) plus custody and safekeeping.** The schedule's own category
+subtotals also foot exactly.
+
+### The advisory fee is no longer an assumption
+
+Fiduciary income on the Call Report is **year-to-date**, so the June 30 figures
+cover six months and annualize at ×2.
+
+| | Income, 6mo | Annualized | Managed assets | Implied |
+| :--- | ---: | ---: | ---: | ---: |
+| Personal trust and agency | $44.581M | $89.16M | $10.653B | 83.7 bps |
+| Investment mgmt / advisory | $56.187M | $112.37M | $20.008B | 56.2 bps |
+| **Combined** | **$100.768M** | **$201.54M** | **$30.661B** | **65.7 bps** |
+
+**The model holds 65.0 bps — 1.1% conservative to Huntington's own filing.**
+Widening the denominator gives 67.0 bps (all managed fiduciary), 56.7 bps
+(incl. non-managed), or 38.7 bps (incl. custody). The combined personal-facing
+managed figure is the correct analogue for a wealth advisory fee, so **65.7 bps
+is the number to defend.** A regression assertion in
+`frontend/scripts/verify-assumptions.mjs` fails if the input is ever raised
+above it.
+
+### The demo's client profile is credible
+
+| Category | Accounts | Avg. managed balance |
+| :--- | ---: | ---: |
+| Investment mgmt / advisory | 8,326 | **$2.40M** |
+| Personal trust and agency | 6,348 | $1.68M |
+| Foundation and endowment | 566 | $3.76M |
+| All managed fiduciary | 23,481 | $1.69M |
+| Custody and safekeeping | 805 | $27.13M |
+
+The demo's client (**Marcus Vance, $2.90M net equity**) sits just above the
+$2.40M average investment-advisory relationship. Not an outlier — squarely in
+the meat of the book, and it can be said out loud with a citation.
+
+> [!WARNING]
+> **What RC-T does NOT settle: the 62% trust-asset decline.**
+> This is a single quarter. Attributing the **$113.9B** YoY drop
+> ($182.8B at 6/30/2025 → $68.9B at 6/30/2026) requires the **same schedule for
+> quarter ended 2025-06-30**. Two candidates are visible in the 2026 data but
+> neither is proven: custody and safekeeping now holds only $21.84B across 805
+> accounts (~$27M each), so a single large institutional custody departure could
+> account for most of it; and corporate trust and agency is effectively nil
+> ($31K across 7 accounts).
+>
+> ⚠️ **Do not read the RC-T Memoranda zeros as facts.** Every memorandum item in
+> this extract reports 0, including "Total managed assets held in fiduciary
+> accounts," which must equal $39.79B. Most RC-T Memorandum item 3 detail is a
+> **December-only collection**, so those fields are simply unpopulated at Q2.
+
+---
+
+
 ## 3. Wealth Capacity & Operational Leverage
 
 | Headline Figure | Primary Citation / Authority | Research & Empirical Data | Operational Grounding |
@@ -158,7 +233,7 @@ That places **$13.33B outside the book Horizon claims to monitor** — and it is
 | Metric | Model Formula / Input | Value | Authority / Source |
 | :--- | :--- | :--- | :--- |
 | **Tier 1 Treasury ICS & 1031 Escrow Spread** | 65% volume allocation | **85.0 bps** | ⚠️ **Internal management estimate** — pending confirmation against Huntington Commercial Treasury Management FTP net spread. Sanity-checkable against the 3.28% Commercial Banking NIM in 10-Q Table 25. |
-| **Tier 2 Wealth Management AUM Fee** | 35% volume allocation | **65.0 bps** | ⚠️ **Internal management estimate** — pending confirmation against the Huntington Private Bank / SEI fiduciary advisory schedule ($2M–$10M tier). |
+| **Tier 2 Wealth Management AUM Fee** | 35% volume allocation | **65.0 bps** | ✅ **Derived from HNB Call Report Schedule RC-T (2026-06-30).** Filing implies **65.7 bps**; the model holds 65.0, 1.1% conservative. See §2b. |
 | **Tier 1 average duration** | IRC §1031 caps an exchange at 180 days | **120 days** | ⛔ **Correction.** Tier 1 is transient escrow and treasury float, not a standing deposit. An annual rate cannot be applied at face value. |
 | **Undiscounted blended margin** | `(0.65 × 85 bps) + (0.35 × 65 bps)` | ~~78.0 bps~~ | ❌ **Superseded** — ignores Tier 1 duration. |
 | **Effective blended yield** | `(0.65 × 85 bps × 120/365) + (0.35 × 65 bps)` | **40.9 bps** | Arithmetic of the estimates above (not independent evidence). |

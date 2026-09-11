@@ -295,11 +295,13 @@ pool, not on the loan book.
 **Break-even requires recapturing 34% of all fleeing seller equity.** That is a real
 target, but it is not a floor, and it must not be presented as one.
 
-* **Assumption provenance:** the 85 bps Tier 1 net NIM and 65 bps Tier 2 advisory fee
-  are **internal management estimates** pending Treasury FTP and Wealth fee-schedule
-  confirmation. The disposition share, equity ratio, and flight rate are **industry
-  defaults**, not Huntington figures. All are adjustable live via the Admin Panel; the
-  model lives in [`frontend/src/lib/assumptions.ts`](../frontend/src/lib/assumptions.ts).
+* **Assumption provenance:** the **65 bps Tier 2 advisory fee is derived from HNB
+  Call Report Schedule RC-T (2026-06-30)**, which implies 65.7 bps — the model holds
+  65.0, 1.1% conservative. See [CITATIONS.md §2b](./CITATIONS.md). The **85 bps Tier 1
+  net NIM remains an internal management estimate** pending Treasury FTP confirmation.
+  The disposition share, equity ratio, and flight rate are **industry defaults**, not
+  Huntington figures. All are adjustable live via the Admin Panel; the model lives in
+  [`frontend/src/lib/assumptions.ts`](../frontend/src/lib/assumptions.ts).
 * **Sensitivity ranking (what to pressure-test first):** flight rate (highest), then
   Tier 1/Tier 2 bps, then disposition share and equity ratio. Turnover is the *least*
   uncertain input — it is derived from Huntington's own Call Report.
