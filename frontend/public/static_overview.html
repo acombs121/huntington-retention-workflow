@@ -260,7 +260,7 @@
     }
     .hero-stats-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
       gap: 1.5rem;
       border-top: 1px solid rgba(255, 255, 255, 0.15);
       padding-top: 2rem;
@@ -268,13 +268,15 @@
     .hero-stat-card {
       display: flex;
       flex-direction: column;
+      min-width: 0;
     }
     .stat-number {
-      font-size: 2rem;
+      font-size: 1.6rem;
       font-weight: 800;
       letter-spacing: -0.02em;
       color: var(--white);
       font-variant-numeric: tabular-nums;
+      white-space: nowrap;
     }
     .stat-highlight {
       color: #34d399;
@@ -675,148 +677,267 @@
 
     /* Part 2: Solution & Workflow Section */
     .solution-section {
-      margin-bottom: 4.5rem;
+      margin-bottom: 5rem;
     }
-    .thesis-box {
-      background-color: var(--white);
-      border: 1px solid var(--slate-200);
-      border-left: 6px solid var(--hban-green);
-      border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2.5rem;
-      box-shadow: var(--card-shadow);
+    .subsection-block {
+      margin-top: 3rem;
     }
-    .thesis-box h3 {
-      font-size: 1.35rem;
+    .subsection-header {
+      margin-bottom: 1.5rem;
+    }
+    .subsection-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--hban-green);
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .subsection-title {
+      font-size: 1.5rem;
       font-weight: 800;
       color: var(--hban-green-dark);
-      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
     }
-    .thesis-box p {
+    .subsection-desc {
+      font-size: 0.95rem;
+      color: var(--slate-600);
+      margin-top: 0.25rem;
+      max-width: 850px;
+      line-height: 1.55;
+    }
+
+    /* Signals Grid (What the Agents Watch) */
+    .signals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+    .signal-card {
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: 14px;
+      padding: 1.6rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    }
+    .signal-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--card-shadow-lg);
+      border-color: var(--hban-mint-border);
+    }
+    .signal-badge {
+      align-self: flex-start;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      background: var(--hban-mint);
+      color: var(--hban-green-dark);
+      border: 1px solid var(--hban-mint-border);
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+    .signal-card h4 {
       font-size: 1.05rem;
-      color: var(--slate-700);
+      font-weight: 800;
+      color: var(--slate-900);
+      margin-bottom: 0.5rem;
+      line-height: 1.35;
+    }
+    .signal-card p {
+      font-size: 0.875rem;
+      color: var(--slate-600);
       line-height: 1.6;
     }
-    .capacity-meter-card {
-      background: linear-gradient(135deg, var(--hban-green-dark) 0%, var(--hban-green-darker) 100%);
-      color: var(--white);
+
+    /* Agent Workflow Pipeline (End-to-End) */
+    .agent-pipeline {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .agent-step-card {
+      background: var(--white);
+      border: 1px solid var(--slate-200);
+      border-radius: 14px;
+      padding: 1.75rem;
+      box-shadow: var(--card-shadow);
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 1.75rem;
+      align-items: flex-start;
+      position: relative;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .agent-step-card:hover {
+      border-color: var(--hban-mint-border);
+      box-shadow: var(--card-shadow-lg);
+    }
+    .agent-number-badge {
+      width: 58px;
+      height: 58px;
       border-radius: 12px;
-      padding: 1.5rem 2rem;
-      margin: 1.5rem 0;
+      background: linear-gradient(135deg, var(--hban-green-dark), var(--hban-green));
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.35rem;
+      box-shadow: 0 4px 8px rgba(0, 103, 56, 0.25);
+      flex-shrink: 0;
+    }
+    .agent-number-sub {
+      font-size: 0.55rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      opacity: 0.9;
+      margin-top: -2px;
+    }
+    .agent-body-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 1.5rem;
-      border: 1px solid var(--hban-green);
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
     }
-    .meter-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--hban-mint-border);
-      margin-bottom: 0.25rem;
+    .agent-name {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--slate-900);
     }
-    .meter-display {
-      font-size: 1.35rem;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: -0.01em;
-    }
-    .meter-tag {
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      padding: 0.4rem 0.9rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--white);
-    }
-
-    /* Comparison Table */
-    .table-container {
-      background: var(--white);
-      border: 1px solid var(--slate-200);
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: var(--card-shadow);
-      margin-bottom: 2rem;
-    }
-    table.comparison-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-    table.comparison-table th {
-      background-color: var(--slate-100);
-      color: var(--slate-700);
-      font-size: 0.8rem;
+    .agent-role-pill {
+      font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid var(--slate-200);
-    }
-    table.comparison-table td {
-      padding: 1.15rem 1.5rem;
-      font-size: 0.95rem;
-      border-bottom: 1px solid var(--slate-200);
-      vertical-align: top;
-    }
-    table.comparison-table tr:last-child td {
-      border-bottom: none;
-    }
-    table.comparison-table tr:hover td {
-      background-color: var(--slate-50);
-    }
-    .badge-today {
-      color: var(--slate-600);
-      font-weight: 600;
-    }
-    .badge-horizon {
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      background: var(--slate-100);
       color: var(--hban-green-dark);
-      font-weight: 700;
+      border: 1px solid var(--slate-200);
     }
-
-    /* Institutional Governance & Guardrails */
-    .guardrail-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 1.25rem;
-      margin-top: 1.5rem;
+    .agent-description {
+      font-size: 0.925rem;
+      color: var(--slate-700);
+      line-height: 1.6;
+      margin-bottom: 0.85rem;
     }
-    .guardrail-callout {
-      background-color: var(--slate-100);
-      border: 1px solid var(--slate-300);
-      border-radius: 10px;
-      padding: 1.25rem 1.75rem;
-      display: flex;
-      gap: 1.25rem;
-      align-items: flex-start;
-    }
-    .guardrail-icon {
-      background-color: var(--hban-green-dark);
-      color: var(--white);
-      width: 32px;
-      height: 32px;
+    .agent-output-box {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-left: 3px solid var(--hban-green);
       border-radius: 8px;
+      padding: 0.65rem 1rem;
+      font-size: 0.825rem;
+      color: var(--slate-700);
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+    .agent-output-label {
       font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      color: var(--hban-green-dark);
+      white-space: nowrap;
+    }
+
+    /* Scaling Advisors Strategic Banner */
+    .scale-thesis-card {
+      background: linear-gradient(135deg, var(--hban-green-dark) 0%, var(--hban-green-darker) 100%);
+      color: var(--white);
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: 0 12px 24px -4px rgba(0, 51, 25, 0.25);
+      border: 1px solid var(--hban-green);
+      position: relative;
+      overflow: hidden;
+    }
+    .scale-thesis-card::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(126, 207, 28, 0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .scale-thesis-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--hban-green-abundant);
+      margin-bottom: 0.5rem;
+    }
+    .scale-thesis-title {
+      font-size: 1.65rem;
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      line-height: 1.25;
+    }
+    .scale-thesis-lead {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: rgba(240, 253, 244, 0.95);
+      max-width: 920px;
+      margin-bottom: 1.5rem;
+    }
+    .scale-thesis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.75rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      position: relative;
+      z-index: 1;
+    }
+    .scale-thesis-item h5 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--hban-mint-border);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .scale-thesis-item p {
       font-size: 0.9rem;
-      flex-shrink: 0;
+      color: rgba(240, 253, 244, 0.9);
+      line-height: 1.6;
     }
-    .guardrail-text h5 {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--slate-900);
-      margin-bottom: 0.25rem;
-    }
-    .guardrail-text p {
-      font-size: 0.875rem;
-      color: var(--slate-600);
+
+    @media (max-width: 640px) {
+      .agent-step-card {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .agent-number-badge {
+        width: 46px;
+        height: 46px;
+        font-size: 1.15rem;
+      }
+      .scale-thesis-card {
+        padding: 1.75rem 1.25rem;
+      }
     }
 
     /* Part 3: Demo Flow (Timeline with 3 Core Dimensions) */
@@ -1631,9 +1752,6 @@
         <nav class="nav-links">
           <a href="#problem">Business Problem</a>
           <a href="#solution">Workflow &amp; Thesis</a>
-          <a href="#demoflow">Operating Workflow</a>
-          <a href="#architecture">Architecture</a>
-          <a href="#roi">Financial ROI</a>
           <span class="version-pill">v6.0 Horizon 2.0</span>
         </nav>
         
@@ -1834,623 +1952,228 @@
       </div>
     </section>
 
-    <!-- SECTION 2: How Horizon Solves It -->
+    <!-- SECTION 2: What the Agents Watch & The End-to-End Workflow -->
     <section id="solution" class="solution-section">
       <div class="section-header">
-        <div class="section-eyebrow">Part 2: The Core Workflow</div>
-        <h2 class="section-title">How Horizon Solves It: Dual-Sided Capacity Leverage</h2>
+        <div class="section-eyebrow">Part 2: Multi-Agent Architecture &amp; Workflow</div>
+        <h2 class="section-title">Autonomous Liquidity Detection, Enrichment &amp; Routing</h2>
         <p class="section-desc">
-          Horizon does not ask bankers to work longer hours, nor does it fire bankers. Built on the <strong>Gemini Enterprise Agent Platform (fka Vertex AI Platform)</strong>, it introduces an intelligent agentic layer that <strong>absorbs the un-staffable work</strong> across both commercial and wealth operations.
+          Huntington Horizon introduces an intelligent agentic orchestration layer built on the <strong>Gemini Enterprise Agent Platform (fka Vertex AI Platform)</strong>. Specialized autonomous agents continually monitor the franchise book, resolve beneficial ownership, match private wealth advisors, and automate personalized relationship manager outreach.
         </p>
       </div>
 
-      <div class="thesis-box">
-        <h3>The Scaling Thesis Stated Plainly</h3>
-        <p>
-          <em>"No human team could monitor a $4.5B payoff book in real time. Horizon monitors all of it, absorbs multi-hour discovery on the commercial side, and pre-stages onboarding and ongoing fiduciary servicing on the wealth side. The same headcount—commercial and wealth—now covers a franchise it physically could not have covered before. That is how Huntington scales wealth management without scaling the org chart."</em>
-        </p>
-      </div>
-
-      <!-- Capacity Meter Display -->
-      <div class="capacity-meter-card">
-        <div>
-          <div class="meter-title">Synthetic Capacity Meter (Live In-Product)</div>
-          <div class="meter-display">2,140 screened ▸ 6 qualified & staged ▸ ~46 hrs manual discovery absorbed</div>
+      <!-- Subsection 1: What the Agents Watch -->
+      <div class="subsection-block">
+        <div class="subsection-header">
+          <div class="subsection-eyebrow">Continuous Surveillance Signals</div>
+          <h3 class="subsection-title">What the Agents Watch</h3>
+          <p class="subsection-desc">
+            Autonomous multi-source ingestion fusing commercial loan books, wire clearing, entity hierarchies, and public deed exhibits in real time.
+          </p>
         </div>
-        <div class="meter-tag">Zero Net New Headcount Required</div>
-      </div>
 
-      <!-- Side-by-Side Value Table -->
-      <div class="table-container">
-        <table class="comparison-table">
-          <thead>
-            <tr>
-              <th style="width: 25%;">Dimension</th>
-              <th style="width: 35%;">Manual Baseline (Today)</th>
-              <th style="width: 40%;">With Huntington Horizon</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Book Coverage</strong></td>
-              <td class="badge-today">Effectively &lt;5% (Humanly un-monitorable)</td>
-              <td class="badge-horizon">100% of $4.5B book monitored in real time via Pub/Sub</td>
-            </tr>
-            <tr>
-              <td><strong>Commercial RM Discovery</strong></td>
-              <td class="badge-today">~6–8 hours per deal across 3 siloed systems</td>
-              <td class="badge-horizon"><strong>~4 minutes total:</strong> Gemini multimodal entity resolution + automated Borrower Settlement Routing Packet</td>
-            </tr>
-            <tr>
-              <td><strong>Messy Real-World Pricing</strong></td>
-              <td class="badge-today">Blocks workflow; requires human analyst to research property</td>
-              <td class="badge-horizon"><strong>Agentic Proof:</strong> Trailing NOI ($637.5k) capitalized via 7.5% submarket cap rate grounded via Vertex AI Search ($8.5M value)</td>
-            </tr>
-            <tr>
-              <td><strong>IRC §1031 Exchange Routing</strong></td>
-              <td class="badge-today">0% captured; 100% leaks to third-party QI accommodators</td>
-              <td class="badge-horizon"><strong>Native 1031 Detection:</strong> Automatic routing to Huntington 1031 Qualified Escrow Depository (Partner QI Network, yielding 4.75%)</td>
-            </tr>
-            <tr>
-              <td><strong>Wealth Advisor Intake &amp; Servicing</strong></td>
-              <td class="badge-today">~4–6 hrs onboarding (2–3 weeks elapsed); capped at 80 clients</td>
-              <td class="badge-horizon"><strong>~3-day onboarding:</strong> Pre-filled KYC/CIP, SEI Data Cloud shell, draft IPS, &amp; ongoing review dossiers expanding capacity to <strong>95–100 clients (2x CSA leverage)</strong></td>
-            </tr>
-            <tr>
-              <td><strong>Compliance & Risk</strong></td>
-              <td class="badge-today">Manual checks; risk of fee-splitting violations or bad credits</td>
-              <td class="badge-horizon"><strong>Exclusion Sentry Tool:</strong> Pass rating (Tier 2), FINRA 2040 100% Deposit FTP Credit, GLBA Quarantined Consent Gate</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Institutional Governance & Regulatory Architecture Grid -->
-      <div class="guardrail-grid">
-        <div class="guardrail-callout">
-          <div class="guardrail-icon">&sect;</div>
-          <div class="guardrail-text">
-            <h5>Institutional Governance: Reg BI &amp; Fiduciary Boundary</h5>
-            <p>
-              Horizon generates <strong>administrative scaffolding only</strong>. It never renders investment advice or suitability determinations. Pre-filled KYC entries, SEI model allocations, and draft IPS structures require mandatory review and authorship by licensed Series 7/66/CFP advisors before client presentation.
-            </p>
+        <div class="signals-grid">
+          <div class="signal-card">
+            <div>
+              <span class="signal-badge">AFS Core &bull; Commercial LOS</span>
+              <h4>Loan Payoff &amp; Early Paydown Events</h4>
+              <p>
+                Monitors payoff demands, scheduled maturities, and especially early paydown events on commercial real estate (CRE) facilities and term loans across all 1,400 branches.
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div class="guardrail-callout">
-          <div class="guardrail-icon">R</div>
-          <div class="guardrail-text">
-            <h5>Ameriprise Partnership &amp; Regulation R Networking</h5>
-            <p>
-              Huntington Advisors operates on Ameriprise's broker-dealer platform (announced Feb 4, 2026). The retail channel is a non-affiliated third party for GLBA privacy purposes. The referral program is a strict <strong>Regulation R networking arrangement</strong> (12 CFR Part 218): Commercial RMs receive deposit FTP credit only, with strictly zero securities commissions or fee-splitting under FINRA Rule 2040.
-            </p>
+          <div class="signal-card">
+            <div>
+              <span class="signal-badge">Fedwire &bull; Title Escrow</span>
+              <h4>Large Inbound Settlement Wires</h4>
+              <p>
+                Detects substantial inbound wire disbursements credited to an LLC operating account originating from title insurance companies, commercial escrow agents, or M&amp;A legal counsel.
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div class="guardrail-callout">
-          <div class="guardrail-icon">&#9881;</div>
-          <div class="guardrail-text">
-            <h5>SEI Wealth Platform &amp; Snowflake Zero-ETL Data Cloud</h5>
-            <p>
-              Huntington Private Bank is migrating to the SEI Wealth Platform (announced March 31, 2026). Horizon integrates natively via <strong>SEI Data Cloud via Snowflake Secure Data Sharing (Zero-ETL architecture)</strong>, provisioning custodial shells and synchronizing real-time estate and trust topologies without brittle legacy on-premise Trust 3000 batch files.
-            </p>
+          <div class="signal-card">
+            <div>
+              <span class="signal-badge">Deposit Core &bull; Liquidity Triage</span>
+              <h4>Dormant Balance Spikes</h4>
+              <p>
+                Surfaces sudden, high-magnitude balance surges that sit idle in business checking accounts beyond calibrated balance thresholds and idle duration windows.
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div class="guardrail-callout">
-          <div class="guardrail-icon">&#9670;</div>
-          <div class="guardrail-text">
-            <h5>ALTA Pillar 2 &amp; UCC 4A Wire Fraud Protection</h5>
-            <p>
-              Commercial lenders lack legal standing to instruct title escrow agents directly. Horizon delivers a formal <strong>DocuSign Settlement Routing Packet</strong> directly to the borrower for seller authorization, backed by Huntington's official bank verification letter and direct telephone callback line at <strong>(614) 480-4401</strong>.
-            </p>
+          <div class="signal-card">
+            <div>
+              <span class="signal-badge">Entity Resolution &bull; AFS Master</span>
+              <h4>Beneficial Ownership &amp; Guarantors</h4>
+              <p>
+                Ingests operating agreements and corporate incumbency certificates to map complex pass-through LLC structures to individual human principals, primary guarantors, and existing personal accounts.
+              </p>
+            </div>
+          </div>
+
+          <div class="signal-card">
+            <div>
+              <span class="signal-badge">Public Records &bull; Registries</span>
+              <h4>External Confirmation Signals</h4>
+              <p>
+                Cross-validates transactions against external public registries including county deed transfers, UCC lien releases, and verified press on business sales and M&amp;A transactions.
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- SECTION 3: The Demo Flow (With 3-Part Dimensions) -->
-    <section id="demoflow" class="demo-flow-section">
-      <div class="section-header">
-        <div class="section-eyebrow">Part 3: Demonstration Blueprint</div>
-        <h2 class="section-title">The 10-Minute Executive Demonstration Flow</h2>
-        <p class="section-desc">
-          A structured walkthrough demonstrating the exact presenter actions, visible UI feedback, and production enterprise implementation mapping for every step of the workflow.
-        </p>
-      </div>
+      <!-- Subsection 2: The Agent Workflow End to End -->
+      <div class="subsection-block">
+        <div class="subsection-header">
+          <div class="subsection-eyebrow">End-to-End Autonomous Execution</div>
+          <h3 class="subsection-title">The Agent Workflow End to End</h3>
+          <p class="subsection-desc">
+            Five coordinated agents execute deterministic analysis, enrichment, routing, and post-closing tracking with human-in-the-loop governance.
+          </p>
+        </div>
 
-      <div class="timeline">
-        <!-- Step 1 -->
-        <div class="timeline-step">
-          <div class="step-marker">1</div>
-          <div class="step-content">
-            <div class="step-header">
-              <span class="step-timing">Day T-14 • 01:30 in Demo</span>
-              <div class="step-title">Continuous Servicing Queue Ingestion</div>
-              <span class="step-persona persona-agent">Horizon Agent</span>
+        <div class="agent-pipeline">
+          <!-- Step 1: Detection Agent -->
+          <div class="agent-step-card">
+            <div class="agent-number-badge">
+              <span>01</span>
+              <span class="agent-number-sub">Detect</span>
             </div>
-            <p>Horizon monitors commercial loan servicing queues (AFS/ACBS). It automatically intercepts an inbound title payoff request PDF from First American Title on <em>Riverfront Commercial Commons</em> ($5,214,800 payoff, 14 days to close).</p>
-            
-            <div class="step-dimensions-grid">
-              <div class="dim-box">
-                <div class="dim-label">Presenter Action</div>
-                <div class="dim-text">Opens Salesforce FSC shell; highlights live ingestion feed and T-14 payoff request document.</div>
+            <div class="agent-body">
+              <div class="agent-body-header">
+                <span class="agent-name">Detection Agent</span>
+                <span class="agent-role-pill">Signal Fusion &bull; Flight Risk Scoring</span>
               </div>
-              <div class="dim-box">
-                <div class="dim-label">What is Shown in Demo</div>
-                <div class="dim-text">Inbound PDF preview, extracted UPB ($5,214,800), and 14-day payoff countdown badge.</div>
-              </div>
-              <div class="dim-box">
-                <div class="dim-label">Production Implementation</div>
-                <div class="dim-text">Google Cloud Pub/Sub event bus ingesting core servicing feeds into Cloud Run microservices.</div>
+              <p class="agent-description">
+                Fuses signals into a composite score for the liquidity event, distinguishing payoffs from refis and 1031s. The detection agent identifies a payoff with no proceeds, no replacement loan, and an identifiable intermediary which directly informs classification.
+              </p>
+              <div class="agent-output-box">
+                <span class="agent-output-label">Key Output:</span>
+                <span>Calibrated Liquidity Score (e.g., 94%) &bull; Deterministic Classification: Refinance vs. 1031 vs. Taxable Cash-Out</span>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Step 2 -->
-        <div class="timeline-step">
-          <div class="step-marker">2</div>
-          <div class="step-content">
-            <div class="step-header">
-              <span class="step-timing">Day T-14 • 03:00 in Demo</span>
-              <div class="step-title">Multimodal Entity Resolution & Guarantor Mapping</div>
-              <span class="step-persona persona-agent">Gemini 3.7 Flash</span>
+          <!-- Step 2: Enrichment Agent -->
+          <div class="agent-step-card">
+            <div class="agent-number-badge">
+              <span>02</span>
+              <span class="agent-number-sub">Enrich</span>
             </div>
-            <p>Powered by the <strong>Gemini Enterprise Agent Platform</strong>, Horizon inspects raw credit documents (Incumbency Certificate &amp; Guaranty Agreement), resolving <code>Vance Riverfront Properties IV, LLC</code> to <strong>Marcus Vance (85%)</strong> and <strong>Elena Vance (15%)</strong> with pixel-level bounding boxes (Elena Vance programmatically excluded from profiling as non-guarantor under GLBA Reg P &amp; FCRA § 604).</p>
-            
-            <div class="step-dimensions-grid">
-              <div class="dim-box">
-                <div class="dim-label">Presenter Action</div>
-                <div class="dim-text">Clicks Marcus Vance in Pane 1; triggers multimodal layout analysis on scanned credit vault documents.</div>
+            <div class="agent-body">
+              <div class="agent-body-header">
+                <span class="agent-name">Enrichment Agent</span>
+                <span class="agent-role-pill">Dossier Synthesis &bull; Capital Modeling</span>
               </div>
-              <div class="dim-box">
-                <div class="dim-label">What is Shown in Demo</div>
-                <div class="dim-text">Pane 2 household topology map with green bounding-box citations on scanned credit certificates.</div>
-              </div>
-              <div class="dim-box">
-                <div class="dim-label">Production Implementation</div>
-                <div class="dim-text">Gemini 3.7 Flash native multimodal visual understanding parsing raw TIFF/PDFs directly from BigQuery vault.</div>
+              <p class="agent-description">
+                Builds an executive 1-pager briefing in seconds: relationship history, who the commercial banker is, what the proceeds likely are, tax implications, and personal wealth objectives, mapping the borrower's total Huntington footprint.
+              </p>
+              <div class="agent-output-box">
+                <span class="agent-output-label">Key Output:</span>
+                <span>Executive Relationship 1-Pager, Net Proceeds Sizing (~$2.90M) &bull; Tax &amp; Wealth Objectives Dossier</span>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Step 3 -->
-        <div class="timeline-step">
-          <div class="step-marker highlight">3</div>
-          <div class="step-content">
-            <div class="step-header">
-              <span class="step-timing">Day T-14 • 04:30 in Demo</span>
-              <div class="step-title">The "Agentic Proof" Moment: Grounded Valuation & 1031 Strategy</div>
-              <span class="step-persona persona-agent">Gemini 3.7 Flash + Vertex Search</span>
+          <!-- Step 3: Routing Agent -->
+          <div class="agent-step-card">
+            <div class="agent-number-badge">
+              <span>03</span>
+              <span class="agent-number-sub">Route</span>
             </div>
-            <p>The title letter omits the contract sale price. Rather than failing, the agent retrieves Q1 trailing NOI ($637.5k), grounds the 7.5% submarket cap rate via Vertex AI Search, computes an indicative $8.5M value ($2.9M net equity), and verifies IRC §1031 exchange intent.</p>
-            
-            <div class="step-dimensions-grid">
-              <div class="dim-box">
-                <div class="dim-label">Presenter Action</div>
-                <div class="dim-text">Adjusts the Sale Price Slider from $8.5M to $9.0M live; inspects the 1031 Tax Strategy Toggle.</div>
+            <div class="agent-body">
+              <div class="agent-body-header">
+                <span class="agent-name">Routing Agent</span>
+                <span class="agent-role-pill">Multi-Factor Matching &bull; RM Notification</span>
               </div>
-              <div class="dim-box">
-                <div class="dim-label">What is Shown in Demo</div>
-                <div class="dim-text">Real-time dynamic arithmetic updating net equity to $3.35M; source citations linking to appraisal database.</div>
-              </div>
-              <div class="dim-box">
-                <div class="dim-label">Production Implementation</div>
-                <div class="dim-text">Vertex AI Search grounding regional cap rates; deterministic Cloud Run `CalculatorTool` executing math.</div>
+              <p class="agent-description">
+                Selects the right advisor based on geography, capacity, and specialty, sending real-time notifications to align the commercial RM and private wealth advisor.
+              </p>
+              <div class="agent-output-box">
+                <span class="agent-output-label">Key Output:</span>
+                <span>Ranked Wealth Advisor Match (98% Match Score) &bull; Automated Dual-Party RM Notification</span>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Step 4 -->
-        <div class="timeline-step">
-          <div class="step-marker">4</div>
-          <div class="step-content">
-            <div class="step-header">
-              <span class="step-timing">Day T-12 • 06:00 in Demo</span>
-              <div class="step-title">Automated Risk & Compliance Screening (Exclusion Sentry)</div>
-              <span class="step-persona persona-agent">Deterministic Cloud Run Tool</span>
+          <!-- Step 4: Outreach Agent -->
+          <div class="agent-step-card">
+            <div class="agent-number-badge">
+              <span>04</span>
+              <span class="agent-number-sub">Outreach</span>
             </div>
-            <p>Before any banker's time is requested, Horizon validates that credit risk is <strong>Pass (Rating 2)</strong> and configures <strong>FINRA Rule 2040 compliance</strong>: RM receives 100% Deposit FTP Credit on their cost-of-funds scorecard with zero securities fee-splitting.</p>
-            
-            <div class="step-dimensions-grid">
-              <div class="dim-box">
-                <div class="dim-label">Presenter Action</div>
-                <div class="dim-text">Navigates to Corporate Governance (CRO Defense); demonstrates deterministic credit risk checks, GLBA DLP sentry, and non-fee-splitting verification.</div>
+            <div class="agent-body">
+              <div class="agent-body-header">
+                <span class="agent-name">Outreach Agent</span>
+                <span class="agent-role-pill">Executive Drafting &bull; Call Scheduling</span>
               </div>
-              <div class="dim-box">
-                <div class="dim-label">What is Shown in Demo</div>
-                <div class="dim-text">Green badges for Pass Rating 2, FINRA 2040 Deposit FTP Credit, and GLBA Quarantined Consent Gate.</div>
-              </div>
-              <div class="dim-box">
-                <div class="dim-label">Production Implementation</div>
-                <div class="dim-text">Cloud Run microservice enforcing deterministic ECOA/Reg B rules and immutable Cloud Audit Logs.</div>
+              <p class="agent-description">
+                Creates a warm intro for the RM to the advisor. The intro is sent on behalf of the commercial banker—they own the client relationship, ensuring they stay firmly in the loop—while pre-populating context and coordinating call scheduling.
+              </p>
+              <div class="agent-output-box">
+                <span class="agent-output-label">Key Output:</span>
+                <span>RM-Authored Introduction Draft, Pre-Populated Deal Context &bull; Automated Intro Call Scheduling</span>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Step 5 -->
-        <div class="timeline-step">
-          <div class="step-marker">5</div>
-          <div class="step-content">
-            <div class="step-header">
-              <span class="step-timing">Day T-12 • 06:45 in Demo</span>
-              <div class="step-title">High-Value Human Call &amp; Borrower-Directed Routing (ALTA Pillar 2)</div>
-              <span class="step-persona persona-rm">Greg Miller (Commercial RM)</span>
+          <!-- Step 5: Tracking Agent -->
+          <div class="agent-step-card">
+            <div class="agent-number-badge">
+              <span>05</span>
+              <span class="agent-number-sub">Track</span>
             </div>
-            <p>RM Greg Miller places a 4-minute warm call: <em>"Marcus, congratulations on getting Riverfront under contract. Let's make sure that $2.9M net proceeds is safely retained. Under ALTA Pillar 2 wire fraud rules, First American Title requires direct seller authorization. I will deliver our verified Huntington Settlement Routing Packet directly to you via DocuSign so you can authorize title, backed by our official bank verification letter for title's telephone callback authentication on (614) 480-4401."</em> Greg records Marcus's affirmative verbal consent to lift the GLBA Privacy Gate.</p>
-            
-            <div class="step-dimensions-grid">
-              <div class="dim-box">
-                <div class="dim-label">Presenter Action</div>
-                <div class="dim-text">Reviews briefing talk track; inspects live DocuSign routing packet; clicks [Record Client Opt-In] to lift GLBA Privacy Gate.</div>
+            <div class="agent-body">
+              <div class="agent-body-header">
+                <span class="agent-name">Tracking Agent</span>
+                <span class="agent-role-pill">Deposit Retention &bull; AUM Conversion Telemetry</span>
               </div>
-              <div class="dim-box">
-                <div class="dim-label">What is Shown in Demo</div>
-                <div class="dim-text">Live DocuSign routing packet (Envelope ENV-HBAN-20260904-8821) with official bank verification letter and callback line (614) 480-4401.</div>
-              </div>
-              <div class="dim-box">
-                <div class="dim-label">Production Implementation</div>
-                <div class="dim-text">DocuSign REST APIs and Apigee X API Gateway delivering authenticated payload directly to borrower.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Step 6 -->
-        <div class="timeline-step">
-          <div class="step-marker highlight">6</div>
-          <div class="step-content">
-            <div class="step-header">
-              <span class="step-timing">Day T-8 • 07:30 in Demo</span>
-              <div class="step-title">Wealth Capacity Leverage: Onboarding &amp; Ongoing Servicing</div>
-              <span class="step-persona persona-pwa">Sarah Jenkins (Private Wealth Advisor)</span>
-            </div>
-            <p>The demo toggles to Sarah Jenkins. Horizon does not dump a raw lead. It delivers an <strong>80% pre-staged onboarding package</strong> (KYC/CIP, SEI Data Cloud custodial shell via Snowflake Zero-ETL, draft IPS scaffolding) plus an <strong>Automated Quarterly Review Dossier</strong> template—expanding Sarah's client capacity from 80 to 95–100 relationships via 2x CSA operational leverage.</p>
-            
-            <div class="step-dimensions-grid">
-              <div class="dim-box">
-                <div class="dim-label">Presenter Action</div>
-                <div class="dim-text">Toggles Persona Switcher to Sarah Jenkins (PWA view); reviews staged dossier and IPS framework.</div>
-              </div>
-              <div class="dim-box">
-                <div class="dim-label">What is Shown in Demo</div>
-                <div class="dim-text">Pre-filled KYC/CIP entries, staged SEI Data Cloud shell, draft IPS framework, and ongoing review dossier template.</div>
-              </div>
-              <div class="dim-box">
-                <div class="dim-label">Production Implementation</div>
-                <div class="dim-text">SEI Data Cloud via Snowflake Secure Data Sharing (Zero-ETL); Cloud Spanner persistent household topology.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Step 7 -->
-        <div class="timeline-step">
-          <div class="step-marker">7</div>
-          <div class="step-content">
-            <div class="step-header">
-              <span class="step-timing">Day T-0 to T+10 • 09:00 in Demo</span>
-              <div class="step-title">Dual-Path Deposit Retention: 100% Retained at Closing</div>
-              <span class="step-persona persona-client">Client & Treasury Platform</span>
-            </div>
-            <p><strong>Path A (Cash Out):</strong> On Day T-0, $2.9M settles directly into Marcus's commercial <strong>Business Premier Insured Cash Sweep (ICS)</strong> yielding 4.85% with multi-million-dollar FDIC insurance. On Day T+10, $2.0M transitions to an SEI discretionary family trust, retaining $900k in commercial liquidity.</p>
-            <p><strong>Path B (1031 Exchange):</strong> If 1031 intent is flagged, proceeds route directly into the <strong>Huntington 1031 Qualified Escrow Depository (Partner QI Network)</strong> (yielding 4.75%) under Treas. Reg. § 1.1031(k)-1(g)(3) during the 180-day window.</p>
-            
-            <div class="step-dimensions-grid">
-              <div class="dim-box">
-                <div class="dim-label">Presenter Action</div>
-                <div class="dim-text">Shows Day 0 settlement ledger; highlights seamless transition from Treasury ICS to SEI Wealth Platform.</div>
-              </div>
-              <div class="dim-box">
-                <div class="dim-label">What is Shown in Demo</div>
-                <div class="dim-text">Two-tier retention breakdown: $2.0M Wealth AUM + $900k Commercial Deposits = $2.9M retained.</div>
-              </div>
-              <div class="dim-box">
-                <div class="dim-label">Production Implementation</div>
-                <div class="dim-text">Core deposit accounting (AFS/ACBS) coupled with SEI Wealth Platform custodial ledger.</div>
+              <p class="agent-description">
+                Watches the funds and stays on the money until it's either captured or deployed. Tracks cycle time from notification to outreach to conversation to conversion to verify advisors are successfully converting leads into assets under management (AUM).
+              </p>
+              <div class="agent-output-box">
+                <span class="agent-output-label">Key Output:</span>
+                <span>Deposit Velocity &bull; Milestone Funnel Tracking: Notification &rarr; Outreach &rarr; Conversation &rarr; Conversion</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- SECTION 4: Architecture Diagrams -->
-    <section id="architecture" class="arch-section">
-      <div class="section-header">
-        <div class="section-eyebrow">Part 4: System Architecture</div>
-        <h2 class="section-title">Technical Architecture: Demo vs. Target Production</h2>
-        <p class="section-desc">
-          Compare the high-speed prototype monostack built for executive demonstration against the enterprise-hardened production architecture engineered for scale, auditability, and regulatory compliance.
-        </p>
-      </div>
-
-      <!-- Tab Navigation -->
-      <div class="tabs-wrapper">
-        <button class="tab-btn active" onclick="switchTab('demo-arch')">1. Working Demo Stack (React + Vite + FastAPI on Cloud Run)</button>
-        <button class="tab-btn" onclick="switchTab('prod-arch')">2. Target Enterprise Production Stack (Google Cloud + Banking Core)</button>
-      </div>
-
-      <!-- TAB 1: DEMO ARCHITECTURE -->
-      <div id="demo-arch" class="tab-pane active">
-        <div class="diagram-container">
-          <p class="diagram-desc">
-            <strong>Standard Cloud Run Monostack:</strong> Containerized React 18 + Vite SPA paired with a Python 3.11 FastAPI backend in a multi-stage Docker container deployed on Google Cloud Run. Features native Cloud Run Direct IAP with cryptographic JWT verification, Application Default Credentials (ADC), scale-to-zero idle defaults (`--min-instances=0`), and live integration with the Gemini Enterprise Agent Platform.
+      <!-- Subsection 3: Why This Scales Advisors -->
+      <div class="subsection-block">
+        <div class="scale-thesis-card">
+          <div class="scale-thesis-eyebrow">Enterprise Scaling Thesis</div>
+          <h3 class="scale-thesis-title">Why This Scales Advisors</h3>
+          <p class="scale-thesis-lead">
+            The scarcest resource in wealth management is qualified conversations. Advisors spend hours prospecting, cold-calling, and chasing unvetted leads. Horizon eliminates prospecting by delivering warm, high-conviction liquidity events from Huntington’s own commercial book—with the commercial banker initiating the introduction. The advisor focuses entirely on advisory and conversion, multiplying book growth per advisor without adding headcount.
           </p>
 
-          <div class="arch-grid-demo">
-            <!-- Col 1: Presentation -->
-            <div class="arch-column">
-              <div class="arch-col-title">
-                <span>Presentation Tier</span>
-                <span style="color: var(--hban-green-dark); font-size: 0.75rem;">Client Browser</span>
-              </div>
-              <div class="arch-node core-focus">
-                <span class="node-badge badge-ui">UI Monostack</span>
-                <div class="node-title">Salesforce FSC Shell</div>
-                <div class="node-tech">React 18 • Vite • TailwindCSS • shadcn/ui</div>
-                <div class="node-desc">Embedded 3-Pane console: Priority Radar, Household Topology Canvas, and Agent Staging Workspace.</div>
-              </div>
-              <div class="arch-node">
-                <span class="node-badge badge-ui">Interactive Control</span>
-                <div class="node-title">Persona Switcher</div>
-                <div class="node-tech">Dual-Persona State Manager</div>
-                <div class="node-desc">Instant toggle between Commercial RM (Greg) and Private Wealth Advisor (Sarah) proving dual-sided leverage.</div>
-              </div>
-              <div class="arch-node">
-                <span class="node-badge badge-ui">Mandatory Admin</span>
-                <div class="node-title">Admin Panel & Gear Icon</div>
-                <div class="node-tech">Slide-Over Sheet • Lucide Settings</div>
-                <div class="node-desc">Slide-out drawer displaying live telemetry badges and quick links to Brand Kit and Demo Script.</div>
-              </div>
+          <div class="scale-thesis-grid">
+            <div class="scale-thesis-item">
+              <h5>The Scarcest Resource: Qualified Conversations</h5>
+              <p>
+                Advisors spend countless hours cold prospecting external leads with zero financial transparency or relationship equity. Horizon eliminates speculative outreach by delivering opportunities where verified liquidity is already in motion.
+              </p>
             </div>
 
-            <!-- Col 2: Cloud Run Host & Proxy -->
-            <div class="arch-column">
-              <div class="arch-col-title">
-                <span>Compute & Security Tier</span>
-                <span style="color: var(--hban-green-dark); font-size: 0.75rem;">Google Cloud Run</span>
-              </div>
-              <div class="arch-node core-focus">
-                <span class="node-badge badge-cloud">Monostack Host</span>
-                <div class="node-title">FastAPI Application Server</div>
-                <div class="node-tech">Cloud Run Container • Python 3.11</div>
-                <div class="node-desc">Multi-stage Docker container serving static bundle and protected APIs. Bound to `0.0.0.0:${PORT:-8080}`.</div>
-              </div>
-              <div class="arch-node">
-                <span class="node-badge badge-tool">Enterprise Security</span>
-                <div class="node-title">Direct IAP + JWT Middleware</div>
-                <div class="node-tech">X-Goog-IAP-JWT-Assertion</div>
-                <div class="node-desc">Cryptographic JWT verification against Google public keys. Scale-to-zero defaults (`--min-instances=0`).</div>
-              </div>
-              <div class="arch-node">
-                <span class="node-badge badge-tool">Deterministic Tool</span>
-                <div class="node-title">Calculator & Sentry Engine</div>
-                <div class="node-tech">Deterministic Python Services</div>
-                <div class="node-desc">Executes UPB per diem interest, NOI capitalization arithmetic, and ECOA/Reg B credit risk filters.</div>
-              </div>
+            <div class="scale-thesis-item">
+              <h5>Warm Commercial Conduit Over Cold Outreach</h5>
+              <p>
+                Rather than an unsolicited, intrusive cold call from wealth management, clients receive a trusted, personalized introduction from their existing commercial relationship manager who has managed their credit for years.
+              </p>
             </div>
 
-            <!-- Col 3: Live Intelligence & Fallback -->
-            <div class="arch-column">
-              <div class="arch-col-title">
-                <span>Intelligence & Mock Core</span>
-                <span style="color: var(--hban-green-dark); font-size: 0.75rem;">Gemini Enterprise Agent</span>
-              </div>
-              <div class="arch-node core-focus">
-                <span class="node-badge badge-ai">Live Multimodal AI</span>
-                <div class="node-title">Gemini 3.7 Flash</div>
-                <div class="node-tech">Gemini Enterprise Agent Platform</div>
-                <div class="node-desc">Processes raw scanned PDF/TIFF documents directly with visual bounding-box extraction and ADC authentication.</div>
-              </div>
-              <div class="arch-node">
-                <span class="node-badge badge-ai">RAG Grounding</span>
-                <div class="node-title">Vertex AI Search Grounding</div>
-                <div class="node-tech">Grounding Attribution Engine</div>
-                <div class="node-desc">Dynamically retrieves commercial appraisal records and submarket cap rates with clickable citation badges.</div>
-              </div>
-              <div class="arch-node">
-                <span class="node-badge badge-data">Resilience Layer</span>
-                <div class="node-title">Local Encrypted Fallback</div>
-                <div class="node-tech">In-Memory Redis Cache</div>
-                <div class="node-desc">Pre-loaded backup document (*Apex Logistics*) and cached lookups guaranteeing zero-crash stage delivery.</div>
-              </div>
+            <div class="scale-thesis-item">
+              <h5>Pre-Qualified Leads with Established Footprints</h5>
+              <p>
+                Every opportunity is backed by complete entity resolution, verified net equity sizing, historical loan performance, and active depository accounts—giving advisors immediate fiduciary leverage without manual legwork.
+              </p>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- TAB 2: PRODUCTION ARCHITECTURE -->
-      <div id="prod-arch" class="tab-pane">
-        <div class="diagram-container">
-          <p class="diagram-desc">
-            <strong>Target Enterprise Production Architecture:</strong> Multi-tier banking integration featuring event-driven core servicing listeners, Gemini Enterprise Agent Platform with multimodal visual layout understanding, Apigee X API gateway security, VPC Service Controls, and deep integration with SEI Wealth Platform and DocuSign.
-          </p>
-
-          <div class="prod-tiers">
-            <!-- Tier 1: Ingestion & Core Banking -->
-            <div class="prod-tier-row">
-              <div class="tier-header">
-                <span class="tier-name">Tier 1: Core Banking & Ingestion Layer</span>
-                <span class="tier-boundary">Bank Core Boundary</span>
-              </div>
-              <div class="tier-grid">
-                <div class="arch-node">
-                  <span class="node-badge badge-data">Core Servicing</span>
-                  <div class="node-title">AFS & ACBS Loan Servicing</div>
-                  <div class="node-tech">Mainframe / Core Feeds</div>
-                  <div class="node-desc">Inbound payoff statement request documents and daily loan maturity queues.</div>
-                </div>
-                <div class="arch-node">
-                  <span class="node-badge badge-cloud">Message Broker</span>
-                  <div class="node-title">Google Cloud Pub/Sub</div>
-                  <div class="node-tech">High-throughput Event Stream</div>
-                  <div class="node-desc">Publishes payoff request ingestion events to trigger asynchronous processing.</div>
-                </div>
-                <div class="arch-node">
-                  <span class="node-badge badge-data">Document Vault</span>
-                  <div class="node-title">Commercial Credit Vault</div>
-                  <div class="node-tech">Enterprise Content Mgmt</div>
-                  <div class="node-desc">Stores signed incumbency certificates, commercial guaranties, and covenant compliance reports.</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Tier 2: Agentic Processing & Tooling -->
-            <div class="prod-tier-row">
-              <div class="tier-header">
-                <span class="tier-name">Tier 2: Agentic Orchestration & Grounding</span>
-                <span class="tier-boundary">Google Cloud Banking Enclave</span>
-              </div>
-              <div class="tier-grid">
-                <div class="arch-node core-focus">
-                  <span class="node-badge badge-ai">Agent Orchestrator</span>
-                  <div class="node-title">Gemini 3.7 Flash</div>
-                  <div class="node-tech">Gemini Enterprise Agent Platform</div>
-                  <div class="node-desc">Native multimodal layout parsing, unstated parameter identification, and structured planning.</div>
-                </div>
-                <div class="arch-node">
-                  <span class="node-badge badge-ai">Dynamic Grounding</span>
-                  <div class="node-title">Vertex AI Search</div>
-                  <div class="node-tech">Appraisal Vector Retrieval</div>
-                  <div class="node-desc">Grounds property NOI and regional cap rate indices with verifiable document provenance.</div>
-                </div>
-                <div class="arch-node">
-                  <span class="node-badge badge-tool">Deterministic Microservices</span>
-                  <div class="node-title">Cloud Run Tool Cluster</div>
-                  <div class="node-tech">Containerized Python Services</div>
-                  <div class="node-desc">Hosts CalculatorTool, 1031ExchangeDetector, and ExclusionSentryTool.</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Tier 3: Enterprise Data & State -->
-            <div class="prod-tier-row">
-              <div class="tier-header">
-                <span class="tier-name">Tier 3: Enterprise Data & Relationship Graph</span>
-                <span class="tier-boundary">Data Persistence Layer</span>
-              </div>
-              <div class="tier-grid">
-                <div class="arch-node">
-                  <span class="node-badge badge-data">Graph & Topology</span>
-                  <div class="node-title">Google Cloud Spanner</div>
-                  <div class="node-tech">Globally Consistent Graph</div>
-                  <div class="node-desc">Maps complex commercial LLC hierarchies, operating entities, and beneficial human guarantors.</div>
-                </div>
-                <div class="arch-node">
-                  <span class="node-badge badge-data">Analytics & Auditing</span>
-                  <div class="node-title">BigQuery Analytics Vault</div>
-                  <div class="node-tech">Historical Telemetry</div>
-                  <div class="node-desc">Maintains historical payoff tracking, flight pattern telemetry, and model performance metrics.</div>
-                </div>
-                <div class="arch-node">
-                  <span class="node-badge badge-data">Security Boundary</span>
-                  <div class="node-title">VPC-SC & Cloud KMS</div>
-                  <div class="node-tech">CMEK • Service Perimeters</div>
-                  <div class="node-desc">Zero-data-logging boundary protecting confidential banking records under OCC standards.</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Tier 4: Governance, Integration & Channels -->
-            <div class="prod-tier-row">
-              <div class="tier-header">
-                <span class="tier-name">Tier 4: Enterprise Integration & Endpoints</span>
-                <span class="tier-boundary">Apigee X API Gateway (mTLS)</span>
-              </div>
-              <div class="tier-grid">
-                <div class="arch-node">
-                  <span class="node-badge badge-ui">Banker CRM</span>
-                  <div class="node-title">Salesforce Financial Services Cloud</div>
-                  <div class="node-tech">Canvas Integration</div>
-                  <div class="node-desc">Embedded Horizon workspace for Commercial RMs and Private Wealth Advisors.</div>
-                </div>
-                <div class="arch-node">
-                  <span class="node-badge badge-cloud">Wealth Platform</span>
-                  <div class="node-title">SEI Data Cloud (Snowflake Zero-ETL)</div>
-                  <div class="node-tech">Snowflake Secure Sharing &bull; SEI Gateway</div>
-                  <div class="node-desc">Provisions staged account shells, model allocations, and custodial trust accounts without legacy batch files.</div>
-                </div>
-                <div class="arch-node">
-                  <span class="node-badge badge-cloud">Broker-Dealer Network</span>
-                  <div class="node-title">Ameriprise Financial Platform</div>
-                  <div class="node-tech">Regulation R Networking &bull; 12 CFR Part 218</div>
-                  <div class="node-desc">Enforces deposit FTP credit only; strictly firewalls securities fee-splitting under FINRA Rule 2040.</div>
-                </div>
-                <div class="arch-node">
-                  <span class="node-badge badge-cloud">Settlement Integrity</span>
-                  <div class="node-title">ALTA Pillar 2 DocuSign Gateway</div>
-                  <div class="node-tech">DocuSign REST API &bull; Callback (614) 480-4401</div>
-                  <div class="node-desc">Delivers authenticated Borrower Settlement Routing Packet; title verifies via direct banker callback line.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION 5: Financial Sensitivity ROI -->
-    <section id="roi" class="roi-section">
-      <div class="section-header">
-        <div class="section-eyebrow">Part 5: Financial Justification</div>
-        <h2 class="section-title">The Business Case: Sensitivity & Payback</h2>
-        <p class="section-desc">
-          Horizon's economics rest on conservative assumptions: a $4.5B annual payoff pool, 78% historical flight rate, a blended 78.0 bps capture margin (65% Tier 1 Treasury ICS &amp; 1031 Escrow at 85 bps; 35% Tier 2 Wealth AUM at 65 bps), and an annual enterprise cloud run-rate of $1.25M.
-        </p>
-      </div>
-
-      <div class="roi-table-wrapper">
-        <table class="roi-table">
-          <thead>
-            <tr>
-              <th>Retention Scenario</th>
-              <th>Retained Liquidity</th>
-              <th>Blended Value (78.0 bps)</th>
-              <th>Operating Cost</th>
-              <th>Net Annual ROI</th>
-              <th>Breakeven Payback</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>5% Floor (Ultra-Conservative)</strong></td>
-              <td>$225,000,000</td>
-              <td>$1,755,000 / yr</td>
-              <td>($1,250,000)</td>
-              <td class="roi-highlight">+$505,000 / yr</td>
-              <td><strong>8.5 Months</strong></td>
-            </tr>
-            <tr>
-              <td><strong>10% Target (Conservative)</strong></td>
-              <td>$450,000,000</td>
-              <td>$3,510,000 / yr</td>
-              <td>($1,250,000)</td>
-              <td class="roi-highlight">+$2,260,000 / yr</td>
-              <td><strong>4.3 Months</strong></td>
-            </tr>
-            <tr>
-              <td><strong>15% Goal (Executive Target)</strong></td>
-              <td>$675,000,000</td>
-              <td>$5,265,000 / yr</td>
-              <td>($1,250,000)</td>
-              <td class="roi-highlight">+$4,015,000 / yr</td>
-              <td><strong>2.9 Months</strong></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--slate-500); margin-top: 1rem; border-top: 1px solid var(--slate-200); padding-top: 0.75rem;">
-        <div>
-          * Note: Capturing 2.5% of at-risk commercial credits from refinancing away represents ~$1.35M in additional preserved commercial loan NIM, treated as un-modeled upside.
-        </div>
-        <div>
-          <a href="citations.html" target="_blank" style="color: var(--hban-green-dark); font-weight: 700; text-decoration: underline;">View Authoritative Citations &amp; Evidence Registry &rarr;</a>
         </div>
       </div>
     </section>
@@ -2539,30 +2262,8 @@
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="page-footer">
-    <div style="font-weight: 700; color: var(--slate-700); margin-bottom: 0.25rem;">
-      Huntington Bancshares Incorporated • Huntington Horizon Project
-    </div>
-    <div>
-      Internal Working Document &amp; Cloud Run Monostack Blueprint (Version 6.0 - Horizon 2.0) • Dual-Sided Capacity Leverage Thesis
-    </div>
-  </footer>
 
   <script>
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
-
-      if (tabId === 'demo-arch') {
-        document.querySelectorAll('.tab-btn')[0].classList.add('active');
-        document.getElementById('demo-arch').classList.add('active');
-      } else {
-        document.querySelectorAll('.tab-btn')[1].classList.add('active');
-        document.getElementById('prod-arch').classList.add('active');
-      }
-    }
-
     function toggleAdminPanel() {
       const overlay = document.getElementById('admin-overlay');
       const drawer = document.getElementById('admin-drawer');

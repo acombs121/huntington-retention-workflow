@@ -26,6 +26,66 @@
     /* Geometry Tokens */
     --radius-pill: 9999px;
     --radius-card: 16px;
+
+    /* Semantic Palette Tokens (Light Theme Default) */
+    --color-bg: #F6F7F4;
+    --color-surface: #FFFFFF;
+    --color-surface-2: #EEF1EC;
+    --color-surface-3: #E3E8E2;
+    --color-ink: #16211D;
+    --color-ink-2: #3F4A45;
+    --color-ink-3: #6B7570;
+    --color-ink-4: #98A390;
+    --color-accent: #1E5A45;
+    --color-accent-deep: #2E7D5B;
+    --color-good: #2F6B4F;
+    --color-warn: #9A6A12;
+    --color-crit: #9C3B2E;
+
+    /* Slate RGB scale mapped to Light Palette Tokens */
+    --slate-50: 246 247 244;  /* #F6F7F4: bg (page ground) */
+    --slate-100: 238 241 236; /* #EEF1EC: surface-2 (raised/hover) */
+    --slate-200: 227 232 226; /* #E3E8E2: surface-3 (control fill / border) */
+    --slate-300: 205 212 204; /* hairline border */
+    --slate-400: 152 163 144; /* #98A390: ink-4 (disabled) */
+    --slate-500: 107 117 112; /* #6B7570: ink-3 (muted/labels) */
+    --slate-600: 63 74 69;    /* #3F4A45: ink-2 (secondary text) */
+    --slate-700: 45 56 51;    /* dark secondary text */
+    --slate-800: 32 43 38;    /* deep ink text */
+    --slate-900: 22 33 29;    /* #16211D: ink (primary text) */
+    --slate-950: 15 23 20;    /* ultra-deep ink */
+  }
+
+  .dark {
+    /* Semantic Palette Tokens in Dark Mode */
+    --color-bg: #0E1412;
+    --color-surface: #151D1A;
+    --color-surface-2: #182521;
+    --color-surface-3: #22302A;
+    --color-ink: #f2f5f1;
+    --color-ink-2: #C6d0CA;
+    --color-ink-3: #8f9c95;
+    --color-ink-4: #66736C;
+    --color-accent: #7FD1A9;
+    --color-accent-deep: #33A072;
+    --color-good: #7FD1A9;
+    --color-warn: #E38341;
+    --color-crit: #E5736A;
+
+    /* Semantic Slate Canvas & Surfaces */
+    --slate-950: 14 20 18;    /* #0E1412: bg (page ground) */
+    --slate-900: 21 29 26;    /* #151D1A: surface (card) */
+    --slate-800: 24 37 33;    /* #182521: surface-2 (raised/hover) */
+    --slate-700: 34 48 42;    /* #22302A: surface-3 (control fill / border) */
+    --slate-600: 45 64 56;    /* #2D4038: prominent container boundary */
+
+    /* Typography / Ink Scale */
+    --slate-500: 102 115 108; /* #66736C: ink-4 (disabled) */
+    --slate-400: 143 156 149; /* #8F9C95: ink-3 (muted/labels) */
+    --slate-300: 198 208 202; /* #C6D0CA: ink-2 (secondary text) */
+    --slate-200: 224 231 227; /* Elevated secondary text */
+    --slate-100: 242 245 241; /* #F2F5F1: ink (primary text) */
+    --slate-50: 14 20 18;     /* #0E1412: bg (page ground fallback) */
   }
 }
 
@@ -34,7 +94,8 @@ body {
   font-family: 'Mulish', 'Muli', 'Apex New', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #0F172A;
+  color: #16211D;
+  background-color: #F6F7F4;
 }
 
 /* Huntington Brand Component Utilities */
@@ -43,18 +104,18 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background-color: #006738;
-  color: #ffffff;
+  background-color: #2E7D5B;
+  color: #FFFFFF;
   font-weight: 600;
   font-size: 0.875rem;
   padding: 0.625rem 1.25rem;
   transition: all 167ms cubic-bezier(0.6, 0, 0, 1);
-  box-shadow: 0 2px 4px 0 rgba(0, 103, 56, 0.18);
+  box-shadow: 0 2px 4px 0 rgba(46, 125, 91, 0.18);
   border: 1px solid transparent;
 }
 .hban-btn-primary:hover {
-  background-color: #1B5630;
-  box-shadow: 0 4px 10px 0 rgba(0, 103, 56, 0.28);
+  background-color: #246449;
+  box-shadow: 0 4px 10px 0 rgba(46, 125, 91, 0.28);
 }
 .hban-btn-primary:active {
   transform: scale(0.98);
@@ -66,27 +127,205 @@ body {
   justify-content: center;
   border-radius: 9999px;
   background-color: #ffffff;
-  color: #006738;
+  color: #1E5A45;
   font-weight: 600;
   font-size: 0.875rem;
   padding: 0.625rem 1.25rem;
-  border: 1.5px solid #006738;
+  border: 1.5px solid #1E5A45;
   transition: all 167ms cubic-bezier(0.6, 0, 0, 1);
 }
 .hban-btn-secondary:hover {
-  background-color: #E8F5E9;
-  color: #004724;
+  background-color: #EEF1EC;
+  color: #16211D;
 }
 
 .hban-card {
   border-radius: 16px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #E3E8E2;
   background-color: #ffffff;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
 }
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* Direct token classes (Responsive to theme variables) */
+.bg-palette-bg { background-color: var(--color-bg); }
+.bg-palette-surface { background-color: var(--color-surface); }
+.bg-palette-surface-2 { background-color: var(--color-surface-2); }
+.bg-palette-surface-3 { background-color: var(--color-surface-3); }
+
+.text-palette-ink { color: var(--color-ink); }
+.text-palette-ink-2 { color: var(--color-ink-2); }
+.text-palette-ink-3 { color: var(--color-ink-3); }
+.text-palette-ink-4 { color: var(--color-ink-4); }
+
+.text-palette-accent { color: var(--color-accent); }
+.bg-palette-accent { background-color: var(--color-accent); }
+.bg-palette-accent-deep { background-color: var(--color-accent-deep); }
+
+/* Light Mode Accent UI & Primary Button Harmonization */
+.text-\[\#006738\] {
+  color: #1E5A45 !important;
+}
+
+.border-\[\#006738\] {
+  border-color: #1E5A45 !important;
+}
+
+.bg-\[\#006738\] {
+  background-color: #2E7D5B !important;
+}
+.hover\:bg-\[\#1B5630\]:hover {
+  background-color: #246449 !important;
+}
+
+/* Light Mode Containers (surface-2 & surface-3) */
+.bg-\[\#E8F5E9\]\/60,
+.bg-\[\#E8F5E9\]\/50,
+.bg-\[\#E8F5E9\]\/40,
+.bg-\[\#E8F5E9\]\/30,
+.bg-\[\#E8F5E9\]\/20,
+.bg-\[\#E8F5E9\] {
+  background-color: #EEF1EC !important;
+}
+
+.border-\[\#A7F3D0\],
+.border-\[\#A7F3D0\]\/70,
+.border-\[\#A7F3D0\]\/60 {
+  border-color: #E3E8E2 !important;
+}
+
+/* Light Mode Status Tokens */
+.text-emerald-400,
+.text-green-500,
+.text-emerald-600,
+.text-emerald-700 {
+  color: #2F6B4F;
+}
+
+.text-amber-400,
+.text-amber-500,
+.text-yellow-600,
+.text-amber-700 {
+  color: #9A6A12;
+}
+
+.text-rose-400,
+.text-red-500,
+.text-red-600,
+.text-rose-600,
+.text-rose-700 {
+  color: #9C3B2E;
+}
+
+/* ============================================================
+   Dark Mode Active Overrides
+   ============================================================ */
+.dark body {
+  color: #f2f5f1;
+  background-color: #0E1412;
+}
+
+/* In dark mode, primary text resolves to ink (#f2f5f1) */
+.dark .text-white {
+  color: #f2f5f1;
+}
+
+/* In dark mode, primary buttons use accent-deep (#33A072) */
+.dark .hban-btn-primary {
+  background-color: #33A072;
+  color: #f2f5f1;
+  box-shadow: 0 2px 4px 0 rgba(51, 160, 114, 0.18);
+}
+.dark .hban-btn-primary:hover {
+  background-color: #27815B;
+  box-shadow: 0 4px 10px 0 rgba(51, 160, 114, 0.28);
+}
+
+/* Ensure corporate green accents resolve to accent (#7FD1A9) in dark mode */
+.dark .text-\[\#006738\] {
+  color: #7FD1A9 !important;
+}
+
+/* Ensure active selection borders pop in accent (#7FD1A9) in dark mode */
+.dark .border-\[\#006738\] {
+  border-color: #7FD1A9 !important;
+}
+
+/* Ensure primary button fills use accent-deep (#33A072) in dark mode */
+.dark .bg-\[\#006738\] {
+  background-color: #33A072 !important;
+}
+.dark .hover\:bg-\[\#1B5630\]:hover {
+  background-color: #27815B !important;
+}
+
+/* Harmonize light-mint container highlights to surface-3 (#22302A) and accent border (#7FD1A9) */
+.dark .bg-\[\#E8F5E9\]\/60,
+.dark .bg-\[\#E8F5E9\]\/50,
+.dark .bg-\[\#E8F5E9\]\/40,
+.dark .bg-\[\#E8F5E9\]\/30,
+.dark .bg-\[\#E8F5E9\]\/20,
+.dark .bg-\[\#E8F5E9\] {
+  background-color: rgba(34, 48, 42, 0.6) !important;
+}
+
+.dark .border-\[\#A7F3D0\],
+.dark .border-\[\#A7F3D0\]\/70,
+.dark .border-\[\#A7F3D0\]\/60 {
+  border-color: rgba(127, 209, 169, 0.35) !important;
+}
+
+/* Status token harmonization in dark mode */
+.dark .text-emerald-400,
+.dark .text-green-500,
+.dark .text-emerald-500,
+.dark .text-emerald-600,
+.dark .text-emerald-700 {
+  color: #7FD1A9 !important;
+}
+
+.dark .text-amber-400,
+.dark .text-amber-500,
+.dark .text-yellow-500,
+.dark .text-yellow-600,
+.dark .text-amber-700 {
+  color: #E38341 !important;
+}
+
+.dark .text-rose-400,
+.dark .text-red-400,
+.dark .text-red-500,
+.dark .text-rose-600,
+.dark .text-rose-700 {
+  color: #E5736A !important;
+}
+
+.dark .border-amber-400,
+.dark .border-amber-500 {
+  border-color: rgba(227, 131, 65, 0.4) !important;
+}
+
+.dark .border-rose-400,
+.dark .border-red-400 {
+  border-color: rgba(229, 115, 106, 0.4) !important;
+}
+
+.dark .hban-btn-secondary {
+  background-color: #151D1A;
+  color: #f2f5f1;
+  border-color: #33A072;
+}
+.dark .hban-btn-secondary:hover {
+  background-color: #182521;
+  color: #7FD1A9;
+}
+
+.dark .hban-card {
+  border-color: #22302A;
+  background-color: #151D1A;
 }
 
 /* Custom scrollbars for clean technical appearance */
@@ -102,5 +341,8 @@ body {
   border-radius: 3px;
 }
 .dark ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #22302A;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #33A072;
 }

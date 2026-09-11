@@ -4,7 +4,7 @@ Explicit domain types for Commercial Liquidity Orchestration.
 Follows ubiquitous language documented in docs/CONTEXT.md.
 """
 from typing import Optional, Dict, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class PayoffStatement(BaseModel):
@@ -136,3 +136,32 @@ class LiquidityAssessment(BaseModel):
             "finra_rule_2040_compliant": self.depository_route.finra_rule_2040_compliant,
             "occ_sr11_7_designation": self.depository_route.occ_sr11_7_designation,
         }
+
+
+class FusedSignal(BaseModel):
+    category: str
+    signal_name: str
+    source: str
+    observation: str
+    risk_impact: str
+    verdict: str
+
+
+class HypothesisEvaluation(BaseModel):
+    hypothesis: str
+    confidence_pct: int
+    status: str
+    rationale: str
+
+
+class DetectionReasoningTrace(BaseModel):
+    payoff_id: str
+    confidence_score: int
+    urgency_tier: str
+    classification: str
+    summary_verdict: str
+    model_agent: str = "gemini-3.7-flash (Multimodal Signal Fusion)"
+    evaluation_timestamp: str
+    fused_signals: list[FusedSignal]
+    hypotheses: list[HypothesisEvaluation]
+    trace_steps: list[str]

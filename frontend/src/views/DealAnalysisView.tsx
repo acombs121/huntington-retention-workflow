@@ -1,15 +1,97 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { EntityResolutionData, PayoffItem } from '../types';
 import {
   FileText,
-  Building2,
-  User,
-  Users,
   CheckCircle2,
   ArrowRight,
   ArrowLeft,
-  Sparkles,
+  GitGraph,
 } from 'lucide-react';
+import { SignalGraphModal } from '../components/SignalGraphModal';
+
+interface PrincipalRelationship {
+  principalName: string;
+  principalRole: string;
+  tenureYears: number;
+  startDate: string;
+  tenureSummary: string;
+  assignedRM: string;
+  rmTitle: string;
+  lastTouchpointDate: string;
+  lastTouchpointType: string;
+  lastTouchpointLocation: string;
+  lastTouchpointNotes: string;
+  cfpbComplaints: number;
+  servicingDisputes: string;
+  paymentRecord: string;
+  complianceStanding: string;
+  relationshipTier: string;
+}
+
+function getPrincipalRelationship(deal: PayoffItem, entityData: EntityResolutionData): PrincipalRelationship {
+  if (deal.id === 'PO-2026-7492') {
+    return {
+      principalName: 'Arthur Pendelton',
+      principalRole: 'President & Founder (100% Equity)',
+      tenureYears: 9,
+      startDate: 'September 2017',
+      tenureSummary: '9-year commercial relationship spanning SBA 7(a) facility, equipment line of credit, and commercial depository accounts.',
+      assignedRM: deal.commercial_rm || 'Greg Miller',
+      rmTitle: 'Vice President, Commercial Industrial Banking',
+      lastTouchpointDate: 'August 10, 2026',
+      lastTouchpointType: 'Quarterly Covenant & Capex Review',
+      lastTouchpointLocation: 'Virtual (Microsoft Teams)',
+      lastTouchpointNotes: 'Reviewed Q2 covenant compliance and machine tooling capital expenditure plans. Borrower noted potential real estate transaction under IRC §1031 like-kind exchange structure.',
+      cfpbComplaints: 0,
+      servicingDisputes: '1 resolved operational inquiry (Nov 2023, wire transfer cutoff inquiry resolved same day)',
+      paymentRecord: '100% on-time debt service across 108 billing cycles',
+      complianceStanding: 'Clean Record / Fully Resolved',
+      relationshipTier: 'Pass (Tier 1) Prime Partner',
+    };
+  }
+
+  if (deal.id === 'PO-2026-6104') {
+    return {
+      principalName: 'Dr. Robert Miller',
+      principalRole: 'Managing Partner & Lead Physician',
+      tenureYears: 6,
+      startDate: 'March 2020',
+      tenureSummary: '6-year commercial relationship covering healthcare practice acquisition debt, medical facility term loan, and commercial sweep depository.',
+      assignedRM: deal.commercial_rm || 'Amanda Cross',
+      rmTitle: 'Director, Healthcare Practice Banking',
+      lastTouchpointDate: 'July 28, 2026',
+      lastTouchpointType: 'Practice Facility Renewal Consultation',
+      lastTouchpointLocation: 'Scioto Medical Pavilion, Columbus',
+      lastTouchpointNotes: 'Opened renewal file #REN-6104. Borrower cited aggressive competing rate offers from Fifth Third; RM actively structuring rate-match retention package.',
+      cfpbComplaints: 0,
+      servicingDisputes: '1 billing clarification (April 2024, property tax escrow calculation adjusted within 48 hours)',
+      paymentRecord: '100% on-time debt service across 72 billing cycles',
+      complianceStanding: 'Clean Record / Fully Resolved',
+      relationshipTier: 'Pass (Tier 2) Active Renewal',
+    };
+  }
+
+  // Default: PO-2026-8821 (Vance Riverfront Properties IV, LLC)
+  const primaryGrounded = entityData.grounded_members?.find(m => m.is_guarantor) || entityData.grounded_members?.[0];
+  return {
+    principalName: primaryGrounded?.name || deal.primary_guarantor || 'Marcus Vance',
+    principalRole: primaryGrounded?.role || 'Managing Member & Majority Owner (85% Equity)',
+    tenureYears: 14,
+    startDate: 'May 2012',
+    tenureSummary: '14-year foundational relationship. Originated with commercial treasury management and operating DDA (#..4401), expanding to CRE term financing (#CC-8821) in 2018.',
+    assignedRM: deal.commercial_rm || 'Greg Miller',
+    rmTitle: 'Senior Vice President, Commercial Real Estate Banking',
+    lastTouchpointDate: 'August 18, 2026',
+    lastTouchpointType: 'In-Person Annual Review & Executive Lunch',
+    lastTouchpointLocation: 'Huntington Center, Columbus, OH',
+    lastTouchpointNotes: 'Conducted annual review of High Street property operations and lease roll. Client noted strong cash flows; hinted at evaluating broader capital re-allocation in late Q3. Zero replacement debt solicited.',
+    cfpbComplaints: 0,
+    servicingDisputes: 'None on record (Zero title, escrow, or loan servicing disputes)',
+    paymentRecord: '100% on-time debt service across 168 consecutive billing cycles',
+    complianceStanding: 'Pristine Regulatory & Servicing Record',
+    relationshipTier: 'Tier 1 Prime Standing',
+  };
+}
 
 interface DealAnalysisViewProps {
   deal: PayoffItem;
@@ -24,247 +106,197 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
   onBackToPipeline,
   onProceedToRetention,
 }) => {
-  const [activeCitation, setActiveCitation] = useState<string | null>('borrower');
-  const [selectedMember, setSelectedMember] = useState<string>(
-    entityData.grounded_members?.[0]?.name || deal.primary_guarantor || 'Marcus Vance'
-  );
-
-  useEffect(() => {
-    if (entityData.grounded_members?.length) {
-      setSelectedMember(entityData.grounded_members[0].name);
-    } else if (deal.primary_guarantor) {
-      setSelectedMember(deal.primary_guarantor);
-    }
-  }, [entityData, deal]);
+  const [isSignalGraphOpen, setIsSignalGraphOpen] = useState(false);
+  const relationship = getPrincipalRelationship(deal, entityData);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12 md:py-16 space-y-12">
+    <div className="max-w-6xl mx-auto px-6 sm:px-8 py-8 md:py-12 space-y-8">
       
-      {/* Swiss Editorial Breadcrumb & Navigation Header */}
-      <div className="border-b border-slate-200 dark:border-slate-800 pb-10">
+      {/* Editorial Header */}
+      <div className="pb-6 border-b border-slate-200/80 dark:border-palette-surface-3">
         <button
           onClick={onBackToPipeline}
-          className="inline-flex items-center gap-2 text-xs uppercase font-bold tracking-wider text-slate-500 hover:text-[#006738] dark:text-slate-400 dark:hover:text-white transition mb-4"
+          className="group inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-900 dark:hover:text-palette-ink transition mb-2"
         >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Commercial Pipeline</span>
+          <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+          <span>Commercial Pipeline</span>
         </button>
-
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
-          <div className="max-w-3xl space-y-3">
-            <span className="text-xs uppercase font-bold tracking-widest text-[#006738] dark:text-emerald-400 block">
-              Commercial Credit &bull; Payoff Demand Statement &bull; Title Escrow
-            </span>
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-palette-ink">
                 {deal.borrower_entity}
               </h1>
-              <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-[#E8F5E9] dark:bg-emerald-950/60 text-[#006738] dark:text-emerald-300 border border-[#A7F3D0] dark:border-emerald-800">
+              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-palette-surface-2 text-slate-500 dark:text-palette-ink-3">
                 {deal.id}
               </span>
             </div>
-            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
-              Verified title demand statement, beneficial ownership resolution, and collateral property valuation.
+            <p className="text-xs text-slate-400 dark:text-palette-ink-4 mt-1">
+              {deal.property_name} &bull; {deal.property_address}
             </p>
           </div>
-
-          {/* Primary Action Button */}
-          <div className="pt-2 lg:pt-0">
-            <button
-              onClick={onProceedToRetention}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold tracking-wide bg-[#006738] hover:bg-[#1B5630] text-white shadow-sm transition active:scale-[0.98]"
-            >
-              <span>Configure Retention &amp; Settlement</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setIsSignalGraphOpen(true)}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-slate-200 dark:border-palette-surface-3 bg-white dark:bg-palette-surface hover:bg-slate-50 dark:hover:bg-palette-surface-2 text-xs font-bold text-slate-700 dark:text-palette-ink transition shadow-xs cursor-pointer self-start sm:self-auto shrink-0"
+            title={`Inspect Cloud Spanner Signal Graph for ${deal.borrower_entity}`}
+          >
+            <GitGraph className="w-4 h-4 text-[#006738] dark:text-palette-accent" />
+            <span>Spanner Signal Graph</span>
+          </button>
         </div>
       </div>
 
-      {/* Main 2-Column Inspection Workspace with Generous Whitespace */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+      {/* Main 2-Column Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* Left Column: Document Viewer (7 cols) */}
-        <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm flex flex-col">
-          {/* Document Header */}
-          <div className="p-6 border-b border-slate-200 dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-800/40 flex items-center justify-between">
-            <div className="flex items-center gap-3.5">
-              <div className="p-2.5 rounded-xl bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
-                <FileText className="w-5 h-5 text-[#006738]" />
+        {/* Left Column: Deal & Liquidity Reality (7 cols) */}
+        <div className="lg:col-span-7 space-y-6">
+          
+          {/* Card 1: Title & Payoff Demand */}
+          <div className="bg-white dark:bg-palette-surface border border-slate-200/80 dark:border-palette-surface-3 rounded-2xl p-6 shadow-sm space-y-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-slate-400 dark:text-palette-ink-3" />
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-palette-ink">
+                  Title Payoff Demand
+                </h2>
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
-                  {entityData.document_name}
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Vault ID: {entityData.document_vault_id} &bull; Page {entityData.inspected_page} of {entityData.total_pages}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Document Body with Grounded Bounding Boxes */}
-          <div className="p-8 text-sm leading-relaxed text-slate-800 dark:text-slate-200 space-y-5 select-text">
-            {/* Automated Pre-Ingestion Cloud DLP Banner */}
-            <div className="p-3.5 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-xs flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-[#006738] dark:text-emerald-300 font-bold">
-                <CheckCircle2 className="w-4 h-4 shrink-0 text-[#006738] dark:text-emerald-400" />
-                <span>Automated Pre-Ingestion Cloud DLP Gate: PASSED</span>
-              </div>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:inline">
-                Consumer bureaus, 1040s &amp; CDD purged per GLBA Reg P &bull; Ameriprise Barrier
+              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#006738] dark:text-palette-accent">
+                <CheckCircle2 className="w-3 h-3" />
+                <span>DLP Verified</span>
               </span>
             </div>
 
-            <div className="text-center font-bold text-xs tracking-widest uppercase text-slate-500 dark:text-slate-400 pb-4 border-b border-slate-200 dark:border-slate-800">
-              {deal.title_company.toUpperCase()} &bull; COMMERCIAL ESCROW DEMAND
-            </div>
-
-            <p className="text-xs text-slate-600 dark:text-slate-400">
-              Attn: {deal.settlement_officer}, Commercial Escrow Officer &bull; Escrow File: <strong>{deal.escrow_file_number}</strong>
-            </p>
-
-            <p className="text-xs text-slate-600 dark:text-slate-400">
-              Re: Payoff demand statement for commercial real estate loan encumbering{' '}
-              <span className="font-semibold text-slate-900 dark:text-white">{deal.property_name}, {deal.property_address}</span>.
-            </p>
-
-            {/* Bounding Box 1: Borrower Entity */}
-            <div
-              onClick={() => setActiveCitation('borrower')}
-              className={`p-4 rounded-xl border-2 transition cursor-pointer ${
-                activeCitation === 'borrower'
-                  ? 'border-[#006738] bg-[#E8F5E9]/60 dark:bg-emerald-950/40 shadow-sm'
-                  : 'border-[#A7F3D0] dark:border-emerald-800/60 bg-[#E8F5E9]/20 dark:bg-emerald-950/20 hover:border-[#006738]'
-              }`}
-            >
-              <div className="flex items-center justify-between text-xs text-[#006738] dark:text-emerald-300 font-bold mb-1 tracking-wider uppercase">
-                <span>Verified Borrower Entity</span>
-                <span className="text-xs">Confirmed</span>
+            {/* Hero Payoff Balance */}
+            <div className="pt-1">
+              <span className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-palette-ink-4 block">
+                Total Payoff Balance
+              </span>
+              <div className="text-3xl font-bold text-slate-900 dark:text-palette-ink tabular-nums tracking-tight mt-0.5">
+                ${deal.existing_debt_upb.toLocaleString()}
               </div>
-              <p className="text-xs text-slate-900 dark:text-slate-100">
-                Borrower: <strong>{entityData.borrower_entity.name}</strong>, {entityData.borrower_entity.jurisdiction || 'an Ohio entity'}, duly organized under the laws of the State of Ohio{entityData.borrower_entity.filing_date ? ` on ${entityData.borrower_entity.filing_date}` : ''}.
+              <p className="text-xs text-slate-400 dark:text-palette-ink-4 mt-1">
+                ${deal.per_diem_interest.toFixed(0)}/day per diem &bull; Closing {deal.scheduled_closing_date}
               </p>
             </div>
 
-            {/* Bounding Box 2: Payoff Amount */}
-            <div
-              onClick={() => setActiveCitation('payoff')}
-              className={`p-4 rounded-xl border-2 transition cursor-pointer ${
-                activeCitation === 'payoff'
-                  ? 'border-[#006738] bg-[#E8F5E9]/60 dark:bg-emerald-950/40 shadow-sm'
-                  : 'border-[#A7F3D0] dark:border-emerald-800/60 bg-[#E8F5E9]/20 dark:bg-emerald-950/20 hover:border-[#006738]'
-              }`}
-            >
-              <div className="flex items-center justify-between text-xs text-[#006738] dark:text-emerald-300 font-bold mb-1 tracking-wider uppercase">
-                <span>Verified Payoff &amp; Per Diem</span>
-                <span className="text-xs">Confirmed</span>
+            {/* Clean Key-Value Grid */}
+            <div className="pt-4 border-t border-slate-100 dark:border-palette-surface-3 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div>
+                <span className="text-slate-400 dark:text-palette-ink-4 block">Property</span>
+                <span className="font-semibold text-slate-800 dark:text-palette-ink mt-0.5 block">
+                  {deal.property_name}
+                </span>
+                <span className="text-slate-500 dark:text-palette-ink-3 text-[11px]">
+                  {deal.property_address}
+                </span>
               </div>
-              <p className="text-xs text-slate-900 dark:text-slate-100">
-                Total Required Payoff to The Huntington National Bank as of {deal.payoff_statement_date || 'September 5, 2026'}: <strong>${deal.existing_debt_upb.toLocaleString()}</strong>, with per diem interest of <strong>${deal.per_diem_interest.toFixed(0)}/day</strong> thereafter through scheduled closing ({deal.scheduled_closing_date}).
-              </p>
-            </div>
-
-            {/* Bounding Box 3: Guarantor */}
-            <div
-              onClick={() => {
-                setActiveCitation('guarantor');
-                const primaryName = entityData.grounded_members?.[0]?.name || 'Managing Member';
-                setSelectedMember(primaryName);
-              }}
-              className={`p-4 rounded-xl border-2 transition cursor-pointer ${
-                activeCitation === 'guarantor'
-                  ? 'border-[#006738] bg-[#E8F5E9]/60 dark:bg-emerald-950/40 shadow-sm'
-                  : 'border-[#A7F3D0] dark:border-emerald-800/60 bg-[#E8F5E9]/20 dark:bg-emerald-950/20 hover:border-[#006738]'
-              }`}
-            >
-              <div className="flex items-center justify-between text-xs text-[#006738] dark:text-emerald-300 font-bold mb-1 tracking-wider uppercase">
-                <span>Verified Managing Guarantor</span>
-                <span className="text-xs">Confirmed</span>
+              <div>
+                <span className="text-slate-400 dark:text-palette-ink-4 block">Title &amp; Escrow</span>
+                <span className="font-semibold text-slate-800 dark:text-palette-ink mt-0.5 block">
+                  {deal.title_company}
+                </span>
+                <span className="text-slate-500 dark:text-palette-ink-3 text-[11px]">
+                  File #{deal.escrow_file_number} &bull; {deal.settlement_officer}
+                </span>
               </div>
-              <p className="text-xs text-slate-900 dark:text-slate-100">
-                Incumbency Certification: <strong>{entityData.grounded_members?.[0]?.name || deal.primary_guarantor || 'Managing Member'}</strong>, holding an undivided {entityData.grounded_members?.[0]?.ownership_pct || 100}% {entityData.grounded_members?.[0]?.role || 'Managing Membership Interest'} and sole operating signatory authority for {deal.borrower_entity}.
-                {entityData.grounded_members && entityData.grounded_members.length > 1 && (
-                  <span className="block mt-1 text-slate-500 dark:text-slate-400">
-                    Additional grounded members ({entityData.grounded_members.length - 1}): {entityData.grounded_members.slice(1).map(m => `${m.name} (${m.ownership_pct}%)`).join(', ')}.
-                  </span>
-                )}
-              </p>
-            </div>
-
-            <div className="pt-2 text-xs text-slate-400">
-              * Click any highlighted section above to inspect the corresponding entity record.
             </div>
           </div>
+
+          {/* Card 2: Liquidity & Net Proceeds */}
+          <div className="bg-white dark:bg-palette-surface border border-slate-200/80 dark:border-palette-surface-3 rounded-2xl p-6 shadow-sm space-y-5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-palette-ink">
+                Liquidity &amp; Net Proceeds
+              </h2>
+              <span className="text-xs font-semibold text-[#006738] dark:text-palette-accent">
+                {(deal.submarket_cap_rate * 100).toFixed(1)}% Cap Rate
+              </span>
+            </div>
+
+            {/* Hero Value */}
+            <div className="pt-1">
+              <span className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-palette-ink-4 block">
+                {deal.unstated_sale_price ? 'Indicative Valuation' : 'Estimated Net Equity'}
+              </span>
+              <div className="text-3xl font-bold text-[#006738] dark:text-palette-accent tabular-nums tracking-tight mt-0.5">
+                ~${((deal.unstated_sale_price ? deal.indicative_valuation : deal.estimated_net_equity) / 1000000).toFixed(2)}M
+              </div>
+            </div>
+
+            {/* Financial Line Items */}
+            <div className="pt-4 border-t border-slate-100 dark:border-palette-surface-3 grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
+              <div>
+                <span className="text-slate-400 dark:text-palette-ink-4 block">Trailing Q1 NOI</span>
+                <span className="font-semibold text-slate-800 dark:text-palette-ink tabular-nums mt-0.5 block">
+                  ${deal.noi_trailing_q1.toLocaleString()}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 dark:text-palette-ink-4 block">Cap Rate Benchmark</span>
+                <span className="font-semibold text-slate-800 dark:text-palette-ink mt-0.5 block">
+                  {(deal.submarket_cap_rate * 100).toFixed(2)}%
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 dark:text-palette-ink-4 block">
+                  {deal.unstated_sale_price ? 'Model Tier' : 'Contract Price'}
+                </span>
+                <span className="font-semibold text-slate-800 dark:text-palette-ink mt-0.5 block">
+                  {deal.unstated_sale_price ? 'OCC Tier 3' : `$${(deal.indicative_valuation / 1000000).toFixed(2)}M`}
+                </span>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        {/* Right Column: Verified Entity Resolution & Financial Grounding (5 cols) */}
-        <div className="lg:col-span-5 space-y-8">
+        {/* Right Column: Ownership & Relationship (5 cols) */}
+        <div className="lg:col-span-5 space-y-6">
           
-          {/* Entity Resolution Hierarchy Card */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-              <div className="flex items-center gap-2.5">
-                <Building2 className="w-5 h-5 text-[#006738]" />
-                <h2 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white uppercase tracking-wider">
-                  Verified Beneficial Ownership
-                </h2>
-              </div>
-              <span className="text-xs font-semibold text-[#006738] dark:text-emerald-400 uppercase tracking-wider">
+          {/* Card 1: Beneficial Ownership */}
+          <div className="bg-white dark:bg-palette-surface border border-slate-200/80 dark:border-palette-surface-3 rounded-2xl p-6 shadow-sm space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-palette-surface-3">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-palette-ink">
+                Beneficial Ownership
+              </h2>
+              <span className="text-xs font-semibold text-[#006738] dark:text-palette-accent">
                 EIN Verified
               </span>
             </div>
 
-            {/* Member Cards */}
-            <div className="space-y-3">
+            <div className="divide-y divide-slate-100 dark:divide-palette-surface-3">
               {entityData.grounded_members?.map((member) => {
-                const isSelected = member.name === selectedMember;
                 const isExcluded = member.exclusion_status && member.exclusion_status.includes('Excluded');
 
                 return (
-                  <div
-                    key={member.name}
-                    onClick={() => setSelectedMember(member.name)}
-                    className={`p-4 rounded-xl border transition cursor-pointer ${
-                      isSelected
-                        ? 'border-[#006738] bg-[#E8F5E9]/50 dark:bg-emerald-950/20 shadow-sm'
-                        : 'border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/40 hover:border-slate-300'
-                    }`}
-                  >
+                  <div key={member.name} className="py-3 first:pt-0 last:pb-0">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2.5">
-                        {member.name.includes('Trust') ? (
-                          <Users className="w-4 h-4 text-slate-500" />
-                        ) : (
-                          <User className="w-4 h-4 text-[#006738]" />
-                        )}
-                        <span className="text-sm font-bold text-slate-900 dark:text-white">
-                          {member.name}
-                        </span>
-                      </div>
+                      <span className="text-sm font-semibold text-slate-900 dark:text-palette-ink">
+                        {member.name}
+                      </span>
                       {member.ownership_pct > 0 && (
-                        <span className="text-xs font-bold text-[#006738] dark:text-emerald-400">
+                        <span className="text-xs font-semibold text-slate-500 dark:text-palette-ink-3">
                           {member.ownership_pct}% Equity
                         </span>
                       )}
                     </div>
 
-                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                      {member.role}
+                    <div className="flex items-center justify-between mt-1 text-xs">
+                      <span className="text-slate-400 dark:text-palette-ink-4">
+                        {member.role}
+                      </span>
+                      {member.known_hban_balance > 0 && (
+                        <span className="text-slate-600 dark:text-palette-ink-2 font-medium">
+                          ${(member.known_hban_balance / 1000000).toFixed(2)}M on deposit
+                        </span>
+                      )}
                     </div>
 
                     {isExcluded && (
-                      <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
-                        {member.exclusion_status}
-                      </div>
-                    )}
-
-                    {member.known_hban_balance > 0 && (
-                      <div className="mt-2.5 pt-2.5 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-xs">
-                        <span className="text-slate-500 dark:text-slate-400">Known HBAN Deposits:</span>
-                        <span className="font-bold text-slate-900 dark:text-white tabular-nums">
-                          ${(member.known_hban_balance / 1000000).toFixed(2)}M
-                        </span>
+                      <div className="mt-1.5 inline-flex items-center text-[10px] font-medium text-amber-700 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
+                        Excluded &bull; Non-guarantor
                       </div>
                     )}
                   </div>
@@ -273,99 +305,84 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
             </div>
           </div>
 
-          {/* Financial Valuation Grounding Card */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-              <div className="flex items-center gap-2.5">
-                <Sparkles className="w-5 h-5 text-[#006738]" />
-                <div>
-                  <h2 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white uppercase tracking-wider">
-                    {deal.unstated_sale_price ? 'Internal Liquidity Triage Heuristic' : 'Executed Purchase & Sale Agreement'}
-                  </h2>
-                  <span className="text-[11px] text-slate-400 font-semibold block">
-                    {deal.unstated_sale_price ? 'OCC Bulletin 2011-12 / SR 11-7 Model Tier 3' : 'OCC Bulletin 2011-12 / Fed SR 11-7 Verified'}
-                  </span>
-                </div>
-              </div>
-              <span className="text-xs font-bold text-[#006738] dark:text-emerald-400 uppercase tracking-wider">
-                {deal.unstated_sale_price ? `Submarket ${(deal.submarket_cap_rate * 100).toFixed(1)}% Cap` : 'Contract Verified'}
+          {/* Card 2: Relationship to Principal */}
+          <div className="bg-white dark:bg-palette-surface border border-slate-200/80 dark:border-palette-surface-3 rounded-2xl p-6 shadow-sm space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-palette-surface-3">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-palette-ink">
+                Principal Relationship
+              </h2>
+              <span className="text-xs font-semibold text-[#006738] dark:text-palette-accent">
+                {relationship.relationshipTier}
               </span>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5 text-xs">
-              {deal.unstated_sale_price ? (
-                <>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400">Trailing Q1 In-Place NOI:</span>
-                    <span className="font-bold text-slate-900 dark:text-white tabular-nums">
-                      ${deal.noi_trailing_q1.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400">Submarket Benchmark Cap Rate:</span>
-                    <span className="font-bold text-slate-900 dark:text-white">{(deal.submarket_cap_rate * 100).toFixed(2)}%</span>
-                  </div>
-                  <div className="pt-2.5 border-t border-slate-200 dark:border-slate-700 flex justify-between text-sm">
-                    <span className="font-bold text-slate-900 dark:text-white">Indicative Triage Value:</span>
-                    <span className="font-extrabold text-[#006738] dark:text-emerald-400 tabular-nums">
-                      ~${(deal.indicative_valuation / 1000000).toFixed(2)}M
-                    </span>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400">Contract Purchase Price:</span>
-                    <span className="font-bold text-slate-900 dark:text-white tabular-nums">
-                      ${deal.indicative_valuation.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400">In-Place Q1 Trailing NOI:</span>
-                    <span className="font-bold text-slate-900 dark:text-white tabular-nums">
-                      ${deal.noi_trailing_q1.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400">Implied Transaction Cap Rate:</span>
-                    <span className="font-bold text-slate-900 dark:text-white">{(deal.submarket_cap_rate * 100).toFixed(2)}%</span>
-                  </div>
-                  <div className="pt-2.5 border-t border-slate-200 dark:border-slate-700 flex justify-between text-sm">
-                    <span className="font-bold text-slate-900 dark:text-white">Verified Net Proceeds:</span>
-                    <span className="font-extrabold text-[#006738] dark:text-emerald-400 tabular-nums">
-                      ~${(deal.estimated_net_equity / 1000000).toFixed(2)}M
-                    </span>
-                  </div>
-                </>
-              )}
+            {/* Principal & Tenure Hero */}
+            <div className="flex items-baseline justify-between gap-4">
+              <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-palette-ink">
+                  {relationship.principalName}
+                </h3>
+                <p className="text-xs text-slate-400 dark:text-palette-ink-4">
+                  RM: {relationship.assignedRM}
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="text-xl font-bold text-[#006738] dark:text-palette-accent tabular-nums block">
+                  {relationship.tenureYears} Years
+                </span>
+                <span className="text-[10px] text-slate-400 dark:text-palette-ink-4 block">
+                  Since {relationship.startDate}
+                </span>
+              </div>
             </div>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              <strong>Model Governance Notice:</strong>{' '}
-              {deal.unstated_sale_price
-                ? 'Capitalization heuristic modeled strictly for internal relationship triage and deposit capacity sizing. Client-facing valuation is muzzled; commercial RM never asserts property valuation to borrower.'
-                : `Verified executed purchase and sale agreement per Escrow File #${deal.escrow_file_number}. Valuation asserted directly from commercial contract; internal triage heuristic bypassed.`}
-            </p>
-          </div>
+            {/* Touchpoint summary */}
+            <div className="pt-3 border-t border-slate-100 dark:border-palette-surface-3 text-xs space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-400 dark:text-palette-ink-4">Last Touchpoint</span>
+                <span className="text-slate-600 dark:text-palette-ink-2 font-medium">{relationship.lastTouchpointDate}</span>
+              </div>
+              <p className="text-slate-500 dark:text-palette-ink-3">
+                {relationship.lastTouchpointType} &bull; {relationship.lastTouchpointLocation}
+              </p>
+            </div>
 
-          {/* Bottom Next Step Bar */}
-          <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-4">
-            <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-              Ready to configure borrower settlement routing packet &amp; retention accounts?
-            </span>
-            <button
-              onClick={onProceedToRetention}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold tracking-wide bg-[#006738] hover:bg-[#1B5630] text-white transition active:scale-[0.98]"
-            >
-              <span>Proceed to Retention Setup</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
+            {/* Standing summary */}
+            <div className="pt-3 border-t border-slate-100 dark:border-palette-surface-3 text-xs space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-400 dark:text-palette-ink-4">Payment Record</span>
+                <span className="text-[#006738] dark:text-palette-accent font-semibold">100% On-Time</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-400 dark:text-palette-ink-4">Regulatory &amp; Disputes</span>
+                <span className="text-slate-600 dark:text-palette-ink-2 font-medium">0 on file</span>
+              </div>
+            </div>
           </div>
 
         </div>
 
       </div>
 
+      {/* Bottom Action */}
+      <div className="flex items-center justify-end pt-2">
+        <button
+          onClick={onProceedToRetention}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold bg-[#006738] hover:bg-[#1B5630] dark:bg-palette-accent-deep dark:hover:bg-[#28845e] text-white shadow-sm transition active:scale-[0.98]"
+        >
+          <span>Route to Wealth Advisor</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* Cloud Spanner Signal Grounding Graph Modal */}
+      <SignalGraphModal
+        isOpen={isSignalGraphOpen}
+        onClose={() => setIsSignalGraphOpen(false)}
+        activePayoffId={deal.id}
+      />
+
     </div>
   );
 };
+

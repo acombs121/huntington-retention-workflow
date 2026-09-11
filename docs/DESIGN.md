@@ -51,6 +51,22 @@ This document codifies the visual identity, design tokens, typography scale, com
 | `warn` | `#E38341` | Warning status indicator |
 | `crit` | `#E5736A` | Critical status indicator |
 
+### 2.3 Autonomous Agent Type Identity Tokens (Bold & Branded)
+
+All autonomous agent tags in runtime telemetry and orchestration logs are strictly rendered in **bold** (`font-bold`) using designated Huntington branding profile tokens:
+
+| Agent Identifier | Hex Code | Brand Profile Token | Architectural Role |
+| :--- | :--- | :--- | :--- |
+| **`[INGESTION_AGENT]`** | `#7FD1A9` | HBAN Mint Accent (`palette.accent`) | Core banking pipeline event stream intake (AFS Core, Pub/Sub) |
+| **`[DETECTION_AGENT]`** | `#7FD1A9` | HBAN Mint Accent (`palette.accent`) | Fedwire clearing telemetry & title demand queue fusion |
+| **`[CLASSIFICATION_AGENT]`**| `#E38341` | HBAN Brand Warn (`palette.warn`) | Liquidity event triage & commercial flight risk categorization |
+| **`[ENTITY_AGENT]`** | `#B8EFE4` | HBAN Sage Prosperous (`hban.sage-prosperous`) | Gemini 3.7 Flash multimodal OCR & beneficial ownership resolution |
+| **`[COMPLIANCE_GATE]`** | `#E5736A` | HBAN Brand Crit (`palette.crit`) | GLBA Reg P & FCRA § 604 non-guarantor firewall sentry |
+| **`[ENRICHMENT_AGENT]`** | `#7ECF1C` | HBAN Abundant Green (`hban.green-abundant`)| Executive 1-pager synthesis & unencumbered equity sizing |
+| **`[ROUTING_AGENT]`** | `#A7F3D0` | HBAN Mint Border (`hban.mint-border`) | Wealth market advisor matching, capacity, & CSA leverage |
+| **`[OUTREACH_AGENT]`** | `#7FD1A9` | HBAN Mint Accent (`palette.accent`) | Warm intro briefing generation for commercial bankers |
+| **`[ORCHESTRATION_ENGINE]`**| `#7FD1A9` | HBAN Mint Accent (`palette.accent`) | Batch lifecycle management & Spanner graph synchrony |
+
 ---
 
 ## 3. Typography Scale & Swiss Editorial Hierarchy
