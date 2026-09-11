@@ -203,6 +203,34 @@
       font-size: 0.8rem; line-height: 1.5; padding: 1rem; overflow-x: auto;
       background: rgba(148, 163, 184, 0.08); border-radius: 8px; margin: 0 0 1.25rem;
     }
+
+    /* ---- overflow containment ----
+       Grid and flex items default to min-width:auto, so a long unbreakable
+       label can push its track wider than its 1fr share and scroll the whole
+       page sideways. These rules let the tracks actually shrink. */
+    .timeline-nav { max-width: 100%; }
+    .timeline-step { min-width: 0; overflow: hidden; }
+    .timeline-step .step-num,
+    .timeline-step .step-name,
+    .timeline-step .step-time { display: block; min-width: 0; }
+    .timeline-step .step-name {
+      /* Wrapping beats a mid-word ellipsis in a nav strip. Three lines fits the
+         longest label at the ~161px each track gets on a 1200px container. */
+      white-space: normal;
+      overflow-wrap: anywhere;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin: 0.15rem 0;
+    }
+    .dim-col, .step-card, .qa-card, .problem-callout, .section-block { min-width: 0; }
+    .dim-desc, .qa-a, .doc-prose, .doc-list li { overflow-wrap: anywhere; }
+    .doc-table, .citation-table { max-width: 100%; }
+    .doc-table td, .citation-table td,
+    .doc-table th, .citation-table th { overflow-wrap: anywhere; }
+    code { overflow-wrap: anywhere; }
   </style>
 </head>
 <body>

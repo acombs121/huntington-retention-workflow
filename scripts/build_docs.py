@@ -84,6 +84,34 @@ EXTRA_CSS = """
       font-size: 0.8rem; line-height: 1.5; padding: 1rem; overflow-x: auto;
       background: rgba(148, 163, 184, 0.08); border-radius: 8px; margin: 0 0 1.25rem;
     }
+
+    /* ---- overflow containment ----
+       Grid and flex items default to min-width:auto, so a long unbreakable
+       label can push its track wider than its 1fr share and scroll the whole
+       page sideways. These rules let the tracks actually shrink. */
+    .timeline-nav { max-width: 100%; }
+    .timeline-step { min-width: 0; overflow: hidden; }
+    .timeline-step .step-num,
+    .timeline-step .step-name,
+    .timeline-step .step-time { display: block; min-width: 0; }
+    .timeline-step .step-name {
+      /* Wrapping beats a mid-word ellipsis in a nav strip. Three lines fits the
+         longest label at the ~161px each track gets on a 1200px container. */
+      white-space: normal;
+      overflow-wrap: anywhere;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin: 0.15rem 0;
+    }
+    .dim-col, .step-card, .qa-card, .problem-callout, .section-block { min-width: 0; }
+    .dim-desc, .qa-a, .doc-prose, .doc-list li { overflow-wrap: anywhere; }
+    .doc-table, .citation-table { max-width: 100%; }
+    .doc-table td, .citation-table td,
+    .doc-table th, .citation-table th { overflow-wrap: anywhere; }
+    code { overflow-wrap: anywhere; }
   </style>
 """
 
@@ -585,11 +613,13 @@ def _collect_steps(content: list[Block]) -> list[tuple[int, str, str, str, list[
 def _demo_timeline(steps: list[tuple[int, str, str, str, list[Block]]]) -> str:
     parts = ['    <nav class="timeline-nav">']
     for num, name, start, _end, _ in steps:
+        # Block-level children: inline spans ignore overflow/text-overflow, which
+        # is why these labels used to run together and bleed past the container.
         parts.append(
             '      <div class="timeline-step">'
-            f'<span class="step-num">{num}</span>'
-            f'<span class="step-name">{inline(name)}</span>'
-            f'<span class="step-time">{start}</span></div>'
+            f'<div class="step-num">{num}</div>'
+            f'<div class="step-name">{inline(name)}</div>'
+            f'<div class="step-time">{start}</div></div>'
         )
     parts += ["    </nav>", ""]
     return "\n".join(parts)
