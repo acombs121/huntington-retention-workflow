@@ -80,9 +80,9 @@ huntington-horizon/
 │   ├── AUDIT_REPORT.md          # Architectural baseline validation
 │   ├── critique.md              # Adversarial pre-mortem review
 │   └── huntington-horizon.pdf   # Compiled executive whitepaper & architecture blueprint
-├── tests/                       # 19 automated unit and integration tests (pytest)
+├── tests/                       # 31 automated unit and integration tests (pytest)
 │   ├── unit/                    # Liquidity engine invariant tests (net equity, floor, 1031, ALTA Pillar 2)
-│   └── integration/             # FastAPI endpoint tests (IAP, quarantine, valuation, onboarding, 404/422 validations)
+│   └── integration/             # FastAPI endpoint tests (IAP, quarantine, valuation, onboarding, flight-risk trace, signal-graph, 404/422 validations)
 ├── main.py                      # FastAPI orchestrator, Gemini integration & hardened SPA router
 ├── iap_jwt_middleware.py        # Cryptographic IAP token verification with cert caching
 ├── deploy.sh / destroy.sh       # Cloud Run deployment and safe teardown automation
@@ -135,12 +135,12 @@ Run both the FastAPI backend and Vite frontend proxy concurrently bound strictly
 - **Workflow & Operating Guide**: `http://127.0.0.1:5173/demo_script.html` (or `http://127.0.0.1:8080/demo_script.html`)
 
 ### Verification & Test Commands
-- **Automated Test Suites (19 Unit & Integration Tests)**:
+- **Automated Test Suites (31 Unit & Integration Tests)**:
   ```bash
   source .venv/bin/activate && pytest -v
   npm --prefix frontend test
   ```
-  Executes 19 backend tests verifying valuation formulas, statutory routing invariants, ALTA Pillar 2 DocuSign metadata, deal-isolated GLBA quarantine status, 64-character SHA-256 audit hashes, and deal-parameterized wealth onboarding, alongside frontend TypeScript checks (`tsc -b`).
+  Executes 31 backend tests verifying valuation formulas, statutory routing invariants, ALTA Pillar 2 DocuSign metadata, deal-isolated GLBA quarantine status, 64-character SHA-256 audit hashes, flight-risk algorithmic traces, Spanner Graph ISO GQL signal grounding topologies, and deal-parameterized wealth onboarding, alongside frontend TypeScript checks (`tsc -b`).
 - **Backend Import & Boot**:
   ```bash
   source .venv/bin/activate
@@ -164,6 +164,8 @@ Run both the FastAPI backend and Vite frontend proxy concurrently bound strictly
 | `/api/health` | GET | Diagnostic telemetry (Platform, Model, Project, Service, IAP status, Version 6.0.0). |
 | `/api/user` | GET | Authenticated Google / IAP user profile (`developer@google.com` locally). |
 | `/api/payoffs` | GET | Inbound commercial servicing queue items with Synthetic Capacity Meter. |
+| `/api/flight-risk-trace` | GET | Autonomous agent reasoning chain explaining liquidity event classification & confidence. |
+| `/api/signal-graph` | GET | Google Cloud Spanner Graph (ISO GQL) signal grounding topology & entity network. |
 | `/api/entity-resolution` | GET | Multimodal document extraction with verified entity records, DLP status, and non-guarantor exclusion. |
 | `/api/valuation` | POST | Deterministic valuation calculator, loan payoff, net proceeds, and yield math. |
 | `/api/quarantine` | GET/POST | Deal-partitioned GLBA compliance gate with cryptographic 64-character SHA-256 audit hashing. |

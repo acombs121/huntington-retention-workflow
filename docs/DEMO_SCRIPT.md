@@ -45,9 +45,10 @@ Before launching the demo:
 flowchart LR
     S1["Step 1 (00:00)<br/>Two-Tier Shield"] --> S2["Step 2 (01:30)<br/>Upstream Radar"]
     S2 --> S3["Step 3 (03:30)<br/>Reconciled DLP"]
-    S3 --> S4["Step 4 (06:00)<br/>Borrower Routing"]
-    S4 --> S5["Step 5 (08:30)<br/>CRO Guardrails"]
-    S5 --> S6["Step 6 (09:15)<br/>CFO Economics"]
+    S3 --> S4["Step 4 (05:00)<br/>Advisor Match"]
+    S4 --> S5["Step 5 (06:30)<br/>Borrower Routing"]
+    S5 --> S6["Step 6 (08:30)<br/>CRO Guardrails"]
+    S6 --> S7["Step 7 (09:15)<br/>CFO Economics"]
 ```
 
 ---
@@ -76,14 +77,17 @@ flowchart LR
   3. Explain the upstream surveillance: *"We don't wait for the payoff demand. Horizon screens loan facility maturities at T-120 and T-90, and flags tenant estoppel requests at T-60 so bankers engage during transaction planning."*
   4. Highlight First American Title's payoff demand on Riverfront Commercial Commons surfacing at T-12:
      - *"When the payoff demand arrived from First American, it didn't wait in a loan ops inbox. Horizon ingested the inbound eFax via Microsoft Graph API and RightFax, extracting the loan account and borrower LLC 72 hours before loan ops keyed the quote into AFS."*
+  5. Expand the telemetry container and click **[Inspect Spanner Grounding Graph]**:
+     - *"How does the agent know with 94% certainty that this is an outright commercial cash-out sale rather than a loan refi or a 1031 exchange? It doesn't guess. Horizon queries our Google Cloud Spanner Knowledge Graph via native ISO GQL. Notice the connected nodes: First American Title links to Note #CC-8821, which maps to Vance Riverfront Properties IV, LLC and primary guarantor Marcus Vance. The graph audits nCino for replacement debt (none found), identifies direct wire disbursement to commercial checking DDA #..4401, and verifies zero Qualified Intermediary (QI) involvement. Notice Elena Vance is quarantined with a GLBA Title V privacy badge. This multi-source graph traversal is why the AI achieves institutional signal fidelity."*
 - **What is Shown in the Demo**:
   - Pane 1 Priority Radar with live capacity counter, Pass Tier 2 credit rating badge, scheduled payoff countdown (14 days to close), and global obligor MDM screening pass.
+  - Interactive **Spanner Graph Grounding Console** modal displaying the multi-tier SVG network topology, clickable node inspector, live ISO GQL query telemetry, and deal-switching comparative views.
 - **Production Implementation Blueprint**:
-  - Microsoft Graph API + OpenText RightFax ingesting incoming payoff faxes/emails into Cloud Run event-driven microservices; Snowflake core read-replica loan master.
+  - Google Cloud Spanner Graph (ISO/IEC 39075 GQL pattern matching); Microsoft Graph API + OpenText RightFax ingesting incoming payoff faxes/emails into Cloud Run event-driven microservices; Snowflake core read-replica loan master.
 
 ---
 
-### Step 3: Reconciled Entity Intelligence & Internal Liquidity Triage (03:30–06:00)
+### Step 3: Reconciled Entity Intelligence & Internal Liquidity Triage (03:30–05:00)
 *Demonstrate multimodal extraction with pre-ingestion DLP, non-guarantor privacy exclusions, and internal triage heuristics under OCC SR 11-7.*
 
 - **Presenter Action**:
@@ -93,6 +97,7 @@ flowchart LR
   3. Point out the **Internal Liquidity Triage Indicator**:
      - *"The title letter omits the contract sale price. Rather than having an AI hallucinate an appraisal, Horizon references the underwritten $8.0M baseline and trailing Q1 NOI ($637.5k) to establish an internal triage range of $2.5M to $3.3M. This calculation is strictly muzzled from the client; Greg Miller never asserts a property value to Marcus Vance."*
   4. Adjust the **Sale Price Slider** live from $8.5M to $9.0M, watching net proceeds dynamically re-index to $3.35M.
+  5. Click **[Select Wealth Advisor & Dispatch Intro]** to advance to Advisor Routing.
 - **What is Shown in the Demo**:
   - Pane 2 interactive entity map with green bounding-box citations on credit agreements; non-guarantor exclusion flags; dynamic slider recalculating net equity in real time; 1031 tax strategy toggle.
 - **Production Implementation Blueprint**:
@@ -100,7 +105,26 @@ flowchart LR
 
 ---
 
-### Step 4: Consultative Commercial Call & Borrower-Directed Routing (06:00–08:30)
+### Step 4: Objective Wealth Advisor Matching & Warm Introduction Dispatch (05:00–06:30)
+*Demonstrate objective, non-discriminatory advisor routing based on proximity, capacity, and CRE specialty, followed by banker-authored warm introduction email dispatch.*
+
+- **Presenter Action**:
+  1. Review the candidate advisor ranking:
+     - *"Notice how Horizon selects Sarah Jenkins with a 98% match score. The match is grounded in objective criteria: geographic proximity (0.4 miles at Huntington Center Downtown), specialized CRE disposition experience, and verified bandwidth (72% utilized, capacity for 2 new relationships). Crucially, Sarah already advises Marcus's co-investor David Cole, establishing immediate relationship equity."*
+  2. Contrast with secondary candidates:
+     - *"Brian Gallagher brings excellent corporate treasury fixed-income expertise, but lacks direct principal network ties. Elena Rostova brings deep trust and estate credentials, but is based in Cleveland and near portfolio capacity."*
+  3. Review and dispatch the warm introduction email:
+     - *"The email draft is pre-populated on behalf of commercial banker Greg Miller—preserving the banker-client relationship while ensuring complete context transfers smoothly under GLBA safeguards."*
+  4. Click **[Send Introduction]** and proceed to **[Settlement Setup →]**.
+- **What is Shown in the Demo**:
+  - Candidate advisor comparison cards with capacity gauges, geographic proximity badges, and verified entity network ties.
+  - Interactive email composer with pre-populated contextual deal facts, one-click template reset, and dispatched audit timestamp logging in Commercial CRM.
+- **Production Implementation Blueprint**:
+  - Salesforce Financial Services Cloud advisor capacity index; Apigee X API Gateway mTLS; Commercial CRM audit log event dispatch.
+
+---
+
+### Step 5: Consultative Commercial Call & Borrower-Directed Routing (06:30–08:30)
 *Execute the warm banker call, inspect the live DocuSign routing packet delivered directly to the borrower, and showcase modern SEI Data Cloud wealth integration.*
 
 - **Presenter Action**:
@@ -120,7 +144,7 @@ flowchart LR
 
 ---
 
-### Step 5: Institutional Guardrails (CRO Defense) (08:30–09:15)
+### Step 6: Institutional Guardrails (CRO Defense) (08:30–09:15)
 *Disarm regulatory, privacy, title fraud, and model risk concerns.*
 
 - **Presenter Action**:
@@ -139,7 +163,7 @@ flowchart LR
 
 ---
 
-### Step 6: Financial ROI & CFO Hand-off (09:15–10:00)
+### Step 7: Financial ROI & CFO Hand-off (09:15–10:00)
 *Prove the financial justification with defensible sensitivity modeling and realistic capacity economics.*
 
 - **Presenter Action**:

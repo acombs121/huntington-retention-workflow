@@ -99,6 +99,871 @@ quarantine_states: Dict[str, Dict[str, Any]] = {
     "PO-2026-6104": get_default_quarantine("PO-2026-6104"),
 }
 
+DETECTION_TRACES: Dict[str, Dict[str, Any]] = {
+    "PO-2026-8821": {
+        "payoff_id": "PO-2026-8821",
+        "confidence_score": 94,
+        "urgency_tier": "Critical Flight Risk (T-12 Days)",
+        "classification": "Commercial Asset Sale / Taxable Cash-Out (High Flight Risk)",
+        "summary_verdict": "Detection agent confirmed third-party asset sale with zero replacement financing and no Qualified Intermediary (QI) assignment. Estimated $2,902,700.00 in unencumbered net seller equity is destined for constructive receipt in operating checking, exposing the relationship to imminent 48-hour deposit flight.",
+        "model_agent": "gemini-3.7-flash (Multimodal Signal Fusion)",
+        "evaluation_timestamp": "2026-09-04T08:14:22Z",
+        "fused_signals": [
+            {
+                "category": "Intake Topology & Channel",
+                "signal_name": "Third-Party Settlement Escrow Demand",
+                "source": "Inbound eFax via Microsoft Graph API / First American Title (Escrow #FA-2026-8819-COL)",
+                "observation": "Demand letter requests exact loan payoff calculation for closing scheduled on September 16, 2026. Signed by Commercial Escrow Officer Karen Lindqvist.",
+                "risk_impact": "+20% Baseline Disposition Probability",
+                "verdict": "EXTERNAL ESCROW OPENED"
+            },
+            {
+                "category": "Credit Core & Pipeline Recon",
+                "signal_name": "Replacement Facility Inquiry Cross-Check",
+                "source": "nCino Commercial LOS & AFS Core Accounting",
+                "observation": "Cross-referenced all borrowing entities and guarantors across Huntington's 1,400 branches. Zero replacement loan applications, zero rate lock commitments, and zero pending term sheets.",
+                "risk_impact": "+35% Flight Probability (Excludes Refinance)",
+                "verdict": "ZERO REPLACEMENT FINANCING"
+            },
+            {
+                "category": "Intermediary & Tax Identification",
+                "signal_name": "IRC §1031 Qualified Intermediary (QI) Audit",
+                "source": "Multimodal Exhibit OCR (Exhibits A-E Title Demand)",
+                "observation": "Settlement form indicates direct disbursement to seller entity operating account. Zero QI assignment contract, exchange agreement, or intermediary designation present.",
+                "risk_impact": "+25% Flight Probability (Direct Constructive Receipt)",
+                "verdict": "TAXABLE CASH-OUT / NO INTERMEDIARY"
+            },
+            {
+                "category": "Valuation & Liquidity Delta",
+                "signal_name": "Unencumbered Net Equity Proceeds",
+                "source": "Internal Liquidity Triage (NOI $637.5k @ 7.50% Cap Rate vs $5.18M UPB)",
+                "observation": "Triangulated property valuation of $8,500,000 leaves $2,902,700.00 in net liquid equity after debt payoff ($5.21M) and closing costs ($382.5k).",
+                "risk_impact": "+14% Flight Urgency (High Liquidity Prize)",
+                "verdict": "$2.90M AT-RISK CAPITAL"
+            }
+        ],
+        "hypotheses": [
+            {
+                "hypothesis": "Hypothesis A: Internal Debt Refinance or Extension",
+                "confidence_pct": 4,
+                "status": "REJECTED",
+                "rationale": "No replacement loan records in nCino across Huntington's 21-state footprint. Demand originated by third-party title insurer representing external buyer."
+            },
+            {
+                "hypothesis": "Hypothesis B: IRC §1031 Tax-Deferred Exchange",
+                "confidence_pct": 12,
+                "status": "UNCONFIRMED",
+                "rationale": "Initial title exhibits lack Qualified Intermediary assignment. Funds are scheduled for direct cash constructive receipt, though borrower remains eligible to elect 1031 prior to closing."
+            },
+            {
+                "hypothesis": "Hypothesis C: Third-Party Asset Sale with Liquid Cash-Out",
+                "confidence_pct": 94,
+                "status": "ACCEPTED",
+                "rationale": "Complete asset disposition confirmed by title closing demand, no replacement debt, and direct seller equity disbursement. Historical Treasury flight baseline: 78% within 48-72 hours."
+            }
+        ],
+        "trace_steps": [
+            "[00:00.012] Ingested incoming eFax from First American Title (Escrow #FA-2026-8819-COL) via Microsoft Graph API connector.",
+            "[00:00.048] Multimodal spatial parse: Extracted borrower entity 'Vance Riverfront Properties IV, LLC', facility #CC-8821, payoff quote $5,214,800.00, scheduled closing 2026-09-16.",
+            "[00:00.082] Executed nCino & AFS core cross-reference: Facility #CC-8821 active. Query for replacement loan applications across Huntington's 1,400 branches returned 0 records.",
+            "[00:00.125] Scanned title exhibits for tax-deferred exchange language or Qualified Intermediary (QI) assignments: Zero QI exhibits detected.",
+            "[00:00.169] Calculated net proceeds triage: Grounded valuation ($8.50M) - debt payoff ($5.21M) - closing costs ($382k) = $2.90M net cash equity.",
+            "[00:00.210] Synthesized flight risk signals: Unencumbered seller cash + zero replacement credit + closing in 12 days. Historical treasury flight baseline: 78%.",
+            "[00:00.245] Output composite confidence score: 94% (High Flight Risk). Auto-staged Tier 1 Business Premier ICS and borrower DocuSign routing packet."
+        ]
+    },
+    "PO-2026-7492": {
+        "payoff_id": "PO-2026-7492",
+        "confidence_score": 88,
+        "urgency_tier": "Qualified Escrow Flight (T-24 Days)",
+        "classification": "IRC §1031 Like-Kind Exchange (Identified QI Intermediary)",
+        "summary_verdict": "Detection agent identified active IRC §1031 exchange assignment naming Chicago Title Land Trust / IPX1031 as Qualified Intermediary. Because QI is assigned, net proceeds ($1,588,250.00) cannot touch borrower operating accounts; proceeds will wire to QI's custodial depository unless Huntington 1031 Qualified Escrow Depository is pre-staged.",
+        "model_agent": "gemini-3.7-flash (Multimodal Signal Fusion)",
+        "evaluation_timestamp": "2026-08-20T14:32:10Z",
+        "fused_signals": [
+            {
+                "category": "Intake Topology & Channel",
+                "signal_name": "T-120 Surveillance & Title Demand Intake",
+                "source": "Chicago Title Insurance Co. (Escrow #CT-2026-4401-OH)",
+                "observation": "Payoff demand received at T-24 days for scheduled asset disposition closing on September 28, 2026.",
+                "risk_impact": "+20% Baseline Disposition Probability",
+                "verdict": "THIRD-PARTY ESCROW OPENED"
+            },
+            {
+                "category": "Credit Core & Pipeline Recon",
+                "signal_name": "Replacement Facility Inquiry",
+                "source": "nCino Commercial LOS / SBA 7(a) Portfolio Queue",
+                "observation": "Existing SBA 7(a) commercial facility #SBA-7492. External buyer ('Midwest Precision Holdings LLC') securing debt with third-party institutional lender; no replacement loan with Huntington.",
+                "risk_impact": "+30% Flight Probability (External Financing)",
+                "verdict": "NO REPLACEMENT FINANCING"
+            },
+            {
+                "category": "Intermediary & Tax Identification",
+                "signal_name": "Identifiable Qualified Intermediary (QI)",
+                "source": "Multimodal Contract Exhibit C (Exchange Agreement)",
+                "observation": "Formal IRC §1031 Exchange Assignment naming Chicago Title Land Trust / IPX1031 as Qualified Intermediary. Proceeds are legally prohibited from touching borrower accounts directly.",
+                "risk_impact": "+28% Intermediary Flight Risk (Outside Escrow)",
+                "verdict": "QI INTERMEDIARY CONFIRMED"
+            },
+            {
+                "category": "Valuation & Liquidity Delta",
+                "signal_name": "Exchange Equity Volume",
+                "source": "Appraised Asset Valuation ($3.15M) vs SBA Payoff ($1.42M)",
+                "observation": "Estimated exchange proceeds of $1,588,250.00 held under exchange safe harbor.",
+                "risk_impact": "+10% Institutional Depository Target",
+                "verdict": "$1.59M QI ESCROW TARGET"
+            }
+        ],
+        "hypotheses": [
+            {
+                "hypothesis": "Hypothesis A: Internal SBA Refinance",
+                "confidence_pct": 3,
+                "status": "REJECTED",
+                "rationale": "Buyer is an outside acquirer using non-Huntington debt; SBA 7(a) payoff is final."
+            },
+            {
+                "hypothesis": "Hypothesis B: Taxable Cash-Out to Operating Account",
+                "confidence_pct": 9,
+                "status": "REJECTED",
+                "rationale": "Identified QI assignment legally prevents borrower constructive receipt."
+            },
+            {
+                "hypothesis": "Hypothesis C: 1031 Exchange Wire to Outside Intermediary Bank",
+                "confidence_pct": 88,
+                "status": "ACCEPTED",
+                "rationale": "Exchange documents identify QI. Without Huntington Qualified Escrow Depository, title wires funds to external QI depository bank."
+            }
+        ],
+        "trace_steps": [
+            "[00:00.010] Ingested Chicago Title payoff notice (#CT-2026-4401-OH) during scheduled T-120 surveillance sweep.",
+            "[00:00.038] Parsed exhibits: Identified buyer entity 'Midwest Precision Holdings LLC' and independent lender.",
+            "[00:00.071] Detected IRC §1031 Exchange exhibit: 'Notice of Assignment to Qualified Intermediary' naming Chicago Title Land Trust / IPX1031.",
+            "[00:00.104] Queried nCino replacement pipeline: 0 applications for Buckeye Precision Tooling or Arthur Pendelton.",
+            "[00:00.142] Evaluated intermediary classification: Identifiable intermediary present. Proceeds are 100% tax-deferred exchange equity ($1.59M).",
+            "[00:00.180] Output composite confidence score: 88% (Intermediary Flight Risk). Pre-staged Huntington 1031 Qualified Escrow Depository."
+        ]
+    },
+    "PO-2026-6104": {
+        "payoff_id": "PO-2026-6104",
+        "confidence_score": 58,
+        "urgency_tier": "Refinance Watchlist (T-45 Days)",
+        "classification": "Competitive Refinance Inquiry / Equity Restructuring",
+        "summary_verdict": "Detection agent flagged preliminary payoff inquiry from Commonwealth Land Title. nCino indicates an active loan renewal discussion by Amanda Cross, but borrower is shopping competitive takeout terms with Fifth Third Bank. Moderate flight risk requires banker intervention to lock facility.",
+        "model_agent": "gemini-3.7-flash (Multimodal Signal Fusion)",
+        "evaluation_timestamp": "2026-08-05T11:20:00Z",
+        "fused_signals": [
+            {
+                "category": "Intake Topology & Channel",
+                "signal_name": "Preliminary Payoff Demand Inquiry",
+                "source": "Commonwealth Land Title (Escrow #CLT-2026-9031-OH)",
+                "observation": "Preliminary request for payoff figures at T-45 days. Closing tentative for October 19, 2026.",
+                "risk_impact": "+15% Inquiry Signal",
+                "verdict": "PRELIMINARY INQUIRY"
+            },
+            {
+                "category": "Credit Core & Pipeline Recon",
+                "signal_name": "Active Pipeline & Term Sheet Comparison",
+                "source": "nCino Commercial LOS / RM Amanda Cross",
+                "observation": "Active renewal application in nCino under review; borrower noted receiving competitive loan package from Fifth Third Bank.",
+                "risk_impact": "+25% Competitive Takeout Risk",
+                "verdict": "PENDING INTERNAL REFI"
+            },
+            {
+                "category": "Intermediary & Tax Identification",
+                "signal_name": "Tax Strategy Audit",
+                "source": "Loan Purpose Documentation",
+                "observation": "Zero QI intermediary detected. Medical partner buyout restructure.",
+                "risk_impact": "+8% Unsettled Equity",
+                "verdict": "NO QI INTERMEDIARY"
+            },
+            {
+                "category": "Valuation & Liquidity Delta",
+                "signal_name": "Equity Restructure Position",
+                "source": "Triage NOI Valuation ($5.72M) vs UPB ($3.21M)",
+                "observation": "Estimated equity delta of $2,222,600.00.",
+                "risk_impact": "+10% Refinance Exposure",
+                "verdict": "$2.22M EQUITY RESTRUCTURE"
+            }
+        ],
+        "hypotheses": [
+            {
+                "hypothesis": "Hypothesis A: Competitive Refinance Takeout",
+                "confidence_pct": 58,
+                "status": "ACCEPTED",
+                "rationale": "Borrower is comparing terms; title payoff inquiry indicates competitive lender may be preparing closing package."
+            },
+            {
+                "hypothesis": "Hypothesis B: Third-Party Sale",
+                "confidence_pct": 22,
+                "status": "UNCONFIRMED",
+                "rationale": "Preliminary title inquiry does not show a fully executed Purchase & Sale Agreement."
+            },
+            {
+                "hypothesis": "Hypothesis C: 1031 Exchange",
+                "confidence_pct": 5,
+                "status": "REJECTED",
+                "rationale": "Zero QI documents or exchange intention indicated."
+            }
+        ],
+        "trace_steps": [
+            "[00:00.012] Ingested preliminary payoff inquiry from Commonwealth Land Title (#CLT-2026-9031-OH).",
+            "[00:00.045] nCino cross-check: Found in-progress renewal file #REN-6104 assigned to Amanda Cross.",
+            "[00:00.089] CRM activity note: Client requested payoff quote to evaluate competing refinance quote from Fifth Third.",
+            "[00:00.120] Intermediary check: No Qualified Intermediary exhibits present.",
+            "[00:00.155] Synthesized classification: Competitive Refinance Takeout Risk (58% confidence). Staged for RM defensive rate-lock outreach."
+        ]
+    }
+}
+
+SIGNAL_GRAPHS: Dict[str, Dict[str, Any]] = {
+    "PO-2026-8821": {
+        "payoff_id": "PO-2026-8821",
+        "deal_name": "Marcus Vance / Vance Riverfront Properties IV, LLC",
+        "borrower_entity": "Vance Riverfront Properties IV, LLC",
+        "classification": "Commercial Asset Sale / Taxable Cash-Out (High Flight Risk)",
+        "confidence_score": 94,
+        "spanner_stats": {
+            "database": "huntington-commercial-graph",
+            "engine": "Google Cloud Spanner Graph (ISO GQL Engine)",
+            "instance": "spanner-us-east4-prod-a",
+            "query_latency_ms": 18.4,
+            "nodes_matched": 13,
+            "edges_traversed": 13,
+            "gql_query": (
+                "GRAPH HuntingtonCommercialGraph\n"
+                "MATCH (b:BorrowerEntity {id: 'VANCE-IV-LLC'})-[:HAS_BENEFICIAL_OWNER]->(p:Principal)\n"
+                "OPTIONAL MATCH (p)-[:GUARANTOR_OF]->(f:CreditFacility {id: 'FAC-8821'})\n"
+                "MATCH (f)<-[:PAYOFF_TARGET]-(d:TitleDemand {escrow_id: 'FA-2026-8819-COL'})\n"
+                "OPTIONAL MATCH (b)-[:ASSIGNED_QI]->(qi:Intermediary)\n"
+                "RETURN b.legal_name, p.name, p.guaranty_status, p.glba_quarantined,\n"
+                "       qi.id IS NOT NULL AS has_1031_qi, f.unpaid_balance"
+            )
+        },
+        "nodes": [
+            {
+                "id": "src_fax",
+                "label": "First American Title Demand",
+                "tier": "source",
+                "status": "verified",
+                "badge": "INBOUND EFAX",
+                "subtitle": "Escrow #FA-2026-8819-COL",
+                "properties": {
+                    "Channel": "Microsoft Graph API eFax Intake",
+                    "Originator": "First American Title Insurance Co.",
+                    "Escrow Officer": "Karen Lindqvist",
+                    "Demand Date": "2026-08-28",
+                    "Closing Target": "2026-09-16 (T-12 Days)"
+                },
+                "agent_relevance": "Triggering inbound demand document setting the strict 12-day retention window.",
+                "x": 90,
+                "y": 120
+            },
+            {
+                "id": "src_ncino",
+                "label": "nCino Commercial LOS",
+                "tier": "source",
+                "status": "verified",
+                "badge": "LOS RECON",
+                "subtitle": "Facility #CC-8821",
+                "properties": {
+                    "LOS System": "nCino Commercial Banking Cloud",
+                    "Active Applications": "0 In-Flight Records",
+                    "Rate Lock Commitments": "0 Found Across 1,400 Branches",
+                    "Recon Result": "No Replacement Debt"
+                },
+                "agent_relevance": "Cross-references enterprise pipeline to disprove internal refinance or term extension.",
+                "x": 90,
+                "y": 260
+            },
+            {
+                "id": "src_afs",
+                "label": "AFS Level III Accounting",
+                "tier": "source",
+                "status": "verified",
+                "badge": "CORE LEDGER",
+                "subtitle": "UPB $5,180,000.00",
+                "properties": {
+                    "Core Ledger": "AFS Level III Commercial Loan Core",
+                    "Unpaid Principal": "$5,180,000.00",
+                    "Calculated Payoff Quote": "$5,214,800.00",
+                    "Per Diem Interest": "$692.50",
+                    "Risk Rating": "Pass (Tier 2)"
+                },
+                "agent_relevance": "Supplies authoritative loan balances and per diems to ground equity calculations.",
+                "x": 90,
+                "y": 400
+            },
+            {
+                "id": "note_facility",
+                "label": "Commercial Note & Mortgage",
+                "tier": "contract",
+                "status": "active",
+                "badge": "LIEN FACILITY",
+                "subtitle": "Collateral: 410 S. High St.",
+                "properties": {
+                    "Instrument": "First Senior Commercial Mortgage",
+                    "Original Facility": "$6,500,000.00",
+                    "Collateral": "Riverfront Commercial Commons",
+                    "Lien Release": "Conditioned on $5,214,800.00 Payoff"
+                },
+                "agent_relevance": "Primary collateralized debt facility being extinguished at closing.",
+                "x": 280,
+                "y": 200
+            },
+            {
+                "id": "escrow_order",
+                "label": "Escrow Settlement Order",
+                "tier": "contract",
+                "status": "active",
+                "badge": "SETTLEMENT",
+                "subtitle": "Closing: 2026-09-16",
+                "properties": {
+                    "Escrow ID": "FA-2026-8819-COL",
+                    "Settlement Officer": "Karen Lindqvist",
+                    "Wire Target": "Operating Checking *4109",
+                    "QI Exhibit Attached": "None Detected (Exhibits A-E Audited)"
+                },
+                "agent_relevance": "Identifies settlement mechanics and absence of statutory 1031 escrow instructions.",
+                "x": 280,
+                "y": 360
+            },
+            {
+                "id": "entity_borrower",
+                "label": "Vance Riverfront Properties IV, LLC",
+                "tier": "entity",
+                "status": "verified",
+                "badge": "BORROWER ENTITY",
+                "subtitle": "Ohio LLC #4192081",
+                "properties": {
+                    "Jurisdiction": "Ohio Secretary of State",
+                    "Tax Classification": "Pass-Through Entity (Multi-Member)",
+                    "Formation Date": "2018-04-12",
+                    "Operating DDA": "Huntington Commercial Checking (*4109)"
+                },
+                "agent_relevance": "Borrowing entity holding title to real estate; pass-through entity to beneficial owners.",
+                "x": 470,
+                "y": 200
+            },
+            {
+                "id": "entity_title",
+                "label": "First American Title Insurance Co.",
+                "tier": "entity",
+                "status": "verified",
+                "badge": "SETTLEMENT AGENT",
+                "subtitle": "Columbus Branch #14",
+                "properties": {
+                    "ALTA Identifier": "ALTA-OH-7721",
+                    "Escrow Location": "Downtown Columbus Commercial Unit",
+                    "Security Mandate": "ALTA Best Practices Pillar 2 Verified Call-Back"
+                },
+                "agent_relevance": "Settlement agent receiving the official Huntington payoff verification letter.",
+                "x": 470,
+                "y": 360
+            },
+            {
+                "id": "principal_marcus",
+                "label": "Marcus Vance",
+                "tier": "principal",
+                "status": "verified",
+                "badge": "PRIMARY GUARANTOR (85%)",
+                "subtitle": "Managing Member & Sponsor",
+                "properties": {
+                    "Equity Stake": "85.0% Majority Interest",
+                    "Guaranty Type": "Full Joint & Several Personal Guarantee",
+                    "Known HBAN Liquidity": "$2,100,000.00 in Commercial / Private DDA",
+                    "Wealth Eligibility": "Private Banking / PWA Eligible ($5M+ Total)"
+                },
+                "agent_relevance": "Primary commercial relationship sponsor targeted for RM outreach and wealth bridge.",
+                "x": 660,
+                "y": 160
+            },
+            {
+                "id": "principal_elena",
+                "label": "Elena Vance",
+                "tier": "principal",
+                "status": "quarantined",
+                "badge": "GLBA QUARANTINED (15%)",
+                "subtitle": "Passive Member / Non-Guarantor",
+                "properties": {
+                    "Equity Stake": "15.0% Minority Interest",
+                    "Guaranty Status": "Non-Guarantor (No Commercial Guarantee)",
+                    "GLBA Reg P Status": "Quarantined / Nonpublic Personal Info (NPI)",
+                    "Exclusion Sentry": "Firewalled from Wealth Advisory CRM Pending Opt-In"
+                },
+                "agent_relevance": "Exclusion Sentry boundary test: non-guarantor PII is firewalled from retail wealth systems.",
+                "x": 660,
+                "y": 320
+            },
+            {
+                "id": "sig_no_refi",
+                "label": "Zero Replacement Refinance",
+                "tier": "signal",
+                "status": "flagged",
+                "badge": "BEHAVIORAL SIGNAL",
+                "subtitle": "+35% Flight Risk Weight",
+                "properties": {
+                    "Core Query": "AFS + nCino Cross-System Footprint Scan",
+                    "Branches Checked": "1,400 HBAN Branches",
+                    "Pending Pipelines": "0 Applications / 0 Term Sheets",
+                    "Deterministic Finding": "Completely Eliminates Internal Refinance"
+                },
+                "agent_relevance": "Disproves refinancing hypothesis; confirms asset disposition in progress.",
+                "x": 850,
+                "y": 120
+            },
+            {
+                "id": "sig_no_qi",
+                "label": "Absence of 1031 Intermediary",
+                "tier": "signal",
+                "status": "flagged",
+                "badge": "TAX CLASSIFICATION",
+                "subtitle": "+25% Cash-Out Weight",
+                "properties": {
+                    "Exhibit Audit": "Full Multimodal OCR on Title Demand Exhibits A-E",
+                    "Intermediary Status": "No Qualified Intermediary (QI) Named",
+                    "Funds Destination": "Direct Constructive Receipt in Seller Operating Checking",
+                    "Deterministic Finding": "Classifies Deal as Taxable Liquidity Cash-Out"
+                },
+                "agent_relevance": "Confirms proceeds will touch client operating accounts, triggering Huntington Treasury ICS.",
+                "x": 850,
+                "y": 240
+            },
+            {
+                "id": "sig_equity_delta",
+                "label": "Net Equity Prize: $2,902,700",
+                "tier": "signal",
+                "status": "flagged",
+                "badge": "LIQUIDITY PRIZE",
+                "subtitle": "Triangulated Cap Rate 7.50%",
+                "properties": {
+                    "Indicative Valuation": "$8,500,000.00 ($637.5k NOI capitalized @ 7.50%)",
+                    "Payoff Extinguishment": "$5,214,800.00",
+                    "Estimated Closing Costs": "$382,500.00 (4.5% Standard Commercial Rate)",
+                    "Net Liquid Proceeds": "$2,902,700.00 At-Risk Seller Equity"
+                },
+                "agent_relevance": "Calculates exact relationship retention prize to drive urgency tiering.",
+                "x": 850,
+                "y": 360
+            },
+            {
+                "id": "verdict_node",
+                "label": "Commercial Disposition / Taxable Cash-Out",
+                "tier": "verdict",
+                "status": "verified",
+                "badge": "94% AGENT CONFIDENCE",
+                "subtitle": "Urgency: Critical (T-12 Days)",
+                "properties": {
+                    "Composite Confidence": "94.2% Deterministic Graph Fusion",
+                    "Urgency Window": "Critical (12 Calendar Days to Closing)",
+                    "Recommended Product": "Huntington Business Premier ICS (4.85% APY)",
+                    "Wealth Scaffolding": "Pre-Staged Series 7/66 Intake Shell (Quarantined)"
+                },
+                "agent_relevance": "Final deterministic verdict grounding the Commercial RM T-12 phone briefing.",
+                "x": 850,
+                "y": 490
+            }
+        ],
+        "edges": [
+            {"id": "e1", "source": "src_fax", "target": "escrow_order", "label": "INBOUND_DEMAND", "type": "primary"},
+            {"id": "e2", "source": "src_ncino", "target": "note_facility", "label": "CORE_RECON", "type": "primary"},
+            {"id": "e3", "source": "src_afs", "target": "note_facility", "label": "SERVICING_DATA", "type": "primary"},
+            {"id": "e4", "source": "escrow_order", "target": "entity_title", "label": "ASSIGNED_ESCROW", "type": "primary"},
+            {"id": "e5", "source": "note_facility", "target": "entity_borrower", "label": "BORROWER_OBLIGOR", "type": "primary"},
+            {"id": "e6", "source": "entity_borrower", "target": "principal_marcus", "label": "BENEFICIAL_OWNER_85PCT", "type": "primary"},
+            {"id": "e7", "source": "entity_borrower", "target": "principal_elena", "label": "BENEFICIAL_OWNER_15PCT", "type": "quarantined"},
+            {"id": "e8", "source": "note_facility", "target": "sig_no_refi", "label": "PIPELINE_CHECK", "type": "signal"},
+            {"id": "e9", "source": "escrow_order", "target": "sig_no_qi", "label": "EXHIBIT_ANALYSIS", "type": "signal"},
+            {"id": "e10", "source": "note_facility", "target": "sig_equity_delta", "label": "VALUATION_TRIAGE", "type": "signal"},
+            {"id": "e11", "source": "sig_no_refi", "target": "verdict_node", "label": "CONFIRMS_DISPOSITION", "type": "verdict"},
+            {"id": "e12", "source": "sig_no_qi", "target": "verdict_node", "label": "CONFIRMS_CASH_OUT", "type": "verdict"},
+            {"id": "e13", "source": "sig_equity_delta", "target": "verdict_node", "label": "SCALES_PRIORITY", "type": "verdict"}
+        ]
+    },
+    "PO-2026-7492": {
+        "payoff_id": "PO-2026-7492",
+        "deal_name": "Arthur Pendelton / Buckeye Precision Tooling Corp.",
+        "borrower_entity": "Buckeye Precision Tooling Corp.",
+        "classification": "IRC §1031 Like-Kind Exchange (Identified QI Intermediary)",
+        "confidence_score": 88,
+        "spanner_stats": {
+            "database": "huntington-commercial-graph",
+            "engine": "Google Cloud Spanner Graph (ISO GQL Engine)",
+            "instance": "spanner-us-east4-prod-a",
+            "query_latency_ms": 16.2,
+            "nodes_matched": 10,
+            "edges_traversed": 11,
+            "gql_query": (
+                "GRAPH HuntingtonCommercialGraph\n"
+                "MATCH (b:BorrowerEntity {id: 'BUCKEYE-TOOL-CORP'})-[:HAS_BENEFICIAL_OWNER]->(p:Principal)\n"
+                "MATCH (b)-[:OBLIGOR_ON]->(f:SBAFacility {id: 'SBA-7492'})\n"
+                "MATCH (f)<-[:PAYOFF_TARGET]-(d:TitleDemand {escrow_id: 'CT-2026-4401-OH'})\n"
+                "MATCH (d)-[:CONTAINS_EXHIBIT]->(e:ExchangeAgreement)-[:NAMES_QI]->(qi:QualifiedIntermediary)\n"
+                "RETURN b.legal_name, p.name, qi.entity_name, qi.escrow_wire_instructions, f.unpaid_balance"
+            )
+        },
+        "nodes": [
+            {
+                "id": "src_chicago_fax",
+                "label": "Chicago Title Demand",
+                "tier": "source",
+                "status": "verified",
+                "badge": "INBOUND DEMAND",
+                "subtitle": "Escrow #CT-2026-4401-OH",
+                "properties": {
+                    "Channel": "Scheduled T-120 Surveillance Sweep",
+                    "Title Company": "Chicago Title Insurance Co.",
+                    "Escrow Officer": "Mark Henderson",
+                    "Demand Date": "2026-08-15"
+                },
+                "agent_relevance": "Payoff intake identifying commercial industrial asset disposition.",
+                "x": 90,
+                "y": 150
+            },
+            {
+                "id": "src_sba_core",
+                "label": "SBA 7(a) Core Accounting",
+                "tier": "source",
+                "status": "verified",
+                "badge": "SBA LEDGER",
+                "subtitle": "UPB $1,405,000.00",
+                "properties": {
+                    "Facility Type": "SBA 7(a) Commercial Loan",
+                    "Unpaid Principal": "$1,405,000.00",
+                    "Payoff Quote": "$1,420,000.00",
+                    "Risk Rating": "Pass (Tier 1)"
+                },
+                "agent_relevance": "Authoritative SBA facility ledger data.",
+                "x": 90,
+                "y": 350
+            },
+            {
+                "id": "note_sba",
+                "label": "SBA 7(a) Term Loan & Security",
+                "tier": "contract",
+                "status": "active",
+                "badge": "TERM FACILITY",
+                "subtitle": "Payoff: $1,420,000.00",
+                "properties": {
+                    "Original Loan": "$2,200,000.00",
+                    "Collateral": "Buckeye Industrial Campus B (1280 Dublin Rd)",
+                    "Maturity": "2029-05-15"
+                },
+                "agent_relevance": "SBA note being repaid by outside commercial acquirer.",
+                "x": 280,
+                "y": 200
+            },
+            {
+                "id": "contract_1031",
+                "label": "IRC §1031 Exchange Assignment",
+                "tier": "contract",
+                "status": "active",
+                "badge": "EXCHANGE CONTRACT",
+                "subtitle": "Notice of Assignment to QI",
+                "properties": {
+                    "Exhibit": "Exhibit C to Settlement Escrow Instructions",
+                    "Assignee": "IPX1031 as Qualified Intermediary",
+                    "Safe Harbor": "Treas. Reg. § 1.1031(k)-1(g)(4)"
+                },
+                "agent_relevance": "Legally binds proceeds to Qualified Intermediary, eliminating direct cash-out.",
+                "x": 280,
+                "y": 360
+            },
+            {
+                "id": "entity_buckeye",
+                "label": "Buckeye Precision Tooling Corp.",
+                "tier": "entity",
+                "status": "verified",
+                "badge": "BORROWER ENTITY",
+                "subtitle": "Ohio C-Corporation",
+                "properties": {
+                    "Tax Entity": "Commercial C-Corporation",
+                    "Industry": "Advanced Manufacturing / Machine Tooling",
+                    "Operating DDA": "Huntington Business Commercial Checking"
+                },
+                "agent_relevance": "Operating corporate borrower selling manufacturing facility.",
+                "x": 470,
+                "y": 200
+            },
+            {
+                "id": "entity_qi",
+                "label": "IPX1031 / Chicago Title Trust",
+                "tier": "entity",
+                "status": "verified",
+                "badge": "QUALIFIED INTERMEDIARY",
+                "subtitle": "Statutory Escrow Intermediary",
+                "properties": {
+                    "Corporate Name": "Investment Property Exchange Services, Inc.",
+                    "Fiduciary Role": "IRC §1031 Qualified Intermediary",
+                    "Escrow Prerequisite": "Prohibits Direct Taxpayer Constructive Receipt"
+                },
+                "agent_relevance": "Designated intermediary requiring Huntington 1031 Qualified Escrow Depository bridge.",
+                "x": 470,
+                "y": 360
+            },
+            {
+                "id": "principal_arthur",
+                "label": "Arthur Pendelton",
+                "tier": "principal",
+                "status": "verified",
+                "badge": "100% OWNER / GUARANTOR",
+                "subtitle": "President & Sole Shareholder",
+                "properties": {
+                    "Ownership": "100.0% Common Stock",
+                    "Guaranty": "Unconditional Personal SBA Guaranty",
+                    "Known HBAN Balances": "$890,000.00 Operating DDA"
+                },
+                "agent_relevance": "Sole principal executing 1031 like-kind replacement property acquisition.",
+                "x": 660,
+                "y": 220
+            },
+            {
+                "id": "sig_qi_confirmed",
+                "label": "Identifiable QI Assignment",
+                "tier": "signal",
+                "status": "flagged",
+                "badge": "STATUTORY SAFE HARBOR",
+                "subtitle": "Direct Receipt Prohibited",
+                "properties": {
+                    "Tax Rule": "IRC § 1031(a)(3) Direct Wire Restriction",
+                    "Intermediary Validated": "IPX1031 / Chicago Title Land Trust",
+                    "Signal Impact": "Eliminates Taxable Cash-Out; Mandates QI Escrow"
+                },
+                "agent_relevance": "Directs retention strategy toward Huntington 1031 Escrow Depository.",
+                "x": 850,
+                "y": 160
+            },
+            {
+                "id": "sig_escrow_target",
+                "label": "Exchange Proceeds: $1,588,250",
+                "tier": "signal",
+                "status": "flagged",
+                "badge": "ESCROW TARGET",
+                "subtitle": "Huntington QI Depository (4.75%)",
+                "properties": {
+                    "Asset Valuation": "$3,150,000.00",
+                    "Debt Extinguished": "$1,420,000.00",
+                    "Net QI Escrow": "$1,588,250.00 Safe Harbor Proceeds"
+                },
+                "agent_relevance": "High-yield escrow depository volume available for Huntington retention.",
+                "x": 850,
+                "y": 310
+            },
+            {
+                "id": "verdict_node_1031",
+                "label": "IRC §1031 Tax-Deferred Exchange",
+                "tier": "verdict",
+                "status": "verified",
+                "badge": "88% AGENT CONFIDENCE",
+                "subtitle": "Urgency: High (T-24 Days)",
+                "properties": {
+                    "Composite Confidence": "88.4% Multimodal Verification",
+                    "Target Solution": "Huntington 1031 Qualified Escrow Depository (4.75% APY)",
+                    "Partner Coordination": "IPX1031 Qualified Intermediary Agreement"
+                },
+                "agent_relevance": "Pre-stages specialized 1031 escrow sweep routing package for settlement agent.",
+                "x": 850,
+                "y": 470
+            }
+        ],
+        "edges": [
+            {"id": "e1_7492", "source": "src_chicago_fax", "target": "contract_1031", "label": "ATTACHED_EXHIBIT", "type": "primary"},
+            {"id": "e2_7492", "source": "src_sba_core", "target": "note_sba", "label": "CORE_LEDGER", "type": "primary"},
+            {"id": "e3_7492", "source": "note_sba", "target": "entity_buckeye", "label": "BORROWER_OBLIGOR", "type": "primary"},
+            {"id": "e4_7492", "source": "contract_1031", "target": "entity_qi", "label": "ASSIGNS_PROCEEDS_TO", "type": "primary"},
+            {"id": "e5_7492", "source": "entity_buckeye", "target": "principal_arthur", "label": "SOLE_OWNER_100PCT", "type": "primary"},
+            {"id": "e6_7492", "source": "contract_1031", "target": "sig_qi_confirmed", "label": "VERIFIES_SAFE_HARBOR", "type": "signal"},
+            {"id": "e7_7492", "source": "note_sba", "target": "sig_escrow_target", "label": "EQUITY_RECON", "type": "signal"},
+            {"id": "e8_7492", "source": "sig_qi_confirmed", "target": "verdict_node_1031", "label": "ELIMINATES_CASH_OUT", "type": "verdict"},
+            {"id": "e9_7492", "source": "sig_escrow_target", "target": "verdict_node_1031", "label": "QUALIFIES_ESCROW_DEP", "type": "verdict"},
+            {"id": "e10_7492", "source": "entity_qi", "target": "sig_qi_confirmed", "label": "QI_DESIGNATION", "type": "primary"},
+            {"id": "e11_7492", "source": "principal_arthur", "target": "sig_escrow_target", "label": "BENEFICIAL_INTEREST", "type": "primary"}
+        ]
+    },
+    "PO-2026-6104": {
+        "payoff_id": "PO-2026-6104",
+        "deal_name": "Dr. Robert Miller / Columbus Medical Arts Center LLC",
+        "borrower_entity": "Columbus Medical Arts Center LLC",
+        "classification": "Competitive Refinance Inquiry / Equity Restructuring",
+        "confidence_score": 58,
+        "spanner_stats": {
+            "database": "huntington-commercial-graph",
+            "engine": "Google Cloud Spanner Graph (ISO GQL Engine)",
+            "instance": "spanner-us-east4-prod-a",
+            "query_latency_ms": 19.1,
+            "nodes_matched": 9,
+            "edges_traversed": 10,
+            "gql_query": (
+                "GRAPH HuntingtonCommercialGraph\n"
+                "MATCH (b:BorrowerEntity {id: 'COL-MED-ARTS-LLC'})-[:HAS_BENEFICIAL_OWNER]->(p:Principal)\n"
+                "MATCH (b)-[:OBLIGOR_ON]->(f:CommercialMortgage {id: 'FAC-6104'})\n"
+                "MATCH (f)<-[:INQUIRY_FROM]-(t:TitleInquiry {escrow_id: 'CLT-2026-9031-OH'})\n"
+                "OPTIONAL MATCH (b)-[:APPLICATION_IN_PROGRESS]->(app:LoanApplication)\n"
+                "RETURN b.legal_name, p.name, f.unpaid_balance, app.status, app.proposed_rate"
+            )
+        },
+        "nodes": [
+            {
+                "id": "src_clt_inquiry",
+                "label": "Commonwealth Title Inquiry",
+                "tier": "source",
+                "status": "verified",
+                "badge": "TITLE INQUIRY",
+                "subtitle": "File #CLT-2026-9031-OH",
+                "properties": {
+                    "Inquiry Type": "Preliminary Payoff Demand Quote Request",
+                    "Title Insurer": "Commonwealth Land Title",
+                    "Settlement Officer": "David S. Vance",
+                    "Inquiry Date": "2026-08-01"
+                },
+                "agent_relevance": "Preliminary quote request indicating active rate-shopping or debt restructuring.",
+                "x": 90,
+                "y": 150
+            },
+            {
+                "id": "src_recon_pipeline",
+                "label": "Huntington Pipeline Recon",
+                "tier": "source",
+                "status": "verified",
+                "badge": "INTERNAL RECON",
+                "subtitle": "Renewal File #REN-6104",
+                "properties": {
+                    "Commercial RM": "Amanda Cross",
+                    "CRM Note": "Client requested payoff quote to evaluate competing refinance quote",
+                    "Renewal Status": "Underwriting Review Pending Defensive Rate Match"
+                },
+                "agent_relevance": "Identifies ongoing internal commercial relationship retention dialogue.",
+                "x": 90,
+                "y": 350
+            },
+            {
+                "id": "note_med",
+                "label": "Healthcare Practice Mortgage",
+                "tier": "contract",
+                "status": "active",
+                "badge": "EXISTING MORTGAGE",
+                "subtitle": "Payoff: $3,240,000.00",
+                "properties": {
+                    "Facility Balance": "$3,210,000.00 UPB",
+                    "Payoff Quote": "$3,240,000.00",
+                    "Collateral": "Scioto Medical Pavilion (850 Bethel Rd)"
+                },
+                "agent_relevance": "Mortgage subject to takeout by competing regional lender.",
+                "x": 280,
+                "y": 200
+            },
+            {
+                "id": "contract_refi",
+                "label": "Competitive Refinance Term Sheet",
+                "tier": "contract",
+                "status": "active",
+                "badge": "RATE RESTRUCTURE",
+                "subtitle": "Third-Party Regional Competitor",
+                "properties": {
+                    "Proposed Financing": "Commercial Term Loan ($3.24M)",
+                    "Cash Extraction": "$0.00 (Pure Debt Replacement)",
+                    "Rate Differential": "Estimated -35 bps vs Existing Note"
+                },
+                "agent_relevance": "Documents competitive threat: risk is loan asset runoff, not liquid deposit flight.",
+                "x": 280,
+                "y": 360
+            },
+            {
+                "id": "entity_med",
+                "label": "Columbus Medical Arts Center LLC",
+                "tier": "entity",
+                "status": "verified",
+                "badge": "BORROWER ENTITY",
+                "subtitle": "Healthcare Practice Facility LLC",
+                "properties": {
+                    "Specialty": "Outpatient Surgical & Specialty Practice",
+                    "Jurisdiction": "Ohio",
+                    "Commercial Relationship": "12-Year Huntington Commercial Client"
+                },
+                "agent_relevance": "Operating borrower entity evaluating capital structure options.",
+                "x": 470,
+                "y": 200
+            },
+            {
+                "id": "principal_dr_miller",
+                "label": "Dr. Robert Miller, MD",
+                "tier": "principal",
+                "status": "verified",
+                "badge": "100% MANAGING MEMBER",
+                "subtitle": "Physician & Sole Guarantor",
+                "properties": {
+                    "Role": "Managing Partner & Surgical Director",
+                    "Guaranty": "Unconditional Commercial Guaranty",
+                    "Known HBAN Deposits": "$1,450,000.00 Practice & Personal Accounts"
+                },
+                "agent_relevance": "Primary borrower contact for RM defensive loan modification counter-proposal.",
+                "x": 660,
+                "y": 220
+            },
+            {
+                "id": "sig_rate_shopping",
+                "label": "Active Rate-Shopping Inquiry",
+                "tier": "signal",
+                "status": "flagged",
+                "badge": "REFINANCE SIGNAL",
+                "subtitle": "Term Extension Inquiry",
+                "properties": {
+                    "RM Intelligence": "Amanda Cross recorded competitor solicitation",
+                    "Signal Implication": "Loan Portfolio Runoff Risk",
+                    "Signal Impact": "+52% Refinance Probability"
+                },
+                "agent_relevance": "Directs agent to recommend commercial credit retention rather than wealth triage.",
+                "x": 850,
+                "y": 160
+            },
+            {
+                "id": "sig_zero_equity",
+                "label": "Zero Net Equity Extracted ($0)",
+                "tier": "signal",
+                "status": "flagged",
+                "badge": "EQUITY CONSERVATION",
+                "subtitle": "No Liquid Cash-Out",
+                "properties": {
+                    "Payoff Quote": "$3,240,000.00",
+                    "Replacement Debt": "$3,240,000.00",
+                    "Liquid Equity Disbursed": "$0.00 Net Cash",
+                    "Signal Impact": "Excludes Deposit Flight Playbook"
+                },
+                "agent_relevance": "Confirms lack of liquid wealth proceeds; flags deal as credit counter-offer priority.",
+                "x": 850,
+                "y": 310
+            },
+            {
+                "id": "verdict_node_refi",
+                "label": "Competitive Refinance / Term Extension",
+                "tier": "verdict",
+                "status": "verified",
+                "badge": "58% AGENT CONFIDENCE",
+                "subtitle": "Urgency: Watchlist (T-45 Days)",
+                "properties": {
+                    "Composite Confidence": "58.0% Competitive Refinance Risk",
+                    "Actionable Playbook": "Huntington Commercial Retention Pricing Match (SOFR + 195 bps)",
+                    "Primary Owner": "Amanda Cross (Commercial RM)"
+                },
+                "agent_relevance": "Routes deal to Commercial RM watchlist for defensive pricing adjustment.",
+                "x": 850,
+                "y": 470
+            }
+        ],
+        "edges": [
+            {"id": "e1_6104", "source": "src_clt_inquiry", "target": "note_med", "label": "PRELIMINARY_QUOTE", "type": "primary"},
+            {"id": "e2_6104", "source": "src_recon_pipeline", "target": "contract_refi", "label": "COMPETITIVE_INTEL", "type": "primary"},
+            {"id": "e3_6104", "source": "note_med", "target": "entity_med", "label": "BORROWER_OBLIGOR", "type": "primary"},
+            {"id": "e4_6104", "source": "entity_med", "target": "principal_dr_miller", "label": "SOLE_MEMBER_100PCT", "type": "primary"},
+            {"id": "e5_6104", "source": "contract_refi", "target": "sig_rate_shopping", "label": "RATE_SHOPPING_EVIDENCE", "type": "signal"},
+            {"id": "e6_6104", "source": "contract_refi", "target": "sig_zero_equity", "label": "BALANCE_MATCH", "type": "signal"},
+            {"id": "e7_6104", "source": "sig_rate_shopping", "target": "verdict_node_refi", "label": "CONFIRMS_REFINANCE", "type": "verdict"},
+            {"id": "e8_6104", "source": "sig_zero_equity", "target": "verdict_node_refi", "label": "REJECTS_DEPOSIT_FLIGHT", "type": "verdict"},
+            {"id": "e9_6104", "source": "principal_dr_miller", "target": "sig_rate_shopping", "label": "EVALUATING_OFFERS", "type": "primary"},
+            {"id": "e10_6104", "source": "note_med", "target": "contract_refi", "label": "TAKEOUT_TARGET", "type": "primary"}
+        ]
+    }
+}
+
 PAYOFF_QUEUE = [
     {
         "id": "PO-2026-8821",
@@ -130,7 +995,10 @@ PAYOFF_QUEUE = [
         "primary_guarantor": "Marcus Vance",
         "tax_strategy_detected": "Taxable Cash-Out (1031 Eligible)",
         "loan_type": "Commercial Real Estate Loan / T-14 Payoff Demand",
-        "status": "Staged for Call"
+        "status": "Staged for Call",
+        "flight_confidence_score": 94,
+        "flight_risk_classification": "Commercial Asset Sale / Taxable Cash-Out (High Flight Risk)",
+        "flight_risk_trace": DETECTION_TRACES["PO-2026-8821"]
     },
     {
         "id": "PO-2026-7492",
@@ -162,7 +1030,10 @@ PAYOFF_QUEUE = [
         "primary_guarantor": "Arthur Pendelton",
         "tax_strategy_detected": "IRC §1031 Exchange (QI Routed)",
         "loan_type": "SBA 7(a) Commercial Loan / T-120 Surveillance",
-        "status": "Document Parsing Complete"
+        "status": "Document Parsing Complete",
+        "flight_confidence_score": 88,
+        "flight_risk_classification": "IRC §1031 Like-Kind Exchange (Identified QI Intermediary)",
+        "flight_risk_trace": DETECTION_TRACES["PO-2026-7492"]
     },
     {
         "id": "PO-2026-6104",
@@ -194,7 +1065,10 @@ PAYOFF_QUEUE = [
         "primary_guarantor": "Dr. Robert Miller",
         "tax_strategy_detected": "Taxable Cash-Out",
         "loan_type": "Healthcare Practice Facility Loan / T-45 Watchlist",
-        "status": "Monitoring Queue"
+        "status": "Monitoring Queue",
+        "flight_confidence_score": 58,
+        "flight_risk_classification": "Competitive Refinance Inquiry / Equity Restructuring",
+        "flight_risk_trace": DETECTION_TRACES["PO-2026-6104"]
     }
 ]
 
@@ -310,6 +1184,38 @@ async def get_payoff_queue(
         },
         "payoff_items": items
     }
+
+
+@app.get("/api/flight-risk-trace")
+async def get_flight_risk_trace(
+    payoff_id: str = Query("PO-2026-8821"),
+    user: Dict[str, Any] = Depends(get_authenticated_user)
+) -> Dict[str, Any]:
+    """
+    Returns the multimodal Detection Agent Reasoning Trace for a payoff event,
+    explaining signal fusion across payoff intake, AFS/nCino replacement loan queries,
+    Qualified Intermediary exhibits, and hypothesis testing.
+    """
+    trace = DETECTION_TRACES.get(payoff_id)
+    if not trace:
+        raise HTTPException(status_code=404, detail=f"Flight risk trace for deal '{payoff_id}' not found.")
+    return trace
+
+
+@app.get("/api/signal-graph")
+async def get_signal_graph(
+    payoff_id: str = Query("PO-2026-8821"),
+    user: Dict[str, Any] = Depends(get_authenticated_user)
+) -> Dict[str, Any]:
+    """
+    Returns the Google Cloud Spanner Graph (ISO GQL) signal grounding topology for a payoff event,
+    displaying connected nodes across ingestion feeds, contracts, entities, beneficial owners,
+    behavioral signals, and the final deterministic classification verdict.
+    """
+    graph = SIGNAL_GRAPHS.get(payoff_id)
+    if not graph:
+        raise HTTPException(status_code=404, detail=f"Spanner signal graph for deal '{payoff_id}' not found.")
+    return graph
 
 
 @app.get("/api/entity-resolution")
@@ -691,12 +1597,8 @@ async def get_wealth_onboarding_dossier(
             "mandate": "Conservative Capital Preservation & Liquidity Bridge",
             "horizon": "Medium-to-Long Term (Post-Disposition)",
             "liquidity_reserve_sleeve": "$500,000 in Ultra-Short Treasury / Huntington ICS",
-            "asset_allocation_scaffold": [
-                {"asset_class": "Short-Duration Fixed Income & Treasuries", "target_pct": 50, "rationale": "Capital preservation against reinvestment timeline"},
-                {"asset_class": "Dividend Growth & Core Equities", "target_pct": 35, "rationale": "Inflation hedge & tax-efficient cash flow"},
-                {"asset_class": "Direct Real Assets & Infrastructure Sleeve", "target_pct": 15, "rationale": "Inflation hedge & income; in-house DST securities firewalled per IRC § 1031 safe harbor"}
-            ],
-            "fiduciary_disclaimer": "Draft administrative scaffolding only. Must be authored, reviewed, and finalized by Series 7/66/CFP licensed advisor under Reg BI."
+            "asset_allocation_scaffold": [],
+            "fiduciary_disclaimer": "Asset allocations and investment policies are withheld. Under SEC Reg R and FINRA Rule 2111 / SEC Reg BI, investment strategies are not generated by the commercial bank and must be authored by the licensed Series 7/66/CFP advisor following formal investor discovery."
         },
         "ongoing_servicing_dossier": {
             "annual_reviews_automated": True,

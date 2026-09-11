@@ -172,7 +172,8 @@ def test_wealth_onboarding_deal_parameterization():
     assert vance_unlocked["status"] == "Active / Ready for Advisor Authorship"
     assert "Marcus Vance" in vance_unlocked["target_client"]
     assert vance_unlocked["sei_custodial_shell"]["shell_id"] == "SEI-WP-HBAN-8821"
-    assert len(vance_unlocked["draft_ips_scaffolding"]["asset_allocation_scaffold"]) == 3
+    assert vance_unlocked["draft_ips_scaffolding"]["asset_allocation_scaffold"] == []
+    assert "SEC Reg R" in vance_unlocked["draft_ips_scaffolding"]["fiduciary_disclaimer"]
 
     # Reset Vance consent
     client.post("/api/quarantine", json={"payoff_id": "PO-2026-8821", "verbal_consent_recorded": False})
@@ -322,6 +323,138 @@ def test_wealth_onboarding_rejects_substandard_credit_risk():
         assert "OCC SR 11-7" in resp.json()["detail"]
     finally:
         PAYOFF_QUEUE.remove(substandard_deal)
+
+
+def test_flight_risk_trace_endpoint_vance():
+    """Verifies Detection Agent Reasoning Trace for PO-2026-8821 (Vance cash-out disposition)."""
+    resp = client.get("/api/flight-risk-trace?payoff_id=PO-2026-8821")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["payoff_id"] == "PO-2026-8821"
+    assert data["confidence_score"] == 94
+    assert "Taxable Cash-Out" in data["classification"]
+    assert len(data["fused_signals"]) >= 4
+    
+    # Verify signal fusion elements distinguishing refi vs 1031 vs cash-out
+    signals = {s["signal_name"]: s for s in data["fused_signals"]}
+    assert "Replacement Facility Inquiry Cross-Check" in signals
+    assert "ZERO REPLACEMENT FINANCING" in signals["Replacement Facility Inquiry Cross-Check"]["verdict"]
+    assert "IRC §1031 Qualified Intermediary (QI) Audit" in signals
+    assert "NO INTERMEDIARY" in signals["IRC §1031 Qualified Intermediary (QI) Audit"]["verdict"]
+    
+    # Verify hypothesis elimination
+    hypotheses = {h["hypothesis"]: h for h in data["hypotheses"]}
+    refi_hypo = next(h for k, h in hypotheses.items() if "Refinance" in k)
+    assert refi_hypo["status"] == "REJECTED"
+    assert refi_hypo["confidence_pct"] <= 10
+
+    cash_out_hypo = next(h for k, h in hypotheses.items() if "Cash-Out" in k)
+    assert cash_out_hypo["status"] == "ACCEPTED"
+    assert cash_out_hypo["confidence_pct"] == 94
+
+    assert len(data["trace_steps"]) >= 5
+
+
+def test_flight_risk_trace_endpoint_buckeye_1031():
+    """Verifies Detection Agent Reasoning Trace for PO-2026-7492 (Buckeye 1031 exchange with QI)."""
+    resp = client.get("/api/flight-risk-trace?payoff_id=PO-2026-7492")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["payoff_id"] == "PO-2026-7492"
+    assert data["confidence_score"] == 88
+    assert "1031" in data["classification"]
+
+    signals = {s["signal_name"]: s for s in data["fused_signals"]}
+    assert "Identifiable Qualified Intermediary (QI)" in signals
+    assert "QI INTERMEDIARY CONFIRMED" in signals["Identifiable Qualified Intermediary (QI)"]["verdict"]
+
+    hypo_1031 = next(h for h in data["hypotheses"] if "1031" in h["hypothesis"])
+    assert hypo_1031["status"] == "ACCEPTED"
+    assert hypo_1031["confidence_pct"] == 88
+
+
+def test_flight_risk_trace_endpoint_scioto_refinance():
+    """Verifies Detection Agent Reasoning Trace for PO-2026-6104 (Scioto refinance inquiry)."""
+    resp = client.get("/api/flight-risk-trace?payoff_id=PO-2026-6104")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["payoff_id"] == "PO-2026-6104"
+    assert data["confidence_score"] == 58
+    assert "Refinance" in data["classification"]
+
+
+def test_flight_risk_trace_404_not_found():
+    """Verifies that requesting an unknown deal payoff_id returns HTTP 404."""
+    resp = client.get("/api/flight-risk-trace?payoff_id=PO-UNKNOWN-9999")
+    assert resp.status_code == 404
+    assert "not found" in resp.json()["detail"].lower()
+
+
+def test_payoffs_queue_contains_confidence_scores():
+    """Verifies that GET /api/payoffs returns flight confidence scores for all items."""
+    resp = client.get("/api/payoffs")
+    assert resp.status_code == 200
+    items = resp.json()["payoff_items"]
+    assert len(items) >= 3
+    for item in items:
+        assert "flight_confidence_score" in item
+        assert isinstance(item["flight_confidence_score"], (int, float))
+        assert "flight_risk_classification" in item
+
+
+def test_signal_graph_endpoint_vance():
+    """Verifies Spanner Signal Graph grounding for Marcus Vance (PO-2026-8821)."""
+    resp = client.get("/api/signal-graph?payoff_id=PO-2026-8821")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["payoff_id"] == "PO-2026-8821"
+    assert data["confidence_score"] == 94
+    assert "Cash-Out" in data["classification"]
+    assert data["spanner_stats"]["database"] == "huntington-commercial-graph"
+    assert "ISO GQL" in data["spanner_stats"]["engine"]
+    assert len(data["nodes"]) >= 10
+    assert len(data["edges"]) >= 10
+
+    # Verify Elena Vance is quarantined
+    elena = next(n for n in data["nodes"] if n["id"] == "principal_elena")
+    assert elena["status"] == "quarantined"
+    assert "GLBA" in elena["badge"]
+
+    # Verify verdict node
+    verdict = next(n for n in data["nodes"] if n["tier"] == "verdict")
+    assert "Cash-Out" in verdict["label"]
+
+
+def test_signal_graph_endpoint_buckeye_1031():
+    """Verifies Spanner Signal Graph grounding for Buckeye Precision Tooling (PO-2026-7492)."""
+    resp = client.get("/api/signal-graph?payoff_id=PO-2026-7492")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["payoff_id"] == "PO-2026-7492"
+    assert data["confidence_score"] == 88
+    assert "1031" in data["classification"]
+    assert any(n["id"] == "entity_qi" for n in data["nodes"])
+    assert any("1031" in n["label"] for n in data["nodes"])
+
+
+def test_signal_graph_endpoint_scioto_refinance():
+    """Verifies Spanner Signal Graph grounding for Columbus Medical Arts (PO-2026-6104)."""
+    resp = client.get("/api/signal-graph?payoff_id=PO-2026-6104")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["payoff_id"] == "PO-2026-6104"
+    assert data["confidence_score"] == 58
+    assert "Refinance" in data["classification"]
+    assert any("Refinance" in n["label"] for n in data["nodes"])
+
+
+def test_signal_graph_404_not_found():
+    """Verifies that requesting an unknown deal payoff_id returns HTTP 404."""
+    resp = client.get("/api/signal-graph?payoff_id=PO-INVALID-9999")
+    assert resp.status_code == 404
+    assert "not found" in resp.json()["detail"].lower()
+
+
 
 
 

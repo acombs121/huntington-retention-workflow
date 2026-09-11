@@ -44,6 +44,38 @@ export interface PayoffItem {
   managing_member?: string;
   primary_guarantor?: string;
   loan_type?: string;
+  flight_confidence_score?: number;
+  flight_risk_classification?: string;
+  flight_risk_trace?: DetectionReasoningTrace;
+}
+
+export interface FusedSignal {
+  category: string;
+  signal_name: string;
+  source: string;
+  observation: string;
+  risk_impact: string;
+  verdict: string;
+}
+
+export interface HypothesisEvaluation {
+  hypothesis: string;
+  confidence_pct: number;
+  status: 'ACCEPTED' | 'REJECTED' | 'UNCONFIRMED';
+  rationale: string;
+}
+
+export interface DetectionReasoningTrace {
+  payoff_id: string;
+  confidence_score: number;
+  urgency_tier: string;
+  classification: string;
+  summary_verdict: string;
+  model_agent: string;
+  evaluation_timestamp: string;
+  fused_signals: FusedSignal[];
+  hypotheses: HypothesisEvaluation[];
+  trace_steps: string[];
 }
 
 export interface BoundingBox {
@@ -188,3 +220,44 @@ export interface WealthOnboardingData {
     features: string[];
   };
 }
+
+export interface SpannerGraphNode {
+  id: string;
+  label: string;
+  tier: 'source' | 'contract' | 'entity' | 'principal' | 'signal' | 'verdict';
+  status: 'verified' | 'quarantined' | 'active' | 'flagged';
+  badge: string;
+  subtitle?: string;
+  properties: Record<string, string>;
+  agent_relevance: string;
+  x: number;
+  y: number;
+}
+
+export interface SpannerGraphEdge {
+  id: string;
+  source: string;
+  target: string;
+  label: string;
+  type: 'primary' | 'quarantined' | 'signal' | 'verdict';
+}
+
+export interface SpannerGraphData {
+  payoff_id: string;
+  deal_name: string;
+  borrower_entity: string;
+  classification: string;
+  confidence_score: number;
+  spanner_stats: {
+    database: string;
+    engine: string;
+    instance: string;
+    query_latency_ms: number;
+    nodes_matched: number;
+    edges_traversed: number;
+    gql_query: string;
+  };
+  nodes: SpannerGraphNode[];
+  edges: SpannerGraphEdge[];
+}
+

@@ -15,34 +15,41 @@ This document codifies the visual identity, design tokens, typography scale, com
 
 ## 2. Color Palette & Design Tokens
 
-### 2.1 CSS Variables / Theme Tokens
+### 2.1 Official Light Mode Semantic Palette Tokens
 
-| Token Name | Light Mode Value | Dark Mode Value | Usage / Role |
-| :--- | :--- | :--- | :--- |
-| `--hban-green` | `#006738` | `#00884A` | Huntington Signature Green (Primary Brand Anchor) |
-| `--hban-green-dark` | `#004724` | `#003319` | Deep Forest Green (Hero surfaces, primary buttons) |
-| `--hban-mint` | `#E8F5E9` | `#064E3B` | Soft Sage Tint (Active pills, positive status tags) |
-| `--hban-mint-border` | `#A7F3D0` | `#047857` | Mint Hairline Borders |
-| `--bg-canvas` | `#F8FAFC` (Slate-50) | `#0B1320` | Application body background |
-| `--bg-surface` | `#FFFFFF` | `#1E293B` (Slate-800) | Card, modal, and panel backgrounds |
-| `--border-subtle` | `#E2E8F0` (Slate-200) | `#334155` (Slate-700) | Card and input container borders |
-| `--text-primary` | `#0F172A` (Charcoal) | `#F8FAFC` (Slate-50) | Primary headers and high-contrast labels |
-| `--text-secondary` | `#64748B` (Slate-500) | `#94A3B8` (Slate-400) | Subtitles, helper text, and secondary tags |
-| `--hban-charcoal` | `#0F172A` | `#020617` | Executive hero gradient and header chrome |
+| Token | Hex Code | Role / Semantic Function |
+| :--- | :--- | :--- |
+| `bg` | `#F6F7F4` | Page ground canvas (warm chalk) |
+| `surface` | `#FFFFFF` | Card container background |
+| `surface-2` | `#EEF1EC` | Raised cards, active rows, hover states |
+| `surface-3` | `#E3E8E2` | Control fill, inset panels, card borders |
+| `ink` | `#16211D` | Primary text and headings |
+| `ink-2` | `#3F4A45` | Secondary text, table subheaders |
+| `ink-3` | `#6B7570` | Muted metadata, field labels |
+| `ink-4` | `#98A390` | Disabled controls, tertiary borders |
+| `accent` | `#1E5A45` | Forest accent UI, badges, focus rings |
+| `accent-deep`| `#2E7D5B` | Primary button fill |
+| `good` | `#2F6B4F` | Positive status indicator |
+| `warn` | `#9A6A12` | Warning status indicator |
+| `crit` | `#9C3B2E` | Critical status indicator |
 
-### 2.2 Brand Palette Ramp (Tailwind `colors.brand`)
+### 2.2 Official Dark Mode Semantic Palette Tokens
 
-- `brand-50`: `#F0FDF4`
-- `brand-100`: `#DCFCE7`
-- `brand-200`: `#BBF7D0`
-- `brand-300`: `#86EFAC`
-- `brand-400`: `#4ADE80`
-- `brand-500`: `#22C55E`
-- `brand-600`: `#006738` *(Huntington Corporate Green)*
-- `brand-700`: `#004724` *(Deep Forest)*
-- `brand-800`: `#003319` *(Darker Forest)*
-- `brand-900`: `#0B2818`
-- `brand-950`: `#041A0E`
+| Token | Hex Code | Role / Semantic Function |
+| :--- | :--- | :--- |
+| `bg` | `#0E1412` | Page ground canvas (pitch pine forest) |
+| `surface` | `#151D1A` | Card container background |
+| `surface-2` | `#182521` | Raised cards, active rows, hover states |
+| `surface-3` | `#22302A` | Control fill, inset panels, card borders |
+| `ink` | `#F2F5F1` | Primary text and headings |
+| `ink-2` | `#C6D0CA` | Secondary text, table subheaders |
+| `ink-3` | `#8F9C95` | Muted metadata, field labels |
+| `ink-4` | `#66736C` | Disabled controls, tertiary borders |
+| `accent` | `#7FD1A9` | Mint accent UI, badges, focus rings |
+| `accent-deep`| `#33A072` | Primary button fill |
+| `good` | `#7FD1A9` | Positive status indicator |
+| `warn` | `#E38341` | Warning status indicator |
+| `crit` | `#E5736A` | Critical status indicator |
 
 ---
 
