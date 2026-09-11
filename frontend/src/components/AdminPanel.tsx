@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, X, ExternalLink, Palette, FileText, Layers, Server, ShieldCheck, Cpu, User, RefreshCw, CheckCircle2, TrendingUp, ArrowRight } from 'lucide-react';
+import { Settings, X, ExternalLink, Palette, FileText, Layers, Server, ShieldCheck, Cpu, User, RefreshCw, CheckCircle2, TrendingUp, ArrowRight, SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { useAssumptions } from '../context/AssumptionsContext';
+import {
+  ASSUMPTION_META,
+  DEFAULT_ASSUMPTIONS,
+  NumericAssumptionKey,
+  Provenance,
+  computeRoi,
+  formatAssumption,
+  formatBps,
+  formatUsdCompact,
+} from '../lib/assumptions';
 
 interface SystemHealth {
   status: string;
@@ -24,6 +35,84 @@ export interface AdminPanelProps {
   onViewExecutive?: () => void;
 }
 
+const PROVENANCE_STYLES: Record<Provenance, { label: string; className: string }> = {
+  verified: {
+    label: 'Verified',
+    className:
+      'bg-[#E8F5E9] text-[#006738] border-[#A7F3D0] dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800',
+  },
+  derived: {
+    label: 'Derived',
+    className:
+      'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-900',
+  },
+  estimate: {
+    label: 'Estimate',
+    className:
+      'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-900',
+  },
+};
+
+interface AssumptionDialProps {
+  assumptionKey: NumericAssumptionKey;
+  value: number;
+  onChange: (value: number) => void;
+  isDefault: boolean;
+}
+
+/**
+ * One slider per model input. The provenance badge and the source tooltip are the
+ * point of this control: an executive can see at a glance which numbers came from
+ * Huntington's own filings and which are our judgement, and move the latter live.
+ */
+const AssumptionDial: React.FC<AssumptionDialProps> = ({
+  assumptionKey,
+  value,
+  onChange,
+  isDefault,
+}) => {
+  const meta = ASSUMPTION_META[assumptionKey];
+  const badge = PROVENANCE_STYLES[meta.provenance];
+
+  return (
+    <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 space-y-2">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <div className="text-xs font-semibold text-slate-900 dark:text-white leading-snug">
+            {meta.label}
+          </div>
+          <span
+            className={`inline-flex items-center mt-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${badge.className}`}
+            title={meta.source}
+          >
+            {badge.label}
+          </span>
+        </div>
+        <div className="text-right shrink-0">
+          <div className="text-sm font-extrabold tabular-nums text-slate-900 dark:text-white">
+            {formatAssumption(assumptionKey, value)}
+          </div>
+          {!isDefault && (
+            <div className="text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+              overridden
+            </div>
+          )}
+        </div>
+      </div>
+      <input
+        type="range"
+        min={meta.min}
+        max={meta.max}
+        step={meta.step}
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        aria-label={meta.label}
+        className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#006738]"
+      />
+    </div>
+  );
+};
+
 export const AdminPanel: React.FC<AdminPanelProps> = ({
   appName = 'Huntington Horizon',
   brandKitUrl = '/brand_kit.html',
@@ -36,6 +125,34 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [health, setHealth] = useState<SystemHealth | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const {
+    assumptions,
+    setAssumption,
+    setNumericAssumption,
+    reset,
+    isModified,
+    funnel,
+    capacity,
+    statedYield,
+    effectiveYield,
+  } = useAssumptions();
+
+  // Break-even is independent of the recapture rate, so any probe value works here.
+  const { breakevenRecapturePct } = computeRoi(assumptions, 10);
+
+  const dialOrder: NumericAssumptionKey[] = [
+    'turnover',
+    'saleShare',
+    'equityRatio',
+    'flightRate',
+    'tier1DurationDays',
+    'tier1Share',
+    'tier1Bps',
+    'tier2Bps',
+    'avgLoanSize',
+    'hoursSavedPerEvent',
+  ];
 
   // Fetch runtime diagnostics when the admin panel opens
   useEffect(() => {
@@ -224,7 +341,115 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </div>
                 </div>
 
-                {/* Section 2: Live Platform Telemetry */}
+                {/* Section 2: Business Case Assumptions
+                    These dials exist so the business case can be interrogated live in the
+                    room rather than defended from a static slide. Every figure in Executive
+                    Analytics reads from this same model. */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xs uppercase tracking-widest text-slate-400 dark:text-slate-500 font-bold flex items-center gap-1.5">
+                      <SlidersHorizontal className="w-3.5 h-3.5" />
+                      Business Case Assumptions
+                    </h3>
+                    <button
+                      onClick={reset}
+                      disabled={!isModified}
+                      className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-slate-500 hover:text-[#006738] dark:hover:text-emerald-400 disabled:opacity-40 disabled:hover:text-slate-500 transition"
+                      title="Restore every dial to the documented default"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      Reset
+                    </button>
+                  </div>
+
+                  {/* Verified denominator. Not adjustable: it comes from the filings. */}
+                  <div className="p-3 rounded-lg border border-[#A7F3D0] dark:border-emerald-900 bg-[#E8F5E9]/60 dark:bg-emerald-950/30 mb-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-xs font-semibold text-slate-900 dark:text-white">
+                          Target Loan Book
+                        </div>
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                          Q2 2026 10-Q Table 8, net of the small-business tranche
+                        </div>
+                      </div>
+                      <div className="text-sm font-extrabold tabular-nums text-[#006738] dark:text-emerald-400">
+                        {formatUsdCompact(funnel.targetBook)}
+                      </div>
+                    </div>
+                    <label className="flex items-center gap-2 mt-2.5 pt-2.5 border-t border-[#A7F3D0]/60 dark:border-emerald-900/60 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={assumptions.includeOwnerOccupied}
+                        onChange={(e) => setAssumption('includeOwnerOccupied', e.target.checked)}
+                        className="w-3.5 h-3.5 rounded accent-[#006738] cursor-pointer"
+                      />
+                      <span className="text-[11px] text-slate-600 dark:text-slate-300 leading-snug">
+                        Include owner-occupied CRE ($13.3B, booked inside C&amp;I per Call Report
+                        RC-C Part I)
+                      </span>
+                    </label>
+                  </div>
+
+                  <div className="space-y-2">
+                    {dialOrder.map((key) => (
+                      <AssumptionDial
+                        key={key}
+                        assumptionKey={key}
+                        value={assumptions[key] as number}
+                        onChange={(v) => setNumericAssumption(key, v)}
+                        isDefault={assumptions[key] === DEFAULT_ASSUMPTIONS[key]}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Live consequence of the dials above */}
+                  <div className="mt-3 p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/50 space-y-2">
+                    <div className="text-[10px] uppercase tracking-widest font-bold text-slate-400">
+                      Resulting Model
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-slate-500 dark:text-slate-400">Equity at risk / yr</span>
+                      <span className="font-bold tabular-nums text-slate-900 dark:text-white">
+                        {formatUsdCompact(funnel.atRiskEquity)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-slate-500 dark:text-slate-400">
+                        Blended yield (duration-adj.)
+                      </span>
+                      <span className="font-bold tabular-nums text-slate-900 dark:text-white">
+                        {formatBps(effectiveYield)}
+                        <span className="font-normal text-slate-400">
+                          {' '}
+                          vs {formatBps(statedYield)}
+                        </span>
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-slate-500 dark:text-slate-400">
+                        Break-even recapture
+                      </span>
+                      <span className="font-bold tabular-nums text-amber-600 dark:text-amber-400">
+                        {isFinite(breakevenRecapturePct)
+                          ? `${breakevenRecapturePct.toFixed(1)}%`
+                          : 'unreachable'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-xs pt-2 border-t border-slate-100 dark:border-slate-700">
+                      <span className="text-slate-500 dark:text-slate-400">
+                        Capacity value ({capacity.low.fteEquivalent.toFixed(1)}&ndash;
+                        {capacity.high.fteEquivalent.toFixed(1)} FTE)
+                      </span>
+                      <span className="font-bold tabular-nums text-[#006738] dark:text-emerald-400">
+                        {formatUsdCompact(capacity.low.annualValue)}&ndash;
+                        {formatUsdCompact(capacity.high.annualValue)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 3: Live Platform Telemetry */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-xs uppercase tracking-widest text-slate-400 dark:text-slate-500 font-bold">
@@ -292,7 +517,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </div>
                 </div>
 
-                {/* Section 3: User Identity */}
+                {/* Section 4: User Identity */}
                 {user?.email && (
                   <div>
                     <h3 className="text-xs uppercase tracking-widest text-slate-400 dark:text-slate-500 font-bold mb-3">

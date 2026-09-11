@@ -48,7 +48,7 @@ export const detectionReasoningTraces: Record<string, DetectionReasoningTrace> =
         category: "Valuation & Liquidity Delta",
         signal_name: "Unencumbered Net Equity Proceeds",
         source: "Internal Liquidity Triage (NOI $637.5k @ 7.50% Cap Rate vs $5.18M UPB)",
-        observation: "Triangulated property valuation of $8,500,000 leaves $2,902,700.00 in net liquid equity after debt payoff ($5.21M) and closing costs ($382.5k).",
+        observation: "Triangulated property valuation of $8,500,000 leaves $2,902,700.00 in net liquid equity after the title payoff quote ($5,214,800.00 = $5,180,000.00 unpaid principal + $34,800.00 accrued interest and exit fees) and estimated closing costs ($382,500.00 at 4.5%).",
         risk_impact: "+14% Flight Urgency (High Liquidity Prize)",
         verdict: "$2.90M AT-RISK CAPITAL"
       }
@@ -78,7 +78,7 @@ export const detectionReasoningTraces: Record<string, DetectionReasoningTrace> =
       "[00:00.048] Multimodal spatial parse: Extracted borrower entity 'Vance Riverfront Properties IV, LLC', facility #CC-8821, payoff quote $5,214,800.00, scheduled closing 2026-09-16.",
       "[00:00.082] Executed nCino & AFS core cross-reference: Facility #CC-8821 active. Query for replacement loan applications across Huntington's 1,400 branches returned 0 records.",
       "[00:00.125] Scanned title exhibits for tax-deferred exchange language or Qualified Intermediary (QI) assignments: Zero QI exhibits detected.",
-      "[00:00.169] Calculated net proceeds triage: Grounded valuation ($8.50M) - debt payoff ($5.21M) - closing costs ($382k) = $2.90M net cash equity.",
+      "[00:00.169] Calculated net proceeds triage: Grounded valuation ($8,500,000) - title payoff quote ($5,214,800) - closing costs ($382,500) = $2,902,700 net cash equity.",
       "[00:00.210] Synthesized flight risk signals: Unencumbered seller cash + zero replacement credit + closing in 12 days. Historical treasury flight baseline: 78%.",
       "[00:00.245] Output composite confidence score: 94% (High Flight Risk). Auto-staged Tier 1 Business Premier ICS and borrower DocuSign routing packet."
     ]
@@ -232,7 +232,9 @@ export const initialCapacityMeter: CapacityMeter = {
   manual_discovery_absorbed_hrs: 46.2,
   wealth_admin_absorbed_hrs: 18.5,
   active_machine_inferences: 3,
-  book_scale_volume: "$4.50 Billion",
+  // Verified: 10-Q Table 8 CRE less the Call Report small-business tranche, plus
+  // owner-occupied CRE. Must stay in sync with main.py.
+  book_scale_volume: "$33.30 Billion",
   historical_flight_risk_rate: "78%",
   branch_network_count: "1,400 Branches (21 States)",
   sba_ranking: "Top-2 National SBA 7(a) Lender",
@@ -449,7 +451,7 @@ export const initialQuarantineState: QuarantineState = {
   recorded_by: null,
   consent_timestamp: null,
   audit_hash: "SHA256-GLBA-HBAN-99418-PENDING",
-  compliance_notes: "Awaiting Commercial RM verbal opt-in during T-12 client touchpoint per 15 U.S.C. Sec. 6801 (GLBA), 12 C.F.R. Sec. 1016.11, and SEC Regulation R Networking Arrangement (Ameriprise platform)."
+  compliance_notes: "Awaiting Commercial RM verbal opt-in during T-12 client touchpoint. Advisor handoff is intra-institutional (Huntington-employed advisor, Huntington client); consent is captured as cross-line-of-business marketing consent and the SEC Regulation R referral record. Ameriprise platform NPI access governed as a service provider under 12 C.F.R. Sec. 1016.13; GLBA safeguards per 15 U.S.C. Sec. 6801."
 };
 
 export const initialWireInstructions: WireInstructionData = {
@@ -494,7 +496,7 @@ export const initialWealthOnboarding: WealthOnboardingData = {
     pending_advisor_actions: [
       "Commercial RM must document affirmative verbal opt-in consent from primary guarantor",
       "Execute GLBA Regulation P customer privacy disclosure",
-      "Complete Reg BI Suitability Evaluation & FINRA Rule 2111 Risk Profile Questionnaire"
+      "Complete OCC Reg 9 fiduciary suitability review & investment objectives questionnaire (Reg BI / FINRA 2111 apply instead if routed to the HFA retail channel)"
     ]
   },
   sei_custodial_shell: {
@@ -509,7 +511,7 @@ export const initialWealthOnboarding: WealthOnboardingData = {
     horizon: "Unstated",
     liquidity_reserve_sleeve: "$0.00 (Locked)",
     asset_allocation_scaffold: [],
-    fiduciary_disclaimer: "Scaffolding withheld. Under SEC Reg BI and GLBA, asset allocation scaffolding is unlocked only after affirmative client opt-in and licensed advisor risk discovery."
+    fiduciary_disclaimer: "Scaffolding withheld. Under OCC Reg 9 fiduciary standards and GLBA, asset allocation scaffolding is unlocked only after affirmative client opt-in and licensed advisor risk discovery."
   },
   ongoing_servicing_dossier: {
     annual_reviews_automated: false,
@@ -942,7 +944,7 @@ RETURN b.legal_name, p.name, qi.entity_name, qi.escrow_wire_instructions, f.unpa
         tier: "signal",
         status: "flagged",
         badge: "ESCROW TARGET",
-        subtitle: "Huntington QI Depository (4.75%)",
+        subtitle: "Huntington Qualified Escrow Depository / QI: IPX1031 (4.75%)",
         properties: {
           "Asset Valuation": "$3,150,000.00",
           "Debt Extinguished": "$1,420,000.00",

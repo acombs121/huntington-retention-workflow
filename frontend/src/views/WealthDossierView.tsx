@@ -3,7 +3,6 @@ import { WealthOnboardingData } from '../types';
 import {
   ShieldCheck,
   CheckCircle2,
-  ArrowRight,
   ArrowLeft,
   Building,
   Check,
@@ -13,13 +12,11 @@ import {
 interface WealthDossierViewProps {
   data: WealthOnboardingData;
   onBackToQueue: () => void;
-  onProceedToStrategy: () => void;
 }
 
 export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
   data,
   onBackToQueue,
-  onProceedToStrategy,
 }) => {
   const clientDisplayName = data.target_client ? data.target_client.split('(')[0].trim() : 'Client';
 
@@ -54,15 +51,12 @@ export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
             </p>
           </div>
 
-          {/* Action Button */}
+          {/* Action Status Badge */}
           <div className="pt-2 lg:pt-0">
-            <button
-              onClick={onProceedToStrategy}
-              className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full text-sm font-bold tracking-wide bg-[#006738] hover:bg-[#1B5630] text-white shadow-sm transition active:scale-[0.98]"
-            >
-              <span>Review Portfolio Strategy</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-[#E8F5E9] dark:bg-emerald-950/60 text-[#006738] dark:text-emerald-300 border border-[#A7F3D0] dark:border-emerald-800">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Dossier Ready for Advisor Discovery</span>
+            </span>
           </div>
         </div>
       </div>
@@ -107,16 +101,16 @@ export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
 
           <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
             {data.staged_kyc_cip?.verified_fields?.map((field) => (
-              <div key={field.field} className="p-5 flex items-center justify-between gap-4">
+              <div key={field.field} className="px-6 py-4 flex items-center justify-between gap-4">
                 <div className="min-w-0 pr-2">
-                  <span className="text-slate-400 block text-xs uppercase font-semibold tracking-wider">{field.field}</span>
-                  <span className="font-bold text-slate-900 dark:text-white text-sm mt-1 block break-words">
+                  <span className="text-slate-400 block text-[11px] uppercase font-semibold tracking-wider">{field.field}</span>
+                  <span className="font-semibold text-slate-900 dark:text-white text-sm mt-0.5 block break-words">
                     {field.value}
                   </span>
                 </div>
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#006738] dark:text-emerald-400 bg-[#E8F5E9] dark:bg-emerald-950/40 px-3 py-1 rounded-full border border-[#A7F3D0] dark:border-emerald-800 whitespace-nowrap shrink-0">
+                <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#006738] dark:text-emerald-400 whitespace-nowrap shrink-0">
                   <Check className="w-3.5 h-3.5 shrink-0" />
-                  {field.status}
+                  <span>Verified</span>
                 </span>
               </div>
             ))}
@@ -124,15 +118,15 @@ export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
         </div>
 
         {/* Right Column: Custodial Shell & Fiduciary Checklist (5 cols) */}
-        <div className="lg:col-span-5 space-y-8">
+        <div className="lg:col-span-5 space-y-6">
           
           {/* SEI Custodial Shell */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-              <div className="flex items-center gap-2.5">
-                <Building className="w-5 h-5 text-[#006738]" />
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                  SEI Wealth Platform (SEI Data Cloud) Custodial Shell
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Building className="w-4 h-4 text-[#006738] dark:text-emerald-400" />
+                <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                  SEI Data Cloud Custodial Shell
                 </h3>
               </div>
               <span className="text-xs font-bold text-[#006738] dark:text-emerald-400 uppercase tracking-wider">
@@ -140,23 +134,23 @@ export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
               </span>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5 text-xs">
-              <div className="flex justify-between">
-                <span className="text-slate-400">Shell ID:</span>
-                <span className="font-bold text-slate-900 dark:text-white">{data.sei_custodial_shell?.shell_id}</span>
+            <div className="divide-y divide-slate-100 dark:divide-slate-800/80 text-xs">
+              <div className="py-2.5 flex justify-between">
+                <span className="text-slate-400">Shell ID</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{data.sei_custodial_shell?.shell_id}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Account Title:</span>
-                <span className="font-bold text-slate-900 dark:text-white text-right max-w-[200px] truncate">
+              <div className="py-2.5 flex justify-between">
+                <span className="text-slate-400">Account Title</span>
+                <span className="font-semibold text-slate-900 dark:text-white text-right max-w-[220px] truncate">
                   {data.sei_custodial_shell?.account_title}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Custodian:</span>
-                <span className="font-bold text-slate-900 dark:text-white">{data.sei_custodial_shell?.custodian}</span>
+              <div className="py-2.5 flex justify-between">
+                <span className="text-slate-400">Custodian</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{data.sei_custodial_shell?.custodian}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Cash Depository:</span>
+              <div className="py-2.5 flex justify-between">
+                <span className="text-slate-400">Cash Depository</span>
                 <span className="font-bold text-[#006738] dark:text-emerald-400">Huntington FDIC Sweep</span>
               </div>
             </div>
@@ -164,24 +158,24 @@ export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
 
           {/* Pending Advisor Fiduciary Actions */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-              <div className="flex items-center gap-2.5">
-                <FileCheck className="w-5 h-5 text-[#006738]" />
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <FileCheck className="w-4 h-4 text-[#006738] dark:text-emerald-400" />
+                <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                   Advisor Authorship Actions
                 </h3>
               </div>
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                Reg BI Required
+              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                Fiduciary Review Required
               </span>
             </div>
 
-            <div className="space-y-2.5 text-xs">
+            <div className="divide-y divide-slate-100 dark:divide-slate-800/80 text-xs">
               {data.staged_kyc_cip?.pending_advisor_actions?.map((action, idx) => (
-                <div key={idx} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700 flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full border border-slate-300 dark:border-slate-600 flex items-center justify-center text-xs text-slate-600 font-bold">
+                <div key={idx} className="py-2.5 flex items-center gap-3">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[11px] font-bold flex items-center justify-center shrink-0">
                     {idx + 1}
-                  </div>
+                  </span>
                   <span className="text-slate-700 dark:text-slate-300 font-medium">
                     {action}
                   </span>
@@ -189,22 +183,36 @@ export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
               ))}
             </div>
 
-            <p className="text-xs text-slate-400 leading-relaxed pt-1">
-              * Regulation Best Interest mandate: Automated staging handles administrative paperwork; licensed advisor retains 100% fiduciary discretion over investment selection.
+            <p className="text-[11px] text-slate-400 leading-relaxed pt-1">
+              Private Bank relationship under OCC Reg 9 (12 C.F.R. &sect; 9): automated staging handles administrative paperwork; the licensed advisor retains 100% fiduciary discretion over investment selection.
             </p>
           </div>
 
-          {/* Bottom Next Step */}
-          <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-4">
-            <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-              Ready to review asset allocation?
-            </span>
+          {/* Bottom Completion Action */}
+          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+            <div className="space-y-0.5">
+              <div className="text-xs font-bold text-slate-900 dark:text-white">
+                Administrative Pre-Staging Complete (80% Paperwork Eliminated)
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                KYC records and custodial shell are verified. Fiduciary discovery and investment strategy will be authored during the client intake consultation.
+              </p>
+              {/* Administrative scaffolding only — not a recommendation under any applicable standard. */}
+              <p className="text-[10px] leading-relaxed text-slate-400 dark:text-slate-500 pt-1">
+                <span className="font-bold uppercase tracking-wider">Administrative staging only.</span>{' '}
+                No asset allocation, product, or strategy is recommended here. Nothing in this
+                dossier constitutes investment advice or a recommendation &mdash; whether under the
+                bank&rsquo;s fiduciary standard (OCC Reg 9) for Private Bank relationships or SEC
+                Regulation Best Interest for retail brokerage relationships. All suitability
+                determinations are authored by the licensed advisor.
+              </p>
+            </div>
             <button
-              onClick={onProceedToStrategy}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold tracking-wide bg-[#006738] hover:bg-[#1B5630] text-white transition active:scale-[0.98]"
+              onClick={onBackToQueue}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition shrink-0 self-start sm:self-auto"
             >
-              <span>Next: Portfolio Strategy</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to Client Queue</span>
             </button>
           </div>
 

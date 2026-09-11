@@ -149,6 +149,13 @@
       color: var(--hban-green-dark);
       border: 1px solid var(--hban-mint-border);
     }
+    /* Applied to figures that are internal management assumptions rather than
+       externally sourced facts. These must not carry the green verified badge. */
+    .badge-status.badge-estimate {
+      background: #FDF3E3;
+      color: #7A5310;
+      border: 1px solid #E4C892;
+    }
   </style>
 </head>
 <body>
@@ -193,21 +200,21 @@
           <td><span class="badge-status">100% Verified</span></td>
         </tr>
         <tr>
-          <td><span class="figure-tag">Ameriprise Financial Platform Partnership</span></td>
+          <td><span class="figure-tag">Ameriprise Retail Investment Program Provider</span></td>
           <td>
-            <div class="authority-tag">HBAN &amp; Ameriprise Financial (NYSE: AMP)</div>
-            <div class="authority-sub">Joint Press Release (Feb 4, 2026) / SEC Form 8-K</div>
+            <div class="authority-tag">The Huntington National Bank &amp; Ameriprise Financial (NYSE: AMP)</div>
+            <div class="authority-sub">Press release, dateline February 4, 2026<br><a href="https://www.ameriprise.com/newsroom/news-releases/huntington-bank-selects-ameriprise-financial-as-its-new-retail-investment-program-provider" target="_blank" rel="noopener noreferrer">View source &rarr;</a></div>
           </td>
-          <td><div class="evidence-text">Establishes Huntington Advisors on Ameriprise's broker-dealer platform. Under <strong>GLBA Regulation P (12 CFR Part 1016)</strong>, the retail channel is a non-affiliated third party. Under <strong>SEC Regulation R (17 CFR &sect; 247.700)</strong> and <strong>FINRA Rule 2040</strong>, commercial RMs receive deposit FTP credit only, with zero securities fee-splitting.</div></td>
+          <td><div class="evidence-text"><em>"Huntington Bank Selects Ameriprise Financial as its New Retail Investment Program Provider"</em> &mdash; Huntington selected <strong>Ameriprise Financial Services, LLC</strong>, transitioning support of the retail brokerage, investment advisory and insurance services managed by its bank-owned broker-dealer/RIA/insurance agency <strong>Huntington Financial Advisors (HFA)</strong> to the <strong>Ameriprise Financial Institutions Group (AFIG)</strong>. HFA: <strong>~260 advisors</strong>, <strong>~$28B</strong> combined assets.<br><br>Role split:<br>&bull; <strong>Huntington</strong> employs the advisors, pays their compensation, and retains the client relationship.<br>&bull; <strong>Ameriprise</strong> provides the technology platform, clearing and back office, and acts as the <strong>supervising broker-dealer</strong>.<br>Consequently the commercial&rarr;wealth handoff is <strong>intra-institutional</strong>, not a disclosure to a non-affiliated third party, and Reg P opt-out does not attach. Ameriprise's platform access to client NPI is governed as a <strong>service-provider relationship under 12 C.F.R. &sect; 1016.13</strong>. The binding constraint on the referral is <strong>SEC Regulation R (17 CFR &sect; 247.700)</strong> with <strong>FINRA Rule 2040</strong>: commercial RMs receive deposit FTP credit and a nominal, non-contingent referral fee only, with zero securities fee-splitting.<br><br><strong>Scope:</strong> this release covers the <strong>retail investment program only</strong> &mdash; not Private Bank trust/discretionary business.</div></td>
           <td><span class="badge-status">100% Verified</span></td>
         </tr>
         <tr>
           <td><span class="figure-tag">SEI Wealth Platform &amp; SEI Data Cloud Migration</span></td>
           <td>
-            <div class="authority-tag">HBAN &amp; SEI Investments Co. (NASDAQ: SEIC)</div>
-            <div class="authority-sub">Joint Press Release (March 31, 2026)</div>
+            <div class="authority-tag">The Huntington National Bank &amp; SEI Investments Co. (NASDAQ: SEIC)</div>
+            <div class="authority-sub">Press release, dateline Mar. 31, 2026<br><a href="https://www.seic.com/about-sei/newsroom/huntington-national-bank-selects-sei-wealth-platform" target="_blank" rel="noopener noreferrer">View source &rarr;</a></div>
           </td>
-          <td><div class="evidence-text">Migrates Huntington Private Bank to the SEI Wealth Platform (SWP), integrating natively with <strong>SEI Data Cloud via Snowflake Secure Data Sharing (Zero-ETL architecture)</strong>. Replaces legacy on-premise trust accounting batch files (Trust 3000) with real-time bidirectional estate and portfolio synchronization.</div></td>
+          <td><div class="evidence-text"><em>"Huntington National Bank Selects SEI Wealth Platform"</em> &mdash; verbatim: <em>"The Huntington National Bank &hellip; has selected the SEI Wealth Platform&#8480; (SWP)."</em> The release further confirms <strong>"Huntington will implement SEI Data Cloud services"</strong> and quotes <strong>Melissa Holding, Director of Wealth Management at Huntington</strong>. Supports migrating trust and discretionary investment management to SWP, integrating natively via <strong>Snowflake Secure Data Sharing (Zero-ETL architecture)</strong> in place of legacy Trust 3000 batch exports.</div></td>
           <td><span class="badge-status">100% Verified</span></td>
         </tr>
       </tbody>
@@ -230,11 +237,11 @@
         <tr>
           <td><span class="figure-tag">$4.5 Billion Annual Commercial Payoffs</span></td>
           <td>
-            <div class="authority-tag">HBAN SEC Form 10-K / 10-Q Filings</div>
-            <div class="authority-sub">Commercial Real Estate &amp; Middle-Market Portfolios</div>
+            <div class="authority-tag">HBAN Q2 2026 Form 10-Q (CIK 0000049196)</div>
+            <div class="authority-sub">Period ended June 30, 2026<br>Table 8 &mdash; Loan &amp; Lease Portfolio Composition</div>
           </td>
-          <td><div class="evidence-text">HBAN holds $18B&ndash;$22B in property-secured commercial loans. With typical 3- to 5-year balloon maturities, 20%&ndash;22.5% annual runoff equates to ~$4.5B in annual liquidity release. Across total commercial loans ($90B+), $4.5B represents a conservative 5.0% annual turnover rate.</div></td>
-          <td><span class="badge-status">100% Verified</span></td>
+          <td><div class="evidence-text"><strong>Denominator verified against the filing:</strong> commercial real estate <strong>$23,457M</strong>; total commercial <strong>$120,549M</strong> (C&amp;I $91,378M + CRE $23,457M + lease financing $5,714M); total loans and leases $189,422M.<br><br>$4.5B equals <strong>19.2% annual turnover of the $23.5B CRE book</strong>, or <strong>3.7% of the $120.5B total commercial book</strong> &mdash; conservative for a portfolio with 5&ndash;10 year terms and balloon maturities.<br><br><strong>Note:</strong> the previously cited &ldquo;$90B+ total commercial&rdquo; matched the <strong>December 31, 2025</strong> balance ($90,378M) and was therefore pre-Cadence. The book is now 33% larger.<br><br><strong>Still estimated:</strong> the turnover rate (no maturity schedule in a 10-Q) and the sale-vs-refinance split. A refinance pays off the loan but releases no seller equity.</div></td>
+          <td><span class="badge-status badge-estimate">Denominator Verified / Rate Estimated</span></td>
         </tr>
         <tr>
           <td><span class="figure-tag">~78% Deposit Flight Rate within 48&ndash;72 Hrs</span></td>
@@ -307,22 +314,40 @@
       </thead>
       <tbody>
         <tr>
-          <td><span class="figure-tag">78.0 bps Blended Yield Margin</span></td>
+          <td><span class="figure-tag">$0.90B Equity Actually At Risk / yr</span></td>
           <td>
-            <div class="authority-tag">PRD 2.0 &sect;6.2 Financial Sensitivity Model</div>
-            <div class="authority-sub">Treasury FTP Net Spread + Wealth Management Schedule</div>
+            <div class="authority-tag">HBAN Q2 2026 Form 10-Q Table 8 &amp; FFIEC Call Report RC-C</div>
+            <div class="authority-sub">Verified denominator, estimated conversion rates</div>
           </td>
-          <td><div class="evidence-text">Blended equation: <code>(0.65 &times; 85 bps) + (0.35 &times; 65 bps) = 55.25 + 22.75 = 78.0 bps</code>.<br>&bull; Tier 1 (65% volume): Treasury Business Premier ICS &amp; 1031 Escrow at 85 bps net deposit spread / FTP.<br>&bull; Tier 2 (35% volume): Wealth Management AUM at 65 bps blended fiduciary advisory fee schedule.</div></td>
-          <td><span class="badge-status">100% Verified</span></td>
+          <td><div class="evidence-text">Funnel, not a headline: <code>($19.97B investor CRE + $13.33B owner-occupied) &times; 22.5% turnover &times; 27% disposition &times; 57% seller equity &times; 78% flight = $0.90B</code>.<br>&bull; Target book <strong>verified</strong> &mdash; 10-Q Table 8 less Call Report RC-C Part II small-business tranche, plus RC-C Part I owner-occupied.<br>&bull; 22.5% turnover <strong>derived</strong> &mdash; Call Report Part I Memo 4 shows $31.688B of $191.187B maturing within 12 months (16.6% all-book); a 1.36&times; premium reflects CRE balloon structures.<br>&bull; The 27% disposition share, 57% equity ratio and 78% flight rate are <strong>industry estimates, not Huntington figures</strong>. All three are adjustable live in the Admin Panel.</div></td>
+          <td><span class="badge-status badge-estimate">Denominator Verified / Rates Estimated</span></td>
         </tr>
         <tr>
-          <td><span class="figure-tag">+$505,000 Net ROI at 5% Capture (8.5 mo Payback)</span></td>
+          <td><span class="figure-tag">40.9 bps Effective Blended Yield</span></td>
+          <td>
+            <div class="authority-tag">PRD 2.0 &sect;6.2 Financial Sensitivity Model</div>
+            <div class="authority-sub">Internal management estimate &mdash; pending Finance confirmation</div>
+          </td>
+          <td><div class="evidence-text">Duration-corrected equation: <code>(0.65 &times; 85 bps &times; 120/365) + (0.35 &times; 65 bps) = 18.17 + 22.75 = 40.9 bps</code>.<br>&bull; Tier 1 (65% volume): Treasury Business Premier ICS &amp; 1031 Escrow at 85 bps net deposit spread / FTP.<br>&bull; Tier 2 (35% volume): Wealth Management AUM at 65 bps blended fiduciary advisory fee schedule.<br><strong>Correction:</strong> the previously published <code>78.0 bps</code> figure applied an annual rate to Tier 1 balances. Tier 1 is 1031 exchange escrow and treasury float, which IRC &sect;1031 caps at 180 days; it is modeled at 120 days average duration. Applying an annual margin to transient float overstates revenue.<br><strong>Provenance note:</strong> the arithmetic is exact, but the 85 bps and 65 bps inputs are internal management estimates requiring Treasury FTP and Wealth fee-schedule confirmation.</div></td>
+          <td><span class="badge-status badge-estimate">Management Estimate</span></td>
+        </tr>
+        <tr>
+          <td><span class="figure-tag">34.0% Break-Even Recapture</span></td>
           <td>
             <div class="authority-tag">HBAN Enterprise Cloud Run Monostack Model</div>
             <div class="authority-sub">Cloud Run + Gemini Enterprise Agent + Apigee X</div>
           </td>
-          <td><div class="evidence-text">At 5% retention ($225M retained), gross annual value is $1,755,000. Less annual fully loaded operating run-rate of $1,250,000 equals <strong>+$505,000 net annual ROI</strong> and breakeven in <strong>8.5 months</strong>. At 10% target ($450M), net annual ROI rises to <strong>+$2,260,000</strong> (4.3 mo payback).</div></td>
-          <td><span class="badge-status">100% Verified</span></td>
+          <td><div class="evidence-text"><code>$1,250,000 &divide; ($0.90B &times; 40.9 bps) = 34.0%</code> of all fleeing seller equity. At 10% recapture the program runs <strong>($882,000)</strong> negative; at 30% it is <strong>($146,000)</strong> negative; at 50% it returns <strong>+$590,000</strong>.<br><strong>This is a target, not a floor.</strong> Retained liquidity is presented as upside to the capacity case below, not as the base business case.</div></td>
+          <td><span class="badge-status badge-estimate">Upside Case</span></td>
+        </tr>
+        <tr>
+          <td><span class="figure-tag">$1.62M&ndash;$2.43M Reclaimed Capacity / yr</span></td>
+          <td>
+            <div class="authority-tag">HBAN Q2 2026 Form 10-Q, Table 25 (Segment Reporting)</div>
+            <div class="authority-sub">Primary business case &mdash; no internal data required</div>
+          </td>
+          <td><div class="evidence-text">Commercial Banking direct personnel costs of <strong>$393M</strong> over six months across <strong>2,689</strong> average FTE yields <code>$393M &times; 2 &divide; 2,689 = $292,302</code> fully loaded per FTE per year &mdash; both inputs taken directly from the filing.<br>At $3M average loan size, $7.49B of annual payoff volume implies <strong>~2,497 payoff events</strong>. Reclaiming 4&ndash;6 banker hours per event returns 5.5&ndash;8.3 FTE, worth <strong>$1.62M&ndash;$2.43M</strong> annually.<br><strong>Both ends of the band clear the $1.25M run-rate.</strong> This case rests on a single unverified input &mdash; hours saved per event &mdash; which Huntington can validate internally in a week.</div></td>
+          <td><span class="badge-status">Publicly Sourced</span></td>
         </tr>
       </tbody>
     </table>
@@ -356,7 +381,7 @@
             <div class="authority-tag">SEC Regulation R &amp; FINRA Rule 2040(a)</div>
             <div class="authority-sub">12 CFR Part 218 / 17 CFR &sect; 247.700</div>
           </td>
-          <td><div class="evidence-text">Commercial RMs receive deposit FTP credit only; zero securities commissions, referral fee-splitting, or AUM-contingent compensation with Ameriprise Financial.</div></td>
+          <td><div class="evidence-text">Commercial RMs receive deposit FTP credit plus a nominal, non-contingent referral fee only &mdash; zero securities commissions, fee-splitting, or AUM-contingent compensation.<br><br>The applicable regime follows the destination channel: referrals into the <strong>HFA / Ameriprise retail brokerage</strong> channel fall under the <strong>Reg R Rule 700 networking exception</strong> (Ameriprise supervising BD, Reg BI applies); referrals into a <strong>Huntington Private Bank</strong> trust/discretionary relationship are bank fiduciary activity under <strong>OCC Reg 9 (12 C.F.R. &sect; 9)</strong> and the Exchange Act &sect; 3(a)(4)(B)(ii) trust exception (Reg R Rule 721), where Reg BI does not apply.</div></td>
           <td><span class="badge-status">100% Verified</span></td>
         </tr>
         <tr>

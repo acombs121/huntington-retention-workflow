@@ -3,281 +3,901 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Huntington Horizon 2.0 | Interactive Executive Demo Script</title>
+  <title>Huntington Horizon 2.0 | Customer Demo Script & Production Blueprint (v6.0)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet" />
   <style>
     :root {
+      /* Huntington Corporate Palette */
       --hban-green: #006738;
       --hban-green-dark: #004724;
-      --hban-mint: #e8f5e9;
-      --hban-mint-border: #a7f3d0;
-      --slate-900: #0f172a;
-      --slate-800: #1e293b;
-      --slate-700: #334155;
-      --slate-600: #475569;
-      --slate-500: #64748b;
-      --slate-200: #e2e8f0;
-      --slate-100: #f1f5f9;
-      --slate-50: #f8fafc;
-      --white: #ffffff;
-      --bg-body: var(--slate-50);
-      --text-main: var(--slate-900);
-      --card-bg: var(--white);
-      --border-color: var(--slate-200);
+      --hban-green-darker: #003319;
+      --hban-green-midnight: #012D2A;
+      --hban-green-abundant: #7ECF1C;
+      --hban-mint: #E8F5E9;
+      --hban-mint-border: #A7F3D0;
+      --hban-sage: #B8EFE4;
+
+      /* Semantic Status Light */
+      --semantic-good: #2F6B4F;
+      --semantic-warn: #9A6A12;
+      --semantic-crit: #9C3B2E;
+      --semantic-accent: #1E5A45;
+
+      /* Surfaces (Light Chalk) */
+      --bg-body: #F6F7F4;
+      --surface: #FFFFFF;
+      --surface-2: #EEF1EC;
+      --surface-3: #E3E8E2;
+      --ink: #16211D;
+      --ink-2: #3F4A45;
+      --ink-3: #6B7570;
+      --ink-4: #98A390;
+      --border-color: #E2E8F0;
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-hero: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
     }
+
     body.dark {
-      --bg-body: #0b1320;
-      --text-main: #f8fafc;
-      --card-bg: #1e293b;
-      --border-color: #334155;
+      /* Surfaces (Dark Pitch Pine Forest) */
+      --bg-body: #0E1412;
+      --surface: #151D1A;
+      --surface-2: #182521;
+      --surface-3: #22302A;
+      --ink: #F2F5F1;
+      --ink-2: #C6D0CA;
+      --ink-3: #8F9C95;
+      --ink-4: #66736C;
+      --border-color: #263832;
+
+      /* Semantic Status Dark */
+      --semantic-good: #7FD1A9;
+      --semantic-warn: #E38341;
+      --semantic-crit: #E5736A;
+      --semantic-accent: #7FD1A9;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-family: 'Mulish', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       background-color: var(--bg-body);
-      color: var(--text-main);
+      color: var(--ink);
       line-height: 1.6;
       padding: 2.5rem;
-      max-width: 1100px;
-      margin: 0 auto;
-      transition: background-color 0.2s, color 0.2s;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      min-height: 100vh;
     }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
     .header-bar {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       margin-bottom: 2rem;
-      padding-bottom: 1.5rem;
+      padding-bottom: 1.75rem;
       border-bottom: 1px solid var(--border-color);
     }
-    .header-bar h1 { font-size: 2rem; font-weight: 800; color: var(--hban-green); }
-    .header-bar p { color: var(--slate-500); font-size: 0.95rem; }
-    .theme-btn {
-      background: var(--card-bg);
+    .brand-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--hban-green);
+      margin-bottom: 0.25rem;
+    }
+    body.dark .brand-eyebrow { color: var(--semantic-accent); }
+
+    .title-area h1 {
+      font-size: 2.25rem;
+      font-weight: 900;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .title-area h1 span.green-mark { color: var(--hban-green); }
+    body.dark .title-area h1 span.green-mark { color: var(--semantic-accent); }
+
+    .title-area p {
+      color: var(--ink-3);
+      font-size: 0.95rem;
+      margin-top: 0.35rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .version-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: var(--surface-2);
+      color: var(--ink-2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
       border: 1px solid var(--border-color);
-      padding: 0.5rem 1rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .theme-btn {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 1.1rem;
       border-radius: 8px;
       cursor: pointer;
-      font-weight: 600;
-      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--ink);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
     }
+    .theme-btn:hover {
+      background: var(--surface-2);
+      border-color: var(--hban-green);
+    }
+
+    /* Executive Problem Callout */
     .problem-callout {
-      background: var(--card-bg);
+      background: var(--surface);
+      border: 1px solid var(--border-color);
       border-left: 6px solid var(--hban-green);
-      border-radius: 10px;
-      padding: 1.75rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-      border: 1px solid var(--border-color);
-      border-left-width: 6px;
+      border-radius: 14px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow-card);
     }
-    .problem-callout h3 { font-size: 1.25rem; font-weight: 800; color: var(--hban-green); margin-bottom: 0.5rem; }
-    .step-card {
-      background: var(--card-bg);
+    body.dark .problem-callout {
+      border-left-color: var(--semantic-accent);
+    }
+    .problem-callout h3 {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--hban-green);
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+    body.dark .problem-callout h3 {
+      color: var(--semantic-accent);
+    }
+    .problem-callout p {
+      font-size: 0.92rem;
+      color: var(--ink-2);
+      line-height: 1.7;
+    }
+
+    /* Step Timeline Flow */
+    .timeline-nav {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+      padding: 0.75rem;
+      background: var(--surface);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 1.75rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      border-radius: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    @media (max-width: 960px) {
+      .timeline-nav { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    }
+    .timeline-step {
+      padding: 0.5rem 0.65rem;
+      border-radius: 8px;
+      background: var(--surface-2);
+      text-decoration: none;
+      color: var(--ink-2);
+      transition: all 0.15s;
+      border: 1px solid var(--border-color);
+    }
+    .timeline-step:hover {
+      background: var(--hban-mint);
+      border-color: var(--hban-mint-border);
+      color: var(--hban-green-dark);
+    }
+    body.dark .timeline-step:hover {
+      background: rgba(127, 209, 169, 0.15);
+      border-color: var(--semantic-accent);
+      color: var(--semantic-accent);
+    }
+    .step-num {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--hban-green);
+      display: block;
+    }
+    body.dark .step-num { color: var(--semantic-accent); }
+    .step-time {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--ink-3);
+      font-variant-numeric: tabular-nums;
+    }
+    .step-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 0.1rem;
+    }
+
+    /* Pre-Flight Checklist Card */
+    .checklist-card {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .checklist-card h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem 1.5rem;
+    }
+    @media (max-width: 768px) { .checklist-grid { grid-template-columns: 1fr; } }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 0.85rem;
+      color: var(--ink-2);
+    }
+    .check-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--hban-green);
+      cursor: pointer;
+    }
+
+    /* Step Cards */
+    .step-card {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-card);
+      transition: background-color 0.25s ease, border-color 0.25s ease;
     }
     .step-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .step-header h4 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.01em;
     }
     .step-badge {
       font-size: 0.75rem;
       font-weight: 800;
-      text-transform: uppercase;
       padding: 0.25rem 0.65rem;
       border-radius: 6px;
       background: var(--hban-mint);
       color: var(--hban-green-dark);
       border: 1px solid var(--hban-mint-border);
+      font-variant-numeric: tabular-nums;
     }
-    .step-card h4 { font-size: 1.2rem; font-weight: 700; color: var(--text-main); }
+    body.dark .step-badge {
+      background: rgba(127, 209, 169, 0.12);
+      color: var(--semantic-accent);
+      border-color: rgba(127, 209, 169, 0.3);
+    }
+    .step-summary {
+      font-size: 0.9rem;
+      color: var(--ink-2);
+      font-style: italic;
+      margin-bottom: 1.25rem;
+    }
+
+    /* 3-Column Execution Dimension */
     .dim-row {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 1rem;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      gap: 1.25rem;
       margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border-color);
     }
-    @media (max-width: 800px) { .dim-row { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .dim-row { grid-template-columns: 1fr; } }
     .dim-col {
-      background: rgba(0,0,0,0.02);
-      padding: 0.85rem;
-      border-radius: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-color);
+      padding: 1.1rem;
+      border-radius: 10px;
     }
-    body.dark .dim-col { background: rgba(255,255,255,0.03); }
-    .dim-title { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--slate-500); margin-bottom: 0.35rem; }
-    .dim-desc { font-size: 0.85rem; color: var(--text-main); line-height: 1.4; }
+    .dim-title {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--hban-green);
+      margin-bottom: 0.45rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    body.dark .dim-title { color: var(--semantic-accent); }
+    .dim-desc {
+      font-size: 0.85rem;
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    .dim-desc ul {
+      margin-left: 1.15rem;
+      margin-top: 0.35rem;
+    }
+    .dim-desc li {
+      margin-bottom: 0.35rem;
+    }
+    .script-quote {
+      border-left: 3px solid var(--hban-green);
+      padding-left: 0.65rem;
+      margin-top: 0.4rem;
+      font-style: italic;
+      color: var(--ink-2);
+    }
+    body.dark .script-quote {
+      border-left-color: var(--semantic-accent);
+    }
+
+    /* Executive Q&A Section */
+    .qa-card {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow-card);
+    }
+    .qa-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .qa-item {
+      padding: 1.1rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .qa-item:last-child {
+      border-bottom: none;
+    }
+    .qa-q {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 0.45rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .qa-q span.q-badge {
+      font-size: 0.68rem;
+      font-weight: 800;
+      background: var(--hban-green);
+      color: #FFF;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      shrink: 0;
+    }
+    body.dark .qa-q span.q-badge {
+      background: var(--semantic-accent);
+      color: #0E1412;
+    }
+    .qa-a {
+      font-size: 0.88rem;
+      color: var(--ink-2);
+      line-height: 1.6;
+      padding-left: 1.85rem;
+    }
   </style>
 </head>
 <body>
-  <div class="header-bar">
-    <div>
-      <h1>Huntington Horizon 2.0 Customer Demo Script</h1>
-      <p>10-Minute Executive Presentation Walkthrough & Production Blueprint (v6.0)</p>
-    </div>
-    <button class="theme-btn" onclick="toggleTheme()">Toggle Dark / Light</button>
-  </div>
+  <div class="container">
+    <!-- Header Bar -->
+    <header class="header-bar">
+      <div class="title-area">
+        <div class="brand-eyebrow">Institutional Executive Presentation &bull; C-Level Blueprint</div>
+        <h1>Huntington Horizon 2.0 <span class="green-mark">Customer Demo Script</span></h1>
+        <p>10-Minute Executive Presentation Walkthrough, Spanner Graph Grounding Defense, &amp; OCC/GLBA Regulatory Safe Harbors (v6.0)</p>
+      </div>
+      <div class="header-actions">
+        <span class="version-tag">Production v6.0</span>
+        <button type="button" class="theme-btn" onclick="toggleTheme()">
+          <span id="theme-icon">&#9681;</span>
+          <span id="theme-text">Toggle Dark / Light</span>
+        </button>
+      </div>
+    </header>
 
-  <!-- What Problem Does This Solve -->
-  <div class="problem-callout">
-    <h3>What Problem Does This Solve?</h3>
-    <p>
-      Huntington's commercial book generates <strong>$4.5B in annual commercial real estate (CRE), middle-market, and SBA 7(a) loan payoffs</strong> across <strong>1,400 branches in 21 states</strong>. As a <strong>top-2 SBA 7(a) lender nationally</strong>, our book is packed with middle-market business sales and commercial property exits. Within 48–72 hours of closing, ~78% of net proceeds ($2M–$10M+) wire out to competitors because commercial exits take 6–9 months, title company payoff faxes sit in loan ops queues for days, and 1031 exchanges leak to outside accommodators. <strong>Horizon 2.0 deploys a Two-Tier Retention Shield</strong>: locking entity liquidity on Huntington's balance sheet on Day 0 via <strong>Business Premier Insured Cash Sweep (ICS) (4.85% APY)</strong> and <strong>Institutional 1031 Qualified Escrow Depository</strong>, and engaging personal wealth advisory post-distribution via cloud-native <strong>SEI Data Cloud</strong> integration under strict <strong>Ameriprise Regulation R Networking</strong> compliance.
-    </p>
-  </div>
+    <!-- Executive Problem Callout -->
+    <section class="problem-callout">
+      <h3>What Problem Does This Solve?</h3>
+      <p>
+        Huntington's commercial book generates <strong>$4.5B in annual commercial real estate (CRE), middle-market, and SBA 7(a) loan payoffs</strong> across <strong>1,400 branches in 21 states</strong>. As a <strong>top-2 SBA 7(a) lender nationally</strong>, our franchise is rich with middle-market business sales and commercial property exits. Within 48–72 hours of closing, ~78% of net proceeds ($2M–$10M+) routinely wire out to Wall Street wirehouses because commercial exits take 6–9 months, title company payoff faxes sit in loan ops queues for days, and 1031 exchanges leak to outside accommodators.
+      </p>
+      <p style="margin-top: 0.75rem;">
+        <strong>Horizon 2.0 deploys a Two-Tier Retention Shield:</strong> locking entity liquidity on Huntington's balance sheet on Day 0 via <strong>Business Premier Insured Cash Sweep (ICS) (4.85% APY)</strong> and <strong>Institutional 1031 Qualified Escrow Depository</strong>, and engaging personal wealth advisory post-distribution via cloud-native <strong>SEI Data Cloud</strong> integration under strict <strong>Ameriprise Regulation R Networking</strong> compliance.
+      </p>
+    </section>
 
-  <!-- Step 1 -->
-  <div class="step-card">
-    <div class="step-header">
-      <h4>Step 1: The Problem & The $4.5B Flight Cliff</h4>
-      <span class="step-badge">00:00 – 01:30</span>
-    </div>
-    <p>Establish the reality of commercial deposit flight across 1,400 branches and frame the Two-Tier Retention Shield with executive leadership.</p>
-    <div class="dim-row">
-      <div class="dim-col">
-        <div class="dim-title">Presenter Action</div>
-        <div class="dim-desc">Frame the goal: capturing deposits on balance sheet first; cite $4.5B payoffs, 78% flight rate, and top-2 national SBA 7(a) volume.</div>
-      </div>
-      <div class="dim-col">
-        <div class="dim-title">What is Shown in Demo</div>
-        <div class="dim-desc">Executive hero cards contrasting commercial discovery drag with wealth advisor capacity limits across 21 states.</div>
-      </div>
-      <div class="dim-col">
-        <div class="dim-title">Production Implementation</div>
-        <div class="dim-desc">BigQuery analytics warehouse tracking historical loan payoffs, SBA portfolio registers, and core deposit outflow telemetry.</div>
-      </div>
-    </div>
-  </div>
+    <!-- 7-Step Navigation Ribbon -->
+    <nav class="timeline-nav">
+      <a href="#step-1" class="timeline-step">
+        <span class="step-num">Step 1</span>
+        <span class="step-time">00:00 – 01:30</span>
+        <div class="step-name">The $4.5B Flight Cliff</div>
+      </a>
+      <a href="#step-2" class="timeline-step">
+        <span class="step-num">Step 2</span>
+        <span class="step-time">01:30 – 03:30</span>
+        <div class="step-name">Intake &amp; Spanner Graph</div>
+      </a>
+      <a href="#step-3" class="timeline-step">
+        <span class="step-num">Step 3</span>
+        <span class="step-time">03:30 – 05:00</span>
+        <div class="step-name">Entity OCR &amp; Triage</div>
+      </a>
+      <a href="#step-4" class="timeline-step">
+        <span class="step-num">Step 4</span>
+        <span class="step-time">05:00 – 06:30</span>
+        <div class="step-name">Advisor Matching &amp; Intro</div>
+      </a>
+      <a href="#step-5" class="timeline-step">
+        <span class="step-num">Step 5</span>
+        <span class="step-time">06:30 – 08:30</span>
+        <div class="step-name">Borrower Routing &amp; SEI</div>
+      </a>
+      <a href="#step-6" class="timeline-step">
+        <span class="step-num">Step 6</span>
+        <span class="step-time">08:30 – 09:15</span>
+        <div class="step-name">Institutional CRO Defense</div>
+      </a>
+      <a href="#step-7" class="timeline-step">
+        <span class="step-num">Step 7</span>
+        <span class="step-time">09:15 – 10:00</span>
+        <div class="step-name">Financial ROI &amp; CFO Hand-off</div>
+      </a>
+    </nav>
 
-  <!-- Step 2 -->
-  <div class="step-card">
-    <div class="step-header">
-      <h4>Step 2: Dual-Horizon Surveillance & Intake Ingestion</h4>
-      <span class="step-badge">01:30 – 03:30</span>
-    </div>
-    <p>Demonstrate upstream exit monitoring at T-120 and automated intake triage via the Loan Operations communication perimeter at T-14.</p>
-    <div class="dim-row">
-      <div class="dim-col">
-        <div class="dim-title">Presenter Action</div>
-        <div class="dim-desc">Point to Operational Capacity Metrics (1,400 branches, 2x CSA leverage); explain T-120 maturity surveillance and RightFax/Graph API intake.</div>
+    <!-- Presenter Pre-Flight Checklist -->
+    <section class="checklist-card">
+      <h3><span>&#9745;</span> Presenter Pre-Flight Checklist</h3>
+      <div class="checklist-grid">
+        <label class="check-item">
+          <input type="checkbox" checked />
+          <span>Cloud Run service is warm and active (latency &lt; 250ms)</span>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" checked />
+          <span>Authenticated via Identity-Aware Proxy (IAP badge displays <code>developer@huntington.com</code>)</span>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" checked />
+          <span>Browser display set to 1920x1080 resolution (100% zoom)</span>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" checked />
+          <span>Admin Panel slide-out verified clickable on top-right gear icon</span>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" checked />
+          <span>Backup document (<em>Apex Logistics Payoff Request.pdf</em>) verified in cache</span>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" checked />
+          <span>Brand Kit and Demo Script tabs accessible for offline reference</span>
+        </label>
       </div>
-      <div class="dim-col">
-        <div class="dim-title">What is Shown in Demo</div>
-        <div class="dim-desc">Pane 1 Priority Radar with live capacity counter, Pass Tier 2 credit rating badge, and global obligor MDM screening.</div>
-      </div>
-      <div class="dim-col">
-        <div class="dim-title">Production Implementation</div>
-        <div class="dim-desc">Microsoft Graph API + OpenText RightFax ingesting payoff faxes/emails into Cloud Run microservices; Snowflake loan master.</div>
-      </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- Step 3 -->
-  <div class="step-card">
-    <div class="step-header">
-      <h4>Step 3: Reconciled Entity Intelligence & Internal Liquidity Triage</h4>
-      <span class="step-badge">03:30 – 06:00</span>
-    </div>
-    <p>Decompose legal agreements with pre-ingestion DLP, enforce Ameriprise privacy barriers, and adjust live triage slider.</p>
-    <div class="dim-row">
-      <div class="dim-col">
-        <div class="dim-title">Presenter Action</div>
-        <div class="dim-desc">Click Marcus Vance; highlight DLP stripping consumer bureaus; note Elena Vance excluded; explain client-facing valuation muzzle under SR 11-7.</div>
+    <!-- Step 1 -->
+    <article id="step-1" class="step-card">
+      <div class="step-header">
+        <h4>Step 1: The Problem &amp; The $4.5B Flight Cliff</h4>
+        <span class="step-badge">00:00 – 01:30</span>
       </div>
-      <div class="dim-col">
-        <div class="dim-title">What is Shown in Demo</div>
-        <div class="dim-desc">Pane 2 entity map with green bounding boxes on credit docs; real-time recalculation of net proceeds to $3.35M on slider adjustment.</div>
+      <div class="step-summary">
+        Establish the reality of commercial deposit flight across Huntington's 1,400 branches and frame the Two-Tier Retention Shield with executive leadership.
       </div>
-      <div class="dim-col">
-        <div class="dim-title">Production Implementation</div>
-        <div class="dim-desc">Gemini Enterprise Agent Platform (gemini-3.7-flash); Google Cloud DLP; nCino REST integration; Cloud Run CalculatorTool.</div>
+      <div class="dim-row">
+        <div class="dim-col">
+          <div class="dim-title">Presenter Action</div>
+          <div class="dim-desc">
+            1. Open Horizon Executive Briefing.<br/>
+            2. Frame core thesis:
+            <div class="script-quote">
+              "We cannot scale wealth management by asking bankers to work harder. We experience $4.5B in annual commercial payoffs across 1,400 branches in 21 states. As a top-2 SBA 7(a) lender nationally, our book is packed with middle-market business sales and commercial property dispositions. Historically, 78% of that liquidity wires out within 48–72 hours."
+            </div>
+            3. Highlight the two-tier structure:
+            <div class="script-quote">
+              "Horizon 2.0 separates Tier 1 Commercial Balance Sheet Retention on Day 0 from Tier 2 Post-Distribution Wealth Advisory at Day 30 to 60, after the sponsor's CPA has executed partnership tax distributions."
+            </div>
+          </div>
+        </div>
+        <div class="dim-col">
+          <div class="dim-title">What is Shown in Demo</div>
+          <div class="dim-desc">
+            Executive hero cards contrasting commercial discovery drag with wealth advisor capacity limits across 21 states.<br/><br/>
+            Visual breakdown of the $4.5B payoff book, $3.51B at-risk outflow, and the Two-Tier Retention Shield architecture diagram.
+          </div>
+        </div>
+        <div class="dim-col">
+          <div class="dim-title">Production Implementation</div>
+          <div class="dim-desc">
+            BigQuery analytical warehouse tracking historical loan payoffs, SBA 7(a) portfolio registers, and core deposit outflow telemetry.<br/><br/>
+            Real-time balance sheet Net Interest Margin (NIM) calculator modeling 85 bps net yield.
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
+    </article>
 
-  <!-- Step 4 -->
-  <div class="step-card">
-    <div class="step-header">
-      <h4>Step 4: Consultative Commercial Call &amp; Borrower-Directed Routing</h4>
-      <span class="step-badge">06:00 – 08:30</span>
-    </div>
-    <p>Place consultative call, inspect live borrower-facing DocuSign routing packet for ALTA callback compliance, record verbal opt-in, and toggle to SEI Data Cloud view.</p>
-    <div class="dim-row">
-      <div class="dim-col">
-        <div class="dim-title">Presenter Action</div>
-        <div class="dim-desc">Inspect live Borrower Settlement Routing Packet; click [Record Client Opt-In]; explain ALTA Pillar 2 rule (lenders lack standing over equity); proceed to Sarah Jenkins (PWA view).</div>
+    <!-- Step 2 -->
+    <article id="step-2" class="step-card">
+      <div class="step-header">
+        <h4>Step 2: Dual-Horizon Surveillance, Ingestion &amp; Spanner Grounding</h4>
+        <span class="step-badge">01:30 – 03:30</span>
       </div>
-      <div class="dim-col">
-        <div class="dim-title">What is Shown in Demo</div>
-        <div class="dim-desc">Live DocuSign routing packet with official bank verification letter and callback line; Wealth Hub displays staged facts with SEI Data Cloud Zero-ETL link.</div>
+      <div class="step-summary">
+        Show how the agent captures upstream exit signals at T-120, ingests payoff demands at T-14, and grounds decisions via Google Cloud Spanner Graph ISO GQL.
       </div>
-      <div class="dim-col">
-        <div class="dim-title">Production Implementation</div>
-        <div class="dim-desc">DocuSign REST APIs; Apigee X API Gateway mTLS; SEI Data Cloud via Snowflake Secure Data Sharing; Cloud Spanner graph.</div>
+      <div class="dim-row">
+        <div class="dim-col">
+          <div class="dim-title">Presenter Action</div>
+          <div class="dim-desc">
+            1. Switch to the Payoff Pipeline console.<br/>
+            2. Point to Operational Capacity Metrics (1,400 branches monitored, 2,140 events screened, 2x CSA leverage active).<br/>
+            3. Expand the <strong>Overnight Autonomous Agent Telemetry</strong> container to show the 9 autonomous agents executing in bold, branded tokens.<br/>
+            4. Click <strong>[Inspect Spanner Grounding Graph]</strong> to open the live topology modal:<br/>
+            <div class="script-quote">
+              "How does Horizon know with 94% confidence this is an outright cash-out sale? It doesn't guess. It queries Cloud Spanner Graph via ISO GQL. Notice Note #CC-8821 maps to Vance Riverfront Properties IV, LLC and guarantor Marcus Vance, verifies zero replacement debt in nCino, and programmatically quarantines Elena Vance with a GLBA Title V privacy badge."
+            </div>
+            5. Demonstrate the 2D canvas drag-to-pan, spacing slider, and switch between <em>Pipeline Flow</em> and <em>Radial Cluster</em> layouts.
+          </div>
+        </div>
+        <div class="dim-col">
+          <div class="dim-title">What is Shown in Demo</div>
+          <div class="dim-desc">
+            Priority Radar with live capacity counter, Pass Tier 2 credit rating badge, scheduled countdown (14 days to close), and global obligor MDM screening pass.<br/><br/>
+            Interactive <strong>Cloud Spanner Graph Grounding Modal</strong> displaying multi-tier SVG network topology, clickable node inspector, live ISO GQL query telemetry (28ms latency, 14 nodes, 19 edges), and single-row pin/unpin controls.
+          </div>
+        </div>
+        <div class="dim-col">
+          <div class="dim-title">Production Implementation</div>
+          <div class="dim-desc">
+            Google Cloud Spanner Graph (ISO/IEC 39075 GQL pattern matching); Microsoft Graph API + OpenText RightFax ingesting payoff faxes/emails into Cloud Run event-driven microservices; Snowflake core read-replica loan master.
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
+    </article>
 
-  <!-- Step 5 -->
-  <div class="step-card">
-    <div class="step-header">
-      <h4>Step 5: Institutional Guardrails (CRO Defense)</h4>
-      <span class="step-badge">08:30 – 09:15</span>
-    </div>
-    <p>Disarm CRO and compliance concerns with verified institutional badges and regulatory safe harbor citations.</p>
-    <div class="dim-row">
-      <div class="dim-col">
-        <div class="dim-title">Presenter Action</div>
-        <div class="dim-desc">Navigate to Executive Analytics and select Corporate Governance (CRO Defense); review ALTA Pillar 2, GLBA Pre-Ingestion DLP, Ameriprise Reg R Networking, and 1031 QI Safe Harbor badges.</div>
+    <!-- Step 3 -->
+    <article id="step-3" class="step-card">
+      <div class="step-header">
+        <h4>Step 3: Reconciled Entity Intelligence &amp; Internal Liquidity Triage</h4>
+        <span class="step-badge">03:30 – 05:00</span>
       </div>
-      <div class="dim-col">
-        <div class="dim-title">What is Shown in Demo</div>
-        <div class="dim-desc">Corporate Governance matrix with green verification badges, tamper-evident cryptographic hashes, zero-data-logging guarantees, and regulatory citations.</div>
+      <div class="step-summary">
+        Demonstrate multimodal extraction with pre-ingestion DLP, non-guarantor privacy exclusions, and internal triage heuristics under OCC SR 11-7.
       </div>
-      <div class="dim-col">
-        <div class="dim-title">Production Implementation</div>
-        <div class="dim-desc">Cloud KMS customer-managed keys (CMEK); VPC Service Controls perimeter; Cloud Audit Logs immutable trail.</div>
+      <div class="dim-row">
+        <div class="dim-col">
+          <div class="dim-title">Presenter Action</div>
+          <div class="dim-desc">
+            1. Click Marcus Vance. Watch the agent decompose <code>Vance Riverfront Properties IV, LLC</code> with verified citations on scanned credit certificates (<code>nCino Facility #CC-8821</code>).<br/>
+            2. Point out <strong>Automated Pre-Ingestion DLP</strong>:
+            <div class="script-quote">
+              "Notice what the agent did NOT ingest. It purged consumer credit bureaus, personal 1040s, and FinCEN CDD records before processing. Elena Vance—a 15% non-guarantor member—is programmatically excluded under GLBA Regulation P."
+            </div>
+            3. Point out the <strong>Internal Liquidity Triage Indicator</strong>:
+            <div class="script-quote">
+              "The title letter omits the contract sale price. Rather than having an AI hallucinate an appraisal, Horizon references the underwritten $8.0M baseline and trailing Q1 NOI to establish an internal triage range of $2.5M to $3.3M. This calculation is strictly muzzled from the client; Greg Miller never asserts a property value to Marcus Vance."
+            </div>
+            4. Adjust the <strong>Sale Price Slider</strong> live from $8.5M to $9.0M, watching net proceeds dynamically re-index to $3.35M.<br/>
+            5. Click <strong>[Select Wealth Advisor &amp; Dispatch Intro]</strong>.
+          </div>
+        </div>
+        <div class="dim-col">
+          <div class="dim-title">What is Shown in Demo</div>
+          <div class="dim-desc">
+            Pane 2 interactive entity map with green bounding-box citations on credit agreements; non-guarantor exclusion flags; dynamic slider recalculating net equity in real time; 1031 tax strategy toggle.
+          </div>
+        </div>
+        <div class="dim-col">
+          <div class="dim-title">Production Implementation</div>
+          <div class="dim-desc">
+            <strong>Gemini Enterprise Agent Platform (fka Vertex AI Platform)</strong> running <code>gemini-3.7-flash</code>; Google Cloud DLP; nCino REST integration; Cloud Run <code>CalculatorTool</code>.
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
+    </article>
 
-  <!-- Step 6 -->
-  <div class="step-card">
-    <div class="step-header">
-      <h4>Step 6: Financial ROI & CFO Hand-off</h4>
-      <span class="step-badge">09:15 – 10:00</span>
-    </div>
-    <p>Present defensible capacity economics (2x CSA leverage, 95 PWA cap) and interactive financial sensitivity model to CFO Zach Wasserman.</p>
-    <div class="dim-row">
-      <div class="dim-col">
-        <div class="dim-title">Presenter Action</div>
-        <div class="dim-desc">Explain realistic capacity targets; slide Layer B ROI from 5% ($505k net) to 10% ($2.26M net); defend $1.25M run-rate.</div>
+    <!-- Step 4 -->
+    <article id="step-4" class="step-card">
+      <div class="step-header">
+        <h4>Step 4: Objective Wealth Advisor Matching &amp; Warm Introduction Dispatch</h4>
+        <span class="step-badge">05:00 – 06:30</span>
       </div>
-      <div class="dim-col">
-        <div class="dim-title">What is Shown in Demo</div>
-        <div class="dim-desc">Dual-sided capacity matrix; interactive sensitivity table showing payback in 4.3 to 8.5 months; componentized $1.25M budget.</div>
+      <div class="step-summary">
+        Demonstrate objective, non-discriminatory advisor routing based on proximity, capacity, and CRE specialty, followed by banker-authored warm introduction email dispatch.
       </div>
-      <div class="dim-col">
-        <div class="dim-title">Production Implementation</div>
-        <div class="dim-desc">Client-side calculation engine; BigQuery financial baseline model.</div>
+      <div class="dim-row">
+        <div class="dim-col">
+          <div class="dim-title">Presenter Action</div>
+          <div class="dim-desc">
+            1. Review candidate advisor ranking in the Advisor Routing View:
+            <div class="script-quote">
+              "Notice how Horizon selects Sarah Jenkins with a 98% match score. The match is grounded in objective criteria: geographic proximity (0.4 miles at Huntington Center Downtown), specialized CRE disposition experience, and verified bandwidth (72% utilized, capacity for 2 new relationships). Crucially, Sarah already advises Marcus's co-investor David Cole, establishing immediate relationship equity."
+            </div>
+            2. Contrast with secondary candidates (Brian Gallagher, Elena Rostova).<br/>
+            3. Review and dispatch the warm introduction email draft pre-populated on behalf of commercial banker Greg Miller.<br/>
+            4. Click <strong>[Send Introduction]</strong> and proceed to <strong>[Settlement Setup &rarr;]</strong>.
+          </div>
+        </div>
+        <div class="dim-col">
+          <div class="dim-title">What is Shown in Demo</div>
+          <div class="dim-desc">
+            Candidate advisor comparison cards with capacity gauges, geographic proximity badges, and verified entity network ties.<br/><br/>
+            Interactive email composer with pre-populated contextual deal facts, one-click template reset, and dispatched audit timestamp logging in Commercial CRM.
+          </div>
+        </div>
+        <div class="dim-col">
+          <div class="dim-title">Production Implementation</div>
+          <div class="dim-desc">
+            Salesforce Financial Services Cloud advisor capacity index; Apigee X API Gateway mTLS; Commercial CRM audit log event dispatch.
+          </div>
+        </div>
       </div>
-    </div>
+    </article>
+
+    <!-- Step 5 -->
+    <article id="step-5" class="step-card">
+      <div class="step-header">
+        <h4>Step 5: Consultative Commercial Call &amp; Borrower-Directed Routing</h4>
+        <span class="step-badge">06:30 – 08:30</span>
+      </div>
+      <div class="step-summary">
+        Execute the warm banker call, inspect the live DocuSign routing packet delivered directly to the borrower, and showcase modern SEI Data Cloud wealth integration.
+      </div>
+      <div class="dim-row">
+        <div class="dim-col">
+          <div class="dim-title">Presenter Action</div>
+          <div class="dim-desc">
+            1. Review RM Greg Miller's relationship briefing:
+            <div class="script-quote">
+              "Notice Greg is not pitching wealth products. He is pitching closing safety: guaranteeing Marcus that his entity's $2.9M net proceeds land in a Business Premier account backed by Insured Cash Sweep (ICS) for multi-million FDIC insurance at 4.85% APY."
+            </div>
+            2. Inspect the live <strong>Borrower Settlement Routing Packet</strong>:
+            <div class="script-quote">
+              "Here is the fatal flaw we fixed: lenders have zero legal standing to direct seller proceeds to title companies under ALTA Pillar 2 wire fraud rules. Horizon generates a verified routing packet delivered directly to Marcus Vance via DocuSign (Envelope ENV-HBAN-20260904-8821), accompanied by Huntington's official bank verification letter for mandatory call-back authentication on (614) 480-4401."
+            </div>
+            3. Click <strong>[Record Client Opt-In]</strong> to record verbal consent with a 64-character SHA-256 audit hash.<br/>
+            4. Click <strong>[Proceed to Private Wealth Intake (Sarah Jenkins)]</strong> to showcase SEI Data Cloud integration.
+          </div>
+        </div>
+        <div class="dim-col">
+          <div class="dim-title">What is Shown in Demo</div>
+          <div class="dim-desc">
+            Live DocuSign routing packet with official Huntington National Bank Account Verification Letter and direct callback authentication line.<br/><br/>
+            Wealth Hub view displaying staged institutional facts with SEI Data Cloud connectivity and zero AI-generated model portfolios.
+          </div>
+        </div>
+        <div class="dim-col">
+          <div class="dim-title">Production Implementation</div>
+          <div class="dim-desc">
+            DocuSign REST APIs; Apigee X API Gateway mTLS; SEI Data Cloud via Snowflake Secure Data Sharing; Cloud Spanner household graph.
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Step 6 -->
+    <article id="step-6" class="step-card">
+      <div class="step-header">
+        <h4>Step 6: Institutional Guardrails (CRO Defense)</h4>
+        <span class="step-badge">08:30 – 09:15</span>
+      </div>
+      <div class="step-summary">
+        Disarm regulatory, privacy, title fraud, and model risk concerns with green verification badges and statutory safe harbors.
+      </div>
+      <div class="dim-row">
+        <div class="dim-col">
+          <div class="dim-title">Presenter Action</div>
+          <div class="dim-desc">
+            1. Navigate to <strong>Executive Analytics</strong> and select the <strong>Corporate Governance (CRO Defense)</strong> tab.<br/>
+            2. Review the six green institutional verification badges:
+            <ul>
+              <li><strong>ALTA Pillar 2 &amp; UCC 4A:</strong> Wire instructions delivered to borrower for seller authorization; official bank verification letter for callback.</li>
+              <li><strong>GLBA Pre-Ingestion DLP:</strong> Consumer bureaus and personal NPI purged at source; non-guarantor individuals excluded for FCRA permissible-purpose hygiene; Ameriprise platform NPI governed by service-provider contract under 12 C.F.R. &sect; 1016.13.</li>
+              <li><strong>Channel-Matched Reg R Networking:</strong> Commercial RM receives 100% hard-dollar commercial deposit FTP credit; nominal, non-contingent referral fee only; zero securities fee-splitting. For <strong>sub-$3M routed to the HFA/Ameriprise retail channel</strong>, Reg R Rule 700 applies and Reg BI supervision sits with Ameriprise as supervising broker-dealer. For <strong>$3M+ routed to Private Bank on SEI</strong>, this is bank fiduciary activity under OCC Reg 9 and Reg R Rule 721 &mdash; Reg BI does not apply.</li>
+              <li><strong>1031 Qualified Escrow Safe Harbor:</strong> Institutional escrow partnered with independent QI (IPX1031); DST securities cross-selling strictly firewalled.</li>
+              <li><strong>OCC SR 11-7 Model Tier 3:</strong> Classified as internal relationship triage heuristic, exempt from credit AVM validation; valuation muzzled.</li>
+              <li><strong>SEI Data Cloud Integration:</strong> Modern cloud-native Snowflake data exchange, eliminating legacy on-premise Trust 3000 batch files.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="dim-col">
+          <div class="dim-title">What is Shown in Demo</div>
+          <div class="dim-desc">
+            Comprehensive Corporate Governance &amp; CRO Defense matrix with tamper-evident audit hashes, zero-data-logging boundary certifications, and statutory citations.
+          </div>
+        </div>
+        <div class="dim-col">
+          <div class="dim-title">Production Implementation</div>
+          <div class="dim-desc">
+            Cloud KMS customer-managed encryption keys (CMEK); VPC Service Controls (VPC-SC perimeter); Cloud Audit Logs immutable trail.
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Step 7 -->
+    <article id="step-7" class="step-card">
+      <div class="step-header">
+        <h4>Step 7: Financial ROI &amp; CFO Hand-off</h4>
+        <span class="step-badge">09:15 – 10:00</span>
+      </div>
+      <div class="step-summary">
+        Prove the financial justification with defensible sensitivity modeling and realistic capacity economics.
+      </div>
+      <div class="dim-row">
+        <div class="dim-col">
+          <div class="dim-title">Presenter Action</div>
+          <div class="dim-desc">
+            1. Show Layer A Capacity Economics:
+            <div class="script-quote">
+              "We do not claim an advisor can manage 150 accounts—fiduciary maintenance makes that impossible. We achieve 2x operational leverage for Client Service Associates (1 CSA supporting 4 advisors), cap senior PWAs at 95–100 accounts (+20–25%), and route sub-$3M transactional liquidity to our Centralized Wealth Advisory Hub."
+            </div>
+            2. Lead with the capacity case:
+            <div class="script-quote">
+              "Your last 10-Q reports $393 million in Commercial Banking direct personnel costs against 2,689 average FTE. That's $292,000 fully loaded per banker. Your Call Report says roughly $7.5 billion of the commercial real estate book turns over in a year — about 2,500 payoff events. If Horizon saves four hours on each one, that's 5.5 FTE, or $1.6 million. At six hours it's $2.4 million. Both clear the $1.25 million run-rate. I did not need a single internal number to build that."
+            </div>
+            3. Move to retained liquidity, framed explicitly as upside:
+            <div class="script-quote">
+              "The deposit story is bigger, but it rests on assumptions I can't source to you. After the full funnel — turnover, sales versus refinances, seller equity, flight — about $900 million is genuinely in play. Break-even needs 34% recapture. I'd rather show you the model than defend a number."
+            </div>
+            4. Open the Admin Panel (gear icon) and move a dial live so the room watches break-even shift. Invite them to set the inputs they believe.<br/>
+            5. If the CFO has not already raised it, name the duration correction: Tier 1 is 1031 escrow, capped at 180 days, so the blended yield is 41 bps and not 78.<br/>
+            6. Show the componentized $1.25M enterprise cloud run-rate defense.<br/>
+            7. Hand the floor to CFO Zach Wasserman for discussion.<br/><br/>
+            <strong>Do not ask the room for their deposit flight rate.</strong> That question makes a CRO admit failure in front of the board. Present 78% as an outside benchmark and let them correct a third party's number.
+          </div>
+        </div>
+        <div class="dim-col">
+          <div class="dim-title">What is Shown in Demo</div>
+          <div class="dim-desc">
+            Capacity case card (publicly sourced from 10-Q Table 25); at-risk equity funnel with per-step provenance badges; recapture sensitivity slider anchored on the 34% break-even; live assumption dials in the Admin Panel.<br/><br/>
+            Componentized $1.25M annual run-rate breakdown across Cloud Spanner, Apigee X, SEI Data Cloud, annual OCC model audit, and engineering pod.
+          </div>
+        </div>
+        <div class="dim-col">
+          <div class="dim-title">Production Implementation</div>
+          <div class="dim-desc">
+            Client-side tabular calculation engine; BigQuery ROI baseline model.
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Executive Q&A Defense -->
+    <section class="qa-card">
+      <div class="qa-title">
+        <span>Anticipated Executive Committee Q&amp;A (Presenter Defense)</span>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">
+          <span class="q-badge">Q1</span>
+          <span>How does the Ameriprise partnership impact client data sharing?</span>
+        </div>
+        <div class="qa-a">
+          Less than people assume, because of how the arrangement is actually structured. <strong>Huntington employs the advisors and the client stays a Huntington customer.</strong> Ameriprise provides the technology platform, clearing and back office, and acts as the supervising broker-dealer. So when Greg hands Marcus to Sarah Jenkins, that is an <strong>intra-institutional handoff between two Huntington employees</strong> &mdash; not a disclosure to a non-affiliated third party, and Reg P opt-out does not attach to it. Ameriprise does receive client NPI through the platform, governed as a <strong>service-provider relationship under 12 C.F.R. &sect; 1016.13</strong> &mdash; contractual confidentiality and use limitations rather than customer opt-out. The two controls that genuinely bind us are <strong>Regulation R</strong>, capping Greg's referral compensation at a nominal, non-contingent, fixed-dollar amount with zero securities fee-splitting; and <strong>Reg BI supervision</strong>, which sits with Ameriprise as the supervising broker-dealer &mdash; precisely why Horizon generates administrative scaffolding only and never a recommendation.</div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">
+          <span class="q-badge">Q2</span>
+          <span>How does Horizon 2.0 connect to Huntington Private Bank's wealth platform?</span>
+        </div>
+        <div class="qa-a">
+          We integrate natively with the <strong>SEI Wealth Platform (SWP)</strong> via the <strong>SEI Data Cloud</strong> (announced March 31, 2026). This utilizes Snowflake Secure Data Sharing (Zero-ETL) to securely exchange portfolio telemetry and verify account status in real time, completely bypassing legacy on-premises trust accounting batch files like Trust 3000.
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">
+          <span class="q-badge">Q3</span>
+          <span>Why does Huntington's top-2 SBA 7(a) lender status matter for this platform?</span>
+        </div>
+        <div class="qa-a">
+          Huntington's commercial payoff book is not just suburban office buildings. Across 1,400 branches in 21 states, Huntington leads the nation in SBA 7(a) lending. SBA loan payoffs represent business sales, acquisitions, and entrepreneur retirements—inflection points where middle-market business owners experience multi-million-dollar liquidity windfalls. Horizon 2.0 monitors SBA 7(a) maturity queues and SOP 50 10 7 prepayment notices to capture entrepreneur wealth.
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">
+          <span class="q-badge">Q4</span>
+          <span>Why don't we deliver wire instructions directly to the title company?</span>
+        </div>
+        <div class="qa-a">
+          Because lenders have zero legal standing to direct seller proceeds. Under ALTA Pillar 2 and UCC Article 4A, title companies disburse seller equity strictly pursuant to the Seller's Closing Disbursement Instructions executed by the seller. Delivering lender instructions directly to title creates wire fraud liability and is rejected out of hand. Horizon 2.0 generates a verified routing packet delivered to Marcus Vance via DocuSign, who submits it as his official seller instruction backed by our official bank verification letter.
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">
+          <span class="q-badge">Q5</span>
+          <span>What prevents Huntington from being disqualified on a 1031 exchange?</span>
+        </div>
+        <div class="qa-a">
+          Horizon 2.0 strictly firewalls 1031 escrow from wealth management and Delaware Statutory Trust (DST) placement desks. Huntington National Bank acts solely as the institutional escrow depository under an independent, unaffiliated national Qualified Intermediary (IPX1031). By prohibiting in-house DST securities sales during the 180-day window, we remain firmly within the Treas. Reg. § 1.1031(k)-1(k)(2)(ii) routine banking safe harbor.
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-q">
+          <span class="q-badge">Q6</span>
+          <span>Why does it cost $1.25M annually to run this platform?</span>
+        </div>
+        <div class="qa-a">
+          Raw AI compute is minimal ($25k/yr). The $1.25M fully-loaded budget funds enterprise Cloud Spanner, Apigee X API gateway integration, SEI Data Cloud connectivity, annual SOC2 and OCC SR 11-7 model validations, and a dedicated 2-person platform engineering and MLOps pod.
+        </div>
+      </div>
+    </section>
   </div>
 
   <script>
+    function updateThemeUI(isDark) {
+      const icon = document.getElementById('theme-icon');
+      const text = document.getElementById('theme-text');
+      if (isDark) {
+        document.body.classList.add('dark');
+        icon.innerHTML = '&#9679;';
+        text.innerText = 'Switch to Light Mode';
+      } else {
+        document.body.classList.remove('dark');
+        icon.innerHTML = '&#9681;';
+        text.innerText = 'Switch to Dark Mode';
+      }
+    }
+
     function toggleTheme() {
-      document.body.classList.toggle('dark');
-      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+      const isDark = !document.body.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      updateThemeUI(isDark);
     }
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark');
-    }
+
+    const savedTheme = localStorage.getItem('theme');
+    const initialDark = savedTheme ? savedTheme === 'dark' : false;
+    updateThemeUI(initialDark);
   </script>
 </body>
 </html>

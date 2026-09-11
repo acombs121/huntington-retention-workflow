@@ -90,7 +90,7 @@ def get_default_quarantine(payoff_id: str) -> Dict[str, Any]:
         "recorded_by": None,
         "consent_timestamp": None,
         "audit_hash": f"SHA256-GLBA-HBAN-{payoff_id}-PENDING",
-        "compliance_notes": f"Awaiting Commercial RM verbal opt-in for {payoff_id} per 15 U.S.C. § 6801 (GLBA), 12 C.F.R. § 1016.11, and SEC Regulation R Networking Arrangement (Ameriprise platform)."
+        "compliance_notes": f"Awaiting Commercial RM verbal opt-in for {payoff_id}. Advisor handoff is intra-institutional (Huntington-employed advisor, Huntington client); consent is captured as cross-line-of-business marketing consent and the SEC Regulation R referral record. Ameriprise platform NPI access governed as a service provider under 12 C.F.R. § 1016.13; GLBA safeguards per 15 U.S.C. § 6801."
     }
 
 quarantine_states: Dict[str, Dict[str, Any]] = {
@@ -137,7 +137,7 @@ DETECTION_TRACES: Dict[str, Dict[str, Any]] = {
                 "category": "Valuation & Liquidity Delta",
                 "signal_name": "Unencumbered Net Equity Proceeds",
                 "source": "Internal Liquidity Triage (NOI $637.5k @ 7.50% Cap Rate vs $5.18M UPB)",
-                "observation": "Triangulated property valuation of $8,500,000 leaves $2,902,700.00 in net liquid equity after debt payoff ($5.21M) and closing costs ($382.5k).",
+                "observation": "Triangulated property valuation of $8,500,000 leaves $2,902,700.00 in net liquid equity after the title payoff quote ($5,214,800.00 = $5,180,000.00 unpaid principal + $34,800.00 accrued interest and exit fees) and estimated closing costs ($382,500.00 at 4.5%).",
                 "risk_impact": "+14% Flight Urgency (High Liquidity Prize)",
                 "verdict": "$2.90M AT-RISK CAPITAL"
             }
@@ -167,7 +167,7 @@ DETECTION_TRACES: Dict[str, Dict[str, Any]] = {
             "[00:00.048] Multimodal spatial parse: Extracted borrower entity 'Vance Riverfront Properties IV, LLC', facility #CC-8821, payoff quote $5,214,800.00, scheduled closing 2026-09-16.",
             "[00:00.082] Executed nCino & AFS core cross-reference: Facility #CC-8821 active. Query for replacement loan applications across Huntington's 1,400 branches returned 0 records.",
             "[00:00.125] Scanned title exhibits for tax-deferred exchange language or Qualified Intermediary (QI) assignments: Zero QI exhibits detected.",
-            "[00:00.169] Calculated net proceeds triage: Grounded valuation ($8.50M) - debt payoff ($5.21M) - closing costs ($382k) = $2.90M net cash equity.",
+            "[00:00.169] Calculated net proceeds triage: Grounded valuation ($8,500,000) - title payoff quote ($5,214,800) - closing costs ($382,500) = $2,902,700 net cash equity.",
             "[00:00.210] Synthesized flight risk signals: Unencumbered seller cash + zero replacement credit + closing in 12 days. Historical treasury flight baseline: 78%.",
             "[00:00.245] Output composite confidence score: 94% (High Flight Risk). Auto-staged Tier 1 Business Premier ICS and borrower DocuSign routing packet."
         ]
@@ -738,7 +738,7 @@ SIGNAL_GRAPHS: Dict[str, Dict[str, Any]] = {
                 "tier": "signal",
                 "status": "flagged",
                 "badge": "ESCROW TARGET",
-                "subtitle": "Huntington QI Depository (4.75%)",
+                "subtitle": "Huntington Qualified Escrow Depository / QI: IPX1031 (4.75%)",
                 "properties": {
                     "Asset Valuation": "$3,150,000.00",
                     "Debt Extinguished": "$1,420,000.00",
@@ -1096,6 +1096,9 @@ class GenerateResponse(BaseModel):
     response: str
     model: str
     grounded_citations: List[str] = []
+    # True only when the text was produced by a real model call. False means the
+    # canned offline fallback served this response, so nothing here is model-grounded.
+    live: bool = True
 
 class ValuationRequest(BaseModel):
     payoff_id: Optional[str] = Field(default="PO-2026-8821")
@@ -1176,7 +1179,10 @@ async def get_payoff_queue(
             "manual_discovery_absorbed_hrs": 46.2,
             "wealth_admin_absorbed_hrs": 18.5,
             "active_machine_inferences": 3,
-            "book_scale_volume": "$4.50 Billion",
+            # Verified: 10-Q Table 8 CRE ($23.457B) less the Call Report RC-C Part II
+            # small-business tranche ($3.490B), plus RC-C Part I owner-occupied ($13.331B).
+            # The prior "$4.50 Billion" was unsourced and conflated the book with payoffs.
+            "book_scale_volume": "$33.30 Billion",
             "historical_flight_risk_rate": "78%",
             "branch_network_count": "1,400 Branches (21 States)",
             "sba_ranking": "Top-2 National SBA 7(a) Lender",
@@ -1534,7 +1540,7 @@ async def get_wealth_onboarding_dossier(
                 "pending_advisor_actions": [
                     "Commercial RM must document affirmative verbal opt-in consent from primary guarantor",
                     "Execute GLBA Regulation P customer privacy disclosure",
-                    "Complete Reg BI Suitability Evaluation & FINRA Rule 2111 Risk Profile Questionnaire"
+                    "Complete OCC Reg 9 fiduciary suitability review & investment objectives questionnaire (Reg BI / FINRA 2111 apply instead if routed to the HFA retail channel)"
                 ]
             },
             "sei_custodial_shell": {
@@ -1549,7 +1555,7 @@ async def get_wealth_onboarding_dossier(
                 "horizon": "Unstated",
                 "liquidity_reserve_sleeve": "$0.00 (Locked)",
                 "asset_allocation_scaffold": [],
-                "fiduciary_disclaimer": "Scaffolding withheld. Under SEC Reg BI and GLBA, asset allocation scaffolding is unlocked only after affirmative client opt-in and licensed advisor risk discovery."
+                "fiduciary_disclaimer": "Scaffolding withheld. Under OCC Reg 9 fiduciary standards and GLBA, asset allocation scaffolding is unlocked only after affirmative client opt-in and licensed advisor risk discovery."
             },
             "ongoing_servicing_dossier": {
                 "annual_reviews_automated": False,
@@ -1581,8 +1587,8 @@ async def get_wealth_onboarding_dossier(
                 {"field": "Source of Wealth", "value": f"Commercial Real Estate Disposition ({payoff.property_name})", "status": "Pending Closing Settlement"}
             ],
             "pending_advisor_actions": [
-                "Reg BI Suitability Evaluation",
-                "FINRA Rule 2111 Risk Profile Questionnaire",
+                "OCC Reg 9 (12 C.F.R. § 9) Fiduciary Suitability Review",
+                "Investment Objectives & Risk Tolerance Questionnaire (Private Bank fiduciary standard; Reg BI / FINRA 2111 apply instead if routed to the HFA retail channel)",
                 "Final Wet/Digital Client Signature on Custodial Disclosures"
             ]
         },
@@ -1598,7 +1604,7 @@ async def get_wealth_onboarding_dossier(
             "horizon": "Medium-to-Long Term (Post-Disposition)",
             "liquidity_reserve_sleeve": "$500,000 in Ultra-Short Treasury / Huntington ICS",
             "asset_allocation_scaffold": [],
-            "fiduciary_disclaimer": "Asset allocations and investment policies are withheld. Under SEC Reg R and FINRA Rule 2111 / SEC Reg BI, investment strategies are not generated by the commercial bank and must be authored by the licensed Series 7/66/CFP advisor following formal investor discovery."
+            "fiduciary_disclaimer": "Asset allocations and investment policies are withheld. Under OCC Reg 9 (12 C.F.R. § 9) fiduciary standards — or SEC Reg BI / FINRA Rule 2111 if the relationship routes to the HFA retail brokerage channel — investment strategies are not generated by the commercial bank and must be authored by the licensed advisor following formal investor discovery."
         },
         "ongoing_servicing_dossier": {
             "annual_reviews_automated": True,
@@ -1619,9 +1625,18 @@ async def generate_agent_response(
     user: Dict[str, Any] = Depends(get_authenticated_user)
 ) -> GenerateResponse:
     """
-    Live Gemini Enterprise Agent Platform text generation endpoint using gemini-3.7-flash.
-    Provides native Vertex AI calls with intelligent fallback for offline / mock testing.
+    Gemini Enterprise Agent Platform text generation endpoint using gemini-3.7-flash.
+
+    When a live model call succeeds the response is returned with live=True and the
+    citations the model was grounded against. If the client is unconfigured or the call
+    fails, a canned offline briefing is served instead — flagged live=False with a model
+    label of "[OFFLINE FALLBACK]" so the caller (and the presenter) can never mistake
+    pre-written text for live model output. The fallback exists so a demo does not crash
+    on stage; it must never masquerade as a real inference.
     """
+    OFFLINE_MODEL_LABEL = f"{gemini_model} [OFFLINE FALLBACK]"
+    OFFLINE_CITATIONS = ["Offline fallback response — pre-written, not grounded by a live model call"]
+
     if genai_client:
         try:
             response = await genai_client.aio.models.generate_content(
@@ -1631,12 +1646,15 @@ async def generate_agent_response(
             return GenerateResponse(
                 response=response.text or "No response returned from model.",
                 model=gemini_model,
-                grounded_citations=["Credit Vault Doc #CC-8821", "Franklin Co. Q1 7.5% Cap Rate Benchmark"]
+                grounded_citations=["Credit Vault Doc #CC-8821", "Franklin Co. Q1 7.5% Cap Rate Benchmark"],
+                live=True,
             )
         except Exception as e:
-            logger.warning(f"Live Gemini API call failed: {e}. Utilizing realistic fallback response.")
+            logger.warning(f"Live Gemini API call failed: {e}. Serving flagged offline fallback response.")
+    else:
+        logger.warning("Gemini client unconfigured. Serving flagged offline fallback response.")
 
-    # High-fidelity realistic banking response fallback
+    # Pre-written offline briefing. Explicitly flagged as non-live above.
     prompt_lower = req.prompt.lower()
     if "call" in prompt_lower or "script" in prompt_lower or "greg" in prompt_lower:
         script = (
@@ -1651,20 +1669,22 @@ async def generate_agent_response(
         )
         return GenerateResponse(
             response=script,
-            model=gemini_model,
-            grounded_citations=["Credit Vault Doc #CC-8821", "First American Title File #FA-2026-8819-COL"]
+            model=OFFLINE_MODEL_LABEL,
+            grounded_citations=OFFLINE_CITATIONS,
+            live=False,
         )
 
     generic_response = (
-        f"Huntington Horizon Agentic Analysis [Model: {gemini_model}]:\n"
-        f"Grounded in Credit Vault Document #CC-8821 and Franklin County Q1 2026 CRE Appraisal Benchmarks.\n"
-        f"Identified entity Vance Riverfront Properties IV, LLC with 85% majority ownership by Marcus Vance. "
-        f"Net proceeds estimated at $2,902,700 capitalizing Q1 NOI ($637,500) at 7.50% submarket cap rate."
+        "Huntington Horizon Agentic Analysis [OFFLINE FALLBACK — not a live model call]:\n"
+        "References Credit Vault Document #CC-8821 and Franklin County Q1 2026 CRE Appraisal Benchmarks.\n"
+        "Identified entity Vance Riverfront Properties IV, LLC with 85% majority ownership by Marcus Vance. "
+        "Net proceeds estimated at $2,902,700 capitalizing Q1 NOI ($637,500) at 7.50% submarket cap rate."
     )
     return GenerateResponse(
         response=generic_response,
-        model=gemini_model,
-        grounded_citations=["Credit Vault Doc #CC-8821", "Franklin County Q1 2026 Commercial Appraisal Benchmark"]
+        model=OFFLINE_MODEL_LABEL,
+        grounded_citations=OFFLINE_CITATIONS,
+        live=False,
     )
 
 
@@ -1701,7 +1721,7 @@ async def serve_spa(full_path: str):
 
     # Strict Path Traversal Guard: ensure resolved path is strictly within DIST_DIR
     if (DIST_DIR in target_path.parents or target_path == DIST_DIR) and target_path.is_file():
-        if target_path.name == "index.html":
+        if target_path.name.endswith(".html") or target_path.name == "index.html":
             return FileResponse(
                 target_path,
                 headers={
@@ -1724,7 +1744,14 @@ async def serve_spa(full_path: str):
             candidate_file = (candidate_dir / full_path).resolve()
             if (candidate_dir in candidate_file.parents or candidate_file == candidate_dir) and candidate_file.is_file():
                 if full_path in ["brand_kit.html", "demo_script.html", "huntington-horizon.pdf", "overview.html", "static_overview.html"]:
-                    return FileResponse(candidate_file)
+                    headers = {}
+                    if candidate_file.name.endswith(".html"):
+                        headers = {
+                            "Cache-Control": "no-cache, no-store, must-revalidate",
+                            "Pragma": "no-cache",
+                            "Expires": "0",
+                        }
+                    return FileResponse(candidate_file, headers=headers)
 
     # SPA Fallback to index.html with no-cache headers
     index_file = DIST_DIR / "index.html"

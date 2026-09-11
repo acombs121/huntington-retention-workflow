@@ -17,8 +17,8 @@ Every claim, numerical metric, legal statute, and financial equation appearing o
 | :--- | :---: | :---: | :--- |
 | **I. Tax, Legal & Regulatory Rules** | 6 | **100% Verified** | 26 CFR § 1.1031, FINRA Rule 2040, SEC Reg R, 15 U.S.C. § 6801 (GLBA), 12 U.S.C. § 1831f (EGRRCPA) |
 | **II. Commercial & Wealth Industry Benchmarks** | 5 | **100% Benchmark-Aligned** | Marcus & Millichap (>60% 1031s), Curinos, Coalition Greenwich, Michael Kitces, Cerulli, Schwab, CBRE |
-| **III. Huntington Institutional Reality (SEC Filings)** | 4 | **Verified (1 Brand Caveat)** | SEC Form 10-K/10-Q (HBAN $188.8B loans, $11B–$18B CRE); AFS core loan servicing; SEI Wealth Platform |
-| **IV. Scenario & Financial Model Precision** | 6 | **100% Mathematically Exact** | Marcus Vance NOI capitalization ($8.5M @ 7.5%), slider flow-through (90%), blended 78.0 bps, ROI payback |
+| **III. Huntington Institutional Reality (SEC Filings)** | 4 | **Partially Retracted** | Q2 2026 10-Q verified: **$189.4B** total loans, **$23.5B** CRE, **$120.5B** total commercial (prior entry said "$188.8B loans, $11B–$18B CRE" — CRE was materially understated). SEI Wealth Platform ✅ verified. **AFS core loan servicing ⚠️ RETRACTED — false positive on "Available-For-Sale"; see §3.** |
+| **IV. Scenario & Financial Model Precision** | 6 | ⚠️ **Arithmetic exact; two operands corrected** | Marcus Vance NOI capitalization ($8.5M @ 7.5%) and slider flow-through (90%) verified. **ROI model corrected:** the retainable pool now excludes extinguished debt ($0.90B, not $3.51B) and the blended yield is duration-adjusted to **40.9 bps** (not 78.0 bps). See §2 below. |
 
 ---
 
@@ -51,8 +51,9 @@ Every claim, numerical metric, legal statute, and financial equation appearing o
 ### 5. GLBA & OCC Quarantined Consent Gate
 * **Claim in `index.html`:** *"GLBA Quarantined Consent Gate: Staged wealth profiles are not injected into SEI Wealth Platform or retail CRM until the commercial RM records the borrower's affirmative verbal consent during the T-12 call."*
 * **Statutory Citation:** [Gramm-Leach-Bliley Act (15 U.S.C. § 6801 et seq.)](https://www.law.cornell.edu/uscode/text/15/6801); [CFPB Regulation P (12 C.F.R. § 1016.11)](https://www.law.cornell.edu/cfr/text/12/1016.11); [FCRA Regulation V (12 C.F.R. Part 1022)](https://www.law.cornell.edu/cfr/text/12/part-1022/subpart-C); [OCC Bulletin 2011-12 / SR 11-7](https://www.occ.treas.gov/news-issuances/bulletins/2011/bulletin-2011-12.html).
-* **Legal Substance:** Commercial credit files include individual guarantor Nonpublic Personal Information (NPI) such as Personal Financial Statements (PFS) and tax returns (12 CFR § 1016.3(p)). Repurposing data collected under a loan-monitoring exception for automated wealth marketing without consent violates loan confidentiality covenants and Regulation P reuse limits. The Quarantined Consent Gate enforces a technical information barrier until consent is documented.
-* **Verdict:** **VERIFIED**
+* **Legal Substance:** Commercial credit files include individual guarantor Nonpublic Personal Information (NPI) such as Personal Financial Statements (PFS) and tax returns (12 CFR § 1016.3(p)). Repurposing data collected for credit underwriting and loan monitoring into automated wealth marketing without consent strains loan confidentiality covenants and purpose-limitation expectations. The Consent Gate enforces a technical information barrier until consent is documented.
+* **Topology correction (2026-09-11):** an earlier version of this project justified the gate on the theory that the retail wealth channel is a *non-affiliated third party* under Reg P. **That is incorrect.** Huntington employs the advisors and retains the client relationship; Ameriprise supplies the platform, clearing/back office, and acts as the supervising broker-dealer. The advisor handoff is therefore **intra-institutional** and Reg P opt-out does not attach to it, while Ameriprise's platform access to NPI is a **service-provider relationship under 12 C.F.R. § 1016.13**. The gate is retained deliberately — as cross-line-of-business marketing consent and as the durable Regulation R referral record — but it is a self-imposed control, not a Reg P prerequisite. Presenters should describe it that way.
+* **Verdict:** **VERIFIED** (control sound; legal rationale restated per the topology correction above)
 
 ### 6. IntraFi Network Deposits & Insured Cash Sweep (ICS)
 * **Claim in `index.html`:** *"Huntington Business Premier ICS (4.85% APY, multi-million FDIC insurance via IntraFi reciprocal network)... $2.9M settles directly into Marcus's commercial Business Premier Insured Cash Sweep (ICS)."*
@@ -132,10 +133,19 @@ Every claim, numerical metric, legal statute, and financial equation appearing o
 * **Verdict:** **REMEDIATED & FULLY VERIFIED**
 
 ### 3. Banking Technology: AFS, ACBS, and SEI Wealth Platform
-* **AFS (Automated Financial Systems):** Cited in **92 Huntington SEC filings**. AFS is Huntington's primary commercial loan accounting engine.
-* **ACBS (FIS):** Global and regional banking standard for syndicated commercial credit.
-* **SEI Wealth Platform (SWP, NASDAQ: SEIC):** Industry-leading trust accounting and private wealth custodial engine used by major regional banking trust departments.
-* **Verdict:** **CONFIRMED & PRODUCTION-AUTHENTIC**
+
+> [!CAUTION]
+> **Retraction (2026-09-11): the AFS finding was a false positive.** This section previously read *"AFS (Automated Financial Systems): Cited in **92 Huntington SEC filings**. AFS is Huntington's primary commercial loan accounting engine."* That evidence does not hold.
+>
+> In bank SEC filings **"AFS" overwhelmingly abbreviates "Available-For-Sale" securities**, not the vendor Automated Financial Systems. Direct check of the **Q2 2026 Form 10-Q**: `AFS` appears **7 times, all 7 meaning available-for-sale** (e.g. *"Total investment securities, comprised of AFS and HTM securities, were $49.6 billion"*). Occurrences of **`ACBS`: 0. `nCino`: 0. `Automated Financial Systems`: 0.**
+>
+> The original full-text search almost certainly counted the accounting abbreviation and misread it as vendor confirmation.
+
+* **AFS (Automated Financial Systems):** ⚠️ **UNVERIFIED.** A real and widely deployed commercial lending platform, but Huntington's use of it is **not evidenced**. Note that banks generally do not name core servicing vendors in SEC filings, so absence is not disproof — the point is that the claim currently rests on **no valid evidence at all**.
+* **ACBS:** ⚠️ **UNVERIFIED**, both as a Huntington system and as to the vendor attribution previously given ("FIS").
+* **nCino:** ⚠️ **UNVERIFIED** as a Huntington system.
+* **SEI Wealth Platform (SWP, NASDAQ: SEIC):** ✅ **VERIFIED** via the March 31, 2026 SEI press release naming The Huntington National Bank directly. See `CITATIONS.md` §1.
+* **Verdict:** **PARTIALLY RETRACTED** — SEI confirmed; AFS / ACBS / nCino are unsourced demo set-dressing and are named on-screen in the UI. Confirm against Huntington's actual core stack before demoing to an audience that would know.
 
 ---
 
@@ -157,13 +167,35 @@ Every claim, numerical metric, legal statute, and financial equation appearing o
   $$\$2,000,000 \text{ (SEI Discretionary Trust)} + \$902,700 \text{ (Operating Reserves)} = \mathbf{\$2,902,700.00} \quad \text{(100.0\% accounted)}$$
 
 ### 2. ROI & Business Case Payback Math
-* **At-Risk Pool:** $\$4.5\text{B} \times 78\% = \mathbf{\$3.51\text{ Billion}}$
-* **Blended Margin Calculation:**
-  $$\text{Blended Margin} = (65\% \times 85\text{ bps}) + (35\% \times 65\text{ bps}) = 55.25\text{ bps} + 22.75\text{ bps} = \mathbf{78.0\text{ bps}} \quad \text{(Exact)}$$
-* **Payback Periods on $1.25M Annual Cloud Cost:**
-  * **5% Floor:** $\$225\text{M retained} \times 0.0078 = \$1,755,000 \text{ gross value} \implies +\$505,000 \text{ net ROI} \implies \left(\frac{\$1,250,000}{\$1,755,000}\right) \times 12 = \mathbf{8.547\text{ mo (8.5 Months)}}$
-  * **10% Target:** $\$450\text{M retained} \times 0.0078 = \$3,510,000 \text{ gross value} \implies +\$2,260,000 \text{ net ROI} \implies \left(\frac{\$1,250,000}{\$3,510,000}\right) \times 12 = \mathbf{4.274\text{ mo (4.3 Months)}}$
-  * **15% Goal:** $\$675\text{M retained} \times 0.0078 = \$5,265,000 \text{ gross value} \implies +\$4,015,000 \text{ net ROI} \implies \left(\frac{\$1,250,000}{\$5,265,000}\right) \times 12 = \mathbf{2.849\text{ mo (2.8 Months)}}$
+
+> [!CAUTION]
+> **Superseded.** The prior derivation in this section was internally exact but rested on
+> two structural errors: it applied the capture rate to the **$4.5B payoff pool** (which is
+> extinguished debt returning to Huntington, not money that can flee), and it applied an
+> **annual** margin to Tier 1 balances that are 1031 escrow float capped at 180 days by
+> statute. Together these overstated returns by roughly an order of magnitude. Corrected
+> below. Canonical implementation: `frontend/src/lib/assumptions.ts`.
+
+* **Retainable pool (corrected funnel):**
+  $$(\$19.97\text{B} + \$13.33\text{B}) \times 22.5\% \times 27\% \times 57\% \times 78\% = \mathbf{\$0.90\text{ Billion}}$$
+  Target book verified from 10-Q Table 8 and Call Report RC-C; turnover derived from Call Report Part I Memo 4; the remaining three rates are labelled industry estimates.
+* **Blended Margin Calculation (with duration):**
+  $$\text{Effective} = \left(65\% \times 85\text{ bps} \times \tfrac{120}{365}\right) + (35\% \times 65\text{ bps}) = 18.17 + 22.75 = \mathbf{40.9\text{ bps}}$$
+  The undiscounted $\mathbf{78.0}$ bps figure is retained only as the superseded value.
+* **Break-even against the $1.25M annual run-rate:**
+  $$\frac{\$1{,}250{,}000}{\$0.90\text{B} \times 0.00409} = \mathbf{34.0\%} \text{ recapture of all fleeing seller equity}$$
+  * **10% recapture:** $\$89.9\text{M} \times 0.00409 = \$368{,}000$ gross $\implies \mathbf{-\$882{,}000}$ net
+  * **30% recapture:** $\$269.8\text{M} \times 0.00409 = \$1{,}104{,}000$ gross $\implies \mathbf{-\$146{,}000}$ net
+  * **50% recapture:** $\$449.7\text{M} \times 0.00409 = \$1{,}840{,}000$ gross $\implies \mathbf{+\$590{,}000}$ net
+* **Capacity case (the primary business case, fully public-sourced):**
+  $$\frac{\$393\text{M} \times 2}{2{,}689\text{ FTE}} = \$292{,}302 \text{ per FTE/yr} \quad\text{(10-Q Table 25)}$$
+  $$\frac{\$7.49\text{B}}{\$3\text{M}} \approx 2{,}497 \text{ events} \implies \frac{2{,}497 \times 4\text{ hrs}}{1{,}800} \times \$292{,}302 = \mathbf{\$1.62\text{M/yr}}$$
+  At 6 hours per event this rises to $\mathbf{\$2.43\text{M/yr}}$. **Both clear the $1.25M run-rate.**
 * **Preserved Commercial NIM:**
   $$\$54,000,000 \times 2.5\% = \mathbf{\$1,350,000.00 \text{ (\$1.35M)}} \quad \text{(Exact)}$$
-* **Verdict:** **MATHEMATICALLY FLAWLESS & PRODUCTION SYNCHRONIZED**
+* **Verdict:** **ARITHMETICALLY CONSISTENT & PRODUCTION SYNCHRONIZED — with the model's
+  assumptions now explicitly labelled.** The earlier "mathematically flawless" grade was
+  accurate about the arithmetic and misleading about the model: correct multiplication of
+  the wrong operands is still the wrong answer. Every figure above now carries a
+  provenance tier (verified / derived / estimate), and the estimates are adjustable live
+  in the Admin Panel rather than baked into the slide.

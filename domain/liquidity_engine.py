@@ -89,7 +89,7 @@ class LiquidityEngine:
                 strategy_product="Huntington 1031 Qualified Escrow Depository (Partnered with IPX1031)",
                 yield_apy=4.75,
                 statutory_basis="Treas. Reg. § 1.1031(k)-1(g)(3) Qualified Escrow Safe Harbor; Partner QI (IPX1031); In-House DST Cross-Sell Strictly Firewalled per § 1.1031(k)-1(k)(2).",
-                routing_destination="Huntington Institutional QI Escrow Custody (Acct: QI-ESCROW-8821)",
+                routing_destination="Huntington 1031 Qualified Escrow Depository / Independent QI: IPX1031 (Acct: QI-ESCROW-8821)",
                 deposit_credit_pct=100.0,
                 finra_rule_2040_compliant=True,
                 occ_sr11_7_designation="Relationship Prioritization Triage Estimate",

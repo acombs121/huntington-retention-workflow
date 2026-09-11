@@ -15,8 +15,10 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+# Anchored to the repo root: these are Python build artifacts. Left unanchored,
+# `lib/` also matches frontend/src/lib/ and silently drops application source.
+/lib/
+/lib64/
 parts/
 sdist/
 var/
@@ -45,3 +47,6 @@ yarn-error.log*
 Thumbs.db
 scratch/
 *.tsbuildinfo
+
+# Root-level scratch dumps of source files (see scratch/ for working files)
+scratch*.txt

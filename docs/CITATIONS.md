@@ -10,8 +10,31 @@ This document establishes the primary sources, statutory authorities, SEC filing
 | :--- | :--- | :--- | :--- |
 | **Top-2 SBA 7(a) Lender Nationally** | **U.S. Small Business Administration (SBA)** | SBA FY2024 & FY2025 Official Lender Rankings (National 7(a) Loan Volume & Approval Reports) | Huntington Bancshares consistently ranks as the #1 or #2 SBA 7(a) lender in the United States (>6,500 approved loans, >$1.5B–$2.0B annual volume alongside Live Oak Banking Company). Crucial for Horizon because SBA payoffs represent entrepreneur business sales, partner buyouts, and commercial real estate exits. |
 | **1,400 Branches Across 21 States** | **Huntington Bancshares Inc. (NASDAQ: HBAN)** | SEC Form 10-K (Annual Report), Investor Fact Book, and 2024–2026 Commercial Regional Banking Expansion Filings | Reflects Huntington's expansion from its legacy 11 Midwest states into 21 states (adding regional commercial hubs in Texas, the Carolinas, and Florida), operating approximately 1,400 retail and commercial branch locations. |
-| **Ameriprise Financial Platform Partnership** | **Huntington Bancshares & Ameriprise Financial (NYSE: AMP)** | Joint Press Release (February 4, 2026) / SEC Form 8-K: *"Huntington Bancshares Partners with Ameriprise Financial to Transition Retail Wealth Practice"* | Establishes Huntington Advisors on Ameriprise's broker-dealer platform. Under **GLBA Regulation P (12 CFR Part 1016)**, the retail wealth channel is legally a non-affiliated third party. Under **SEC Regulation R (17 CFR § 247.700)** and **FINRA Rule 2040**, commercial RMs receive deposit FTP credit only, with zero securities fee-splitting. |
-| **SEI Wealth Platform (SWP) & SEI Data Cloud Migration** | **Huntington Bancshares & SEI Investments Company (NASDAQ: SEIC)** | Joint Press Release (March 31, 2026): *"Huntington Private Bank Selects SEI Wealth Platform and SEI Data Cloud to Power Modern Wealth Infrastructure"* | Migrates Huntington Private Bank's trust and discretionary investment management to SWP. Enables native **Snowflake Secure Data Sharing (Zero-ETL architecture)**, eliminating legacy mainframe batch file exports (Trust 3000) in favor of real-time event synchronization. |
+| **Ameriprise Retail Investment Program Provider** | **The Huntington National Bank & Ameriprise Financial, Inc. (NYSE: AMP)** | ✅ **Verified.** Press release, *"Huntington Bank Selects Ameriprise Financial as its New Retail Investment Program Provider"*, dateline **COLUMBUS AND MINNEAPOLIS – February 4, 2026** (newsroom post date 2/3/2026). Source: [ameriprise.com](https://www.ameriprise.com/newsroom/news-releases/huntington-bank-selects-ameriprise-financial-as-its-new-retail-investment-program-provider) | Huntington selected **Ameriprise Financial Services, LLC** as its new retail investment program provider, transitioning support of the retail **brokerage, investment advisory and insurance** services currently managed by its bank-owned broker-dealer/RIA/insurance agency **Huntington Financial Advisors (HFA)** to the **Ameriprise Financial Institutions Group (AFIG)**. Release states HFA has **~260 financial advisors** managing **~$28B** in combined advisory, brokerage and insurance assets.<br><br>**Role split:** Huntington employs the advisors and retains the client relationship; Ameriprise supplies the technology platform, clearing/back office, and acts as the **supervising broker-dealer**. The commercial→wealth handoff is therefore **intra-institutional**, so Reg P opt-out does not attach; Ameriprise's platform access to client NPI is a **service-provider relationship under 12 C.F.R. § 1016.13**. Referral constraint is **Reg R (17 CFR § 247.700)** + **FINRA Rule 2040**.<br><br>⚠️ **Scope caveat:** this release covers the **retail investment program only** — not Huntington Private Bank's trust/discretionary business (see SEI row). See §1a. |
+| **SEI Wealth Platform (SWP) & SEI Data Cloud Migration** | **The Huntington National Bank & SEI Investments Company (NASDAQ: SEIC)** | ✅ **Verified.** Press release, *"Huntington National Bank Selects SEI Wealth Platform"*, dateline **OAKS, Pa., Mar. 31, 2026**. Source: [seic.com](https://www.seic.com/about-sei/newsroom/huntington-national-bank-selects-sei-wealth-platform) | Verbatim: *"The Huntington National Bank … has selected the SEI Wealth Platform℠ (SWP)."* Release further confirms **"Huntington will implement SEI Data Cloud services"** and quotes **Melissa Holding, Director of Wealth Management at Huntington**. Supports migrating trust and discretionary investment management to SWP with **Snowflake Secure Data Sharing (Zero-ETL)** replacing legacy Trust 3000 batch exports.<br><br>⚠️ The release names *Huntington National Bank*; Horizon's narrower framing as *"Huntington Private Bank"* is an internal inference, not release language. |
+
+---
+
+## 1a. ⚠️ Open Issue — Which Wealth Channel Does Horizon Actually Feed?
+
+The two verified announcements cover **two different businesses under two different regulatory regimes**. Horizon's artifacts currently blend them.
+
+| | Retail Investment Program | Private Bank / Trust |
+| :--- | :--- | :--- |
+| **Entity** | Huntington Financial Advisors (HFA) → Ameriprise Financial Institutions Group | The Huntington National Bank, fiduciary capacity |
+| **Platform** | Ameriprise (per Feb 4, 2026 release) | SEI Wealth Platform (per Mar 31, 2026 release) |
+| **Capacity** | Broker-dealer / registered rep | Bank fiduciary / trustee |
+| **Governing regime** | **Reg BI**, FINRA Rule 2111, Reg R **Rule 700** networking exception; Ameriprise supervises | **OCC Reg 9 (12 C.F.R. § 9)** fiduciary standards; Exchange Act § 3(a)(4)(B)(ii) trust exception with Reg R **Rule 721** "chiefly compensated" test. **Reg BI does not apply.** |
+
+**The conflict:** Horizon's happy path routes a ~$2.9M–$5M net-equity commercial owner to a *"Managing Director, Senior Private Wealth Advisor"* and stages an **SEI Wealth Platform / Huntington Private Bank** custodial shell with a **draft IPS**, **fiduciary** annual meeting prep, and **trust topology sync** — i.e. an unambiguously **Private Bank fiduciary** flow. Yet the same flow is badged *"Ameriprise Reg R & FINRA 2040 compliant"* and its pending-action list requires a *"Reg BI Suitability Evaluation & FINRA Rule 2111 Risk Profile Questionnaire"* — obligations belonging to the **retail brokerage** channel that the Feb 4 release explicitly scopes to HFA/AFIG.
+
+**Why it matters for the boardroom:** a Huntington CRO or General Counsel knows these are separate businesses. Attributing Ameriprise supervision to a Private Bank fiduciary handoff reads as a category error and undermines the credibility of the rest of the compliance matrix.
+
+**Resolution required (product decision, not a doc fix):** state explicitly which tier routes where, then apply the matching regime to each:
+- **Tier A ($3M+ → Private Bank PWA on SEI):** OCC Reg 9 fiduciary standard; Reg R Rule 721; no Reg BI; Ameriprise not in scope.
+- **Tier B (sub-$3M → Centralized Wealth Hub / HFA on Ameriprise):** Reg BI + FINRA 2111; Reg R Rule 700 governs the RM referral fee; Ameriprise is the supervising BD.
+
+A dually-hatted advisor can serve both, but the *product* being recommended determines the regime — so the dossier must label each staged artifact with its channel.
 
 ---
 
@@ -19,9 +42,84 @@ This document establishes the primary sources, statutory authorities, SEC filing
 
 | Headline Figure | Primary Citation / Authority | Benchmark / Empirical Evidence | Methodology |
 | :--- | :--- | :--- | :--- |
-| **$4.5 Billion Annual Commercial Payoffs** | **HBAN SEC Form 10-K & 10-Q Filings (CIK 0000049196)** | Commercial Real Estate (CRE) & Middle-Market Loan Schedules; Loan Run-off Analysis | Huntington holds $18B–$22B in property-secured commercial loans. With typical 3- to 5-year balloon maturities, an annual payoff/refinance turnover of 20%–22.5% equates to ~$4.5B in annual liquidity release. Across total commercial loans ($90B+), $4.5B represents a conservative 5.0% turnover. |
+| **$4.5 Billion Annual Commercial Payoffs** | ✅ **Denominator verified; turnover now derived.** (1) HBAN **Q2 2026 Form 10-Q**, Tables 8 & 10. (2) **HNB FFIEC Call Report, Schedule RC-C Part I & Part II**, quarter ended 2026-06-30 — see [`rc.md`](rc.md). | **Part I Memorandum item 4:** loans and leases with a **remaining maturity of one year or less = $31,688,444K**, against total loans and leases of **$191,186,569K** → **16.6% all-book 12-month maturity rate**.<br><br>**Part II:** small-business CRE (orig. ≤$1M) = $3,490M across 13,941 loans, avg $250K. Net of that, the target segment is **$19.97B of larger commercial CRE**. | $4.5B against the $19.97B target segment implies a **22.5% annual maturity rate — 1.36× the 16.6% all-book average**. That premium is expected and defensible: CRE balloons at 5–7 years while 30-year residential and amortizing auto paper drag the all-book average down.<br><br>**Status: a sourced inference, not a reported figure.** The Call Report does not disaggregate Memo 4 by loan category, so the 22.5% CRE-specific rate is inferred rather than published.<br><br>⚠️ **Still unsourced:** the **sale-vs-refinance split**. No public source provides it, and a refinance releases zero seller equity.<br><br>⚠️ **Definitional caveat — see §2a.** This is *debt extinguished*, not *client liquidity created*. |
 | **~78% Deposit Flight Rate (48–72 Hours)** | **Huntington Treasury Management Historical Cohort Study (2024–2025)** | **Curinos (formerly Novantas)** Commercial Deposit Analytics; **Coalition Greenwich** Regional Banking Studies | Internal retention tracking revealed ~78% of net proceeds wire out within 48–72 hours of closing. Curinos benchmarks show commercial liquidity windfalls over $1M experience **70% to 85% outflow within 3 to 7 business days** if high-yield treasury custody is not established prior to settlement. |
 | **~7 Hours &rarr; 4 Minutes Commercial RM Discovery** | **Commercial Banking Operational Time-Motion Study** | **Coalition Greenwich Commercial Banking Practice Benchmarks** (Bankers spend 60%–70% of weekly hours on administrative data retrieval) | Manual baseline breakdown across siloed systems:<br>&bull; AFS/ACBS core servicing payoff & per-diem interest calculation: 1.0–1.5 hrs<br>&bull; Commercial credit vault scanned note/mortgage review: 1.5–2.0 hrs<br>&bull; SOS corporate filings & FinCEN CDD guarantor extraction: 2.0–2.5 hrs<br>&bull; Trailing NOI extraction, cap rate benchmarking, equity modeling: 1.5–2.0 hrs<br><strong>Total: 6.0 to 8.0 hours per deal.</strong> Horizon’s Gemini 3.7 Flash multimodal pipeline absorbs this in under 4 minutes. |
+
+---
+
+## 2a. Verified Balance Sheet Reference — HBAN Q2 2026 Form 10-Q
+
+All figures below are read directly from the Form 10-Q for the period ended **June 30, 2026** (CIK 0000049196). Dollar amounts in millions.
+
+| Line item | Jun 30, 2026 | Dec 31, 2025 | Source |
+| :--- | ---: | ---: | :--- |
+| Total assets | $283,984 | $225,106 | Consolidated Balance Sheet |
+| Total loans and leases | $189,422 | $149,642 | Table 8 |
+| Total deposits | $222,466 | $176,610 | Table 19 |
+| — Commercial & industrial | $91,378 (49%) | $69,442 (46%) | Table 8 |
+| — Commercial real estate | $23,457 (12%) | $15,209 (10%) | Table 8 |
+| — Lease financing | $5,714 (3%) | $5,727 (4%) | Table 8 |
+| **Total commercial** | **$120,549 (64%)** | **$90,378 (60%)** | Table 8 |
+| Commercial Banking avg. deposits (6mo) | $59,132 | $43,002 | Table 25 |
+| Commercial Banking NIM (6mo) | 3.28% | 3.34% | Table 25 |
+| Total assets under management | $49,600 | $35,300 | Table 24 |
+
+**CRE by property type (Table 10):** Multi-family $6,733 · Warehouse/Industrial $4,629 · Retail $3,536 · Office $2,633 · Hotel $1,904 · Other $4,022.
+
+> [!IMPORTANT]
+> **The prior "$90B+ total commercial" figure was stale.** It matches **$90,378M at December 31, 2025** almost exactly — i.e. the **pre-Cadence** balance. Following the Cadence acquisition (closed February 1, 2026) the commercial book is **$120.5B**, 33% larger. Any slide still citing "$90B+" is a quarter behind and understates the opportunity.
+
+### The debt-vs-equity distinction
+
+The $4.5B payoff pool is **loan principal being repaid to Huntington**, not liquidity available to retain. When a CRE loan pays off at sale, the payoff amount returns to the bank as principal — it cannot "flee" to a competitor. Only the **seller's net equity** is retainable:
+
+```
+Sale price                    $8,500,000
+  − loan payoff               −$5,214,800   → returns to Huntington as principal
+  − closing costs (~4.5%)       −$382,500
+  ────────────────────────────────────────
+  = net equity to seller       $2,902,700   ← the only retainable pool
+```
+
+Using Horizon's own flagship deal, net equity is **~56% of the payoff amount** (implied LTV ~61%). Applying the 78% flight rate and the capture rate to the full $4.5B therefore **overstates the addressable pool**. Two corrections are needed before the ROI is defensible:
+
+1. **Convert payoff volume → equity volume** using the portfolio's average LTV at disposition.
+2. **Exclude refinance-driven payoffs**, which release no seller equity at all.
+
+Until both are quantified, the stated "10% capture rate" is doing hidden work: it looks conservative against $4.5B, but against the true equity pool it implies capturing a much larger share of every dollar actually in play.
+
+### ⛔ The repricing trap — do not misread Call Report Memo 3
+
+Schedule RC-C Part I **Memorandum item 3** reports **$97.34B** of loans in the *"three months or less"* bucket — **50.9% of the entire book**. Read as maturity, that implies the portfolio turns over roughly twice a year.
+
+**It is not maturity.** The schedule's own footnote states: *"Report fixed rate loans and leases by remaining maturity and floating rate loans by next repricing date."* That $97.34B is overwhelmingly **floating-rate commercial paper resetting against SOFR** on monthly or quarterly cycles. The loans are not going anywhere.
+
+> [!CAUTION]
+> Anyone building a turnover or payoff figure from Memo 3 will overstate it by roughly an order of magnitude. **Use Memorandum item 4**, which is a pure remaining-maturity measure: **$31.69B maturing within one year = 16.6% of the book.**
+
+Internal consistency check on the parse: Memo 3 buckets sum to $189.60B; total loans and leases are $191.19B; the $1.59B difference is nonaccrual loans, which the memoranda explicitly exclude. The figures reconcile.
+
+### Classification gap — owner-occupied CRE is not in the 10-Q's CRE line
+
+The Call Report and the 10-Q slice commercial real estate differently:
+
+| Call Report RC-C Part I | Amount |
+| :--- | ---: |
+| Owner-occupied nonfarm nonresidential | $13,331M |
+| Other (non-owner-occupied) nonfarm nonresidential | $14,395M |
+| Multifamily (5+) | $4,884M |
+| Construction & land development | $5,322M |
+
+The 10-Q's **$23,457M "commercial real estate"** excludes **owner-occupied CRE**, which is reported inside **C&I** — standard practice, since owner-occupied property is underwritten on business cash flow rather than the asset.
+
+That places **$13.33B outside the book Horizon claims to monitor** — and it is precisely the *"owner sells the building and the business together"* scenario the demo is built around. **This is an opportunity, not a defect:** the addressable universe is arguably larger than currently stated, but the demo must say which definition it is using or the numbers will not tie out when someone reconciles them against either source.
+
+### Useful board-legible framings now available
+
+- Annual at-risk proceeds vs. **$59.1B** Commercial Banking deposit base — sizes the problem against a real denominator.
+- Tier 2 wealth capture vs. **$49.6B** total AUM (up 41% YoY) — shows the wealth ask is incremental, not heroic.
+- Commercial Banking NIM of **3.28%** — an anchor for sanity-checking the 85 bps net deposit spread assumption.
 
 ---
 
@@ -36,16 +134,62 @@ This document establishes the primary sources, statutory authorities, SEC filing
 
 ## 4. Financial Sensitivity & Return on Investment (ROI)
 
+> [!IMPORTANT]
+> **Superseded.** An earlier version of this table applied the retention rate to the
+> full commercial loan book and applied an annual margin rate to 1031 escrow float.
+> Both were wrong, and together they overstated returns by roughly an order of
+> magnitude. The corrected model is below and is implemented in
+> [`frontend/src/lib/assumptions.ts`](../frontend/src/lib/assumptions.ts).
+
+### 4a. The funnel — from verified book to equity actually at risk
+
+| Step | Value | Provenance |
+| :--- | ---: | :--- |
+| Investor CRE net of small-business tranche | $19.97B | ✅ **Verified** — 10-Q Table 8 ($23.457B) less Call Report RC-C Part II ($3.490B) |
+| Owner-occupied CRE (booked inside C&I) | $13.33B | ✅ **Verified** — Call Report RC-C Part I |
+| **Target book** | **$33.30B** | ✅ **Verified** |
+| × 22.5% 12-month turnover | $7.49B | 🔵 **Derived** — Call Report Part I Memo 4: $31.688B of $191.187B matures ≤12mo = 16.6% all-book; × 1.36 CRE balloon premium |
+| × 27% disposition rather than refinance | $2.02B | ⚠️ **Estimate** — industry default. Cross-checkable against Trepp CMBS payoff-at-maturity and MBA maturity volumes. Not a Huntington figure. |
+| × 57% net seller equity at ~60% LTV | $1.15B | ⚠️ **Estimate** — industry default, after ~4.5% closing costs. Not a Huntington figure. |
+| × 78% flight rate | **$0.90B** | ⚠️ **Estimate — highest sensitivity.** Framed against a 70–85% benchmark band. Huntington has not published this and the demo does not ask for it. |
+
+### 4b. Yield, with the duration correction applied
+
 | Metric | Model Formula / Input | Value | Authority / Source |
 | :--- | :--- | :--- | :--- |
-| **At-Risk Annual Liquidity** | $4.5B Payoff Pool &times; 78% Flight Rate | **$3,510,000,000** | Huntington Treasury Management Baseline |
-| **Tier 1 Treasury ICS & 1031 Escrow Spread** | 65% Volume Allocation | **85.0 bps** | Huntington Commercial Treasury Management Funds Transfer Pricing (FTP) Net Spread |
-| **Tier 2 Wealth Management AUM Fee** | 35% Volume Allocation | **65.0 bps** | Huntington Private Bank / SEI Blended Fiduciary Advisory Schedule ($2M–$10M Tier) |
-| **Blended Retention Yield Margin** | `(0.65 &times; 85 bps) + (0.35 &times; 65 bps)` | **78.0 bps** | PRD 2.0 §6.2 Sensitivity Architecture |
+| **Tier 1 Treasury ICS & 1031 Escrow Spread** | 65% volume allocation | **85.0 bps** | ⚠️ **Internal management estimate** — pending confirmation against Huntington Commercial Treasury Management FTP net spread. Sanity-checkable against the 3.28% Commercial Banking NIM in 10-Q Table 25. |
+| **Tier 2 Wealth Management AUM Fee** | 35% volume allocation | **65.0 bps** | ⚠️ **Internal management estimate** — pending confirmation against the Huntington Private Bank / SEI fiduciary advisory schedule ($2M–$10M tier). |
+| **Tier 1 average duration** | IRC §1031 caps an exchange at 180 days | **120 days** | ⛔ **Correction.** Tier 1 is transient escrow and treasury float, not a standing deposit. An annual rate cannot be applied at face value. |
+| **Undiscounted blended margin** | `(0.65 × 85 bps) + (0.35 × 65 bps)` | ~~78.0 bps~~ | ❌ **Superseded** — ignores Tier 1 duration. |
+| **Effective blended yield** | `(0.65 × 85 bps × 120/365) + (0.35 × 65 bps)` | **40.9 bps** | Arithmetic of the estimates above (not independent evidence). |
 | **Annual Enterprise Operating Run-Rate** | Cloud Run + Gemini Flash + Apigee X + SEI Data Cloud + KMS + L3 Engineering Pod | **$1,250,000 / yr** | Google Cloud Run Monostack Architecture Cost Model (§6.3) |
-| **5% Retention Floor (Ultra-Conservative)** | $225,000,000 Retained &times; 78.0 bps | **$1,755,000 Gross Value<br>+$505,000 Net Annual ROI** | **8.5 Months Breakeven Payback** |
-| **10% Retention Target (Conservative)** | $450,000,000 Retained &times; 78.0 bps | **$3,510,000 Gross Value<br>+$2,260,000 Net Annual ROI** | **4.3 Months Breakeven Payback** |
-| **15% Retention Goal (Executive Target)** | $675,000,000 Retained &times; 78.0 bps | **$5,265,000 Gross Value<br>+$4,015,000 Net Annual ROI** | **2.9 Months Breakeven Payback** |
+| **Break-even recapture** | `$1.25M ÷ ($0.90B × 40.9 bps)` | **34.0%** | Of all fleeing seller equity. This is a target, **not a floor.** |
+
+| Recapture of At-Risk Equity | Retained | Gross Value | Net Annual ROI |
+| :--- | ---: | ---: | ---: |
+| **10%** | $89.9M | $368,000 | **($882,000) / yr** |
+| **20%** | $179.9M | $736,000 | **($514,000) / yr** |
+| **30%** | $269.8M | $1,104,000 | **($146,000) / yr** |
+| **34.0%** | $305.7M | $1,250,000 | **break-even** |
+| **50%** | $449.7M | $1,840,000 | **+$590,000 / yr** |
+
+### 4c. Reclaimed capacity — the primary case, fully public-sourced
+
+| Metric | Model Formula / Input | Value | Authority / Source |
+| :--- | :--- | :--- | :--- |
+| **Commercial Banking direct personnel** | Six months ended June 30, 2026 | **$393M** | ✅ **Verified** — 10-Q Table 25 |
+| **Commercial Banking average FTE** | Six months ended June 30, 2026 | **2,689** | ✅ **Verified** — 10-Q Table 25 |
+| **Fully loaded cost per FTE / yr** | `$393M × 2 ÷ 2,689` | **$292,302** | 🔵 **Derived** from the two verified figures above |
+| **Annual payoff events** | `$7.49B ÷ $3M average loan` | **~2,497** | 🔵 **Derived** |
+| **Value at 4 hrs saved / event** | `2,497 × 4 ÷ 1,800 hrs × $292,302` | **$1.62M / yr** | ✅ clears the $1.25M run-rate |
+| **Value at 6 hrs saved / event** | `2,497 × 6 ÷ 1,800 hrs × $292,302` | **$2.43M / yr** | ✅ clears the $1.25M run-rate |
+
+> [!NOTE]
+> The capacity case depends on exactly **one** unverified input — hours reclaimed per
+> payoff event — which Huntington can validate internally in a week by timing the
+> current manual workflow. The revenue case depends on **four**, each able to move the
+> answer roughly 2x. That asymmetry is why capacity is the headline and retained
+> liquidity is framed as upside.
 
 ---
 

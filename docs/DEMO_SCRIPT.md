@@ -12,7 +12,8 @@ This presenter script guides the demonstration of **Huntington Horizon 2.0** to 
 - **The Operational Disconnect**:
   - *The 6-Month Exit Marathon vs. 11th-Hour Payoff Demand*: Commercial dispositions and SBA business sales take 6–9 months. Arriving only when a title payoff demand arrives at T-14 means Huntington is engaging at the finish line after CPAs, QIs, and external wealth managers have already been selected.
   - *Commercial Servicing Intake Latency*: Title payoff faxes and emails sent to `commercial.payoffs@huntington.com` take loan ops 3–5 business days to process manually, leaving bankers with zero operational lead time.
-  - *Retail Wealth Channel Non-Affiliation (Ameriprise Platform)*: With Huntington Advisors operating on Ameriprise Financial's platform (announced Feb 4, 2026), retail wealth is legally a non-affiliated third party under GLBA Regulation P. Commercial RMs are governed by an SEC Regulation R Networking Arrangement and cannot receive securities transaction commissions.
+  - *Cross-Line-of-Business Handoff Governance (Ameriprise Platform)*: Under the **Huntington Financial Advisors (HFA)** arrangement, **the advisors are Huntington employees and the clients remain Huntington customers** — Ameriprise supplies the technology platform, clearing and back office, and acts as the **supervising broker-dealer**. So the commercial-to-wealth handoff is an *intra-institutional* transfer, not a disclosure to a non-affiliated third party. Ameriprise's receipt of client NPI through the platform is governed as a **service-provider relationship under Reg P (12 C.F.R. § 1016.13)** — contractual confidentiality and use restrictions, not customer opt-out. What *does* bind the commercial RM is the **SEC Regulation R networking exception**: as an unregistered bank employee, Greg Miller may receive only a nominal, fixed-dollar, non-contingent referral fee and no securities transaction compensation.
+    > ⚠️ **Presenter caution — know which channel you're describing.** The Feb 4, 2026 Ameriprise release covers the **retail investment program (HFA)** only. Huntington **Private Bank** trust/discretionary business runs on **SEI** and is a *bank fiduciary* activity under **OCC Reg 9** — Reg BI, FINRA 2111 and Ameriprise supervision **do not apply** to it. If a CRO or GC asks why a "Senior Private Wealth Advisor" handoff is labeled Ameriprise-supervised, acknowledge the tiering: Tier A ($3M+) is Private Bank fiduciary; Tier B (sub-$3M, Centralized Wealth Hub) is the HFA/Ameriprise retail channel. See `CITATIONS.md` §1a.
   - *Private Wealth Servicing Physics*: Advisors are constrained by high-touch fiduciary maintenance (quarterly reviews, tax strategy, emotional coaching), not clerical paperwork. Flooding advisors with raw leads degrades service and causes AUM churn.
   - *The 1031 Exchange Leakage*: 50–65% of commercial property dispositions execute IRC §1031 like-kind exchanges. Under Treas. Reg. § 1.1031(k)-1(k), Huntington cannot act as the Qualified Intermediary. Unless Huntington provides an institutional Qualified Escrow Depository partnered with an independent QI, exchange funds legally must wire out.
 - **The Horizon 2.0 Solution**: Powered by the **Gemini Enterprise Agent Platform (fka Vertex AI Platform)** running `gemini-3.7-flash`:
@@ -20,7 +21,8 @@ This presenter script guides the demonstration of **Huntington Horizon 2.0** to 
   - **Tier 2 (Post-Distribution Wealth Advisory — Day T+30 to T+60)**: Respects corporate entity boundaries, engaging sponsors after CPA tax distributions. Routes sub-$3M transactional liquidity to the Centralized Wealth Advisory Hub and connects Huntington Private Bank to modern **SEI Data Cloud** (announced March 31, 2026) via Snowflake Secure Data Sharing.
 - **Quantifiable Business Impact & ROI**:
   - **Headcount Scaling**: Achieves **2x CSA operational leverage** (1 CSA : 4 PWAs) and sustainably expands senior PWA capacity from 80 to **95–100 relationships (+20–25%)**, with zero net new commercial headcount across 1,400 branches.
-  - **Deposit & Net Value**: At an ultra-conservative **5% retention capture floor ($225M)**, Horizon 2.0 generates **$1.755M gross value ($505k net ROI)**, reaching breakeven payback in **8.5 months**. At a 10% target ($450M retained), net ROI rises to **$2.26M/year (4.3 mo payback)**.
+  - **Reclaimed Capacity (primary case)**: ~2,497 annual payoff events &times; 4–6 banker hours reclaimed each returns **5.5–8.3 FTE**, worth **$1.62M–$2.43M/year** at the $292,302 fully loaded cost per Commercial Banking FTE derived from the Q2 2026 10-Q (Table 25: $393M direct personnel / 2,689 avg FTE). **Both ends of the band clear the $1.25M run-rate.** Every input except hours-saved comes from a public filing.
+  - **Retained Liquidity (upside, not base case)**: roughly **$0.90B** of seller equity is genuinely in play annually after the full funnel is applied. At the duration-corrected **40.9 bps** blended yield, break-even requires recapturing **34%** of it. Present this as upside with the assumptions visible — never as a floor.
 
 ### 1.2 Target Audience & Persona
 - **Primary Audience**: Executive Committee (CEO Steve Steinour, CFO Zach Wasserman, Head of Wealth, Head of Commercial, Chief Risk Officer, CIO/CTO).
@@ -93,7 +95,7 @@ flowchart LR
 - **Presenter Action**:
   1. Click Marcus Vance. Watch the agent decompose `Vance Riverfront Properties IV, LLC` with verified citations on scanned credit certificates (`⧉ nCino Facility #CC-8821`).
   2. Point out the **Automated Pre-Ingestion DLP**:
-     - *"Notice what the agent did NOT ingest. It purged consumer credit bureaus, personal 1040s, and FinCEN CDD records before processing. Elena Vance—a 15% non-guarantor member—is programmatically excluded. Because Huntington Advisors operates on Ameriprise's platform as a non-affiliated third party, this strict data firewall is non-negotiable under GLBA Regulation P."*
+     - *"Notice what the agent did NOT ingest. It purged consumer credit bureaus, personal 1040s, and FinCEN CDD records before processing. Elena Vance—a 15% non-guarantor member—is programmatically excluded. She never applied for this credit, so pulling her into a commercial file and using it to tee up a wealth conversation is exactly the FCRA permissible-purpose problem we refuse to create. The firewall is data minimization at the source: the agent only ever sees what the commercial credit relationship actually justifies."*
   3. Point out the **Internal Liquidity Triage Indicator**:
      - *"The title letter omits the contract sale price. Rather than having an AI hallucinate an appraisal, Horizon references the underwritten $8.0M baseline and trailing Q1 NOI ($637.5k) to establish an internal triage range of $2.5M to $3.3M. This calculation is strictly muzzled from the client; Greg Miller never asserts a property value to Marcus Vance."*
   4. Adjust the **Sale Price Slider** live from $8.5M to $9.0M, watching net proceeds dynamically re-index to $3.35M.
@@ -133,7 +135,7 @@ flowchart LR
   2. Inspect the live **Borrower Settlement Routing Packet** in the right workspace:
      - *"Here is the fatal flaw we fixed: lenders have zero legal standing to direct seller proceeds to title companies. Title companies reject lender wire letters out of hand under ALTA Pillar 2 wire fraud rules. Horizon generates a verified Huntington Settlement Account Routing Packet delivered directly to Marcus Vance via DocuSign (Envelope `ENV-HBAN-20260904-8821`). Marcus executes and submits it as his official Seller Closing Authorization to First American Title, accompanied by Huntington's official bank verification letter for mandatory call-back authentication on `(614) 480-4401`."*
   3. Click **[Record Client Opt-In]** to lift the GLBA Privacy Gate:
-     - *"Clicking Record Client Opt-In logs Marcus's affirmative verbal consent with a cryptographic 64-character SHA-256 audit hash, unlocking the dual-sided handoff to Private Wealth while maintaining full compliance with Regulation R and Ameriprise data firewalls."*
+     - *"Clicking Record Client Opt-In logs Marcus's affirmative verbal consent with a tamper-evident SHA-256 audit hash. To be precise about why: Sarah is a Huntington employee and Marcus stays a Huntington client, so this handoff does not legally require Reg P consent. We gate it anyway. This is our cross-line-of-business marketing consent and the durable record of a Regulation R referral — it proves the client asked for the introduction, and it timestamps the referral so Greg's compensation stays demonstrably nominal and non-contingent. We would rather hold ourselves to a consent standard the regulation does not strictly demand than explain later why we moved a client's information without asking."*
   4. Click **[Proceed to Private Wealth Intake (Sarah Jenkins)]** (or toggle the **Persona Switcher** in the header):
      - *"At Day T+30, after Marcus's CPA has executed partnership distributions, Sarah Jenkins engages. We don't burden Sarah with manual data entry or legacy trust batch files. Huntington Private Bank's migration to the SEI Wealth Platform and SEI Data Cloud (announced March 31, 2026) enables real-time Snowflake Zero-ETL data sharing, delivering verified relationship dossiers under strict SEC Regulation Best Interest governance."*
 - **What is Shown in the Demo**:
@@ -151,8 +153,8 @@ flowchart LR
   1. Navigate to **Executive Analytics** and select the **Corporate Governance (CRO Defense)** tab.
   2. Review the six green institutional verification badges:
      - **ALTA Pillar 2 & UCC 4A**: Wire instructions delivered to the borrower for seller authorization; official bank verification letter for callback authentication.
-     - **GLBA Pre-Ingestion DLP**: Consumer bureaus and personal NPI purged; Ameriprise non-affiliated third-party barrier enforced.
-     - **Ameriprise Regulation R Networking**: Commercial RM receives 100% hard-dollar commercial deposit FTP credit; zero securities fee-splitting.
+     - **GLBA Pre-Ingestion DLP**: Consumer bureaus and personal NPI purged at source; non-guarantor individuals excluded for FCRA permissible-purpose hygiene; Ameriprise platform NPI governed by service-provider contract under 12 C.F.R. § 1016.13.
+     - **Channel-Matched Regulation R Networking**: Commercial RM receives 100% hard-dollar commercial deposit FTP credit; nominal, non-contingent referral fee only; zero securities fee-splitting. For **sub-$3M routed to the HFA/Ameriprise retail channel**, Reg R Rule 700 applies and Reg BI supervision sits with Ameriprise as supervising broker-dealer. For **$3M+ routed to Private Bank on SEI**, this is bank fiduciary activity under OCC Reg 9 and Reg R Rule 721 — Reg BI does not apply.
      - **1031 Qualified Escrow Safe Harbor**: Institutional escrow partnered with independent QI (IPX1031); in-house DST securities cross-selling strictly firewalled under Treas. Reg. § 1.1031(k)-1(k).
      - **OCC SR 11-7 Model Tier 3**: Classified as an internal relationship triage heuristic, exempt from credit AVM validation; client-facing valuation muzzled.
      - **SEI Data Cloud Integration**: Modern cloud-native Snowflake data exchange, eliminating legacy on-premise Trust 3000 batch files.
@@ -164,25 +166,37 @@ flowchart LR
 ---
 
 ### Step 7: Financial ROI & CFO Hand-off (09:15–10:00)
-*Prove the financial justification with defensible sensitivity modeling and realistic capacity economics.*
+*Lead with the number they can verify themselves. Hand them the dials on the number they cannot.*
+
+> [!IMPORTANT]
+> **Sequencing matters here.** Open on reclaimed capacity, which is built from Huntington's
+> own 10-Q. Only then move to retained liquidity, and introduce it explicitly as upside.
+> Do **not** ask anyone in the room what their deposit flight rate is — that question makes
+> a CRO admit a failure in front of the board. Present the 78% benchmark as an outside
+> figure and let them correct a third party's number if they wish.
 
 - **Presenter Action**:
   1. Show Layer A Capacity Economics:
      - *"We do not claim an advisor can manage 150 accounts—fiduciary maintenance makes that impossible. We achieve 2x operational leverage for Client Service Associates (1 CSA supporting 4 advisors), cap senior PWAs at 95–100 accounts (+20–25%), and route sub-$3M transactional liquidity to our Centralized Wealth Advisory Hub."*
-  2. Slide Layer B ROI from 5% ($505k net ROI, 8.5 mo payback) to 10% ($2.26M net ROI, 4.3 mo payback).
-  3. Show the componentized $1.25M enterprise cloud run-rate defense.
-  4. Hand the floor to CFO Zach Wasserman for discussion.
+  2. Lead with the capacity case:
+     - *"Your last 10-Q reports $393 million in Commercial Banking direct personnel costs against 2,689 average FTE. That's $292,000 fully loaded per banker. Your Call Report says roughly $7.5 billion of the commercial real estate book turns over in a year — about 2,500 payoff events. If Horizon saves four hours on each one, that's 5.5 FTE, or $1.6 million. At six hours it's $2.4 million. Both clear the $1.25 million run-rate. I did not need a single internal number to build that."*
+  3. Move to retained liquidity, framed as upside:
+     - *"The deposit story is bigger, but it rests on assumptions I can't source to you. After the full funnel — turnover, sales versus refinances, seller equity, flight — about $900 million is genuinely in play. Break-even needs 34% recapture. I'd rather show you the model than defend a number."*
+  4. Open the **Admin Panel** (gear icon) and change a dial live — move the flight rate, or the disposition share — and let the room watch the break-even move. Invite them to set the inputs they believe.
+  5. Note the duration correction explicitly if the CFO has not already raised it: *"Tier 1 is 1031 escrow. A 1031 runs 180 days maximum, so we can't book an annual margin on it. That takes the blended yield from 78 basis points to 41."*
+  6. Show the componentized $1.25M enterprise cloud run-rate defense.
+  7. Hand the floor to CFO Zach Wasserman for discussion.
 - **What is Shown in the Demo**:
-  - Dual-sided capacity matrix; interactive sensitivity table with net annual ROI and breakeven payback.
+  - Capacity case card (publicly sourced); at-risk equity funnel with per-step provenance badges; recapture sensitivity slider anchored on break-even; live assumption dials in the Admin Panel.
 - **Production Implementation Blueprint**:
-  - Client-side tabular calculation engine; BigQuery ROI baseline model.
+  - Client-side tabular calculation engine (`frontend/src/lib/assumptions.ts`); BigQuery ROI baseline model.
 
 ---
 
 ## 4. Anticipated Executive Q&A (Presenter Defense)
 
 * **"How does the Ameriprise partnership impact client data sharing?"**  
-  → Because Huntington Advisors operates on Ameriprise Financial's platform (announced Feb 4, 2026), the retail broker-dealer channel is a non-affiliated third party under GLBA Regulation P. Commercial borrower data cannot be transferred to Ameriprise without explicit affirmative opt-in consent. Horizon 2.0 quarantines all commercial credit data at the bank perimeter and operates under an SEC Regulation R Networking Arrangement, ensuring Commercial RMs receive bank deposit FTP credit only and zero securities fee-splitting.
+  → Less than people assume, because of how the arrangement is actually structured. **Huntington employs the advisors and the client stays a Huntington customer.** Ameriprise provides the technology platform, clearing and back office, and acts as the supervising broker-dealer. So when Greg hands Marcus to Sarah Jenkins, that is an **intra-institutional handoff between two Huntington employees** — it is not a disclosure to a non-affiliated third party, and Reg P opt-out does not attach to it. Ameriprise does receive client NPI through the platform, and that is governed as a **service-provider relationship under 12 C.F.R. § 1016.13** — contractual confidentiality and use limitations rather than customer opt-out. The two controls that genuinely bind us are: **Regulation R**, which caps Greg's referral compensation at a nominal, non-contingent, fixed-dollar amount with zero securities fee-splitting; and **Reg BI supervision**, which sits with Ameriprise as the supervising broker-dealer — which is precisely why Horizon generates administrative scaffolding only and never a recommendation.
 
 * **"How does Horizon 2.0 connect to Huntington Private Bank's wealth platform?"**  
   → We integrate natively with the **SEI Wealth Platform (SWP)** via the **SEI Data Cloud** (announced March 31, 2026). This utilizes Snowflake Secure Data Sharing (Zero-ETL) to securely exchange portfolio telemetry and verify account status in real time, completely bypassing legacy on-premises trust accounting batch files like Trust 3000.

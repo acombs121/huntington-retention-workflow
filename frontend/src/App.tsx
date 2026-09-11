@@ -3,13 +3,14 @@ import { AlertCircle, X } from 'lucide-react';
 import { Header, AppView } from './components/Header';
 import { PayoffPipelineView } from './views/PayoffPipelineView';
 import { DealAnalysisView } from './views/DealAnalysisView';
+import { AdvisorRoutingView } from './views/AdvisorRoutingView';
 import { RetentionSettlementView } from './views/RetentionSettlementView';
 import { WealthQueueView } from './views/WealthQueueView';
 import { WealthDossierView } from './views/WealthDossierView';
-import { PortfolioStrategyView } from './views/PortfolioStrategyView';
 import { ExecutiveAnalyticsView } from './views/ExecutiveAnalyticsView';
 import { PersonaType } from './types';
 import { useRetentionWorkflow } from './hooks/useRetentionWorkflow';
+import { AssumptionsProvider } from './context/AssumptionsContext';
 
 export const App: React.FC = () => {
   // Theme State
@@ -48,7 +49,11 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0B1320] text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans">
+    // The assumption model must sit above both the Header (which owns the Admin
+    // Panel dials) and <main> (which renders Executive Analytics), so the room can
+    // change an input in one place and see every derived figure move together.
+    <AssumptionsProvider>
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#012415] text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans">
       
       {/* 1. Huntington Corporate Minimalist Header */}
       <Header
@@ -57,7 +62,7 @@ export const App: React.FC = () => {
           setPersona(p);
           if (p === 'commercial_rm' && activeView.startsWith('wealth_')) {
             setActiveView('pipeline');
-          } else if (p === 'wealth_advisor' && ['pipeline', 'analysis', 'retention'].includes(activeView)) {
+          } else if (p === 'wealth_advisor' && ['pipeline', 'analysis', 'routing', 'retention'].includes(activeView)) {
             setActiveView('wealth_queue');
           }
         }}
@@ -93,7 +98,9 @@ export const App: React.FC = () => {
             items={state.payoffItems}
             selectedId={state.selectedPayoffId}
             onSelectDeal={handleSelectDeal}
-            onViewExecutive={() => setActiveView('executive')}
+            onSetSelectedDeal={actions.selectDeal}
+            scannedCount={state.capacityMeter?.screened_events_book || 2140}
+            userName={state.selectedDeal?.commercial_rm?.split(' ')[0] || 'Greg'}
           />
         )}
 
@@ -102,12 +109,22 @@ export const App: React.FC = () => {
             deal={state.selectedDeal}
             entityData={state.entityResolution}
             onBackToPipeline={() => setActiveView('pipeline')}
+            onProceedToRetention={() => setActiveView('routing')}
+          />
+        )}
+
+        {activeView === 'routing' && (
+          <AdvisorRoutingView
+            deal={state.selectedDeal}
+            entityData={state.entityResolution}
+            onBackToAnalysis={() => setActiveView('analysis')}
             onProceedToRetention={() => setActiveView('retention')}
           />
         )}
 
         {activeView === 'retention' && (
           <RetentionSettlementView
+            deal={state.selectedDeal}
             valuation={state.valuation}
             onSalePriceChange={actions.setSalePrice}
             taxStrategy={state.taxStrategy}
@@ -115,7 +132,7 @@ export const App: React.FC = () => {
             quarantineState={state.quarantineState}
             onToggleQuarantine={actions.toggleQuarantine}
             wireInstructions={state.wireInstructions}
-            onBackToAnalysis={() => setActiveView('analysis')}
+            onBackToAnalysis={() => setActiveView('routing')}
             onHandoffToWealth={handleHandoffToWealth}
             isTogglingConsent={state.isTogglingConsent}
             error={state.error}
@@ -154,29 +171,6 @@ export const App: React.FC = () => {
             <WealthDossierView
               data={state.wealthOnboarding}
               onBackToQueue={() => setActiveView('wealth_queue')}
-              onProceedToStrategy={() => setActiveView('wealth_strategy')}
-            />
-          )
-        )}
-
-        {activeView === 'wealth_strategy' && (
-          state.quarantineState?.quarantined ? (
-            <WealthQueueView
-              deal={state.selectedDeal}
-              wealthOnboarding={state.wealthOnboarding}
-              quarantineState={state.quarantineState}
-              valuation={state.valuation}
-              onOpenDossier={() => setActiveView('wealth_dossier')}
-              onSwitchToCommercial={() => {
-                setPersona('commercial_rm');
-                setActiveView('retention');
-              }}
-            />
-          ) : (
-            <PortfolioStrategyView
-              data={state.wealthOnboarding}
-              valuation={state.valuation}
-              onBackToDossier={() => setActiveView('wealth_dossier')}
             />
           )
         )}
@@ -189,7 +183,25 @@ export const App: React.FC = () => {
         )}
       </main>
 
+      {/* Persistent disclaimer. Every figure, client, and document in this build is
+          fabricated for demonstration. This must remain visible on every view so a
+          screenshot taken out of context cannot be mistaken for real bank data. */}
+      <footer className="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#012415]">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4">
+          <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
+            <span className="font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+              Confidential working prototype &mdash; illustrative only.
+            </span>{' '}
+            All borrowers, entities, balances, valuations, advisors, and documents shown are
+            fabricated for demonstration purposes and do not represent real customers or real
+            Huntington Bancshares data. Figures are internal management estimates, not financial
+            guidance, an appraisal, or an investment recommendation. Not for external distribution.
+          </p>
+        </div>
+      </footer>
+
     </div>
+    </AssumptionsProvider>
   );
 };
 

@@ -5,9 +5,7 @@ import {
   Cpu, 
   Lock, 
   Code, 
-  RefreshCw, 
   RotateCcw, 
-  Move, 
   PinOff, 
   GitFork, 
   Layers,
@@ -35,9 +33,9 @@ interface SimNode extends SpannerGraphNode {
 }
 
 const DEALS = [
-  { id: 'PO-2026-8821', name: 'Marcus Vance', entity: 'Vance Riverfront Properties IV, LLC', type: 'Taxable Cash-Out', conf: 94 },
-  { id: 'PO-2026-7492', name: 'Arthur Pendelton', entity: 'Buckeye Precision Tooling Corp.', type: '1031 Exchange', conf: 88 },
-  { id: 'PO-2026-6104', name: 'Dr. Robert Miller', entity: 'Columbus Medical Arts Center LLC', type: 'Loan Refinance', conf: 58 }
+  { id: 'PO-2026-8821', short: 'Vance', name: 'Marcus Vance', entity: 'Vance Riverfront Properties IV, LLC', type: 'Taxable Cash-Out', conf: 94 },
+  { id: 'PO-2026-7492', short: 'Buckeye', name: 'Arthur Pendelton', entity: 'Buckeye Precision Tooling Corp.', type: '1031 Exchange', conf: 88 },
+  { id: 'PO-2026-6104', short: 'Miller', name: 'Dr. Robert Miller', entity: 'Columbus Medical Arts Center LLC', type: 'Loan Refinance', conf: 58 }
 ];
 
 const CANVAS_WIDTH = 1340;
@@ -152,6 +150,64 @@ function getRectIntersection(
   };
 }
 
+// Adaptive text splitter to eliminate truncation and render multi-line labels cleanly
+function splitLabel(label: string, maxChars: number = 26): string[] {
+  if (label.length <= maxChars) return [label];
+  const words = label.split(' ');
+  const lines: string[] = [];
+  let current = '';
+  for (const w of words) {
+    if ((current + (current ? ' ' : '') + w).length <= maxChars) {
+      current += (current ? ' ' : '') + w;
+    } else {
+      if (current) lines.push(current);
+      current = w;
+    }
+  }
+  if (current) lines.push(current);
+  return lines.length > 0 ? lines : [label];
+}
+
+function formatGqlRest(rest: string): React.ReactNode {
+  // Highlight Spanner Graph node labels like :BorrowerEntity, :Principal, :CreditFacility in bold blue
+  const parts = rest.split(/(:[A-Za-z0-9_]+)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith(':')) {
+      return (
+        <span key={i} className="text-blue-700 font-bold">
+          {part}
+        </span>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
+function formatGqlClause(queryStr: string): React.ReactNode[] {
+  const lines = queryStr.trim().split('\n');
+  return lines.map((line, idx) => {
+    const match = line.match(/^(\s*)(GRAPH|OPTIONAL MATCH|MATCH|RETURN|WHERE|AND)\b(.*)$/i);
+    if (match) {
+      const [, indent, keyword, rest] = match;
+      return (
+        <div key={idx} className="flex items-start py-0.5" style={{ paddingLeft: `${(indent?.length || 0) * 6}px` }}>
+          <span className="font-extrabold text-[#004724] tracking-tight shrink-0 mr-1.5 uppercase text-[11px]">
+            {keyword}
+          </span>
+          <span className="text-slate-800 break-all font-medium text-[11px] leading-snug">
+            {formatGqlRest(rest)}
+          </span>
+        </div>
+      );
+    }
+    return (
+      <div key={idx} className="py-0.5 text-slate-800 text-[11px] leading-snug">
+        {line}
+      </div>
+    );
+  });
+}
+
 export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
   isOpen,
   onClose,
@@ -162,6 +218,8 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
   const [layoutMode, setLayoutMode] = useState<'flow' | 'radial'>('flow');
   const [springSpread, setSpringSpread] = useState<number>(270);
   const [zoom, setZoom] = useState<number>(1.0);
+  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState<boolean>(false);
   
   // Synchronous seed data initialization
   const [graphData, setGraphData] = useState<SpannerGraphData>(() => getSeedData(activePayoffId || 'PO-2026-8821'));
@@ -173,7 +231,6 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
     const seed = getSeedData(activePayoffId || 'PO-2026-8821');
     return seedNodesForMode(seed.nodes, 'flow', 270);
   });
-  const [isSimActive, setIsSimActive] = useState<boolean>(true);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -183,6 +240,21 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
   const animFrameRef = useRef<number | null>(null);
   const layoutModeRef = useRef<'flow' | 'radial'>('flow');
   const springSpreadRef = useRef<number>(270);
+  const zoomRef = useRef<number>(1.0);
+  const panRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const panDragRef = useRef<{
+    isPanning: boolean;
+    startX: number;
+    startY: number;
+    startPanX: number;
+    startPanY: number;
+  }>({
+    isPanning: false,
+    startX: 0,
+    startY: 0,
+    startPanX: 0,
+    startPanY: 0,
+  });
   const dragRef = useRef<{
     nodeId: string | null;
     startX: number;
@@ -193,13 +265,15 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
   // Keep refs updated
   layoutModeRef.current = layoutMode;
   springSpreadRef.current = springSpread;
+  panRef.current = pan;
+  zoomRef.current = zoom;
 
-  // Sync selectedDealId with prop changes
+  // Sync selectedDealId with prop changes when modal opens or activePayoffId changes
   useEffect(() => {
-    if (activePayoffId && activePayoffId !== selectedDealId) {
+    if (isOpen && activePayoffId && activePayoffId !== selectedDealId) {
       setSelectedDealId(activePayoffId);
     }
-  }, [activePayoffId]);
+  }, [isOpen, activePayoffId]);
 
   // Main Spring Force Calculation (pure ref-based, zero dependency churn)
   const runSimulationStep = useCallback(() => {
@@ -286,10 +360,10 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
       for (let j = i + 1; j < nodes.length; j++) {
         const n1 = nodes[i];
         const n2 = nodes[j];
-        const halfW1 = n1.tier === 'verdict' ? 98 : 86;
-        const halfH1 = n1.tier === 'verdict' ? 27 : 24;
-        const halfW2 = n2.tier === 'verdict' ? 98 : 86;
-        const halfH2 = n2.tier === 'verdict' ? 27 : 24;
+        const halfW1 = n1.tier === 'verdict' ? 124 : 112;
+        const halfH1 = n1.tier === 'verdict' ? 34 : 29;
+        const halfW2 = n2.tier === 'verdict' ? 124 : 112;
+        const halfH2 = n2.tier === 'verdict' ? 34 : 29;
         const padX = 46;
         const padY = 34;
 
@@ -343,8 +417,8 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
         n.x += n.vx;
         n.y += n.vy;
 
-        const halfW = n.tier === 'verdict' ? 98 : 86;
-        const halfH = n.tier === 'verdict' ? 27 : 24;
+        const halfW = n.tier === 'verdict' ? 124 : 112;
+        const halfH = n.tier === 'verdict' ? 34 : 29;
         n.x = Math.max(halfW + 15, Math.min(CANVAS_WIDTH - halfW - 15, n.x));
         n.y = Math.max(halfH + 15, Math.min(CANVAS_HEIGHT - halfH - 15, n.y));
 
@@ -367,8 +441,6 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
       cancelAnimationFrame(animFrameRef.current);
     }
 
-    setIsSimActive(true);
-
     const tick = () => {
       const active = runSimulationStep();
       setSimNodes([...nodesRef.current]);
@@ -376,7 +448,6 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
       if (active) {
         animFrameRef.current = requestAnimationFrame(tick);
       } else {
-        setIsSimActive(false);
         animFrameRef.current = null;
       }
     };
@@ -443,24 +514,16 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
     startSimulation();
   };
 
-  // Reheat physics simulation
-  const reheatSimulation = () => {
-    alphaRef.current = 0.85;
-    for (const n of nodesRef.current) {
-      if (!n.isPinned) {
-        n.vx += (Math.random() - 0.5) * 6;
-        n.vy += (Math.random() - 0.5) * 6;
-      }
-    }
-    startSimulation();
-  };
-
-  // Reset positions to canonical seeds
+  // Reset positions to canonical seeds and reset pan & zoom
   const resetLayout = () => {
     const resetNodes = seedNodesForMode(graphData.nodes, layoutMode, springSpread);
     nodesRef.current = resetNodes;
     setSimNodes(resetNodes);
     alphaRef.current = 0.6;
+    panRef.current = { x: 0, y: 0 };
+    setPan({ x: 0, y: 0 });
+    zoomRef.current = 1.0;
+    setZoom(1.0);
     startSimulation();
   };
 
@@ -496,7 +559,7 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
     setSimNodes([...nodesRef.current]);
   };
 
-  // SVG coordinate transform helper with W3C CTM inversion
+  // SVG coordinate transform helper with W3C CTM inversion and pan/zoom awareness
   const getSvgCoordinates = (clientX: number, clientY: number) => {
     const svg = svgRef.current;
     if (!svg) return { x: CENTER_X, y: CENTER_Y };
@@ -515,8 +578,13 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
     }
 
     const rect = svg.getBoundingClientRect();
-    const x = ((clientX - rect.left) / rect.width) * CANVAS_WIDTH;
-    const y = ((clientY - rect.top) / rect.height) * CANVAS_HEIGHT;
+    const currentZoom = zoomRef.current || 1.0;
+    const vbW = CANVAS_WIDTH / currentZoom;
+    const vbH = CANVAS_HEIGHT / currentZoom;
+    const vbX = (CANVAS_WIDTH - vbW) / 2 - (panRef.current.x || 0);
+    const vbY = (CANVAS_HEIGHT - vbH) / 2 - (panRef.current.y || 0);
+    const x = vbX + ((clientX - rect.left) / rect.width) * vbW;
+    const y = vbY + ((clientY - rect.top) / rect.height) * vbH;
     return { x, y };
   };
 
@@ -543,9 +611,78 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
     startSimulation();
   };
 
-  // Global mouse move and mouse up handlers for smooth dragging
+  // Canvas Mouse Down handler for click-and-drag panning across 2D plane
+  const handleCanvasMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+
+    panDragRef.current = {
+      isPanning: true,
+      startX: e.clientX,
+      startY: e.clientY,
+      startPanX: panRef.current.x,
+      startPanY: panRef.current.y,
+    };
+    setIsPanning(true);
+  };
+
+  // Wheel and trackpad gesture handler for smooth 2D navigation & pinch zoom
+  const handleWheel = (e: React.WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
+      const newZoom = Math.max(0.65, Math.min(1.75, Number((zoomRef.current * zoomFactor).toFixed(2))));
+      zoomRef.current = newZoom;
+      setZoom(newZoom);
+    } else {
+      const svg = svgRef.current;
+      if (!svg) return;
+      const rect = svg.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+
+      const currentZoom = zoomRef.current || 1.0;
+      const vbW = CANVAS_WIDTH / currentZoom;
+      const vbH = CANVAS_HEIGHT / currentZoom;
+      const scaleX = vbW / rect.width;
+      const scaleY = vbH / rect.height;
+
+      const newPan = {
+        x: panRef.current.x - e.deltaX * scaleX,
+        y: panRef.current.y - e.deltaY * scaleY,
+      };
+      panRef.current = newPan;
+      setPan(newPan);
+    }
+  };
+
+  // Global mouse move and mouse up handlers for smooth dragging & canvas panning
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
+      // 1. Canvas Pan Dragging
+      if (panDragRef.current.isPanning) {
+        const svg = svgRef.current;
+        if (!svg) return;
+        const rect = svg.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) return;
+
+        const currentZoom = zoomRef.current || 1.0;
+        const vbW = CANVAS_WIDTH / currentZoom;
+        const vbH = CANVAS_HEIGHT / currentZoom;
+        const scaleX = vbW / rect.width;
+        const scaleY = vbH / rect.height;
+
+        const deltaX = (e.clientX - panDragRef.current.startX) * scaleX;
+        const deltaY = (e.clientY - panDragRef.current.startY) * scaleY;
+
+        const newPan = {
+          x: panDragRef.current.startPanX + deltaX,
+          y: panDragRef.current.startPanY + deltaY,
+        };
+        panRef.current = newPan;
+        setPan(newPan);
+        return;
+      }
+
+      // 2. Node Dragging
       const { nodeId, startX, startY } = dragRef.current;
       if (!nodeId) return;
 
@@ -564,6 +701,11 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
     };
 
     const handleGlobalMouseUp = () => {
+      if (panDragRef.current.isPanning) {
+        panDragRef.current.isPanning = false;
+        setIsPanning(false);
+      }
+
       const { nodeId, moved } = dragRef.current;
       if (nodeId) {
         if (!moved) {
@@ -613,16 +755,18 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
 
   const handleSelectDeal = (id: string) => {
     setSelectedDealId(id);
+    panRef.current = { x: 0, y: 0 };
+    setPan({ x: 0, y: 0 });
     if (onSelectPayoffId) {
       onSelectPayoffId(id);
     }
   };
 
-  // Compute responsive dynamic viewBox based on Zoom
+  // Compute responsive dynamic viewBox based on Zoom and Pan
   const vbW = CANVAS_WIDTH / zoom;
   const vbH = CANVAS_HEIGHT / zoom;
-  const vbX = (CANVAS_WIDTH - vbW) / 2;
-  const vbY = (CANVAS_HEIGHT - vbH) / 2;
+  const vbX = (CANVAS_WIDTH - vbW) / 2 - pan.x;
+  const vbY = (CANVAS_HEIGHT - vbH) / 2 - pan.y;
   const dynamicViewBox = `${vbX} ${vbY} ${vbW} ${vbH}`;
 
   return (
@@ -673,166 +817,181 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
         </div>
 
         {/* Consolidated Precision Control Ribbon (Single Clean Surface - Warm Chalk #F6F7F4) */}
-        <div className="px-6 py-2 bg-[#F6F7F4] border-b border-slate-200/80 flex items-center justify-between flex-shrink-0 gap-3 overflow-x-auto">
-          {/* Left: Clean Deal Switcher (Chips Removed - Pure Executive Names) */}
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1">Deal:</span>
-            <div className="flex items-center bg-white p-0.5 rounded-lg border border-slate-200 shadow-xs text-xs">
-              {DEALS.map((deal) => {
-                const isSelected = selectedDealId === deal.id;
-                return (
-                  <button
-                    key={deal.id}
-                    onClick={() => handleSelectDeal(deal.id)}
-                    className={`px-3 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                      isSelected
-                        ? 'bg-[#004724] text-white shadow-xs font-bold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
-                  >
-                    {deal.name}
-                  </button>
-                );
-              })}
+        <div className="bg-[#F6F7F4] border-b border-slate-200/80 flex items-center flex-shrink-0">
+          {/* Left: Over Graph Canvas Area (flex-1 border-r border-slate-200) */}
+          <div className="flex-1 relative px-4 py-1.5 flex items-center justify-between border-r border-slate-200 min-h-[44px]">
+            {/* Left: Clean Deal Switcher (Chips Removed - Pure Executive Names) */}
+            <div className="flex items-center gap-1.5 shrink-0 z-10">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Deal:</span>
+              <div className="flex items-center bg-white p-0.5 rounded-lg border border-slate-200 shadow-xs text-xs">
+                {DEALS.map((deal) => {
+                  const isSelected = selectedDealId === deal.id;
+                  return (
+                    <button
+                      key={deal.id}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleSelectDeal(deal.id);
+                      }}
+                      title={`${deal.name} — ${deal.entity}`}
+                      className={`px-1.5 py-0.5 rounded-md text-[10.5px] font-semibold transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#004724] text-white shadow-xs font-bold'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      }`}
+                    >
+                      {deal.short}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Centered Over Graph Area: Mode, Spacing, Zoom, Reset */}
+            <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 shrink-0 z-10">
+              {/* Layout Mode Segmented Control */}
+              <div className="flex items-center bg-white p-0.5 rounded-lg border border-slate-200 shadow-xs text-xs">
+                <button
+                  type="button"
+                  onClick={() => switchLayoutMode('flow')}
+                  className={`px-2 py-0.5 rounded-md text-[10.5px] font-semibold transition-all flex items-center gap-1 cursor-pointer ${
+                    layoutMode === 'flow'
+                      ? 'bg-[#004724] text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                  title="Directional pipeline flow (Left to Right)"
+                >
+                  <GitFork className="w-3 h-3" />
+                  <span>Pipeline</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => switchLayoutMode('radial')}
+                  className={`px-2 py-0.5 rounded-md text-[10.5px] font-semibold transition-all flex items-center gap-1 cursor-pointer ${
+                    layoutMode === 'radial'
+                      ? 'bg-[#004724] text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                  title="Organic radial clusters"
+                >
+                  <Layers className="w-3 h-3" />
+                  <span>Radial</span>
+                </button>
+              </div>
+
+              {/* Spacing / Spread Slider */}
+              <div className="flex items-center gap-1.5 bg-white px-2 py-0.5 rounded-lg border border-slate-200 shadow-xs text-xs">
+                <SlidersHorizontal className="w-3 h-3 text-[#006738]" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Spacing:</span>
+                <input
+                  type="range"
+                  min="190"
+                  max="380"
+                  step="10"
+                  value={springSpread}
+                  onChange={(e) => handleSpreadChange(Number(e.target.value))}
+                  className="w-12 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#004724]"
+                  title={`Target Spring Distance: ${springSpread}px`}
+                />
+                <span className="tabular-nums font-bold text-slate-800 text-[10.5px] w-8 text-right">{springSpread}px</span>
+              </div>
+
+              {/* Zoom Controls */}
+              <div className="flex items-center bg-white rounded-lg border border-slate-200 p-0.5 shadow-xs">
+                <button
+                  type="button"
+                  onClick={() => setZoom(z => Math.max(0.65, Number((z - 0.15).toFixed(2))))}
+                  className="p-0.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded transition cursor-pointer"
+                  title="Zoom Out"
+                >
+                  <ZoomOut className="w-3.5 h-3.5" />
+                </button>
+                <span className="px-1 text-[10.5px] font-bold tabular-nums text-slate-700 min-w-[32px] text-center">
+                  {Math.round(zoom * 100)}%
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setZoom(z => Math.min(1.75, Number((z + 0.15).toFixed(2))))}
+                  className="p-0.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded transition cursor-pointer"
+                  title="Zoom In"
+                >
+                  <ZoomIn className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    zoomRef.current = 1.0;
+                    setZoom(1.0);
+                    panRef.current = { x: 0, y: 0 };
+                    setPan({ x: 0, y: 0 });
+                  }}
+                  className="p-0.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded transition cursor-pointer ml-0.5"
+                  title="Reset Zoom & Pan"
+                >
+                  <Maximize2 className="w-3 h-3" />
+                </button>
+              </div>
+
+              {pinnedCount > 0 && (
+                <button
+                  type="button"
+                  onClick={unpinAllNodes}
+                  className="px-2 py-0.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 text-[10.5px] font-semibold flex items-center gap-1 transition border border-amber-200 shadow-xs cursor-pointer active:scale-[0.98] whitespace-nowrap shrink-0"
+                  title="Release manually pinned positions"
+                >
+                  <PinOff className="w-3 h-3 text-amber-600 shrink-0" />
+                  <span className="whitespace-nowrap">Unpin ({pinnedCount})</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={resetLayout}
+                className="px-2 py-0.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 text-[10.5px] font-semibold flex items-center gap-1 transition border border-slate-200 shadow-xs cursor-pointer active:scale-[0.98] whitespace-nowrap shrink-0"
+                title="Reset springs to initial topological spread"
+              >
+                <RotateCcw className="w-3 h-3 text-slate-500 shrink-0" />
+                <span className="whitespace-nowrap">Reset</span>
+              </button>
             </div>
           </div>
 
-          {/* Center: Topology Mode Switcher & Dynamic Spread Slider */}
-          <div className="flex items-center gap-3 shrink-0">
-            {/* Layout Mode Segmented Control */}
-            <div className="flex items-center bg-white p-0.5 rounded-lg border border-slate-200 shadow-xs text-xs">
-              <button
-                type="button"
-                onClick={() => switchLayoutMode('flow')}
-                className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
-                  layoutMode === 'flow'
-                    ? 'bg-[#004724] text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-                title="Directional pipeline flow (Left to Right)"
-              >
-                <GitFork className="w-3 h-3" />
-                <span>Pipeline</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => switchLayoutMode('radial')}
-                className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
-                  layoutMode === 'radial'
-                    ? 'bg-[#004724] text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-                title="Organic radial clusters"
-              >
-                <Layers className="w-3 h-3" />
-                <span>Radial</span>
-              </button>
-            </div>
-
-            {/* Spacing / Spread Slider */}
-            <div className="flex items-center gap-2 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-xs text-xs">
-              <SlidersHorizontal className="w-3.5 h-3.5 text-[#006738]" />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Spacing:</span>
-              <input
-                type="range"
-                min="190"
-                max="380"
-                step="10"
-                value={springSpread}
-                onChange={(e) => handleSpreadChange(Number(e.target.value))}
-                className="w-20 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#004724]"
-                title={`Target Spring Distance: ${springSpread}px`}
-              />
-              <span className="tabular-nums font-bold text-slate-800 text-[11px] w-9 text-right">{springSpread}px</span>
-            </div>
-          </div>
-
-          {/* Right: Exactly Matching Image 2 (Simulation State, Zoom, Reheat, Reset) */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Simulation Status Badge */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-slate-200 shadow-xs text-[11px] font-semibold text-slate-600">
-              <span className={`w-2 h-2 rounded-full ${isSimActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
-              <span className="text-[10px] font-bold uppercase tracking-wider">
-                {isSimActive ? 'Simulating' : 'Equilibrium'}
-              </span>
-            </div>
-
-            {/* Zoom Controls */}
-            <div className="flex items-center bg-white rounded-lg border border-slate-200 p-0.5 shadow-xs">
-              <button
-                type="button"
-                onClick={() => setZoom(z => Math.max(0.65, Number((z - 0.15).toFixed(2))))}
-                className="p-1 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded transition cursor-pointer"
-                title="Zoom Out"
-              >
-                <ZoomOut className="w-3.5 h-3.5" />
-              </button>
-              <span className="px-1 text-[11px] font-bold tabular-nums text-slate-700 min-w-[36px] text-center">
-                {Math.round(zoom * 100)}%
-              </span>
-              <button
-                type="button"
-                onClick={() => setZoom(z => Math.min(1.75, Number((z + 0.15).toFixed(2))))}
-                className="p-1 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded transition cursor-pointer"
-                title="Zoom In"
-              >
-                <ZoomIn className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setZoom(1.0)}
-                className="p-1 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded transition cursor-pointer ml-0.5"
-                title="Reset Zoom"
-              >
-                <Maximize2 className="w-3 h-3" />
-              </button>
-            </div>
-
-            {pinnedCount > 0 && (
-              <button
-                type="button"
-                onClick={unpinAllNodes}
-                className="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-semibold flex items-center gap-1.5 transition border border-amber-200 shadow-xs cursor-pointer active:scale-[0.98]"
-                title="Release manually pinned positions"
-              >
-                <PinOff className="w-3 h-3 text-amber-600" />
-                <span>Unpin ({pinnedCount})</span>
-              </button>
-            )}
-
-            <button
-              type="button"
-              onClick={reheatSimulation}
-              className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-slate-700 text-[11px] font-semibold flex items-center gap-1.5 transition border border-slate-200 shadow-xs cursor-pointer active:scale-[0.98]"
-              title="Reheat spring simulation to relax forces"
-            >
-              <RefreshCw className={`w-3 h-3 text-[#006738] ${isSimActive ? 'animate-spin' : ''}`} />
-              <span>Reheat</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={resetLayout}
-              className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-slate-700 text-[11px] font-semibold flex items-center gap-1.5 transition border border-slate-200 shadow-xs cursor-pointer active:scale-[0.98]"
-              title="Reset springs to initial topological spread"
-            >
-              <RotateCcw className="w-3 h-3 text-slate-500" />
-              <span>Reset</span>
-            </button>
+          {/* Right: Over Inspector Pane (w-[410px] flex-shrink-0) */}
+          <div className="w-[300px] lg:w-[340px] xl:w-[410px] flex-shrink-0 px-5 py-2 flex items-center justify-between text-xs min-h-[44px]">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              Verified Entity Attributes
+            </span>
+            <span className="text-[10px] font-semibold text-slate-400">
+              Spanner ISO GQL
+            </span>
           </div>
         </div>
 
         {/* Main Body: Graph Canvas (Left 68%) + Inspector Pane (Right 32%) */}
         <div className="flex-1 flex overflow-hidden">
           {/* Left Canvas: SVG Visualizer */}
-          <div className="flex-1 relative bg-[#FAFAFA] flex flex-col overflow-hidden border-r border-slate-200">
-            {/* Interactive SVG Diagram with Spring-Directed Nodes */}
-            <div className="flex-1 overflow-auto p-4 flex items-center justify-center relative bg-[#FAFAFA]">
+          <div className="flex-1 relative bg-[#FAFAFA] flex flex-col overflow-hidden border-r border-slate-200 select-none">
+            {/* Interactive SVG Diagram with Spring-Directed Nodes & 2D Canvas Panning */}
+            <div 
+              className={`flex-1 overflow-auto p-4 flex items-center justify-center relative bg-[#FAFAFA] select-none ${
+                isPanning || isDragging ? 'cursor-grabbing' : 'cursor-grab'
+              }`}
+              onMouseDown={handleCanvasMouseDown}
+              onWheel={handleWheel}
+            >
+              {/* The SVG scales via viewBox, so the width floor steps down on smaller
+                  viewports. A fixed 900px floor plus the inspector pane overflowed a
+                  1280x800 projector and clipped the graph with no way to scroll. */}
               <svg
                 ref={svgRef}
                 viewBox={dynamicViewBox}
-                className={`w-full h-full max-h-[720px] select-none ${isDragging ? 'cursor-grabbing' : 'cursor-default'}`}
-                style={{ minWidth: '900px', minHeight: '540px' }}
+                className={`w-full h-full max-h-[720px] select-none min-w-[560px] md:min-w-[680px] lg:min-w-[780px] xl:min-w-[900px] ${
+                  isPanning || isDragging ? 'cursor-grabbing' : 'cursor-grab'
+                }`}
+                style={{ minHeight: '540px', touchAction: 'none' }}
+                onMouseDown={handleCanvasMouseDown}
               >
                 <defs>
                   <marker
@@ -887,6 +1046,16 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
                   </filter>
                 </defs>
 
+                {/* Full-bleed transparent backdrop for seamless click-and-drag panning across canvas */}
+                <rect
+                  x={-CANVAS_WIDTH * 3}
+                  y={-CANVAS_HEIGHT * 3}
+                  width={CANVAS_WIDTH * 7}
+                  height={CANVAS_HEIGHT * 7}
+                  fill="transparent"
+                  className={isPanning || isDragging ? 'cursor-grabbing' : 'cursor-grab'}
+                />
+
                 {/* Render Dynamic Edges following Simulated Node Coordinates with Exact Card Perimeter Intersections */}
                 {displayEdges.map((edge) => {
                   const srcNode = displayNodes.find(n => n.id === edge.source);
@@ -905,7 +1074,7 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
                         ? '#2563EB' 
                         : '#94A3B8';
 
-                  const strokeWidth = isVerdict ? 2.4 : isSignal ? 1.9 : 1.4;
+                  const strokeWidth = isVerdict ? 2.5 : isSignal ? 2.0 : 1.5;
                   const markerId = isQuarantined 
                     ? 'url(#arrow-quarantined)' 
                     : isVerdict 
@@ -914,53 +1083,79 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
                         ? 'url(#arrow-signal)' 
                         : 'url(#arrow-primary)';
 
-                  const srcW = srcNode.tier === 'verdict' ? 196 : 172;
-                  const srcH = srcNode.tier === 'verdict' ? 54 : 48;
-                  const tgtW = tgtNode.tier === 'verdict' ? 196 : 172;
-                  const tgtH = tgtNode.tier === 'verdict' ? 54 : 48;
+                  const isEdgeConnectedToSelected = selectedNodeId && (edge.source === selectedNodeId || edge.target === selectedNodeId);
+
+                  const srcW = srcNode.tier === 'verdict' ? 248 : 224;
+                  const srcH = srcNode.tier === 'verdict' ? 68 : 58;
+                  const tgtW = tgtNode.tier === 'verdict' ? 248 : 224;
+                  const tgtH = tgtNode.tier === 'verdict' ? 68 : 58;
 
                   const start = getRectIntersection(tgtNode.x, tgtNode.y, srcNode.x, srcNode.y, srcW, srcH);
                   const end = getRectIntersection(srcNode.x, srcNode.y, tgtNode.x, tgtNode.y, tgtW, tgtH);
 
-                  const midX = (start.x + end.x) / 2;
-                  const midY = (start.y + end.y) / 2;
-                  const labelWidth = Math.max(52, edge.label.length * 5.5 + 16);
+                  let pathD = '';
+                  let labelX = (start.x + end.x) / 2;
+                  let labelY = (start.y + end.y) / 2;
+
+                  if (layoutMode === 'flow') {
+                    const dx = end.x - start.x;
+                    const curveWeight = Math.min(130, Math.max(35, Math.abs(dx) * 0.45));
+                    const cx1 = start.x + curveWeight;
+                    const cy1 = start.y;
+                    const cx2 = end.x - curveWeight;
+                    const cy2 = end.y;
+                    pathD = `M ${start.x} ${start.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${end.x} ${end.y}`;
+                    labelX = 0.125 * start.x + 0.375 * cx1 + 0.375 * cx2 + 0.125 * end.x;
+                    labelY = 0.125 * start.y + 0.375 * cy1 + 0.375 * cy2 + 0.125 * end.y;
+                  } else {
+                    const midX = (start.x + end.x) / 2;
+                    const midY = (start.y + end.y) / 2;
+                    const dist = Math.sqrt((end.x - start.x) ** 2 + (end.y - start.y) ** 2) || 1;
+                    const bow = Math.min(26, dist * 0.09);
+                    const perpX = (-(end.y - start.y) / dist) * bow;
+                    const perpY = ((end.x - start.x) / dist) * bow;
+                    const cx = midX + perpX;
+                    const cy = midY + perpY;
+                    pathD = `M ${start.x} ${start.y} Q ${cx} ${cy}, ${end.x} ${end.y}`;
+                    labelX = 0.25 * start.x + 0.5 * cx + 0.25 * end.x;
+                    labelY = 0.25 * start.y + 0.5 * cy + 0.25 * end.y;
+                  }
+
+                  const labelWidth = Math.max(56, edge.label.length * 6 + 18);
 
                   return (
-                    <g key={edge.id} className="transition-opacity">
-                      {/* Spring Edge Line */}
-                      <line
-                        x1={start.x}
-                        y1={start.y}
-                        x2={end.x}
-                        y2={end.y}
+                    <g key={edge.id} className="transition-opacity pointer-events-none">
+                      {/* Smooth Bezier Curve Edge */}
+                      <path
+                        d={pathD}
+                        fill="none"
                         stroke={strokeColor}
-                        strokeWidth={strokeWidth}
-                        strokeDasharray={isQuarantined ? '4 3' : undefined}
+                        strokeWidth={isEdgeConnectedToSelected ? strokeWidth + 0.8 : strokeWidth}
+                        strokeDasharray={isQuarantined ? '5 4' : undefined}
                         markerEnd={markerId}
-                        opacity={0.88}
+                        opacity={isEdgeConnectedToSelected ? 1 : 0.84}
                       />
                       {/* Dynamic Edge Label Pill Badge */}
-                      <g transform={`translate(${midX}, ${midY})`}>
+                      <g transform={`translate(${labelX}, ${labelY})`} className="pointer-events-none select-none">
                         <rect
                           x={-labelWidth / 2}
-                          y="-8.5"
+                          y="-9.5"
                           width={labelWidth}
-                          height="17"
-                          rx="3.5"
+                          height="19"
+                          rx="4.5"
                           fill="#FFFFFF"
                           stroke={strokeColor}
-                          strokeWidth="0.85"
-                          opacity="0.96"
+                          strokeWidth="1"
+                          opacity="0.98"
                         />
                         <text
                           x="0"
                           y="3.5"
                           textAnchor="middle"
-                          fontSize="7.5"
+                          fontSize="8"
                           fontWeight="700"
                           fill={strokeColor}
-                          className="font-sans uppercase tracking-tight select-none pointer-events-none"
+                          className="font-sans uppercase tracking-wider select-none pointer-events-none"
                         >
                           {edge.label}
                         </text>
@@ -977,8 +1172,8 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
                   const isSignal = node.tier === 'signal';
                   const isNodeBeingDragged = dragRef.current.nodeId === node.id;
 
-                  const nodeWidth = isVerdict ? 196 : 172;
-                  const nodeHeight = isVerdict ? 54 : 48;
+                  const nodeWidth = isVerdict ? 248 : 224;
+                  const nodeHeight = isVerdict ? 68 : 58;
                   const halfW = nodeWidth / 2;
                   const halfH = nodeHeight / 2;
 
@@ -1010,7 +1205,7 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
                         ? '#2563EB' 
                         : '#475569';
 
-                  const badgeWidth = Math.max(50, node.badge.length * 5.6 + 12);
+                  const badgeWidth = Math.max(52, node.badge.length * 6.2 + 14);
 
                   return (
                     <g
@@ -1026,7 +1221,7 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
                         y={-halfH}
                         width={nodeWidth}
                         height={nodeHeight}
-                        rx="6"
+                        rx="7"
                         fill={rectFill}
                         stroke={rectStroke}
                         strokeWidth={strokeWidth}
@@ -1038,15 +1233,15 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
                         x={-halfW + 8}
                         y={-halfH + 7}
                         width={badgeWidth}
-                        height="13"
-                        rx="2.5"
+                        height="14"
+                        rx="3"
                         fill={badgeFill}
                       />
                       <text
                         x={-halfW + 8 + badgeWidth / 2}
-                        y={-halfH + 16.5}
+                        y={-halfH + 17.5}
                         textAnchor="middle"
-                        fontSize="7.5"
+                        fontSize="8"
                         fontWeight="700"
                         fill="#FFFFFF"
                         className="font-sans tracking-wider uppercase select-none pointer-events-none"
@@ -1056,7 +1251,7 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
 
                       {/* Right Pin / Status Indicator */}
                       <g 
-                        transform={`translate(${halfW - 14}, ${-halfH + 13})`}
+                        transform={`translate(${halfW - 14}, ${-halfH + 14})`}
                         onClick={(e) => toggleNodePin(node.id, e)}
                         className="cursor-pointer"
                       >
@@ -1072,31 +1267,74 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
                         )}
                       </g>
 
-                      {/* Main Node Label Text */}
-                      <text
-                        x={-halfW + 8}
-                        y={-halfH + 31}
-                        fontSize={isVerdict ? '10.5' : '10'}
-                        fontWeight="700"
-                        fill={isQuarantined ? '#991B1B' : '#0F172A'}
-                        className="font-sans select-none pointer-events-none"
-                      >
-                        {node.label.length > 25 ? node.label.substring(0, 24) + '..' : node.label}
-                      </text>
-
-                      {/* Node Subtitle */}
-                      {node.subtitle && (
-                        <text
-                          x={-halfW + 8}
-                          y={-halfH + 42}
-                          fontSize="8.5"
-                          fontWeight="500"
-                          fill={isQuarantined ? '#B91C1C' : '#64748B'}
-                          className="font-sans select-none pointer-events-none"
-                        >
-                          {node.subtitle.length > 28 ? node.subtitle.substring(0, 27) + '..' : node.subtitle}
-                        </text>
-                      )}
+                      {/* Main Node Label Text (Adaptive 1-line or 2-line, Zero Truncation) */}
+                      {(() => {
+                        const lines = splitLabel(node.label, isVerdict ? 28 : 25);
+                        if (lines.length > 1) {
+                          return (
+                            <>
+                              <text
+                                x={-halfW + 8}
+                                y={-halfH + 29}
+                                fontSize={isVerdict ? '11' : '10.5'}
+                                fontWeight="700"
+                                fill={isQuarantined ? '#991B1B' : '#0F172A'}
+                                className="font-sans select-none pointer-events-none"
+                              >
+                                {lines[0]}
+                              </text>
+                              <text
+                                x={-halfW + 8}
+                                y={-halfH + 41}
+                                fontSize={isVerdict ? '11' : '10.5'}
+                                fontWeight="700"
+                                fill={isQuarantined ? '#991B1B' : '#0F172A'}
+                                className="font-sans select-none pointer-events-none"
+                              >
+                                {lines[1]}
+                              </text>
+                              {node.subtitle && (
+                                <text
+                                  x={-halfW + 8}
+                                  y={isVerdict ? -halfH + 55 : -halfH + 52}
+                                  fontSize="9"
+                                  fontWeight="500"
+                                  fill={isQuarantined ? '#B91C1C' : '#64748B'}
+                                  className="font-sans select-none pointer-events-none"
+                                >
+                                  {node.subtitle}
+                                </text>
+                              )}
+                            </>
+                          );
+                        }
+                        return (
+                          <>
+                            <text
+                              x={-halfW + 8}
+                              y={-halfH + 32}
+                              fontSize={isVerdict ? '11.5' : '11'}
+                              fontWeight="700"
+                              fill={isQuarantined ? '#991B1B' : '#0F172A'}
+                              className="font-sans select-none pointer-events-none"
+                            >
+                              {node.label}
+                            </text>
+                            {node.subtitle && (
+                              <text
+                                x={-halfW + 8}
+                                y={-halfH + 46}
+                                fontSize="9.5"
+                                fontWeight="500"
+                                fill={isQuarantined ? '#B91C1C' : '#64748B'}
+                                className="font-sans select-none pointer-events-none"
+                              >
+                                {node.subtitle}
+                              </text>
+                            )}
+                          </>
+                        );
+                      })()}
                     </g>
                   );
                 })}
@@ -1104,35 +1342,31 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
             </div>
 
             {/* Bottom Canvas Legend */}
-            <div className="px-6 py-2.5 bg-white border-t border-slate-200 flex items-center justify-between text-xs text-slate-600 flex-shrink-0">
-              <div className="flex items-center space-x-5">
+            <div className="px-6 py-2.5 bg-white border-t border-slate-200 flex items-center text-xs text-slate-600 flex-shrink-0">
+              <div className="flex items-center space-x-6 whitespace-nowrap">
                 <span className="font-bold uppercase tracking-wider text-[10px] text-slate-400">Legend:</span>
-                <span className="flex items-center space-x-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-slate-600 inline-block" />
+                <span className="flex items-center space-x-1.5 whitespace-nowrap">
+                  <span className="w-2.5 h-2.5 rounded-full bg-slate-600 inline-block shrink-0" />
                   <span>Core & Entities</span>
                 </span>
-                <span className="flex items-center space-x-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block" />
+                <span className="flex items-center space-x-1.5 whitespace-nowrap">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block shrink-0" />
                   <span>Behavioral Signals</span>
                 </span>
-                <span className="flex items-center space-x-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-600 inline-block" />
+                <span className="flex items-center space-x-1.5 whitespace-nowrap">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-600 inline-block shrink-0" />
                   <span>GLBA Quarantined</span>
                 </span>
-                <span className="flex items-center space-x-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#008559] inline-block" />
+                <span className="flex items-center space-x-1.5 whitespace-nowrap">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#008559] inline-block shrink-0" />
                   <span>Classification Verdict</span>
                 </span>
-              </div>
-              <div className="text-slate-500 text-[11px] font-medium flex items-center space-x-1.5">
-                <Move className="w-3 h-3 text-[#008559]" />
-                <span>Adjust Spacing slider or drag nodes to shape topology &bull; Zero-overlap collision active</span>
               </div>
             </div>
           </div>
 
           {/* Right Inspector Pane (32%) */}
-          <div className="w-[410px] flex-shrink-0 bg-white flex flex-col overflow-y-auto border-l border-slate-200">
+          <div className="w-[300px] lg:w-[340px] xl:w-[410px] flex-shrink-0 bg-white flex flex-col overflow-y-auto border-l border-slate-200">
             {activeNode ? (
               <div className="p-5 flex flex-col space-y-5">
                 {/* Node Identity Card */}
@@ -1217,18 +1451,29 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
                   </div>
                 </div>
 
-                {/* Live Spanner ISO GQL Query */}
+                {/* Live Spanner ISO GQL Query - Swiss Sans-Serif Container */}
                 <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="flex items-center space-x-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      <Code className="w-3.5 h-3.5 text-slate-600" />
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-1.5 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      <Code className="w-3.5 h-3.5 text-[#008559]" />
                       <span>Executed Spanner ISO GQL</span>
                     </div>
-                    <span className="text-[10px] text-slate-400 font-medium">Cloud Spanner Graph</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-semibold tabular-nums">
+                        {graphData.spanner_stats.query_latency_ms}ms
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 text-[10px] font-medium tabular-nums">
+                        {graphData.spanner_stats.nodes_matched} nodes • {graphData.spanner_stats.edges_traversed} edges
+                      </span>
+                    </div>
                   </div>
-                  <pre className="p-3 bg-slate-950 text-emerald-400 rounded-lg text-[11px] font-mono leading-relaxed overflow-x-auto border border-slate-800">
-                    {graphData.spanner_stats.gql_query || 'GRAPH HuntingtonCommercialGraph MATCH ...'}
-                  </pre>
+                  <div className="p-3.5 bg-[#F8F9FA] rounded-xl border border-slate-200/90 text-xs font-sans space-y-1 shadow-sm">
+                    {formatGqlClause(graphData.spanner_stats.gql_query || 'GRAPH HuntingtonCommercialGraph\nMATCH (n)\nRETURN n')}
+                  </div>
+                  <div className="flex items-center justify-between mt-2 text-[10px] text-slate-400 font-medium px-1">
+                    <span>Engine: {graphData.spanner_stats.engine}</span>
+                    <span>Instance: {graphData.spanner_stats.instance}</span>
+                  </div>
                 </div>
               </div>
             ) : (

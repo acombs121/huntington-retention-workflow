@@ -187,6 +187,7 @@ interface PayoffPipelineViewProps {
   items: PayoffItem[];
   selectedId: string;
   onSelectDeal: (id: string) => void;
+  onSetSelectedDeal?: (id: string) => void;
   userName?: string;
   scannedCount?: number;
 }
@@ -195,6 +196,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
   items,
   selectedId,
   onSelectDeal,
+  onSetSelectedDeal,
   userName,
   scannedCount = 2140,
 }) => {
@@ -203,6 +205,13 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
   const [activeTraceDeal, setActiveTraceDeal] = useState<PayoffItem | null>(null);
   const [isTelemetryExpanded, setIsTelemetryExpanded] = useState(false);
   const [isSignalGraphOpen, setIsSignalGraphOpen] = useState(false);
+  const [signalGraphDealId, setSignalGraphDealId] = useState<string>(selectedId || 'PO-2026-8821');
+
+  useEffect(() => {
+    if (selectedId) {
+      setSignalGraphDealId(selectedId);
+    }
+  }, [selectedId]);
 
   const [resolvedUserName, setResolvedUserName] = useState<string>(() => {
     return localStorage.getItem('horizon_user_name') || userName || 'Greg';
@@ -353,7 +362,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-800/50 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
                 <th className="py-4 px-6 sm:px-8">Borrower &amp; Collateral</th>
-                <th className="py-4 px-6">Payoff Balance</th>
+                <th className="py-4 px-6">Unpaid Principal</th>
                 <th className="py-4 px-6">Closing Window</th>
                 <th className="py-4 px-6">Confidence Score</th>
                 <th className="py-4 px-6">Credit Tier</th>
@@ -440,16 +449,33 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
 
                     {/* Action */}
                     <td className="py-5 px-6 sm:px-8 text-center whitespace-nowrap align-middle">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelectDeal(item.id);
-                        }}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold tracking-wide bg-[#006738] hover:bg-[#1B5630] text-white shadow-sm transition active:scale-[0.98] whitespace-nowrap"
-                      >
-                        <span>Inspect</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSignalGraphDealId(item.id);
+                            onSetSelectedDeal?.(item.id);
+                            setIsSignalGraphOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-xs transition active:scale-[0.98] cursor-pointer"
+                          title={`Inspect Spanner Grounding Graph for ${item.borrower_entity}`}
+                        >
+                          <GitGraph className="w-3.5 h-3.5 text-[#006738] dark:text-emerald-400" />
+                          <span>Graph</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectDeal(item.id);
+                          }}
+                          className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide bg-[#006738] hover:bg-[#1B5630] text-white shadow-sm transition active:scale-[0.98] whitespace-nowrap cursor-pointer"
+                        >
+                          <span>Inspect</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -537,32 +563,19 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
             </div>
 
             {/* Spanner Graph Grounding Console Trigger Banner */}
-            <div className="bg-white dark:bg-slate-800/90 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-start sm:items-center space-x-3.5">
-                <div className="w-10 h-10 rounded-lg bg-[#008559]/10 dark:bg-emerald-500/10 border border-[#008559]/20 flex items-center justify-center text-[#008559] dark:text-emerald-400 shrink-0 mt-0.5 sm:mt-0">
-                  <GitGraph className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">
-                      Google Cloud Spanner Graph Grounding
-                    </span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#008559]/10 text-[#008559] dark:text-emerald-400 border border-[#008559]/20">
-                      ISO GQL
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Deterministic ontological graph topology grounding autonomous agents across borrowing entities, beneficial owners, credit facilities, and title escrow signals.
-                  </p>
-                </div>
+            <div className="bg-white dark:bg-slate-800/90 rounded-xl px-6 py-4 border border-slate-200 dark:border-slate-700 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
+                Google Cloud Spanner Graph Grounding
               </div>
               <button
                 type="button"
-                onClick={() => setIsSignalGraphOpen(true)}
-                className="px-4 py-2 rounded-lg bg-[#008559] hover:bg-[#006738] text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center space-x-2 shrink-0 cursor-pointer"
+                onClick={() => {
+                  setSignalGraphDealId(selectedId || 'PO-2026-8821');
+                  setIsSignalGraphOpen(true);
+                }}
+                className="px-5 py-2 rounded-full text-xs font-bold tracking-wide bg-[#006738] hover:bg-[#1B5630] text-white shadow-sm transition active:scale-[0.98] whitespace-nowrap cursor-pointer shrink-0"
               >
-                <GitGraph className="w-4 h-4" />
-                <span>Inspect Spanner Grounding Graph</span>
+                Inspect Spanner Grounding Graph
               </button>
             </div>
 
@@ -570,29 +583,29 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
             <div className="bg-slate-950 text-slate-200 rounded-2xl p-5 font-mono text-xs overflow-x-auto max-h-96 border border-slate-800 shadow-inner space-y-2">
               <div className="text-slate-500 text-[11px] pb-2 border-b border-slate-800 flex items-center justify-between">
                 <span>ORCHESTRATION ENGINE RUN #20260909-034102 &bull; LOG LEVEL: INFO</span>
-                <span className="text-emerald-400 font-bold">EXECUTION: SUCCESS (0 ERRORS)</span>
+                <span className="text-[#7FD1A9] font-bold">EXECUTION: SUCCESS (0 ERRORS)</span>
               </div>
               <div className="leading-relaxed space-y-1.5 pt-1 text-[11.5px]">
-                <div><span className="text-slate-500">[03:41:02.104]</span> <span className="text-emerald-400">[INGESTION_AGENT]</span> Connecting to AFS Core Level 3 via Pub/Sub queue <code>afs.servicing.events</code>...</div>
-                <div><span className="text-slate-500">[03:41:04.281]</span> <span className="text-emerald-400">[INGESTION_AGENT]</span> Retrieved 2,140 active loan facilities across 1,400 branch directories.</div>
-                <div><span className="text-slate-500">[03:41:18.940]</span> <span className="text-emerald-400">[DETECTION_AGENT]</span> Fusing Fedwire clearing telemetry &amp; title insurance payoff demand queue...</div>
-                <div><span className="text-slate-500">[03:41:22.015]</span> <span className="text-emerald-400">[DETECTION_AGENT]</span> 2,137 non-event facilities confirmed (scheduled amortization, routine servicing).</div>
-                <div><span className="text-slate-500">[03:41:24.320]</span> <span className="text-amber-400">[CLASSIFICATION_AGENT]</span> Flagged 3 active payoff demands requiring liquidity event triage:</div>
+                <div><span className="text-slate-500">[03:41:02.104]</span> <span className="font-bold text-[#7FD1A9]">[INGESTION_AGENT]</span> Connecting to AFS Core Level 3 via Pub/Sub queue <code>afs.servicing.events</code>...</div>
+                <div><span className="text-slate-500">[03:41:04.281]</span> <span className="font-bold text-[#7FD1A9]">[INGESTION_AGENT]</span> Retrieved 2,140 active loan facilities across 1,400 branch directories.</div>
+                <div><span className="text-slate-500">[03:41:18.940]</span> <span className="font-bold text-[#7FD1A9]">[DETECTION_AGENT]</span> Fusing Fedwire clearing telemetry &amp; title insurance payoff demand queue...</div>
+                <div><span className="text-slate-500">[03:41:22.015]</span> <span className="font-bold text-[#7FD1A9]">[DETECTION_AGENT]</span> 2,137 non-event facilities confirmed (scheduled amortization, routine servicing).</div>
+                <div><span className="text-slate-500">[03:41:24.320]</span> <span className="font-bold text-[#E38341]">[CLASSIFICATION_AGENT]</span> Flagged 3 active payoff demands requiring liquidity event triage:</div>
                 <div className="pl-6 text-slate-400">&bull; PO-2026-8821 ($5,180,000 UPB, First American Title, T-12 days)</div>
                 <div className="pl-6 text-slate-400">&bull; PO-2026-7492 ($1,405,000 UPB, Chicago Title, T-24 days)</div>
                 <div className="pl-6 text-slate-400">&bull; PO-2026-6104 ($3,210,000 UPB, Commonwealth Land Title, T-45 days)</div>
-                <div><span className="text-slate-500">[03:41:26.540]</span> <span className="text-emerald-400">[CLASSIFICATION_AGENT]</span> Analyzing PO-2026-8821: Zero replacement debt in nCino; direct cash disbursement to LLC operating account.</div>
-                <div><span className="text-slate-500">[03:41:28.112]</span> <span className="text-emerald-400">[CLASSIFICATION_AGENT]</span> Classification: <strong>Commercial Sale / Taxable Cash-Out</strong> &bull; Flight Risk Confidence: 94%.</div>
-                <div><span className="text-slate-500">[03:41:31.420]</span> <span className="text-cyan-400">[ENTITY_AGENT]</span> Invoking Gemini 3.7 Flash Multimodal Layout OCR on credit vault document <code>doc_vault/incumbency_cert_8821.pdf</code>...</div>
-                <div><span className="text-slate-500">[03:41:33.890]</span> <span className="text-cyan-400">[ENTITY_AGENT]</span> Resolved Beneficial Ownership: Marcus Vance (85% Ownership, Primary Guarantor).</div>
-                <div><span className="text-slate-500">[03:41:34.102]</span> <span className="text-purple-400">[COMPLIANCE_GATE]</span> GLBA Reg P &amp; FCRA § 604 Rule: Elena Vance (15% non-guarantor) programmatically quarantined from profiling.</div>
-                <div><span className="text-slate-500">[03:41:36.450]</span> <span className="text-emerald-400">[ENRICHMENT_AGENT]</span> Synthesizing Executive 1-Pager: Net equity proceeds sized at $2,900,000 after $5,180,000 debt payoff and closing fees.</div>
-                <div><span className="text-slate-500">[03:41:38.220]</span> <span className="text-emerald-400">[ENRICHMENT_AGENT]</span> Identified commercial RM relationship: Greg Miller (Columbus Central Commercial Team, 12-yr account tenure).</div>
-                <div><span className="text-slate-500">[03:41:40.812]</span> <span className="text-blue-400">[ROUTING_AGENT]</span> Evaluating 14 Private Wealth Advisors in Columbus Wealth Market against capacity, specialty, and performance:</div>
+                <div><span className="text-slate-500">[03:41:26.540]</span> <span className="font-bold text-[#E38341]">[CLASSIFICATION_AGENT]</span> Analyzing PO-2026-8821: Zero replacement debt in nCino; direct cash disbursement to LLC operating account.</div>
+                <div><span className="text-slate-500">[03:41:28.112]</span> <span className="font-bold text-[#E38341]">[CLASSIFICATION_AGENT]</span> Classification: <strong className="text-white">Commercial Sale / Taxable Cash-Out</strong> &bull; Flight Risk Confidence: 94%.</div>
+                <div><span className="text-slate-500">[03:41:31.420]</span> <span className="font-bold text-[#B8EFE4]">[ENTITY_AGENT]</span> Invoking Gemini 3.7 Flash Multimodal Layout OCR on credit vault document <code>doc_vault/incumbency_cert_8821.pdf</code>...</div>
+                <div><span className="text-slate-500">[03:41:33.890]</span> <span className="font-bold text-[#B8EFE4]">[ENTITY_AGENT]</span> Resolved Beneficial Ownership: Marcus Vance (85% Ownership, Primary Guarantor).</div>
+                <div><span className="text-slate-500">[03:41:34.102]</span> <span className="font-bold text-[#E5736A]">[COMPLIANCE_GATE]</span> GLBA Reg P &amp; FCRA § 604 Rule: Elena Vance (15% non-guarantor) programmatically quarantined from profiling.</div>
+                <div><span className="text-slate-500">[03:41:36.450]</span> <span className="font-bold text-[#7ECF1C]">[ENRICHMENT_AGENT]</span> Synthesizing Executive 1-Pager: Net equity proceeds sized at $2,900,000 after $5,180,000 debt payoff and closing fees.</div>
+                <div><span className="text-slate-500">[03:41:38.220]</span> <span className="font-bold text-[#7ECF1C]">[ENRICHMENT_AGENT]</span> Identified commercial RM relationship: Greg Miller (Columbus Central Commercial Team, 12-yr account tenure).</div>
+                <div><span className="text-slate-500">[03:41:40.812]</span> <span className="font-bold text-[#A7F3D0]">[ROUTING_AGENT]</span> Evaluating 14 Private Wealth Advisors in Columbus Wealth Market against capacity, specialty, and performance:</div>
                 <div className="pl-6 text-slate-400">&bull; Match 1: Sarah Jenkins (Score: 98% &bull; Book: 84 accounts &bull; Headroom: Available &bull; Specialty: CRE Liquidity)</div>
-                <div><span className="text-slate-500">[03:41:44.204]</span> <span className="text-blue-400">[ROUTING_AGENT]</span> Capacity verification: Sarah Jenkins manages 84 families; well within 95–100 capacity threshold under 2x CSA leverage.</div>
-                <div><span className="text-slate-500">[03:41:48.090]</span> <span className="text-emerald-400">[OUTREACH_AGENT]</span> Pre-generating warm intro email for commercial banker Greg Miller to Marcus Vance &amp; Sarah Jenkins.</div>
-                <div><span className="text-slate-500">[03:42:04.918]</span> <span className="text-emerald-400">[ORCHESTRATION_ENGINE]</span> Overnight batch completed in 4m 18s. Horizon dashboard updated for morning review.</div>
+                <div><span className="text-slate-500">[03:41:44.204]</span> <span className="font-bold text-[#A7F3D0]">[ROUTING_AGENT]</span> Capacity verification: Sarah Jenkins manages 84 families; well within 95–100 capacity threshold under 2x CSA leverage.</div>
+                <div><span className="text-slate-500">[03:41:48.090]</span> <span className="font-bold text-[#7FD1A9]">[OUTREACH_AGENT]</span> Pre-generating warm intro email for commercial banker Greg Miller to Marcus Vance &amp; Sarah Jenkins.</div>
+                <div><span className="text-slate-500">[03:42:04.918]</span> <span className="font-bold text-[#7FD1A9]">[ORCHESTRATION_ENGINE]</span> Overnight batch completed in 4m 18s. Horizon dashboard updated for morning review.</div>
               </div>
             </div>
           </div>
@@ -740,9 +753,22 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveTraceDeal(null)}
-                  className="px-4 py-2 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+                  className="px-4 py-2 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer"
                 >
                   Close
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSignalGraphDealId(activeTraceDeal.id);
+                    onSetSelectedDeal?.(activeTraceDeal.id);
+                    setActiveTraceDeal(null);
+                    setIsSignalGraphOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold border border-[#006738] text-[#006738] dark:text-emerald-400 hover:bg-[#006738]/10 shadow-xs transition whitespace-nowrap cursor-pointer"
+                >
+                  <GitGraph className="w-3.5 h-3.5" />
+                  <span>Spanner Graph</span>
                 </button>
                 <button
                   type="button"
@@ -750,7 +776,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
                     onSelectDeal(activeTraceDeal.id);
                     setActiveTraceDeal(null);
                   }}
-                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold bg-[#006738] hover:bg-[#1B5630] text-white shadow-xs transition whitespace-nowrap"
+                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold bg-[#006738] hover:bg-[#1B5630] text-white shadow-xs transition whitespace-nowrap cursor-pointer"
                 >
                   <span>Inspect Deal</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -765,9 +791,10 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
       <SignalGraphModal
         isOpen={isSignalGraphOpen}
         onClose={() => setIsSignalGraphOpen(false)}
-        activePayoffId={selectedId}
+        activePayoffId={signalGraphDealId || selectedId}
         onSelectPayoffId={(dealId) => {
-          onSelectDeal(dealId);
+          setSignalGraphDealId(dealId);
+          onSetSelectedDeal?.(dealId);
         }}
       />
 

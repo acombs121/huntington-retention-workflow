@@ -31,7 +31,7 @@ Horizon gives a **fixed team the reach of a much larger one** by having an intel
 2. **Absorbs Commercial Discovery via Gemini Multimodal Intelligence:** Uses Google Cloud **Gemini Enterprise Agent Platform** with native multimodal ingestion to inspect raw scanned credit agreements, deeds, and incumbency certificates directly, mapping borrowing LLCs to beneficial owners with pixel-level bounding-box citations—eliminating multi-hour manual discovery.
 3. **Reasons Over Messy Reality with Grounded Intelligence:** Detects missing information (e.g., unstated contract sale prices) and calculates indicative net proceeds using in-place trailing Net Operating Income (NOI) capitalized via submarket cap rates **grounded dynamically via Vertex AI Search** against internal commercial appraisal benchmarks.
 4. **Detects Tax Strategy & 1031 Routing:** Inspects payoff requests and settlement filings for exchange provisions. If an IRC §1031 exchange is detected, it automatically routes proceeds to a **Huntington 1031 Qualified Escrow Depository (Partner QI Network)** path under Treas. Reg. § 1.1031(k)-1(g)(3), preserving deposits during the 180-day window rather than letting funds leak to external accommodators.
-5. **Absorbs Wealth Onboarding & Ongoing Servicing:** Pre-stages the advisor's administrative scaffolding behind a **GLBA-compliant Quarantined Consent Gate**—pre-filling KYC/CIP records, configuring an SEI custodial shell, drafting an Investment Policy Statement (IPS) framework, and assembling ongoing quarterly portfolio review briefs. Onboarding compresses from weeks to days, and ongoing servicing capacity expands from 80 to 150 accounts per advisor.
+5. **Absorbs Wealth Onboarding & Ongoing Servicing:** Pre-stages the advisor's administrative scaffolding behind a **GLBA-compliant Quarantined Consent Gate**—pre-filling KYC/CIP records, configuring an SEI custodial shell, drafting an Investment Policy Statement (IPS) framework, and assembling ongoing quarterly portfolio review briefs. Onboarding compresses from weeks to days, and ongoing servicing capacity expands from 80 to **95–100 accounts per advisor (+20–25%)** via 2x CSA operational leverage, with sub-$3M transactional accounts routed to the Centralized Wealth Advisory Hub.
 6. **Surfaces Only the Qualified Few via Deterministic Sentry:** Applies objective credit risk ratings and FINRA Rule 2040 non-fee splitting checks deterministically, ensuring bankers spend human time only on pre-vetted, ready-to-action relationships.
 
 > **The Scaling Claim (stated plainly):** *No human team could monitor a $4.5B payoff book in real time. Horizon monitors all of it, absorbs multi-hour discovery on the commercial side, and pre-stages onboarding and ongoing fiduciary servicing on the wealth side. The same headcount—commercial and wealth—now covers a franchise it physically could not have covered before. That is how Huntington scales wealth management without scaling the org chart.*
@@ -108,7 +108,7 @@ Horizon gives a **fixed team the reach of a much larger one** by having an intel
   - **Day T+10 (Wealth Advisory):** With liquidity secured, Sarah completes full fiduciary discovery. Marcus transitions $2.0M into his discretionary **SEI Wealth Platform** Family Trust account, leaving $900k in commercial operating reserves.
 * **Path B (IRC §1031 Exchange Alternate Path):**
   - If Marcus flags 1031 intent, funds cannot touch Business Premier ICS. Horizon routes the wire instructions to the **Huntington 1031 Qualified Escrow Depository (Partner QI Network)** under Treas. Reg. § 1.1031(k)-1(g)(3).
-  - Proceeds are held under institutional escrow yielding 4.75% during the statutory 45-day identification / 180-day closing window, while referring Marcus to Huntington's **Delaware Statutory Trust (DST) / 1031 Advisory Desk**—retaining $2.9M in institutional deposits that would otherwise be wired to external exchange accommodators.
+  - Proceeds are held in a **Huntington Qualified Escrow Depository** yielding 4.75% during the statutory 45-day identification / 180-day closing window, under an **independent, unaffiliated Qualified Intermediary (IPX1031)**—retaining $2.9M in institutional deposits that would otherwise be wired to external exchange accommodators. Huntington's role is strictly limited to the routine banking safe harbor of Treas. Reg. § 1.1031(k)-1(k)(2)(ii); the bank does **not** act as Qualified Intermediary for its own borrower, and in-house DST/securities placement is firewalled for the duration of the exchange window to preserve the client's deferral.
 
 ---
 ## 3. The Focused 3-Pane Workspace
@@ -219,7 +219,7 @@ To guarantee zero-cost idle operation, rapid executive iteration, and enterprise
 1. **No Core Loan Servicing:** Horizon does not process interest payments, principal curtailments, or escrow disbursements.
 2. **No Payoff Execution:** Horizon calculates indicative payoff figures for planning; it does not execute wire transfers or extinguish debt.
 3. **No Legal Lien Releases:** Horizon does not generate or record mortgage satisfactions, deed reconveyances, or UCC-3 termination filings. These remain strictly within loan operations and settlement agent controls.
-4. **No Replacement of Licensed Advice (Reg BI Guardrail):** Horizon absorbs *administrative* discovery and onboarding scaffolding only. It does **not** conduct fiduciary discovery, render suitability determinations, or author investment recommendations. All KYC/CIP entries, SEI allocation models, and draft IPS documents are **draft scaffolding requiring licensed-advisor review and authorship**; the Series 7/66/CFP advisor owns every suitability and investment decision.
+4. **No Replacement of Licensed Advice (Advice Guardrail):** Horizon absorbs *administrative* discovery and onboarding scaffolding only. It does **not** conduct fiduciary discovery, render suitability determinations, or author investment recommendations. All KYC/CIP entries, SEI allocation models, and draft IPS documents are **draft scaffolding requiring licensed-advisor review and authorship**; the licensed advisor owns every suitability and investment decision. This guardrail is written to satisfy whichever standard governs the destination channel — **OCC Reg 9 (12 C.F.R. § 9)** fiduciary duties for Private Bank trust/discretionary relationships, or **SEC Reg BI** / FINRA 2111 for HFA retail brokerage relationships on the Ameriprise platform. See `CITATIONS.md` §1a.
 5. **No Aggregate Net-Worth Inference:** Horizon surfaces only Huntington-resolvable positions and documented credit application facts; it does not compute or assert total personal net worth.
 6. **GLBA & FCRA Quarantined Consent Gate:** Financial information obtained from commercial credit agreements is strictly quarantined. Staged wealth profiles are not injected into SEI Wealth Platform or retail CRM until the commercial RM records the borrower's **affirmative verbal consent** during the T-12 call.
 7. **Model Risk Management (OCC Bulletin 2011-12 / Fed SR 11-7):** Property valuations and proceeds estimates produced by Horizon are designated as **"Indicative Triage Estimates for Relationship Prioritization."** They are never used for credit underwriting, collateral evaluation, or regulatory capital calculations, exempting the workflow from full-scale credit model validation mandates while upholding model governance standards.
@@ -236,28 +236,101 @@ Horizon's value is presented in two linked layers: **(A) capacity leverage** (th
 | :--- | :---: | :---: |
 | **Commercial** discovery + staging per qualified deal | ~6–8 hours (RM, 3 systems) | ~4 minutes (agent) + ~4 min (RM call) |
 | **Wealth** onboarding effort per new relationship | ~4–6 hours; ~2–3 weeks elapsed | ~80% pre-staged; ~3 days elapsed |
-| **Wealth** ongoing fiduciary servicing capacity | ~80–100 relationships per PWA | **~150 relationships per PWA** (automated review dossiers) |
+| **Wealth** ongoing fiduciary servicing capacity | ~80 relationships per PWA | **~95–100 relationships per PWA (+20–25%)** (automated review dossiers + 2x CSA leverage) |
 | Portion of $4.5B payoff book monitorable in real time | Effectively **<5%** (capacity-bound) | **100%** |
-| IRC §1031 exchange liquidity captured | **0%** (wires out to 3rd party QIs) | **Captured in Huntington QI Escrow** |
+| IRC §1031 exchange liquidity captured | **0%** (wires out to 3rd-party accommodators) | **Captured in Huntington Qualified Escrow Depository** (independent QI: IPX1031) |
 | Net new RM **or** PWA headcount required to scale | Requires material FTE additions | **Zero net new headcount** |
 
-> **The Headcount Sentence:** *Commercial discovery was un-staffable at book scale, and wealth onboarding and ongoing servicing throttled advisor capacity at 80 accounts. Horizon absorbs both—surfacing invisible opportunities, accelerating onboarding from weeks to days, and providing automated servicing dossiers that expand advisor capacity to 150 accounts. This converts an un-staffable workload into an automated one on both sides of the bank with zero net new headcount.*
+> **The Headcount Sentence:** *Commercial discovery was un-staffable at book scale, and wealth onboarding and ongoing servicing throttled advisor capacity at 80 accounts. Horizon absorbs both—surfacing invisible opportunities, accelerating onboarding from weeks to days, and providing automated servicing dossiers and 2x CSA operational leverage that expand advisor capacity to 95–100 accounts (+20–25%). This converts an un-staffable workload into an automated one on both sides of the bank with zero net new headcount.*
 
 ### 6.2 Layer B — Retained Financial Value (Interactive Sensitivity)
-Leadership adjusts the **Liquidity Retention Capture Rate** across the $4.5B book:
 
-**Portfolio Baseline**
-* Annual Commercial CRE & Middle Market Loan Payoff Volume: **$4.50 Billion**
-* Historical Flight Rate: **~78% ($3.51B)** *(provenance: §1.1)*
-* Value Levers: **Tier 1 (Treasury ICS & 1031 Escrow)** 60% of captured @ 85 bps Net NIM; **Tier 2 (Wealth AUM)** 40% of captured @ 65 bps Advisory Fee; Annual Enterprise Cloud & Operating Run-Rate: **($1.25M)**.
+> [!IMPORTANT]
+> **This is the upside case, not the base case.** The primary business case is §6.2a
+> (reclaimed capacity), which is derived entirely from Huntington's own published
+> filings. The retained-liquidity model below depends on four inputs that no public
+> source can settle, each capable of moving the answer by roughly 2x. It is presented
+> so the room can set those inputs, not so the presenter can defend them.
 
-| Retention Capture Rate | Incremental Retained Liquidity | Gross Annual Value | Cloud & Op Cost | Net Annual ROI | Payback |
-| :---: | :---: | :---: | :---: | :---: | :---: |
-| **5% (Ultra-Conservative)** | $225.0M | $1,732,500 | ($1,250,000) | **$482,500 / yr** | 8.6 mo |
-| **10% (Conservative Target)** | $450.0M | $3,465,000 | ($1,250,000) | **$2,215,000 / yr** | 4.3 mo |
-| **15% (Management Goal)** | $675.0M | $5,197,500 | ($1,250,000) | **$3,947,500 / yr** | 2.9 mo |
+**Portfolio baseline — the funnel, not a headline number**
 
-*(Note: Preserving 2.5% of at-risk commercial credits from refinancing away represents ~$1.35M in additional preserved loan NIM, treated as upside and excluded from headline figures.)*
+The prior version of this model multiplied a "$4.5B payoff book" by a capture rate.
+That conflated four distinct steps. The corrected derivation is explicit at each stage:
+
+| Step | Value | Provenance |
+| :--- | ---: | :--- |
+| Investor CRE, net of the small-business tranche | **$19.97B** | Verified — 10-Q Table 8 less Call Report RC-C Part II |
+| Plus owner-occupied CRE (booked inside C&I) | **$13.33B** | Verified — Call Report RC-C Part I |
+| **Target book** | **$33.30B** | Verified |
+| × 22.5% 12-month turnover | $7.49B | Derived — Call Report Memo 4 (16.6% all-book × 1.36 CRE premium) |
+| × 27% disposition rather than refinance | $2.02B | **Estimate** — industry default |
+| × 57% net seller equity at ~60% LTV | $1.15B | **Estimate** — industry default |
+| × 78% flight rate absent intervention | **$0.90B** | **Estimate** — 70–85% benchmark band |
+
+`$0.90B` is the equity actually in play in a year. The recapture slider acts on *that*
+pool, not on the loan book.
+
+**Value levers, with duration applied**
+
+* Tier 1 (Treasury ICS & 1031 Escrow): 65% of recaptured funds @ 85 bps net NIM
+* Tier 2 (Wealth AUM): 35% of recaptured funds @ 65 bps advisory fee
+* Annual enterprise cloud & operating run-rate: **($1.25M)**
+
+> [!WARNING]
+> **Duration correction.** Tier 1 balances are 1031 exchange escrow and treasury
+> float. IRC §1031 imposes a statutory 180-day maximum, so these are transient
+> balances modeled at **120 days average duration** — not standing deposits. The
+> undiscounted blended margin of `(0.65 × 85) + (0.35 × 65)` = **78.0 bps** is
+> therefore wrong. The effective blended yield is
+> `(0.65 × 85 bps × 120/365) + (0.35 × 65 bps)` = **40.9 bps**.
+
+| Recapture of At-Risk Equity | Retained Liquidity | Gross Annual Value | Cloud & Op Cost | Net Annual ROI |
+| :---: | :---: | :---: | :---: | :---: |
+| **10%** | $89.9M | $368,000 | ($1,250,000) | **($882,000) / yr** |
+| **20%** | $179.9M | $736,000 | ($1,250,000) | **($514,000) / yr** |
+| **30%** | $269.8M | $1,104,000 | ($1,250,000) | **($146,000) / yr** |
+| **34.0% — break-even** | $305.7M | $1,250,000 | ($1,250,000) | **$0 / yr** |
+| **50%** | $449.7M | $1,840,000 | ($1,250,000) | **+$590,000 / yr** |
+
+**Break-even requires recapturing 34% of all fleeing seller equity.** That is a real
+target, but it is not a floor, and it must not be presented as one.
+
+* **Assumption provenance:** the 85 bps Tier 1 net NIM and 65 bps Tier 2 advisory fee
+  are **internal management estimates** pending Treasury FTP and Wealth fee-schedule
+  confirmation. The disposition share, equity ratio, and flight rate are **industry
+  defaults**, not Huntington figures. All are adjustable live via the Admin Panel; the
+  model lives in [`frontend/src/lib/assumptions.ts`](../frontend/src/lib/assumptions.ts).
+* **Sensitivity ranking (what to pressure-test first):** flight rate (highest), then
+  Tier 1/Tier 2 bps, then disposition share and equity ratio. Turnover is the *least*
+  uncertain input — it is derived from Huntington's own Call Report.
+* *(Note on "Cost Recovery": that column measures how long gross annual value takes to
+  cover the $1.25M annual operating run-rate. It is **not** a capital payback period —
+  no build/implementation cost is modeled.)*
+* *(Note: preserving at-risk commercial credits from refinancing away represents
+  additional preserved loan NIM, treated as upside and excluded from headline figures.)*
+
+### 6.2a Layer C — Reclaimed Capacity (Primary Business Case)
+
+Unlike §6.2, every input here traces to a Huntington disclosure. Nothing in this
+section requires the bank to reveal internal performance data.
+
+| Input | Value | Provenance |
+| :--- | ---: | :--- |
+| Commercial Banking direct personnel costs, 6 months | $393M | Verified — 10-Q Table 25 |
+| Commercial Banking average FTE | 2,689 | Verified — 10-Q Table 25 |
+| **Fully loaded cost per FTE per year** | **$292,302** | Derived — `$393M × 2 ÷ 2,689` |
+| Annual payoff events at $3M average loan | ~2,497 | Derived — `$7.49B ÷ $3M` |
+| Productive hours per FTE-year | 1,800 | Standard convention |
+
+| Hours Reclaimed per Event | Hours Saved | FTE Equivalent | Annual Value | vs. $1.25M Run-Rate |
+| :---: | :---: | :---: | :---: | :--- |
+| **4 hrs (conservative)** | 9,989 | 5.5 | **$1.62M** | ✅ clears |
+| **6 hrs (observed baseline)** | 14,984 | 8.3 | **$2.43M** | ✅ clears |
+
+**The capacity case clears the run-rate on time savings alone, at the conservative
+end of the band.** It rests on a single assumption — hours reclaimed per event — which
+Huntington can validate internally within a week by timing the existing manual payoff
+workflow. That is the argument to lead with.
 
 ### 6.3 Enterprise Operating Cost Breakdown ($1,250,000 Run-Rate Defense)
 To satisfy CFO scrutiny, the $1.25M annual operating run-rate is componentized across cloud infrastructure, security, and dedicated engineering:
@@ -281,7 +354,7 @@ To satisfy CFO scrutiny, the $1.25M annual operating run-rate is componentized a
 | **03:30–06:00** | **The Agentic Proof (Multimodal Grounding & Dynamic Slider):** Click Marcus Vance. Watch Gemini 3.7 Flash extract LLC ownership with **visual bounding-box highlights**. Show missing sale price resolved via trailing NOI grounded by Vertex AI Search ($8.5M @ 7.5% cap rate). Adjust sale price slider live from $8.5M to $9.0M. | **Pane 2 & 3:** Interactive household topology map with clickable source citations (`⧉ Credit Vault #CC-8821`). Live streaming token feedback; interactive slider dynamically re-computing net proceeds to $3.35M. | Gemini Enterprise Agent Platform (`gemini-3.7-flash`) native multimodal document understanding; Vertex AI Search grounding; Cloud Run `CalculatorTool`. | CTO & CIO see state-of-the-art multimodal AI; CFO sees automated analyst judgment. |
 | **06:00–08:30** | **The Human Touch + The Wealth Bottleneck Solved:** Step into Greg's 4-minute call. Click **[Approve & Deliver Wire Form]**, generating First American's wire letter. Toggle **Persona Switcher** to Sarah Jenkins (PWA): show pre-staged KYC/CIP, SEI shell, and **Automated Quarterly Review Dossier**. Say: *"We achieve 2x CSA operational leverage, expanding senior PWA capacity to 95–100 relationships (+20–25%) while routing transactional accounts to our Centralized Wealth Hub."* | **Pane 3:** Generated PDF wire instruction letter with First American Title pre-filled. PWA view displays 80% completed KYC/CIP, pre-configured SEI shell, and quarterly relationship review template. | Apigee X API Gateway mTLS routing to SEI Wealth Platform Gateway; DocuSign REST APIs; Cloud Spanner household graph. | Head of Wealth sees onboarding friction solved AND ongoing advisor capacity expanded under Reg BI. |
 | **08:30–09:15** | **Institutional Guardrails (CRO Defense):** Open compliance audit drawer: highlight green badges for **FINRA 2040 non-fee splitting**, **GLBA Quarantined Consent Gate**, **OCC SR 11-7 Triage Designation**, and **1031 QI Escrow routing**. | Slide-out compliance drawer displaying green verification badges, tamper-evident dual-ID hash, and zero-data-logging boundary certifications. | Cloud KMS customer-managed encryption keys (CMEK); VPC Service Controls (VPC-SC perimeter); Cloud Audit Logs immutable trail. | Chief Risk Officer sees airtight compliance, privacy, and model risk boundaries. |
-| **09:15–10:00** | **The Bottom Line (Two Layers):** Show Layer A (zero net new headcount across Commercial and Wealth) then slide Layer B ROI from 5% ($482k net) to 10% ($2.2M net). Show componentized $1.25M budget. Hand floor to CFO. | Layer A capacity comparison matrix; Layer B interactive ROI slider displaying net annual value and breakeven payback (8.6 mo down to 4.3 mo). | Interactive client-side tabular numeric engine; BigQuery ROI baseline model. | Executive Committee sees a proven scaling thesis backed by defensible economics. |
+| **09:15–10:00** | **The Bottom Line (Three Layers):** Show Layer A (zero net new headcount) and Layer C (**reclaimed capacity, $1.62M–$2.43M/yr, sourced entirely from 10-Q Table 25**). Then introduce Layer B retained liquidity **as upside**: walk the funnel to ~$0.90B at risk and move the recapture slider around the 34% break-even. Open the Admin Panel and change an assumption live. Show componentized $1.25M budget. Hand floor to CFO. | Capacity case card; at-risk equity funnel with provenance badges; recapture slider anchored on break-even; live assumption dials. | Interactive client-side model (`frontend/src/lib/assumptions.ts`); BigQuery ROI baseline model. | Executive Committee sees a scaling thesis whose primary case they can verify against their own filings, and a revenue case whose assumptions they set themselves. |
 
 ---
 ## 8. Demonstration Setup & Presentation Guardrails
@@ -299,10 +372,10 @@ To satisfy CFO scrutiny, the $1.25M annual operating run-rate is componentized a
 ### Anticipated Executive Q&A (Presenter Prep)
 
 * **"How does this scale wealth management with existing headcount if advisors are already at capacity?"**  
-  → Horizon eliminates both wealth bottlenecks: it compresses administrative onboarding from ~3 weeks to ~3 days, and provides automated quarterly review dossiers that expand advisor capacity from 80 to 150 relationships without adding staff (§1.2, §6.1).
+  → Horizon eliminates both wealth bottlenecks: it compresses administrative onboarding from ~3 weeks to ~3 days, and provides automated quarterly review dossiers and 2x CSA operational leverage that expand advisor capacity from 80 to 95–100 relationships (+20–25%) without adding staff. We deliberately do **not** claim 150 accounts per advisor — high-touch fiduciary maintenance makes that infeasible; sub-$3M transactional accounts route to the Centralized Wealth Advisory Hub instead (§1.2, §6.1).
 
 * **"What if the borrower is doing a 1031 exchange? Won't the deposit leave anyway?"**  
-  → That’s why Horizon includes native 1031 detection. When an exchange is identified, proceeds are routed directly into a Huntington Qualified Intermediary (QI) Escrow Custody Account, preserving institutional deposits during the 180-day exchange window and referring the client to Huntington's Delaware Statutory Trust (DST) desk (§1.1, §2 Step 7).
+  → That’s why Horizon includes native 1031 detection. When an exchange is identified, proceeds are routed into a **Huntington Qualified Escrow Depository** under Treas. Reg. § 1.1031(k)-1(g)(3), administered by an **independent, unaffiliated Qualified Intermediary (IPX1031)**. Huntington cannot serve as QI for its own borrower under the disqualified-person rules of Treas. Reg. § 1.1031(k)-1(k), so the bank's role is confined to the routine banking safe harbor as escrow depository. This preserves institutional deposits during the 180-day exchange window without jeopardizing the client's deferral (§1.1, §2 Step 7).
 
 * **"If commercial RMs never did this work, how can we claim capacity leverage?"**  
   → We don’t claim saved hours on work people were doing; we claim **manual discovery absorbed**—work that was un-staffable at book scale. Horizon monitors 100% of the book and hands the RM a pre-screened, ready-to-call relationship, converting invisible liquidity into actionable pipeline (§1.1, §2 Step 2).
