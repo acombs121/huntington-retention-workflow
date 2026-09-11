@@ -552,10 +552,10 @@
     <section id="corporate-palette" class="kit-card">
       <div class="section-title">
         <span>1. Huntington Corporate Palette</span>
-        <span class="badge">12 Official Swatches</span>
+        <span class="badge">14 Official Swatches</span>
       </div>
       <p style="color: var(--ink-3); font-size: 0.85rem; margin-bottom: 1.25rem;">
-        Codified in <code>docs/DESIGN.md</code> and <code>tailwind.config.js</code> under the <code>hban.*</code> and <code>brand.*</code> namespace tokens.
+        Primary brand colors are codified in <code>docs/DESIGN.md</code> and <code>tailwind.config.js</code> under the <code>hban.*</code> and <code>brand.*</code> namespace tokens. Dark-mode accents such as the mint <code>#7FD1A9</code> are <em>not</em> named Tailwind tokens &mdash; they exist as CSS custom properties here and as arbitrary values (<code>text-[#7FD1A9]</code>) in components. Treat this page as the palette of record; treat <code>tailwind.config.js</code> as the subset with utility-class names.
       </p>
 
       <div class="swatches-grid">
@@ -664,6 +664,24 @@
             <div class="swatch-name">Charcoal Slate</div>
             <div class="swatch-hex">#0F172A</div>
             <div class="swatch-role">Primary Text / Header Accent</div>
+          </div>
+        </div>
+
+        <div class="swatch">
+          <div class="swatch-color" style="background: #1B5630;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Green Hover</div>
+            <div class="swatch-hex">#1B5630</div>
+            <div class="swatch-role">Primary Button Hover (<code>hban.green-hover</code>)</div>
+          </div>
+        </div>
+
+        <div class="swatch">
+          <div class="swatch-color" style="background: #394048;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">HBAN Grey</div>
+            <div class="swatch-hex">#394048</div>
+            <div class="swatch-role">Secondary Text / Borders (<code>hban.grey</code>)</div>
           </div>
         </div>
       </div>
@@ -832,7 +850,7 @@
         <div><span class="terminal-time">[03:41:31.420]</span> <strong style="color: #B8EFE4;">[ENTITY_AGENT]</strong> Invoking Gemini 3.7 Flash Multimodal Layout OCR on credit vault document <code>doc_vault/incumbency_cert_8821.pdf</code>...</div>
         <div><span class="terminal-time">[03:41:33.890]</span> <strong style="color: #B8EFE4;">[ENTITY_AGENT]</strong> Resolved Beneficial Ownership: Marcus Vance (85% Ownership, Primary Guarantor).</div>
         <div><span class="terminal-time">[03:41:34.102]</span> <strong style="color: #E5736A;">[COMPLIANCE_GATE]</strong> GLBA Reg P &amp; FCRA § 604 Rule: Elena Vance (15% non-guarantor) programmatically quarantined from profiling.</div>
-        <div><span class="terminal-time">[03:41:36.450]</span> <strong style="color: #7ECF1C;">[ENRICHMENT_AGENT]</strong> Synthesizing Executive 1-Pager: Net equity proceeds sized at $2,900,000 after debt payoff.</div>
+        <div><span class="terminal-time">[03:41:36.450]</span> <strong style="color: #7ECF1C;">[ENRICHMENT_AGENT]</strong> Synthesizing Executive 1-Pager: Net equity proceeds sized at $2,902,700 after the $5,214,800 title payoff quote and $382,500 in estimated closing costs.</div>
         <div><span class="terminal-time">[03:41:40.812]</span> <strong style="color: #A7F3D0;">[ROUTING_AGENT]</strong> Evaluating 14 Private Wealth Advisors in Columbus Wealth Market against capacity &amp; CSA leverage.</div>
         <div><span class="terminal-time">[03:41:48.090]</span> <strong style="color: #7FD1A9;">[OUTREACH_AGENT]</strong> Pre-generating warm intro email for commercial banker Greg Miller to Marcus Vance &amp; Sarah Jenkins.</div>
         <div><span class="terminal-time">[03:42:04.918]</span> <strong style="color: #7FD1A9;">[ORCHESTRATION_ENGINE]</strong> Overnight batch completed in 4m 18s. Horizon dashboard updated for morning review.</div>
@@ -909,7 +927,7 @@
 
           <div>
             <div style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); margin-bottom: 0.5rem;">Verified Input Primitive</div>
-            <input type="text" class="input-field" value="Marcus Vance &bull; $2,900,000 Equity" placeholder="Search facilities, borrowers, or advisors..." />
+            <input type="text" class="input-field" value="Marcus Vance &bull; $2,902,700 Equity" placeholder="Search facilities, borrowers, or advisors..." />
           </div>
 
           <div>
