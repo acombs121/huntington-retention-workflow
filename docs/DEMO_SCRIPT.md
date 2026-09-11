@@ -213,5 +213,8 @@ flowchart LR
 * **"Why does it cost $1.25M annually to run this platform?"**  
   → Raw AI compute is minimal ($25k/yr). The $1.25M fully-loaded budget funds enterprise Cloud Spanner, Apigee X API gateway integration, SEI Data Cloud connectivity, annual SOC2 and OCC SR 11-7 model validations, and a dedicated 2-person platform engineering and MLOps pod.
 
+* **"Our trust assets dropped 62% year over year. Why are we investing in wealth?"**  
+  → Because that number is measuring the business you *left*, not the business you're in. Your Q2 2026 10-Q Table 24 shows total trust assets at $68.9B against $182.8B a year prior. Call Report Schedule RC-T decomposes it exactly: **custody and safekeeping ran off $101.9B** and **corporate trust exited entirely — 5,565 accounts to 3.** Over the same twelve months, **managed fiduciary assets grew 41%** to $39.8B and managed accounts grew 29% to 23,481. The decisive number is the income line: **total trust assets fell 62% while gross fiduciary fee income rose 17%**, from $114.0M to $133.3M. The assets that left were earning **0.78 basis points** on custody and 6.15 on corporate trust. The managed advisory book that replaced them earns **65.7 bps** — about 84 times the custody rate. Huntington has already decided to trade low-fee institutional processing for high-margin managed advice. Horizon is an execution engine for the direction the bank is *already going*. One honest caveat: part of that managed growth is Cadence and Veritex, not same-store — but the composition shift is unambiguous.
+
 ---
 *Huntington Horizon 2.0 Presenter Script (v6.0) — Engineered for real-world banking execution, regulatory compliance, and balance sheet preservation.*

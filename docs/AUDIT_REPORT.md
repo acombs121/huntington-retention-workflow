@@ -182,6 +182,12 @@ Every claim, numerical metric, legal statute, and financial equation appearing o
 * **Blended Margin Calculation (with duration):**
   $$\text{Effective} = \left(65\% \times 85\text{ bps} \times \tfrac{120}{365}\right) + (35\% \times 65\text{ bps}) = 18.17 + 22.75 = \mathbf{40.9\text{ bps}}$$
   The undiscounted $\mathbf{78.0}$ bps figure is retained only as the superseded value.
+  **The 65 bps Tier 2 leg is no longer an estimate:** HNB Call Report Schedule RC-T
+  (2026-06-30) implies **65.7 bps** — personal trust income $44.581M plus investment
+  management/advisory $56.187M, year-to-date at six months, annualized over the
+  $30.661B of managed assets in those categories. The 2025-06-30 filing implies
+  69.2 bps. The model holds 65.0, conservative to both. Only the **85 bps Tier 1
+  spread remains an internal estimate.** See CITATIONS.md §2b.
 * **Break-even against the $1.25M annual run-rate:**
   $$\frac{\$1{,}250{,}000}{\$0.90\text{B} \times 0.00409} = \mathbf{34.0\%} \text{ recapture of all fleeing seller equity}$$
   * **10% recapture:** $\$89.9\text{M} \times 0.00409 = \$368{,}000$ gross $\implies \mathbf{-\$882{,}000}$ net

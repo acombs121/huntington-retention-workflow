@@ -73,11 +73,14 @@ try {
   // ($10.653B + $20.008B) it implies 65.7 bps.
   const RCT_IMPLIED_TIER2 = ((44.581 + 56.187) * 2) / (10.653e3 + 20.007704e3);
   check('RC-T implied advisory yield', RCT_IMPLIED_TIER2, 0.006573, 5e-6);
+  // Same computation against the prior-year filing (docs/rct-25.md).
+  const RCT_2025_TIER2 = ((29.696 + 47.617) * 2) / (6.082758e3 + 16.257894e3);
+  check('RC-T 2025 implied advisory yield', RCT_2025_TIER2, 0.006921, 5e-6);
   assert.ok(
-    A.tier2Bps <= RCT_IMPLIED_TIER2,
-    `tier2Bps (${A.tier2Bps}) must stay at or below the RC-T implied ${RCT_IMPLIED_TIER2}`,
+    A.tier2Bps <= RCT_IMPLIED_TIER2 && A.tier2Bps <= RCT_2025_TIER2,
+    `tier2Bps (${A.tier2Bps}) must stay at or below both filed years`,
   );
-  ok('advisory fee is conservative to the RC-T implied yield');
+  ok('advisory fee is conservative to both RC-T filing years');
   assert.equal(
     m.ASSUMPTION_META.tier2Bps.provenance,
     'derived',

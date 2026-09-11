@@ -180,20 +180,69 @@ The demo's client (**Marcus Vance, $2.90M net equity**) sits just above the
 $2.40M average investment-advisory relationship. Not an outlier — squarely in
 the meat of the book, and it can be said out loud with a citation.
 
-> [!WARNING]
-> **What RC-T does NOT settle: the 62% trust-asset decline.**
-> This is a single quarter. Attributing the **$113.9B** YoY drop
-> ($182.8B at 6/30/2025 → $68.9B at 6/30/2026) requires the **same schedule for
-> quarter ended 2025-06-30**. Two candidates are visible in the 2026 data but
-> neither is proven: custody and safekeeping now holds only $21.84B across 805
-> accounts (~$27M each), so a single large institutional custody departure could
-> account for most of it; and corporate trust and agency is effectively nil
-> ($31K across 7 accounts).
+### ✅ RESOLVED — what caused the 62% trust-asset decline
+
+**Source:** the same schedule one year earlier, quarter ended **2025-06-30**
+(updated 2025-07-29). Local copy: [`docs/rct-25.md`](./rct-25.md).
+
+Both years tie to the 10-Q exactly, so the decomposition is complete:
+
+| | 2025-06-30 | 2026-06-30 | Change | |
+| :--- | ---: | ---: | ---: | ---: |
+| Total fiduciary — **managed** | $28.24B | $39.79B | **+$11.55B** | **+40.9%** |
+| Total fiduciary — non-managed | $30.80B | $7.23B | −$23.57B | −76.5% |
+| Custody and safekeeping | $123.74B | $21.84B | −$101.90B | −82.4% |
+| **Total trust assets** | **$182.78B** | **$68.86B** | **−$113.92B** | **−62.3%** |
+| *10-Q Table 24* | *$182.8B* | *$68.9B* | | |
+
+**Two institutional processing businesses left. The advisory business grew.**
+
+- **Custody and safekeeping runoff: −$101.90B.** Accounts fell 1,013 → 805, so
+  roughly 200 departing relationships took $102B — a handful of very large
+  institutional custody mandates.
+- **Corporate trust exit: −$27.93B.** Non-managed corporate trust accounts went
+  **5,565 → 3**. That is not attrition, it is an exit from the line of business.
+- **Managed fiduciary grew +$11.55B (+40.9%)** and managed accounts grew
+  **18,172 → 23,481 (+29.2%)**. Personal trust managed accounts alone rose
+  **+49.9%**.
+
+### The number that settles the argument
+
+| Fiduciary income (6mo, YTD) | 2025 | 2026 | Change |
+| :--- | ---: | ---: | ---: |
+| Personal trust and agency | $29.7M | $44.6M | **+50.1%** |
+| Investment mgmt / advisory | $47.6M | $56.2M | **+18.0%** |
+| Corporate trust and agency | $8.6M | $1.0M | −87.9% |
+| Custody and safekeeping | $4.8M | $1.0M | −78.8% |
+| **Total gross fiduciary income** | **$114.0M** | **$133.3M** | **+17.0%** |
+
+**Total trust assets fell 62% and fiduciary fee income rose 17%.** The assets
+that left were earning almost nothing: custody yielded **0.78 bps** annualized
+in 2025, corporate trust **6.15 bps**. The managed advisory book they were
+replaced with yields **65.7 bps** — roughly **84× the custody rate**.
+
+> [!IMPORTANT]
+> **This reframes the headline from a risk into the demo's strongest support.**
+> Huntington shed ~$130B of near-zero-fee institutional processing while growing
+> the high-margin managed advisory franchise. Horizon's entire premise — route
+> more commercial liquidity events into managed advisory relationships — is
+> pointed in exactly the direction their own regulatory filings show the bank
+> already moving. If the 62% figure comes up, this is the answer.
+
+**Advisory yield held up through the shift:** 69.2 bps (2025) → 65.7 bps (2026).
+The model's 65.0 bps is conservative to both years.
+
+> [!CAUTION]
+> **Do not present the +40.9% managed growth as organic.** The Q2 2026 10-Q
+> attributes segment growth "primarily to the impact of the Cadence and Veritex
+> acquisitions." The *composition shift* is real and directional; same-store
+> performance is not separable from these filings.
 >
-> ⚠️ **Do not read the RC-T Memoranda zeros as facts.** Every memorandum item in
-> this extract reports 0, including "Total managed assets held in fiduciary
-> accounts," which must equal $39.79B. Most RC-T Memorandum item 3 detail is a
-> **December-only collection**, so those fields are simply unpopulated at Q2.
+> Separately, **do not read the RC-T Memoranda zeros as facts.** Every memorandum
+> item in both extracts reports 0, including "Total managed assets held in
+> fiduciary accounts," which must equal the reported totals. Most RC-T
+> Memorandum item 3 detail is a **December-only collection**, so those fields are
+> simply unpopulated at Q2.
 
 ---
 
