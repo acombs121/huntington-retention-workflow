@@ -42,7 +42,7 @@ function getTopFactorsForDeal(deal: PayoffItem): DealTraceAnalysis {
       factors: [
         {
           title: 'Zero Replacement Debt Found',
-          description: 'nCino and AFS Core check across 1,400 branches found zero renewal or replacement credit applications, ruling out an internal refinance.',
+          description: 'A core ledger and LOS check across 1,400 branches found zero renewal or replacement credit applications, ruling out an internal refinance.',
         },
         {
           title: 'Direct Cash Disbursement (No QI Intermediary)',
@@ -58,7 +58,7 @@ function getTopFactorsForDeal(deal: PayoffItem): DealTraceAnalysis {
         },
       ],
       pathways: [
-        { label: 'Internal Refinance', confidenceScore: 4, detail: '0 loans in nCino' },
+        { label: 'Internal Refinance', confidenceScore: 4, detail: '0 loans in the LOS' },
         { label: '1031 Exchange', confidenceScore: 12, detail: 'No QI intermediary' },
         { label: 'Unknown', confidenceScore: 2, detail: 'Verified escrow exhibits' },
       ],
@@ -98,7 +98,7 @@ function getTopFactorsForDeal(deal: PayoffItem): DealTraceAnalysis {
   if (deal.id === 'PO-2026-6104') {
     return {
       classificationTitle: 'Competitive Refinance Inquiry',
-      summaryText: 'Preliminary payoff inquiry received while a renewal discussion is active in nCino. Borrower is shopping competitive takeout terms with Fifth Third Bank.',
+      summaryText: 'Preliminary payoff inquiry received while a renewal discussion is active in the LOS. Borrower is shopping competitive takeout terms with Fifth Third Bank.',
       factors: [
         {
           title: 'Competitive Takeout Threat',
@@ -106,7 +106,7 @@ function getTopFactorsForDeal(deal: PayoffItem): DealTraceAnalysis {
         },
         {
           title: 'Active In-Progress Renewal File',
-          description: 'nCino shows renewal file #REN-6104 assigned to Amanda Cross, confirming initial intent to retain debt.',
+          description: 'The LOS shows renewal file #REN-6104 assigned to Amanda Cross, confirming initial intent to retain debt.',
         },
         {
           title: 'Preliminary Payoff Inquiry',
@@ -133,7 +133,7 @@ function getTopFactorsForDeal(deal: PayoffItem): DealTraceAnalysis {
     factors: [
       {
         title: 'Replacement Debt Pipeline Check',
-        description: 'Queried 1,400 Huntington branches in nCino/AFS; zero replacement loan files found.',
+        description: 'Queried 1,400 Huntington branches in the LOS and core ledger; zero replacement loan files found.',
       },
       {
         title: is1031 ? 'Qualified Intermediary Detected' : 'Direct Cash Disbursement',
@@ -149,7 +149,7 @@ function getTopFactorsForDeal(deal: PayoffItem): DealTraceAnalysis {
       },
     ],
     pathways: [
-      { label: 'Internal Refinance', confidenceScore: 5, detail: 'No loan in nCino' },
+      { label: 'Internal Refinance', confidenceScore: 5, detail: 'No loan in the LOS' },
       { label: '1031 Exchange', confidenceScore: is1031 ? 88 : 10, detail: is1031 ? 'QI detected' : 'No QI detected' },
       { label: 'Unknown', confidenceScore: 4, detail: 'Verified escrow exhibits' },
     ],
@@ -581,7 +581,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
                 <span className="text-[#7FD1A9] font-bold">EXECUTION: SUCCESS (0 ERRORS)</span>
               </div>
               <div className="leading-relaxed space-y-1.5 pt-1 text-[11.5px]">
-                <div><span className="text-slate-500">[03:41:02.104]</span> <span className="font-bold text-[#7FD1A9]">[INGESTION_AGENT]</span> Connecting to AFS Core Level 3 via Pub/Sub queue <code>afs.servicing.events</code>...</div>
+                <div><span className="text-slate-500">[03:41:02.104]</span> <span className="font-bold text-[#7FD1A9]">[INGESTION_AGENT]</span> Connecting to the core servicing ledger via Pub/Sub queue <code>servicing.payoff.events</code>...</div>
                 <div><span className="text-slate-500">[03:41:04.281]</span> <span className="font-bold text-[#7FD1A9]">[INGESTION_AGENT]</span> Retrieved {scannedCount.toLocaleString()} active commercial facilities across 1,400 branch directories.</div>
                 <div><span className="text-slate-500">[03:41:18.940]</span> <span className="font-bold text-[#7FD1A9]">[DETECTION_AGENT]</span> Fusing Fedwire clearing telemetry &amp; title insurance payoff demand queue...</div>
                 <div><span className="text-slate-500">[03:41:22.015]</span> <span className="font-bold text-[#7FD1A9]">[DETECTION_AGENT]</span> {(scannedCount - stagedCount).toLocaleString()} non-event facilities confirmed (scheduled amortization, routine servicing).</div>
@@ -589,7 +589,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
                 <div className="pl-6 text-slate-400">&bull; PO-2026-8821 ($5,180,000 UPB, First American Title, T-12 days)</div>
                 <div className="pl-6 text-slate-400">&bull; PO-2026-7492 ($1,405,000 UPB, Chicago Title, T-24 days)</div>
                 <div className="pl-6 text-slate-400">&bull; PO-2026-6104 ($3,210,000 UPB, Commonwealth Land Title, T-45 days)</div>
-                <div><span className="text-slate-500">[03:41:26.540]</span> <span className="font-bold text-[#E38341]">[CLASSIFICATION_AGENT]</span> Analyzing PO-2026-8821: Zero replacement debt in nCino; direct cash disbursement to LLC operating account.</div>
+                <div><span className="text-slate-500">[03:41:26.540]</span> <span className="font-bold text-[#E38341]">[CLASSIFICATION_AGENT]</span> Analyzing PO-2026-8821: Zero replacement debt in the LOS; direct cash disbursement to LLC operating account.</div>
                 <div><span className="text-slate-500">[03:41:28.112]</span> <span className="font-bold text-[#E38341]">[CLASSIFICATION_AGENT]</span> Classification: <strong className="text-white">Commercial Sale / Taxable Cash-Out</strong> &bull; Flight Risk Confidence: 94%.</div>
                 <div><span className="text-slate-500">[03:41:31.420]</span> <span className="font-bold text-[#B8EFE4]">[ENTITY_AGENT]</span> Invoking Gemini 3.7 Flash Multimodal Layout OCR on credit vault document <code>doc_vault/incumbency_cert_8821.pdf</code>...</div>
                 <div><span className="text-slate-500">[03:41:33.890]</span> <span className="font-bold text-[#B8EFE4]">[ENTITY_AGENT]</span> Resolved Beneficial Ownership: Marcus Vance (85% Ownership, Primary Guarantor).</div>
@@ -742,7 +742,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
             {/* Footer */}
             <div className="px-6 sm:px-8 py-4 border-t border-slate-200 dark:border-slate-800 bg-[#F8FAFC] dark:bg-slate-800/40 flex items-center justify-between gap-4">
               <span className="text-[11px] text-slate-400">
-                Grounded in nCino Commercial LOS, AFS Core &amp; title escrow exhibits.
+                Grounded in the commercial LOS, core ledger &amp; title escrow exhibits.
               </span>
               <div className="flex items-center gap-3">
                 <button

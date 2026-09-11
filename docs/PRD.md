@@ -57,7 +57,7 @@ Horizon gives a **fixed team the reach of a much larger one** by having an intel
 ```
 
 ### Step 1: Book-Scale Monitoring & Ingestion (Day T-14)
-* Horizon continuously monitors **all** commercial servicing queues (AFS / ACBS core feeds)—coverage a human team cannot provide. Among thousands of events, it ingests a Payoff Statement Request (scanned PDF) from First American Title for *Riverfront Commercial Commons* (Borrower: `Vance Riverfront Properties IV, LLC`).
+* Horizon continuously monitors **all** commercial servicing queues (core servicing feeds)—coverage a human team cannot provide. Among thousands of events, it ingests a Payoff Statement Request (scanned PDF) from First American Title for *Riverfront Commercial Commons* (Borrower: `Vance Riverfront Properties IV, LLC`).
 * Loan debt payoff balance: **$5,214,800**. Scheduled closing date: **14 days out**.
 
 ### Step 2: The Agent Absorbs the Commercial Discovery Load (Day T-14)
@@ -163,7 +163,7 @@ Horizon utilizes a clean **Single Orchestrator + Deterministic Tools** pattern b
 │                                    HORIZON PROTOTYPE STACK                                      │
 ├───────────────────────────────┬─────────────────────────────────┬───────────────────────────────┤
 │ DATA INGESTION & STORAGE      │ REASONING ORCHESTRATOR          │ GOVERNANCE & UI INTEGRATION   │
-│ • Core Servicing (AFS / ACBS) │ • Gemini Enterprise Agent       │ • Apigee X API Gateway        │
+│ • Core Servicing (core servicing) │ • Gemini Enterprise Agent       │ • Apigee X API Gateway        │
 │ • Cloud Pub/Sub (Event Bus)   │   Platform (gemini-3.7-flash)   │ • Salesforce FSC Embedded App │
 │ • Cloud Spanner (Entity Graph)│ • Vertex AI Search (Grounding)  │ • DocuSign REST APIs          │
 │ • BigQuery (Credit Vault)     │ • Deterministic Cloud Run Tools │ • SEI Wealth Platform Gateway │
@@ -187,10 +187,10 @@ The LLM is strictly confined to unstructured document understanding, contextual 
 ### 4.3 High-Fidelity Signal Grounding via Google Cloud Spanner Graph (ISO GQL)
 To eliminate hallucination and prove how autonomous detection agents achieve high-fidelity liquidity classifications (e.g., 94% confidence on commercial sale cash-out vs. 96% on 1031 exchange vs. 91% on refinance), Horizon integrates natively with **Google Cloud Spanner Graph**:
 1. **Deterministic Graph Topology:** Organizes enterprise commercial relationships across 5 connected ontological tiers:
-   - *Data Ingestion Core:* AFS core feeds, title insurance demands (RightFax eFax), county deed records, and nCino LOS pipelines.
+   - *Data Ingestion Core:* core servicing feeds, title insurance demands (RightFax eFax), county deed records, and commercial LOS pipelines.
    - *Contract & Entity Layer:* Commercial notes, pass-through borrowing LLCs, and incumbency certificates.
    - *Beneficial Owners & Guarantors:* Natural-person sponsors (e.g. Marcus Vance 85% unconditional guarantor vs. Elena Vance 15% non-guarantor shielded by GLBA).
-   - *Behavioral Signal Features:* In-place replacement debt audits (nCino), escrow wire routing destinations (commercial DDA vs. statutory escrow), and Qualified Intermediary (QI) presence.
+   - *Behavioral Signal Features:* In-place replacement debt audits (commercial LOS), escrow wire routing destinations (commercial DDA vs. statutory escrow), and Qualified Intermediary (QI) presence.
    - *Verdict Node:* Target liquidity classification with deterministic confidence calibration.
 2. **Spanner Graph Grounding Console:** An interactive, near-full-page modal accessible via `[Spanner Graph]` in the footer of each deal's reasoning-trace panel, rendering an SVG network graph with interactive node inspection, real-time Spanner ISO GQL query telemetry, and dynamic multi-deal topology comparison.
 

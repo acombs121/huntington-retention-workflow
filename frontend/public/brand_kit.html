@@ -308,6 +308,12 @@
     .token-table tr:hover td {
       background: var(--surface-2);
     }
+    /* Bare <code> must inherit the brand face. Without this it falls back to
+       the UA monospace default, violating the zero-monospace policy stated in
+       DESIGN.md 3 -- including inside the sentence that states it. */
+    code {
+      font-family: inherit;
+    }
     .code-pill {
       font-family: inherit;
       font-size: 0.75rem;
@@ -670,7 +676,7 @@
         <span class="badge">DESIGN.md §2.1 &amp; §2.2</span>
       </div>
       <p style="color: var(--ink-3); font-size: 0.85rem; margin-bottom: 1rem;">
-        Adaptive light chalk and dark pitch pine forest surfaces with strict WCAG AAA color contrast ratios.
+        Adaptive light chalk and dark pitch pine forest surfaces. Body and heading text meet WCAG AA; the low-emphasis tokens below are metadata-only and are not AA-rated at small sizes.
       </p>
 
       <table class="token-table">
@@ -755,7 +761,7 @@
         <div class="agent-card">
           <div class="agent-tag" style="color: #7FD1A9;">[INGESTION_AGENT]</div>
           <div class="agent-meta"><strong>Token:</strong> #7FD1A9 (HBAN Mint Accent)</div>
-          <div class="agent-meta">Core banking pipeline intake (AFS Core Level 3, Pub/Sub queue).</div>
+          <div class="agent-meta">Core banking pipeline intake (the core servicing ledger, Pub/Sub queue).</div>
         </div>
 
         <div class="agent-card">
@@ -816,7 +822,7 @@
           <span>ORCHESTRATION ENGINE RUN #20260909-034102 &bull; LOG LEVEL: INFO</span>
           <span style="color: #7FD1A9; font-weight: 800;">EXECUTION: SUCCESS (0 ERRORS)</span>
         </div>
-        <div><span class="terminal-time">[03:41:02.104]</span> <strong style="color: #7FD1A9;">[INGESTION_AGENT]</strong> Connecting to AFS Core Level 3 via Pub/Sub queue <code>afs.servicing.events</code>...</div>
+        <div><span class="terminal-time">[03:41:02.104]</span> <strong style="color: #7FD1A9;">[INGESTION_AGENT]</strong> Connecting to the core servicing ledger via Pub/Sub queue <code>servicing.payoff.events</code>...</div>
         <div><span class="terminal-time">[03:41:04.281]</span> <strong style="color: #7FD1A9;">[INGESTION_AGENT]</strong> Retrieved 11,099 active commercial facilities across 1,400 branch directories.</div>
         <div><span class="terminal-time">[03:41:18.940]</span> <strong style="color: #7FD1A9;">[DETECTION_AGENT]</strong> Fusing Fedwire clearing telemetry &amp; title insurance payoff demand queue...</div>
         <div><span class="terminal-time">[03:41:22.015]</span> <strong style="color: #7FD1A9;">[DETECTION_AGENT]</strong> 11,096 non-event facilities confirmed (scheduled amortization, routine servicing).</div>

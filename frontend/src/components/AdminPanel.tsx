@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, X, ExternalLink, Palette, FileText, Layers, Server, ShieldCheck, Cpu, User, RefreshCw, CheckCircle2, TrendingUp, ArrowRight, SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { Settings, X, ExternalLink, Palette, FileText, Server, ShieldCheck, Cpu, User, RefreshCw, CheckCircle2, TrendingUp, ArrowRight, SlidersHorizontal, RotateCcw } from 'lucide-react';
 import { useAssumptions } from '../context/AssumptionsContext';
 import {
   ASSUMPTION_META,
@@ -30,7 +30,6 @@ export interface AdminPanelProps {
   appName?: string;
   brandKitUrl?: string;
   demoScriptUrl?: string;
-  overviewUrl?: string;
   citationsUrl?: string;
   onViewExecutive?: () => void;
 }
@@ -117,7 +116,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   appName = 'Huntington Horizon',
   brandKitUrl = '/brand_kit.html',
   demoScriptUrl = '/demo_script.html',
-  overviewUrl = '/overview.html',
   citationsUrl = '/citations.html',
   onViewExecutive,
 }) => {
@@ -277,24 +275,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         <div>
                           <div className="font-semibold text-slate-900 dark:text-white">Workflow &amp; Operating Guide</div>
                           <div className="text-xs text-slate-500 dark:text-slate-400">Standard operating procedures &amp; banking workflows</div>
-                        </div>
-                      </div>
-                      <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-[#006738] transition" />
-                    </a>
-
-                    <a
-                      href={overviewUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-800 hover:border-[#006738] dark:hover:border-[#006738] bg-slate-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 transition group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-md bg-white dark:bg-slate-700 text-[#006738] shadow-sm">
-                          <Layers className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-slate-900 dark:text-white">Overview</div>
-                          <div className="text-xs text-slate-500 dark:text-slate-400">Standalone single-page executive overview</div>
                         </div>
                       </div>
                       <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-[#006738] transition" />

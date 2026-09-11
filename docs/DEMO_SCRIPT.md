@@ -78,9 +78,9 @@ flowchart LR
   2. Point to the **Operational Capacity Metrics** in Pane 1: *"1,400 branches monitored, 11,099 commercial facilities screened overnight, 3 qualified commercial leads, 2x CSA leverage active."*
   3. Explain the upstream surveillance: *"We don't wait for the payoff demand. Horizon screens loan facility maturities at T-120 and T-90, and flags tenant estoppel requests at T-60 so bankers engage during transaction planning."*
   4. Highlight First American Title's payoff demand on Riverfront Commercial Commons surfacing at T-12:
-     - *"When the payoff demand arrived from First American, it didn't wait in a loan ops inbox. Horizon ingested the inbound eFax via Microsoft Graph API and RightFax, extracting the loan account and borrower LLC 72 hours before loan ops keyed the quote into AFS."*
+     - *"When the payoff demand arrived from First American, it didn't wait in a loan ops inbox. Horizon ingested the inbound eFax via Microsoft Graph API and RightFax, extracting the loan account and borrower LLC 72 hours before loan ops keyed the quote into the core ledger."*
   5. Click the deal's **confidence score** to open the reasoning trace, then click **[Spanner Graph]** in its footer:
-     - *"How does the agent know with 94% certainty that this is an outright commercial cash-out sale rather than a loan refi or a 1031 exchange? It doesn't guess. Horizon queries our Google Cloud Spanner Knowledge Graph via native ISO GQL. Notice the connected nodes: First American Title links to Note #CC-8821, which maps to Vance Riverfront Properties IV, LLC and primary guarantor Marcus Vance. The graph audits nCino for replacement debt (none found), identifies direct wire disbursement to commercial checking DDA #..4401, and verifies zero Qualified Intermediary (QI) involvement. Notice Elena Vance is quarantined with a GLBA Title V privacy badge. This multi-source graph traversal is why the AI achieves institutional signal fidelity."*
+     - *"How does the agent know with 94% certainty that this is an outright commercial cash-out sale rather than a loan refi or a 1031 exchange? It doesn't guess. Horizon queries our Google Cloud Spanner Knowledge Graph via native ISO GQL. Notice the connected nodes: First American Title links to Note #CC-8821, which maps to Vance Riverfront Properties IV, LLC and primary guarantor Marcus Vance. The graph audits the LOS for replacement debt (none found), identifies direct wire disbursement to commercial checking DDA #..4401, and verifies zero Qualified Intermediary (QI) involvement. Notice Elena Vance is quarantined with a GLBA Title V privacy badge. This multi-source graph traversal is why the AI achieves institutional signal fidelity."*
 - **What is Shown in the Demo**:
   - Pane 1 Priority Radar with live capacity counter, Pass Tier 2 credit rating badge, scheduled payoff countdown (14 days to close), and global obligor MDM screening pass.
   - Interactive **Spanner Graph Grounding Console** modal displaying the multi-tier SVG network topology, clickable node inspector, live ISO GQL query telemetry, and deal-switching comparative views.
@@ -93,7 +93,7 @@ flowchart LR
 *Demonstrate multimodal extraction with pre-ingestion DLP, non-guarantor privacy exclusions, and internal triage heuristics under OCC SR 11-7.*
 
 - **Presenter Action**:
-  1. Click Marcus Vance. Watch the agent decompose `Vance Riverfront Properties IV, LLC` with verified citations on scanned credit certificates (`⧉ nCino Facility #CC-8821`).
+  1. Click Marcus Vance. Watch the agent decompose `Vance Riverfront Properties IV, LLC` with verified citations on scanned credit certificates (`⧉ LOS Facility #CC-8821`).
   2. Point out the **Automated Pre-Ingestion DLP**:
      - *"Notice what the agent did NOT ingest. It purged consumer credit bureaus, personal 1040s, and FinCEN CDD records before processing. Elena Vance—a 15% non-guarantor member—is programmatically excluded. She never applied for this credit, so pulling her into a commercial file and using it to tee up a wealth conversation is exactly the FCRA permissible-purpose problem we refuse to create. The firewall is data minimization at the source: the agent only ever sees what the commercial credit relationship actually justifies."*
   3. Point out the **Internal Liquidity Triage Indicator**:
@@ -103,7 +103,7 @@ flowchart LR
 - **What is Shown in the Demo**:
   - Pane 2 interactive entity map with green bounding-box citations on credit agreements; non-guarantor exclusion flags; dynamic slider recalculating net equity in real time; 1031 tax strategy toggle.
 - **Production Implementation Blueprint**:
-  - **Gemini Enterprise Agent Platform (fka Vertex AI Platform)** running `gemini-3.7-flash`; Google Cloud DLP; nCino REST integration; Cloud Run `CalculatorTool`.
+  - **Gemini Enterprise Agent Platform (fka Vertex AI Platform)** running `gemini-3.7-flash`; Google Cloud DLP; Core LOS REST integration; Cloud Run `CalculatorTool`.
 
 ---
 

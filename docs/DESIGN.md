@@ -57,7 +57,7 @@ All autonomous agent tags in runtime telemetry and orchestration logs are strict
 
 | Agent Identifier | Hex Code | Brand Profile Token | Architectural Role |
 | :--- | :--- | :--- | :--- |
-| **`[INGESTION_AGENT]`** | `#7FD1A9` | HBAN Mint Accent (`palette.accent`) | Core banking pipeline event stream intake (AFS Core, Pub/Sub) |
+| **`[INGESTION_AGENT]`** | `#7FD1A9` | HBAN Mint Accent (`palette.accent`) | Core banking pipeline event stream intake (core ledger, Pub/Sub) |
 | **`[DETECTION_AGENT]`** | `#7FD1A9` | HBAN Mint Accent (`palette.accent`) | Fedwire clearing telemetry & title demand queue fusion |
 | **`[CLASSIFICATION_AGENT]`**| `#E38341` | HBAN Brand Warn (`palette.warn`) | Liquidity event triage & commercial flight risk categorization |
 | **`[ENTITY_AGENT]`** | `#B8EFE4` | HBAN Sage Prosperous (`hban.sage-prosperous`) | Gemini 3.7 Flash multimodal OCR & beneficial ownership resolution |

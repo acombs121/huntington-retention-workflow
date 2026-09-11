@@ -142,7 +142,7 @@ DETECTION_TRACES: Dict[str, Dict[str, Any]] = {
             {
                 "category": "Credit Core & Pipeline Recon",
                 "signal_name": "Replacement Facility Inquiry Cross-Check",
-                "source": "nCino Commercial LOS & AFS Core Accounting",
+                "source": "Commercial LOS & Core Loan Accounting",
                 "observation": "Cross-referenced all borrowing entities and guarantors across Huntington's 1,400 branches. Zero replacement loan applications, zero rate lock commitments, and zero pending term sheets.",
                 "risk_impact": "+35% Flight Probability (Excludes Refinance)",
                 "verdict": "ZERO REPLACEMENT FINANCING"
@@ -169,7 +169,7 @@ DETECTION_TRACES: Dict[str, Dict[str, Any]] = {
                 "hypothesis": "Hypothesis A: Internal Debt Refinance or Extension",
                 "confidence_pct": 4,
                 "status": "REJECTED",
-                "rationale": "No replacement loan records in nCino across Huntington's 21-state footprint. Demand originated by third-party title insurer representing external buyer."
+                "rationale": "No replacement loan records in the LOS across Huntington's 21-state footprint. Demand originated by third-party title insurer representing external buyer."
             },
             {
                 "hypothesis": "Hypothesis B: IRC §1031 Tax-Deferred Exchange",
@@ -187,7 +187,7 @@ DETECTION_TRACES: Dict[str, Dict[str, Any]] = {
         "trace_steps": [
             "[00:00.012] Ingested incoming eFax from First American Title (Escrow #FA-2026-8819-COL) via Microsoft Graph API connector.",
             "[00:00.048] Multimodal spatial parse: Extracted borrower entity 'Vance Riverfront Properties IV, LLC', facility #CC-8821, payoff quote $5,214,800.00, scheduled closing 2026-09-16.",
-            "[00:00.082] Executed nCino & AFS core cross-reference: Facility #CC-8821 active. Query for replacement loan applications across Huntington's 1,400 branches returned 0 records.",
+            "[00:00.082] Executed LOS and core ledger cross-reference: Facility #CC-8821 active. Query for replacement loan applications across Huntington's 1,400 branches returned 0 records.",
             "[00:00.125] Scanned title exhibits for tax-deferred exchange language or Qualified Intermediary (QI) assignments: Zero QI exhibits detected.",
             "[00:00.169] Calculated net proceeds triage: Grounded valuation ($8,500,000) - title payoff quote ($5,214,800) - closing costs ($382,500) = $2,902,700 net cash equity.",
             "[00:00.210] Synthesized flight risk signals: Unencumbered seller cash + zero replacement credit + closing in 12 days. Historical treasury flight baseline: 78%.",
@@ -214,7 +214,7 @@ DETECTION_TRACES: Dict[str, Dict[str, Any]] = {
             {
                 "category": "Credit Core & Pipeline Recon",
                 "signal_name": "Replacement Facility Inquiry",
-                "source": "nCino Commercial LOS / SBA 7(a) Portfolio Queue",
+                "source": "Commercial LOS / SBA 7(a) Portfolio Queue",
                 "observation": "Existing SBA 7(a) commercial facility #SBA-7492. External buyer ('Midwest Precision Holdings LLC') securing debt with third-party institutional lender; no replacement loan with Huntington.",
                 "risk_impact": "+30% Flight Probability (External Financing)",
                 "verdict": "NO REPLACEMENT FINANCING"
@@ -260,7 +260,7 @@ DETECTION_TRACES: Dict[str, Dict[str, Any]] = {
             "[00:00.010] Ingested Chicago Title payoff notice (#CT-2026-4401-OH) during scheduled T-120 surveillance sweep.",
             "[00:00.038] Parsed exhibits: Identified buyer entity 'Midwest Precision Holdings LLC' and independent lender.",
             "[00:00.071] Detected IRC §1031 Exchange exhibit: 'Notice of Assignment to Qualified Intermediary' naming Chicago Title Land Trust / IPX1031.",
-            "[00:00.104] Queried nCino replacement pipeline: 0 applications for Buckeye Precision Tooling or Arthur Pendelton.",
+            "[00:00.104] Queried the LOS replacement pipeline: 0 applications for Buckeye Precision Tooling or Arthur Pendelton.",
             "[00:00.142] Evaluated intermediary classification: Identifiable intermediary present. Proceeds are 100% tax-deferred exchange equity ($1.59M).",
             "[00:00.180] Output composite confidence score: 88% (Intermediary Flight Risk). Pre-staged Huntington 1031 Qualified Escrow Depository."
         ]
@@ -270,7 +270,7 @@ DETECTION_TRACES: Dict[str, Dict[str, Any]] = {
         "confidence_score": 58,
         "urgency_tier": "Refinance Watchlist (T-45 Days)",
         "classification": "Competitive Refinance Inquiry / Equity Restructuring",
-        "summary_verdict": "Detection agent flagged preliminary payoff inquiry from Commonwealth Land Title. nCino indicates an active loan renewal discussion by Amanda Cross, but borrower is shopping competitive takeout terms with Fifth Third Bank. Moderate flight risk requires banker intervention to lock facility.",
+        "summary_verdict": "Detection agent flagged preliminary payoff inquiry from Commonwealth Land Title. The LOS indicates an active loan renewal discussion by Amanda Cross, but borrower is shopping competitive takeout terms with Fifth Third Bank. Moderate flight risk requires banker intervention to lock facility.",
         "model_agent": "gemini-3.7-flash (Multimodal Signal Fusion)",
         "evaluation_timestamp": "2026-08-05T11:20:00Z",
         "fused_signals": [
@@ -285,8 +285,8 @@ DETECTION_TRACES: Dict[str, Dict[str, Any]] = {
             {
                 "category": "Credit Core & Pipeline Recon",
                 "signal_name": "Active Pipeline & Term Sheet Comparison",
-                "source": "nCino Commercial LOS / RM Amanda Cross",
-                "observation": "Active renewal application in nCino under review; borrower noted receiving competitive loan package from Fifth Third Bank.",
+                "source": "Commercial LOS / RM Amanda Cross",
+                "observation": "Active renewal application in the LOS under review; borrower noted receiving competitive loan package from Fifth Third Bank.",
                 "risk_impact": "+25% Competitive Takeout Risk",
                 "verdict": "PENDING INTERNAL REFI"
             },
@@ -329,7 +329,7 @@ DETECTION_TRACES: Dict[str, Dict[str, Any]] = {
         ],
         "trace_steps": [
             "[00:00.012] Ingested preliminary payoff inquiry from Commonwealth Land Title (#CLT-2026-9031-OH).",
-            "[00:00.045] nCino cross-check: Found in-progress renewal file #REN-6104 assigned to Amanda Cross.",
+            "[00:00.045] LOS cross-check: Found in-progress renewal file #REN-6104 assigned to Amanda Cross.",
             "[00:00.089] CRM activity note: Client requested payoff quote to evaluate competing refinance quote from Fifth Third.",
             "[00:00.120] Intermediary check: No Qualified Intermediary exhibits present.",
             "[00:00.155] Synthesized classification: Competitive Refinance Takeout Risk (58% confidence). Staged for RM defensive rate-lock outreach."
@@ -382,13 +382,13 @@ SIGNAL_GRAPHS: Dict[str, Dict[str, Any]] = {
             },
             {
                 "id": "src_ncino",
-                "label": "nCino Commercial LOS",
+                "label": "Commercial LOS",
                 "tier": "source",
                 "status": "verified",
                 "badge": "LOS RECON",
                 "subtitle": "Facility #CC-8821",
                 "properties": {
-                    "LOS System": "nCino Commercial Banking Cloud",
+                    "LOS System": "Commercial Loan Origination System",
                     "Active Applications": "0 In-Flight Records",
                     "Rate Lock Commitments": "0 Found Across 1,400 Branches",
                     "Recon Result": "No Replacement Debt"
@@ -399,13 +399,13 @@ SIGNAL_GRAPHS: Dict[str, Dict[str, Any]] = {
             },
             {
                 "id": "src_afs",
-                "label": "AFS Level III Accounting",
+                "label": "Core Loan Accounting",
                 "tier": "source",
                 "status": "verified",
                 "badge": "CORE LEDGER",
                 "subtitle": "UPB $5,180,000.00",
                 "properties": {
-                    "Core Ledger": "AFS Level III Commercial Loan Core",
+                    "Core Ledger": "Level III Commercial Loan Core Ledger",
                     "Unpaid Principal": "$5,180,000.00",
                     "Calculated Payoff Quote": "$5,214,800.00",
                     "Per Diem Interest": "$692.50",
@@ -524,7 +524,7 @@ SIGNAL_GRAPHS: Dict[str, Dict[str, Any]] = {
                 "badge": "BEHAVIORAL SIGNAL",
                 "subtitle": "+35% Flight Risk Weight",
                 "properties": {
-                    "Core Query": "AFS + nCino Cross-System Footprint Scan",
+                    "Core Query": "Core Ledger + LOS Cross-System Footprint Scan",
                     "Branches Checked": "1,400 HBAN Branches",
                     "Pending Pipelines": "0 Applications / 0 Term Sheets",
                     "Deterministic Finding": "Completely Eliminates Internal Refinance"
@@ -1229,7 +1229,7 @@ async def get_flight_risk_trace(
 ) -> Dict[str, Any]:
     """
     Returns the multimodal Detection Agent Reasoning Trace for a payoff event,
-    explaining signal fusion across payoff intake, AFS/nCino replacement loan queries,
+    explaining signal fusion across payoff intake, core ledger and LOS replacement loan queries,
     Qualified Intermediary exhibits, and hypothesis testing.
     """
     trace = DETECTION_TRACES.get(payoff_id)
@@ -1773,7 +1773,7 @@ async def serve_spa(full_path: str):
         if candidate_dir.is_dir():
             candidate_file = (candidate_dir / full_path).resolve()
             if (candidate_dir in candidate_file.parents or candidate_file == candidate_dir) and candidate_file.is_file():
-                if full_path in ["brand_kit.html", "demo_script.html", "huntington-horizon.pdf", "overview.html", "static_overview.html"]:
+                if full_path in ["brand_kit.html", "demo_script.html", "huntington-horizon.pdf", "overview.html"]:
                     headers = {}
                     if candidate_file.name.endswith(".html"):
                         headers = {
