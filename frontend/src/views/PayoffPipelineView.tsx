@@ -84,7 +84,7 @@ function getTopFactorsForDeal(deal: PayoffItem): DealTraceAnalysis {
         },
         {
           title: '$1.59M Exchange Equity Target',
-          description: 'Appraised $3.15M valuation vs. $1.42M debt payoff leaves $1.59M target for Qualified Escrow Depository.',
+          description: 'Estimated $3.15M valuation vs. $1.42M debt payoff leaves roughly $1.59M for the Qualified Escrow Depository.',
         },
       ],
       pathways: [

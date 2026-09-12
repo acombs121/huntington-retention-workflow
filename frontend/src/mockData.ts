@@ -16,7 +16,7 @@ export const detectionReasoningTraces: Record<string, DetectionReasoningTrace> =
     confidence_score: 94,
     urgency_tier: "Critical Flight Risk (T-12 Days)",
     classification: "Commercial Asset Sale / Taxable Cash-Out (High Flight Risk)",
-    summary_verdict: "Detection agent confirmed third-party asset sale with zero replacement financing and no Qualified Intermediary (QI) assignment. Estimated $2,902,700.00 in unencumbered net seller equity is destined for constructive receipt in operating checking, exposing the relationship to imminent 48-hour deposit flight.",
+    summary_verdict: "Detection agent confirmed a third-party asset sale: zero replacement financing anywhere in Huntington, and a prepayment premium quote the borrower asked us to price. An estimated $2,902,700.00 in net seller equity leaves the facility at closing. No exchange coordination has been requested, so the proceeds are presumed taxable -- but under either treatment the balance leaves, exposing the relationship to deposit flight within 48 hours.",
     model_agent: "gemini-3.7-flash (Multimodal Signal Fusion)",
     evaluation_timestamp: "2026-09-04T08:14:22Z",
     fused_signals: [
@@ -37,12 +37,12 @@ export const detectionReasoningTraces: Record<string, DetectionReasoningTrace> =
         verdict: "ZERO REPLACEMENT FINANCING"
       },
       {
-        category: "Intermediary & Tax Identification",
-        signal_name: "IRC §1031 Qualified Intermediary (QI) Audit",
-        source: "Multimodal Exhibit OCR (Exhibits A-E Title Demand)",
-        observation: "Settlement form indicates direct disbursement to seller entity operating account. Zero QI assignment contract, exchange agreement, or intermediary designation present.",
-        risk_impact: "+25% Flight Probability (Direct Constructive Receipt)",
-        verdict: "TAXABLE CASH-OUT / NO INTERMEDIARY"
+        category: "Servicing Request Pattern",
+        signal_name: "Prepayment Premium Quote Requested",
+        source: "Loan Servicing call log / payoff quote workflow",
+        observation: "Borrower requested a yield-maintenance premium quote on 2026-08-26, nineteen days before the scheduled closing; the premium can only be computed by Huntington, so the request lands on our own servicing desk. No Qualified Intermediary has been named to the bank and no exchange coordination has been requested.",
+        risk_impact: "+25% Flight Probability (Early Retirement Intent)",
+        verdict: "EARLY PAYOFF PRICED"
       },
       {
         category: "Valuation & Liquidity Delta",
@@ -64,22 +64,22 @@ export const detectionReasoningTraces: Record<string, DetectionReasoningTrace> =
         hypothesis: "Hypothesis B: IRC §1031 Tax-Deferred Exchange",
         confidence_pct: 12,
         status: "UNCONFIRMED",
-        rationale: "Initial title exhibits lack Qualified Intermediary assignment. Funds are scheduled for direct cash constructive receipt, though borrower remains eligible to elect 1031 prior to closing."
+        rationale: "No exchange coordination has been requested and no Qualified Intermediary has been named to the bank. Huntington is not a party to an exchange agreement and would not receive one, so this cannot be ruled out from bank-held data; the borrower also remains eligible to elect a 1031 prior to closing."
       },
       {
         hypothesis: "Hypothesis C: Third-Party Asset Sale with Liquid Cash-Out",
         confidence_pct: 94,
         status: "ACCEPTED",
-        rationale: "Complete asset disposition confirmed by title closing demand, no replacement debt, and direct seller equity disbursement. Historical Treasury flight baseline: 78% within 48-72 hours."
+        rationale: "Asset disposition confirmed by the inbound title closing demand, no replacement debt at Huntington, and a borrower-requested prepayment premium quote. Industry deposit-flight benchmark: 78% within 48-72 hours."
       }
     ],
     trace_steps: [
       "[00:00.012] Ingested incoming eFax from First American Title (Escrow #FA-2026-8819-COL) via Microsoft Graph API connector.",
       "[00:00.048] Multimodal spatial parse: Extracted borrower entity 'Vance Riverfront Properties IV, LLC', facility #CC-8821, payoff quote $5,214,800.00, scheduled closing 2026-09-16.",
       "[00:00.082] Executed LOS and core ledger cross-reference: Facility #CC-8821 active. Query for replacement loan applications across Huntington's 1,400 branches returned 0 records.",
-      "[00:00.125] Scanned title exhibits for tax-deferred exchange language or Qualified Intermediary (QI) assignments: Zero QI exhibits detected.",
+      "[00:00.125] Retrieved servicing request history for facility #CC-8821: borrower-requested yield-maintenance premium quote logged 2026-08-26. No 1031 exchange coordination requested.",
       "[00:00.169] Calculated net proceeds triage: Grounded valuation ($8,500,000) - title payoff quote ($5,214,800) - closing costs ($382,500) = $2,902,700 net cash equity.",
-      "[00:00.210] Synthesized flight risk signals: Unencumbered seller cash + zero replacement credit + closing in 12 days. Historical treasury flight baseline: 78%.",
+      "[00:00.210] Synthesized flight risk signals: Unencumbered seller cash + zero replacement credit + closing in 12 days. Industry deposit-flight benchmark: 78%.",
       "[00:00.245] Output composite confidence score: 94% (High Flight Risk). Auto-staged Tier 1 Business Premier ICS and borrower DocuSign routing packet."
     ]
   },
@@ -119,7 +119,7 @@ export const detectionReasoningTraces: Record<string, DetectionReasoningTrace> =
       {
         category: "Valuation & Liquidity Delta",
         signal_name: "Exchange Equity Volume",
-        source: "Appraised Asset Valuation ($3.15M) vs SBA Payoff ($1.42M)",
+        source: "Cap-Rate Triage Valuation ($3.15M est.) vs SBA Payoff ($1.42M)",
         observation: "Estimated exchange proceeds of $1,588,250.00 held under exchange safe harbor.",
         risk_impact: "+10% Institutional Depository Target",
         verdict: "$1.59M QI ESCROW TARGET"
@@ -300,7 +300,7 @@ export const initialPayoffQueue: PayoffItem[] = [
     commercial_rm: "Greg Miller",
     assigned_pwa: "Sarah Jenkins",
     unstated_sale_price: false,
-    noi_trailing_q1: 245000.00,
+    noi_trailing_q1: 245700.00,
     submarket_cap_rate: 0.078,
     indicative_valuation: 3150000.00,
     estimated_net_equity: 1588250.00,
@@ -335,7 +335,7 @@ export const initialPayoffQueue: PayoffItem[] = [
     commercial_rm: "Amanda Cross",
     assigned_pwa: "Brian Gallagher",
     unstated_sale_price: true,
-    noi_trailing_q1: 412000.00,
+    noi_trailing_q1: 411840.00,
     submarket_cap_rate: 0.072,
     indicative_valuation: 5720000.00,
     estimated_net_equity: 2222600.00,
@@ -541,19 +541,20 @@ export const mockSignalGraphs: Record<string, SpannerGraphData> = {
       instance: "spanner-us-east4-prod-a",
       query_latency_ms: 18.4,
       nodes_matched: 13,
-      edges_traversed: 13,
+      edges_traversed: 14,
       gql_query: `GRAPH HuntingtonCommercialGraph
 MATCH (b:BorrowerEntity {id: 'VANCE-IV-LLC'})-[:HAS_BENEFICIAL_OWNER]->(p:Principal)
 OPTIONAL MATCH (p)-[:GUARANTOR_OF]->(f:CreditFacility {id: 'FAC-8821'})
 MATCH (f)<-[:PAYOFF_TARGET]-(d:TitleDemand {escrow_id: 'FA-2026-8819-COL'})
+OPTIONAL MATCH (f)<-[:QUOTED_FOR]-(q:PrepaymentQuote)
 OPTIONAL MATCH (b)-[:ASSIGNED_QI]->(qi:Intermediary)
 RETURN b.legal_name, p.name, p.guaranty_status, p.glba_quarantined,
-       qi.id IS NOT NULL AS has_1031_qi, f.unpaid_balance`
+       q.requested_at, qi.id IS NOT NULL AS has_1031_qi, f.unpaid_balance`
     },
     nodes: [
       {
         id: "src_fax",
-        label: "First American Title Demand",
+        label: "Inbound eFax Channel",
         tier: "source",
         status: "verified",
         badge: "INBOUND EFAX",
@@ -622,19 +623,19 @@ RETURN b.legal_name, p.name, p.guaranty_status, p.glba_quarantined,
         y: 200
       },
       {
-        id: "escrow_order",
-        label: "Escrow Settlement Order",
+        id: "payoff_demand",
+        label: "Inbound Payoff Demand",
         tier: "contract",
         status: "active",
-        badge: "SETTLEMENT",
-        subtitle: "Closing: 2026-09-16",
+        badge: "TITLE DEMAND",
+        subtitle: "Good-Through: 2026-09-16",
         properties: {
-          "Escrow ID": "FA-2026-8819-COL",
-          "Settlement Officer": "Karen Lindqvist",
-          "Wire Target": "Operating Checking *4109",
-          "QI Exhibit Attached": "None Detected (Exhibits A-E Audited)"
+          "Escrow File Cited": "FA-2026-8819-COL (the requester's file number, not ours)",
+          "Signed By": "Karen Lindqvist, Commercial Escrow Officer",
+          "Borrower Authorization": "Signed by Marcus Vance, Managing Member",
+          "Not Received": "Settlement statement, seller disbursement instructions, purchase contract"
         },
-        agent_relevance: "Identifies settlement mechanics and absence of statutory 1031 escrow instructions.",
+        agent_relevance: "The one instrument the payoff desk actually receives. It fixes the closing date and the settlement agent; it does not disclose the sale price or where the seller's net proceeds go.",
         x: 280,
         y: 360
       },
@@ -726,20 +727,20 @@ RETURN b.legal_name, p.name, p.guaranty_status, p.glba_quarantined,
         y: 120
       },
       {
-        id: "sig_no_qi",
-        label: "Absence of 1031 Intermediary",
+        id: "sig_prepay_quote",
+        label: "Prepayment Premium Quote Requested",
         tier: "signal",
         status: "flagged",
-        badge: "TAX CLASSIFICATION",
-        subtitle: "+25% Cash-Out Weight",
+        badge: "BORROWER REQUEST",
+        subtitle: "+25% Disposition Weight",
         properties: {
-          "Exhibit Audit": "Full Multimodal OCR on Title Demand Exhibits A-E",
-          "Intermediary Status": "No Qualified Intermediary (QI) Named",
-          "Funds Destination": "Payoff demand directs proceeds to the borrower, not a QI",
-          "Finding": "Indicates a taxable cash-out rather than a 1031 exchange",
-          "Inference Type": "Negative inference, valid because the demand names a recipient"
+          "Request Channel": "Borrower call to Loan Servicing, logged 2026-08-26",
+          "Quote Issued": "Yield-maintenance premium, good through 2026-09-16",
+          "Why We Can See It": "The premium can only be computed by Huntington, so the borrower has to ask us for it",
+          "Finding": "Borrower is pricing an early retirement of the facility, not a renewal",
+          "Limitation": "Confirms early payoff; on its own it does not separate a sale from an external refinance"
         },
-        agent_relevance: "Proceeds are directed to client operating accounts rather than a 1031 escrow, which is what triggers the Treasury ICS play.",
+        agent_relevance: "The earliest disposition signal that originates inside the bank. A borrower who intends to carry the loan to maturity has no reason to price a prepayment premium.",
         x: 850,
         y: 240
       },
@@ -770,10 +771,11 @@ RETURN b.legal_name, p.name, p.guaranty_status, p.glba_quarantined,
         subtitle: "Urgency: Critical (T-12 Days)",
         properties: {
           "Composite Confidence": "94.2% Deterministic Graph Fusion",
-          "Confidence Basis": "Anchored on the inbound title payoff demand (T-12); maturity screening alone does not separate a sale from a refinance",
+          "Confidence Basis": "Anchored on the inbound title payoff demand and the borrower's own prepayment-quote request (T-12); maturity screening alone does not separate a sale from a refinance",
           "Urgency Window": "Critical (12 Calendar Days to Closing)",
           "Recommended Product": "Huntington Business Premier ICS (4.85% APY)",
-          "Wealth Scaffolding": "Pre-Staged Series 7/66 Intake Shell (Quarantined)"
+          "Wealth Scaffolding": "Pre-Staged Series 7/66 Intake Shell (Quarantined)",
+          "Proceeds Treatment": "Taxable cash-out presumed. No exchange coordination has been requested and the bank is not a party to any §1031 agreement, so this cannot be confirmed from bank-held data. Either path is deposit flight; it selects the product."
         },
         agent_relevance: "Final verdict grounding the Commercial RM T-12 phone briefing. Classification firms up when the title demand lands; the earlier signals set the watchlist.",
         x: 850,
@@ -781,19 +783,20 @@ RETURN b.legal_name, p.name, p.guaranty_status, p.glba_quarantined,
       }
     ],
     edges: [
-      { id: "e1", source: "src_fax", target: "escrow_order", label: "INBOUND_DEMAND", type: "primary" },
+      { id: "e1", source: "src_fax", target: "payoff_demand", label: "INBOUND_DEMAND", type: "primary" },
       { id: "e2", source: "src_ncino", target: "note_facility", label: "CORE_RECON", type: "primary" },
       { id: "e3", source: "src_afs", target: "note_facility", label: "SERVICING_DATA", type: "primary" },
-      { id: "e4", source: "escrow_order", target: "entity_title", label: "ASSIGNED_ESCROW", type: "primary" },
+      { id: "e4", source: "payoff_demand", target: "entity_title", label: "ASSIGNED_ESCROW", type: "primary" },
       { id: "e5", source: "note_facility", target: "entity_borrower", label: "BORROWER_OBLIGOR", type: "primary" },
       { id: "e6", source: "entity_borrower", target: "principal_marcus", label: "BENEFICIAL_OWNER_85PCT", type: "primary" },
       { id: "e7", source: "entity_borrower", target: "principal_elena", label: "BENEFICIAL_OWNER_15PCT", type: "quarantined" },
       { id: "e8", source: "note_facility", target: "sig_no_refi", label: "PIPELINE_CHECK", type: "signal" },
-      { id: "e9", source: "escrow_order", target: "sig_no_qi", label: "EXHIBIT_ANALYSIS", type: "signal" },
+      { id: "e9", source: "payoff_demand", target: "verdict_node", label: "ANCHORS_CLASSIFICATION", type: "verdict" },
       { id: "e10", source: "note_facility", target: "sig_equity_delta", label: "VALUATION_TRIAGE", type: "signal" },
       { id: "e11", source: "sig_no_refi", target: "verdict_node", label: "CONFIRMS_DISPOSITION", type: "verdict" },
-      { id: "e12", source: "sig_no_qi", target: "verdict_node", label: "CONFIRMS_CASH_OUT", type: "verdict" },
-      { id: "e13", source: "sig_equity_delta", target: "verdict_node", label: "SCALES_PRIORITY", type: "verdict" }
+      { id: "e12", source: "sig_prepay_quote", target: "verdict_node", label: "CONFIRMS_EARLY_PAYOFF", type: "verdict" },
+      { id: "e13", source: "sig_equity_delta", target: "verdict_node", label: "SCALES_PRIORITY", type: "verdict" },
+      { id: "e14", source: "note_facility", target: "sig_prepay_quote", label: "SERVICING_REQUEST", type: "signal" }
     ]
   },
   "PO-2026-7492": {
@@ -813,8 +816,8 @@ RETURN b.legal_name, p.name, p.guaranty_status, p.glba_quarantined,
 MATCH (b:BorrowerEntity {id: 'BUCKEYE-TOOL-CORP'})-[:HAS_BENEFICIAL_OWNER]->(p:Principal)
 MATCH (b)-[:OBLIGOR_ON]->(f:SBAFacility {id: 'SBA-7492'})
 MATCH (f)<-[:PAYOFF_TARGET]-(d:TitleDemand {escrow_id: 'CT-2026-4401-OH'})
-MATCH (d)-[:CONTAINS_EXHIBIT]->(e:ExchangeAgreement)-[:NAMES_QI]->(qi:QualifiedIntermediary)
-RETURN b.legal_name, p.name, qi.entity_name, qi.escrow_wire_instructions, f.unpaid_balance`
+MATCH (b)-[:SUBMITTED]->(r:ExchangeCoordinationRequest)-[:NAMES_QI]->(qi:QualifiedIntermediary)
+RETURN b.legal_name, p.name, qi.entity_name, r.logged_at, f.unpaid_balance`
     },
     nodes: [
       {
@@ -869,19 +872,19 @@ RETURN b.legal_name, p.name, qi.entity_name, qi.escrow_wire_instructions, f.unpa
       },
       {
         id: "contract_1031",
-        label: "IRC §1031 Exchange Assignment",
+        label: "Borrower 1031 Coordination Request",
         tier: "contract",
         status: "active",
-        badge: "EXCHANGE CONTRACT",
-        subtitle: "Notice of Assignment to QI",
+        badge: "RM CALL NOTE",
+        subtitle: "Logged 2026-08-18 by Commercial RM",
         properties: {
-          "Exhibit": "Exhibit C to Settlement Escrow Instructions",
-          "Assignee": "IPX1031 as Qualified Intermediary",
-          "Safe Harbor": "Treas. Reg. § 1.1031(k)-1(g)(4)"
+          "Channel": "Inbound borrower call to the Commercial RM, logged in CRM",
+          "Intermediary Named by Borrower": "IPX1031",
+          "Document Status": "Exchange agreement not provided; the bank is not a party to it"
         },
-        agent_relevance: "Legally binds proceeds to Qualified Intermediary, eliminating direct cash-out.",
-        x: 280,
-        y: 360
+        agent_relevance: "The bank learns of the exchange because the borrower asks for help with it, not because it receives the exchange agreement.",
+        x: 660,
+        y: 400
       },
       {
         id: "entity_buckeye",
@@ -933,15 +936,15 @@ RETURN b.legal_name, p.name, qi.entity_name, qi.escrow_wire_instructions, f.unpa
       },
       {
         id: "sig_qi_confirmed",
-        label: "Identifiable QI Assignment",
+        label: "QI Named by Borrower",
         tier: "signal",
         status: "flagged",
-        badge: "STATUTORY SAFE HARBOR",
-        subtitle: "Direct Receipt Prohibited",
+        badge: "BORROWER-STATED",
+        subtitle: "Qualified Escrow Opportunity",
         properties: {
-          "Tax Rule": "IRC § 1031(a)(3) Direct Wire Restriction",
-          "Intermediary Validated": "IPX1031 / Chicago Title Land Trust",
-          "Signal Impact": "Eliminates Taxable Cash-Out; Mandates QI Escrow"
+          "Safe Harbor Sought": "Treas. Reg. § 1.1031(k)-1(g)(3) qualified escrow account",
+          "Intermediary Named": "IPX1031 (stated by the borrower; not independently verified)",
+          "Signal Impact": "Proceeds route to a qualified escrow rather than the operating DDA; the retention play is the escrow depository, not ICS"
         },
         agent_relevance: "Directs retention strategy toward Huntington 1031 Escrow Depository.",
         x: 850,
@@ -955,9 +958,10 @@ RETURN b.legal_name, p.name, qi.entity_name, qi.escrow_wire_instructions, f.unpa
         badge: "ESCROW TARGET",
         subtitle: "Huntington Qualified Escrow Depository / QI: IPX1031 (4.75%)",
         properties: {
-          "Asset Valuation": "$3,150,000.00",
-          "Debt Extinguished": "$1,420,000.00",
-          "Net QI Escrow": "$1,588,250.00 Safe Harbor Proceeds"
+          "Indicative Valuation": "$3,150,000.00 est. ($245.7k NOI capitalized @ 7.80%)",
+          "Debt Extinguishment": "$1,420,000.00",
+          "Estimated Closing Costs": "$141,750.00 (4.5% Standard Commercial Rate)",
+          "Net Exchange Proceeds": "$1,588,250.00 estimated safe-harbor proceeds"
         },
         agent_relevance: "High-yield escrow depository volume available for Huntington retention.",
         x: 850,
@@ -981,14 +985,14 @@ RETURN b.legal_name, p.name, qi.entity_name, qi.escrow_wire_instructions, f.unpa
       }
     ],
     edges: [
-      { id: "e1_7492", source: "src_chicago_fax", target: "contract_1031", label: "ATTACHED_EXHIBIT", type: "primary" },
+      { id: "e1_7492", source: "entity_buckeye", target: "contract_1031", label: "SUBMITTED_REQUEST", type: "primary" },
       { id: "e2_7492", source: "src_sba_core", target: "note_sba", label: "CORE_LEDGER", type: "primary" },
       { id: "e3_7492", source: "note_sba", target: "entity_buckeye", label: "BORROWER_OBLIGOR", type: "primary" },
       { id: "e4_7492", source: "contract_1031", target: "entity_qi", label: "ASSIGNS_PROCEEDS_TO", type: "primary" },
       { id: "e5_7492", source: "entity_buckeye", target: "principal_arthur", label: "SOLE_OWNER_100PCT", type: "primary" },
-      { id: "e6_7492", source: "contract_1031", target: "sig_qi_confirmed", label: "VERIFIES_SAFE_HARBOR", type: "signal" },
+      { id: "e6_7492", source: "contract_1031", target: "sig_qi_confirmed", label: "NAMES_INTERMEDIARY", type: "signal" },
       { id: "e7_7492", source: "note_sba", target: "sig_escrow_target", label: "EQUITY_RECON", type: "signal" },
-      { id: "e8_7492", source: "sig_qi_confirmed", target: "verdict_node_1031", label: "ELIMINATES_CASH_OUT", type: "verdict" },
+      { id: "e8_7492", source: "sig_qi_confirmed", target: "verdict_node_1031", label: "SELECTS_ESCROW_PRODUCT", type: "verdict" },
       { id: "e9_7492", source: "sig_escrow_target", target: "verdict_node_1031", label: "QUALIFIES_ESCROW_DEP", type: "verdict" },
       { id: "e10_7492", source: "entity_qi", target: "sig_qi_confirmed", label: "QI_DESIGNATION", type: "primary" },
       { id: "e11_7492", source: "principal_arthur", target: "sig_escrow_target", label: "BENEFICIAL_INTEREST", type: "primary" }
@@ -1066,17 +1070,17 @@ RETURN b.legal_name, p.name, f.unpaid_balance, app.status, app.proposed_rate`
       },
       {
         id: "contract_refi",
-        label: "Competitive Refinance Term Sheet",
+        label: "Competing Offer (Client-Reported)",
         tier: "contract",
         status: "active",
-        badge: "RATE RESTRUCTURE",
-        subtitle: "Third-Party Regional Competitor",
+        badge: "CLIENT-REPORTED",
+        subtitle: "Relayed to RM Amanda Cross",
         properties: {
-          "Proposed Financing": "Commercial Term Loan ($3.24M)",
-          "Cash Extraction": "$0.00 (Pure Debt Replacement)",
+          "Proposed Financing": "Commercial term loan (~$3.24M), as described by the client",
+          "Cash Extraction": "$0.00 (client states pure debt replacement)",
           "Rate Differential": "Estimated -35 bps vs Existing Note"
         },
-        agent_relevance: "Documents competitive threat: risk is loan asset runoff, not liquid deposit flight.",
+        agent_relevance: "Competitive threat as relayed by the client; Huntington does not hold the competitor's term sheet. The risk here is loan asset runoff, not liquid deposit flight.",
         x: 280,
         y: 360
       },

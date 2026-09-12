@@ -183,7 +183,7 @@ Rather than running multi-hop OCR through Document AI and passing text dumps to 
 The LLM is strictly confined to unstructured document understanding, contextual planning, and narrative drafting. All financial arithmetic and regulatory filtering are executed by deterministic code:
 * `CalculatorTool.compute_payoff()`: Calculates exact UPB per diem interest based on contractual day counts.
 * `CalculatorTool.capitalize_noi()`: Computes indicative valuation (NOI ÷ cap rate) and net equity proceeds; inputs are grounded by Vertex AI Search, arithmetic is executed by deterministic code.
-* `TenThirtyOneDetectorTool.evaluate()`: Scans title exhibits for Section 1031 exchange provisions, toggling the settlement routing between Business Premier ICS and QI Escrow Custody.
+* `TenThirtyOneDetectorTool.evaluate()`: Checks bank-held records for a named Qualified Intermediary or a borrower request for exchange coordination, toggling settlement routing between Business Premier ICS and QI Escrow Custody. The bank is not a party to the exchange agreement and does not receive it, so a negative result is a presumption rather than a finding.
 * `ExclusionSentryTool.screen()`: Evaluates objective regulatory risk ratings and minimum liquidity hurdles under strict ECOA/Reg B deterministic parameters.
 
 ### 4.3 High-Fidelity Signal Grounding via Google Cloud Spanner Graph (ISO GQL)

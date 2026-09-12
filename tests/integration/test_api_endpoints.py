@@ -2,6 +2,8 @@
 Integration Tests for Huntington Book Scout FastAPI Endpoints
 Verifies multi-deal valuation, entity resolution, wire instructions, and GLBA quarantine gate.
 """
+import json
+
 import pytest
 from starlette.testclient import TestClient
 
@@ -42,7 +44,7 @@ def test_valuation_buckeye_tooling_sub_7m():
     response = client.post("/api/valuation", json={
         "payoff_id": "PO-2026-7492",
         "sale_price": 3150000.00,
-        "noi": 245000.00,
+        "noi": 245700.00,
         "cap_rate": 0.078,
         "debt_payoff": 1420000.00,
         "closing_cost_rate": 0.045,
@@ -395,8 +397,25 @@ def test_flight_risk_trace_endpoint_vance():
     signals = {s["signal_name"]: s for s in data["fused_signals"]}
     assert "Replacement Facility Inquiry Cross-Check" in signals
     assert "ZERO REPLACEMENT FINANCING" in signals["Replacement Facility Inquiry Cross-Check"]["verdict"]
-    assert "IRC §1031 Qualified Intermediary (QI) Audit" in signals
-    assert "NO INTERMEDIARY" in signals["IRC §1031 Qualified Intermediary (QI) Audit"]["verdict"]
+    # Wave 2: the third signal used to be an OCR "audit" of title-demand exhibits
+    # A-E. A payoff lender does not receive those. It is now the borrower's own
+    # prepayment-premium quote request, which originates at Huntington's servicing
+    # desk and is therefore genuinely observable.
+    assert "Prepayment Premium Quote Requested" in signals
+    prepay = signals["Prepayment Premium Quote Requested"]
+    assert "EARLY PAYOFF PRICED" in prepay["verdict"]
+    assert "Loan Servicing" in prepay["source"]
+
+    # Guard the whole class: nothing in this payload may claim the bank reads an
+    # instrument it is not a party to.
+    blob = json.dumps(data)
+    for never_received in (
+        "Exhibits A-E",
+        "executed purchase and sale agreement",
+        "Settlement form indicates direct disbursement",
+    ):
+        assert never_received not in blob, f"payoff desk never receives: {never_received}"
+
     
     # Verify hypothesis elimination
     hypotheses = {h["hypothesis"]: h for h in data["hypotheses"]}
@@ -492,6 +511,33 @@ def test_signal_graph_endpoint_vance():
     verdict = next(n for n in data["nodes"] if n["tier"] == "verdict")
     assert "Cash-Out" in verdict["label"]
     assert "T-12" in verdict["properties"]["Confidence Basis"]
+    # The tax treatment is a presumption, not a finding: the bank never sees the
+    # exchange agreement. It must say so on the node itself.
+    assert "presumed" in verdict["properties"]["Proceeds Treatment"]
+
+    # Wave 2: the inbound demand node describes only what the payoff desk gets.
+    demand = next(n for n in data["nodes"] if n["id"] == "payoff_demand")
+    assert demand["label"] == "Inbound Payoff Demand"
+    assert "Not Received" in demand["properties"]
+    assert "Wire Target" not in demand["properties"]
+
+    # The 25-point signal now originates at Huntington's own servicing desk.
+    prepay = next(n for n in data["nodes"] if n["id"] == "sig_prepay_quote")
+    assert "+25%" in prepay["subtitle"]
+    assert "Limitation" in prepay["properties"]
+
+    # Guard the class across every deal's graph payload.
+    for payoff_id in ("PO-2026-8821", "PO-2026-7492", "PO-2026-6104"):
+        blob = json.dumps(client.get(f"/api/signal-graph?payoff_id={payoff_id}").json())
+        for never_received in (
+            "Exhibits A-E",
+            "ExchangeAgreement",
+            "Exhibit C to Settlement Escrow Instructions",
+            "Escrow Settlement Order",
+            "Competitive Refinance Term Sheet",
+        ):
+            assert never_received not in blob, f"{payoff_id}: payoff desk never receives {never_received}"
+
 
 
 def test_signal_graph_endpoint_buckeye_1031():
