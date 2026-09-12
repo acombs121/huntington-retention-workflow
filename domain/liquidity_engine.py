@@ -56,6 +56,14 @@ class LiquidityEngine:
         """
         Primary interface: Performs complete liquidity assessment for an inbound commercial payoff.
         Absorbs valuation math, statutory safe harbor tax rules, and wire instruction generation.
+
+        `net_equity_proceeds` is sale price less the payoff quote less estimated closing
+        costs. It is deliberately **gross of the yield-maintenance prepayment premium and
+        of the seller's tax liability** -- capital gains and depreciation recapture on a
+        taxable cash-out. Both are real, both reduce the amount that can actually be
+        deposited, and neither is modelled here. Treat the result as an upper bound on
+        retainable proceeds rather than a settlement figure, and say so wherever it is
+        shown to a room.
         """
         if tax_strategy not in ("cash_out", "1031_exchange"):
             raise ValueError(f"Unsupported tax strategy '{tax_strategy}'. Must be 'cash_out' or '1031_exchange'.")

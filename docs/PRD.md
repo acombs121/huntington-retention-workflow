@@ -274,7 +274,7 @@ pool, not on the loan book.
 
 **Value levers, with duration applied**
 
-* Tier 1 (Treasury ICS & 1031 Escrow): 65% of recaptured funds @ 85 bps net NIM
+* Tier 1 (Treasury ICS & 1031 Escrow): 65% of recaptured funds @ 85 bps **FTP credit** — the wholesale funding a retained deposit displaces, less the 4.85% APY paid to the client (*not* asset yield minus deposit rate)
 * Tier 2 (Wealth AUM): 35% of recaptured funds @ 65 bps advisory fee
 * Annual enterprise cloud & operating run-rate: **($1.25M)**
 
@@ -285,6 +285,17 @@ pool, not on the loan book.
 > undiscounted blended margin of `(0.65 × 85) + (0.35 × 65)` = **78.0 bps** is
 > therefore wrong. The effective blended yield is
 > `(0.65 × 85 bps × 120/365) + (0.35 × 65 bps)` = **40.9 bps**.
+
+> [!NOTE]
+> **What the 85 bps is.** A deposit's value to the bank is **funds transfer pricing**: the
+> marginal wholesale funding it displaces, less the rate paid to the customer. It is not
+> asset yield minus deposit rate, which is why the 4.85% APY on Business Premier ICS does
+> not put the product under water. 85 bps over a 4.85% APY implies a marginal funding curve
+> near **5.70%** — derived here, verified nowhere, and owned by **Huntington Treasury**. The
+> ~4.88% implied coupon on the maturing Vance facility (per-diem $692.50 on $5.18M unpaid
+> principal) is a seasoned 2018-vintage asset yield on a loan being repaid at par; it is not
+> today's cost of funds. The deposit is worth more to the bank than the loan it replaces,
+> because the loan is leaving either way.
 
 | Recapture of At-Risk Equity | Retained Liquidity | Gross Annual Value | Cloud & Op Cost | Net Annual ROI |
 | :---: | :---: | :---: | :---: | :---: |
@@ -357,7 +368,7 @@ To satisfy CFO scrutiny, the $1.25M annual operating run-rate is componentized a
 | **01:30–03:30** | **The Book No Human Can Watch:** Open Book Scout in FSC. Point to the **Synthetic Capacity Meter** (~15 hrs discovery absorbed, 3 active inferences running). Show First American Title's payoff surfacing at T-12. | **Pane 1 (Priority Radar):** Synthetic Capacity Meter (`11,099 facilities screened ▸ 3 qualified & staged`). Dynamic critical queue sorted by close date. Green "Pass Tier 2" credit badge. | Google Cloud Pub/Sub ingesting core servicing events into Cloud Run event-driven microservices. | Head of Commercial sees leverage, not an intrusive time-and-motion audit. |
 | **03:30–06:00** | **The Agentic Proof (Multimodal Grounding & Dynamic Slider):** Click Marcus Vance. Watch Gemini 3.7 Flash extract LLC ownership with **visual bounding-box highlights**. Show missing sale price resolved via trailing NOI grounded by Vertex AI Search ($8.5M @ 7.5% cap rate). Adjust the indicative valuation slider live from $8.5M to $9.0M. | **Pane 2 & 3:** Interactive household topology map with clickable source citations (`⧉ Credit Vault #CC-8821`). Live streaming token feedback; interactive slider dynamically re-computing net proceeds to $3.35M. | Gemini Enterprise Agent Platform (`gemini-3.7-flash`) native multimodal document understanding; Vertex AI Search grounding; Cloud Run `CalculatorTool`. | CTO & CIO see state-of-the-art multimodal AI; CFO sees automated analyst judgment. |
 | **06:00–08:30** | **The Human Touch + The Wealth Bottleneck Solved:** Step into Greg's 4-minute call. Click **[Approve & Deliver Wire Form]**, generating First American's wire letter. Toggle **Persona Switcher** to Sarah Jenkins (PWA): show pre-staged KYC/CIP, SEI shell, and **Automated Quarterly Review Dossier**. Say: *"We achieve 2x CSA operational leverage, expanding senior PWA capacity to 95–100 relationships (+20–25%) while routing transactional accounts to our Centralized Wealth Hub."* | **Pane 3:** Generated PDF wire instruction letter with First American Title pre-filled. PWA view displays 80% completed KYC/CIP, pre-configured SEI shell, and quarterly relationship review template. | Apigee X API Gateway mTLS routing to SEI Wealth Platform Gateway; DocuSign REST APIs; Cloud Spanner household graph. | Head of Wealth sees onboarding friction solved AND ongoing advisor capacity expanded under Reg BI. |
-| **08:30–09:15** | **Institutional Guardrails (CRO Defense):** Open compliance audit drawer: highlight green badges for **FINRA 2040 non-fee splitting**, **GLBA Quarantined Consent Gate**, **OCC Bulletin 2011-12 Triage Designation**, and **1031 QI Escrow routing**. | Slide-out compliance drawer displaying green verification badges, tamper-evident dual-ID hash, and zero-data-logging boundary certifications. | Cloud KMS customer-managed encryption keys (CMEK); VPC Service Controls (VPC-SC perimeter); Cloud Audit Logs immutable trail. | Chief Risk Officer sees airtight compliance, privacy, and model risk boundaries. |
+| **08:30–09:15** | **Institutional Guardrails (CRO Defense):** Open compliance audit drawer: highlight green badges for **FINRA 2040 non-fee splitting**, **GLBA Quarantined Consent Gate**, **OCC Bulletin 2011-12 Triage Designation**, and **1031 QI Escrow routing**. | Slide-out compliance drawer displaying green verification badges, a SHA-256 consent digest written to a write-once Cloud Audit Log — the append-only log is what resists alteration, the digest is what detects drift — and zero-data-logging boundary certifications. | Cloud KMS customer-managed encryption keys (CMEK); VPC Service Controls (VPC-SC perimeter); Cloud Audit Logs immutable trail. | Chief Risk Officer sees airtight compliance, privacy, and model risk boundaries. |
 | **09:15–10:00** | **The Bottom Line (Three Layers):** Show Layer A (zero net new headcount) and Layer C (**reclaimed capacity, $1.62M–$2.43M/yr, sourced entirely from 10-Q Table 25**). Then introduce Layer B retained liquidity **as upside**: walk the funnel to ~$0.90B at risk and move the recapture slider around the 34% break-even. Open the Admin Panel and change an assumption live. Show componentized $1.25M budget. Hand floor to CFO. | Capacity case card; at-risk equity funnel with provenance badges; recapture slider anchored on break-even; live assumption dials. | Interactive client-side model (`frontend/src/lib/assumptions.ts`); BigQuery ROI baseline model. | Executive Committee sees a scaling thesis whose primary case they can verify against their own filings, and a revenue case whose assumptions they set themselves. |
 
 ---

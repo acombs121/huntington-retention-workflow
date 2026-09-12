@@ -1,3 +1,17 @@
+/**
+ * Huntington Book Scout -- seed / fallback dataset.
+ *
+ * Every transaction date below is authored against the demo epoch
+ * **2026-09-04**: the flagship closes 2026-09-16, which is what makes
+ * `days_to_close` 12. These literals are seeds only. What the app actually
+ * renders comes from the API, which shifts the same authored dates onto
+ * today's frame in `domain/demo_clock.py` so the countdown and the closing
+ * date can never disagree on screen.
+ *
+ * Do not freshen these literals by hand. They are the baseline the offset
+ * table in `demo_clock.py` is keyed to, and the main.py <-> mockData.ts parity
+ * check compares against them.
+ */
 import {
   CapacityMeter,
   PayoffItem,
@@ -240,7 +254,10 @@ export const initialCapacityMeter: CapacityMeter = {
   book_scale_volume: "$33.30 Billion",
   historical_flight_risk_rate: "78%",
   branch_network_count: "1,400 Branches (21 States)",
-  sba_ranking: "Top-2 National SBA 7(a) Lender",
+  // No numeric SBA rank. The Call Report's "small business" schedule is keyed
+  // to original loan amount, not SBA program participation, so nothing in this
+  // repo substantiates a placement.
+  sba_position: "Among the top national SBA 7(a) lenders by approved loan count",
   csa_leverage_ratio: "2x CSA Leverage (1 CSA : 4 PWAs)"
 };
 
@@ -374,7 +391,7 @@ export const initialEntityResolution: EntityResolutionData = {
       is_guarantor: true,
       is_signatory: true,
       exclusion_status: "Included / Full Commercial Profiling",
-      known_hban_accounts: ["Commercial DDA #..4401", "Operating Reserve #..9182"],
+      known_hban_accounts: ["Commercial DDA #..4109", "Operating Reserve #..9182"],
       known_hban_balance: 2100000.00,
       bounding_box: {
         ymin: 248,
@@ -892,13 +909,13 @@ RETURN b.legal_name, p.name, qi.entity_name, r.logged_at, f.unpaid_balance`
         tier: "entity",
         status: "verified",
         badge: "BORROWER ENTITY",
-        subtitle: "Ohio C-Corporation",
+        subtitle: "Ohio S-Corporation",
         properties: {
-          "Tax Entity": "Commercial C-Corporation",
+          "Tax Entity": "Subchapter S Corporation",
           "Industry": "Advanced Manufacturing / Machine Tooling",
           "Operating DDA": "Huntington Business Commercial Checking"
         },
-        agent_relevance: "Operating corporate borrower selling manufacturing facility.",
+        agent_relevance: "Operating corporate borrower selling the manufacturing facility. The corporation holds title, so the corporation -- not Arthur personally -- is the exchanging taxpayer on any IRC §1031 replacement.",
         x: 470,
         y: 200
       },
@@ -923,14 +940,15 @@ RETURN b.legal_name, p.name, qi.entity_name, r.logged_at, f.unpaid_balance`
         label: "Arthur Pendelton",
         tier: "principal",
         status: "verified",
-        badge: "100% OWNER / GUARANTOR",
-        subtitle: "President & Sole Shareholder",
+        badge: "70% OWNER / GUARANTOR",
+        subtitle: "President & Majority Shareholder",
         properties: {
-          "Ownership": "100.0% Common Stock",
+          "Ownership": "70.0% Voting Common",
+          "Co-Shareholder": "Janet Pendelton, 30% common, joint personal guarantor",
           "Guaranty": "Unconditional Personal SBA Guaranty",
           "Known HBAN Balances": "$890,000.00 Operating DDA"
         },
-        agent_relevance: "Sole principal executing 1031 like-kind replacement property acquisition.",
+        agent_relevance: "Majority shareholder and personal guarantor. His interest in the replacement property runs through his stock in the corporation, which holds title and is the exchanging taxpayer.",
         x: 660,
         y: 220
       },
@@ -989,13 +1007,13 @@ RETURN b.legal_name, p.name, qi.entity_name, r.logged_at, f.unpaid_balance`
       { id: "e2_7492", source: "src_sba_core", target: "note_sba", label: "CORE_LEDGER", type: "primary" },
       { id: "e3_7492", source: "note_sba", target: "entity_buckeye", label: "BORROWER_OBLIGOR", type: "primary" },
       { id: "e4_7492", source: "contract_1031", target: "entity_qi", label: "ASSIGNS_PROCEEDS_TO", type: "primary" },
-      { id: "e5_7492", source: "entity_buckeye", target: "principal_arthur", label: "SOLE_OWNER_100PCT", type: "primary" },
+      { id: "e5_7492", source: "entity_buckeye", target: "principal_arthur", label: "BENEFICIAL_OWNER_70PCT", type: "primary" },
       { id: "e6_7492", source: "contract_1031", target: "sig_qi_confirmed", label: "NAMES_INTERMEDIARY", type: "signal" },
       { id: "e7_7492", source: "note_sba", target: "sig_escrow_target", label: "EQUITY_RECON", type: "signal" },
       { id: "e8_7492", source: "sig_qi_confirmed", target: "verdict_node_1031", label: "SELECTS_ESCROW_PRODUCT", type: "verdict" },
       { id: "e9_7492", source: "sig_escrow_target", target: "verdict_node_1031", label: "QUALIFIES_ESCROW_DEP", type: "verdict" },
       { id: "e10_7492", source: "entity_qi", target: "sig_qi_confirmed", label: "QI_DESIGNATION", type: "primary" },
-      { id: "e11_7492", source: "principal_arthur", target: "sig_escrow_target", label: "BENEFICIAL_INTEREST", type: "primary" }
+      { id: "e11_7492", source: "entity_buckeye", target: "sig_escrow_target", label: "EXCHANGING_TAXPAYER", type: "primary" }
     ]
   },
   "PO-2026-6104": {

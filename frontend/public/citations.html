@@ -429,6 +429,7 @@
       − closing costs (~4.5%)       −$382,500
       ────────────────────────────────────────
       = net equity to seller       $2,902,700   ← the only retainable pool</pre>
+    <div class="callout callout-important"><strong>That $2,902,700 is gross of two real deductions.</strong> It nets the payoff quote and estimated closing costs, and nothing else. It does <strong>not</strong> subtract the <strong>yield-maintenance prepayment premium</strong> — the signal graph records the borrower asking Huntington's own servicing desk to price one, so the demo asserts the premium exists — nor the seller's <strong>capital-gains and depreciation-recapture liability</strong> on a taxable cash-out. Both reduce what can actually be deposited, which is precisely the quantity the Tier 1 case is about. The figure is retained because every downstream number is derived from it; present it as an <strong>upper bound on retainable proceeds</strong>, not as a settlement figure.</div>
     <p class="doc-prose">Using Book Scout's own flagship deal, net equity is <strong>~56% of the payoff amount</strong> (implied LTV ~61%). Applying the 78% flight rate and the capture rate to the full $7.49B therefore <strong>overstates the addressable pool</strong>. Two corrections are needed before the ROI is defensible:</p>
     <ul class="doc-list">
     <li><strong>Convert payoff volume → equity volume</strong> using the portfolio's average LTV at disposition.</li>
@@ -470,7 +471,7 @@
     <ul class="doc-list">
     <li>Annual at-risk proceeds vs. <strong>$59.1B</strong> Commercial Banking deposit base — sizes the problem against a real denominator.</li>
     <li>Tier 2 wealth capture vs. <strong>$49.6B</strong> total AUM (up 41% YoY) — shows the wealth ask is incremental, not heroic.</li>
-    <li>Commercial Banking NIM of <strong>3.28%</strong> — an anchor for sanity-checking the 85 bps net deposit spread assumption.</li>
+    <li>Commercial Banking NIM of <strong>3.28%</strong> — an anchor for the <strong>asset</strong> side of the book. Note what it does not check: the 85 bps Tier 1 figure is a <strong>funds-transfer-pricing credit</strong> (marginal wholesale funding displaced, less the 4.85% APY paid to the client), not asset yield minus deposit rate. See §4b.</li>
     </ul>
   </div>
   <div class="section-block">
@@ -748,9 +749,15 @@
     </tr></thead><tbody>
     <tr>
     <td><strong>Tier 1 Treasury ICS & 1031 Escrow Spread</strong></td>
-    <td>65% volume allocation</td>
+    <td>65% volume allocation, expressed as an <strong>FTP credit</strong></td>
     <td><strong>85.0 bps</strong></td>
-    <td class="cell-estimate">⚠️ <strong>Internal management estimate</strong> — pending confirmation against Huntington Commercial Treasury Management FTP net spread. Sanity-checkable against the 3.28% Commercial Banking NIM in 10-Q Table 25.</td>
+    <td class="cell-estimate">⚠️ <strong>Internal management estimate</strong> — pending confirmation against Huntington Commercial Treasury Management's FTP curve. A deposit's value to the bank is the marginal wholesale funding it displaces less the rate paid to the customer; it is <strong>not</strong> asset yield minus deposit rate. The 3.28% Commercial Banking NIM prices the asset side and is not a check on this row.</td>
+    </tr>
+    <tr>
+    <td><strong>Implied marginal funding curve</strong></td>
+    <td>4.85% APY paid to the client + 85.0 bps FTP credit</td>
+    <td><strong>≈ 5.70%</strong></td>
+    <td class="cell-estimate">⚠️ <strong>Derived here, verified nowhere.</strong> This is the input to challenge and <strong>Huntington Treasury owns it</strong> — nothing in this repo substantiates a funding curve. If Treasury's marginal cost is below 5.70%, Tier 1 contribution falls proportionately. The ~4.88% implied coupon on the maturing Vance facility (per-diem $692.50 on $5.18M UPB) is a seasoned 2018-vintage asset yield on a loan being repaid at par — not a cost of funds, and not the comparison.</td>
     </tr>
     <tr>
     <td><strong>Tier 2 Wealth Management AUM Fee</strong></td>

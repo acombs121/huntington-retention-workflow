@@ -1,10 +1,13 @@
 import React from 'react';
 import { QuarantineState, ValuationData, PayoffItem, WealthOnboardingData } from '../types';
 import { UserCheck, Building2, ArrowRight, CheckCircle2, Lock } from 'lucide-react';
+import { StaleRecordNotice } from '../components/StaleRecordNotice';
 
 interface WealthQueueViewProps {
   deal?: PayoffItem;
   wealthOnboarding?: WealthOnboardingData;
+  /** The dossier and valuation in state belong to a different deal. */
+  isDealDataStale?: boolean;
   quarantineState: QuarantineState;
   valuation: ValuationData;
   onOpenDossier: () => void;
@@ -14,6 +17,7 @@ interface WealthQueueViewProps {
 export const WealthQueueView: React.FC<WealthQueueViewProps> = ({
   deal,
   wealthOnboarding,
+  isDealDataStale = false,
   quarantineState,
   valuation,
   onOpenDossier,
@@ -54,7 +58,7 @@ export const WealthQueueView: React.FC<WealthQueueViewProps> = ({
                 Available Inflow
               </span>
               <div className="text-3xl sm:text-4xl font-extrabold text-[#006738] dark:text-emerald-400 tabular-nums">
-                ${(valuation.net_equity_proceeds / 1000000).toFixed(2)}M
+                {isDealDataStale ? '\u2014' : `$${(valuation.net_equity_proceeds / 1000000).toFixed(2)}M`}
               </div>
             </div>
             <div className="h-12 w-px bg-slate-200 dark:bg-slate-800" />
@@ -62,8 +66,8 @@ export const WealthQueueView: React.FC<WealthQueueViewProps> = ({
               <span className="text-xs uppercase font-semibold tracking-wider text-slate-400 block">
                 Fiduciary Gate
               </span>
-              <div className={`text-xl sm:text-2xl font-extrabold tracking-tight ${isUnlocked ? 'text-[#006738] dark:text-emerald-400' : 'text-slate-500'}`}>
-                {isUnlocked ? 'Unlocked' : 'Quarantined'}
+              <div className={`text-xl sm:text-2xl font-extrabold tracking-tight ${!isDealDataStale && isUnlocked ? 'text-[#006738] dark:text-emerald-400' : 'text-slate-500'}`}>
+                {isDealDataStale ? 'Unavailable' : isUnlocked ? 'Unlocked' : 'Quarantined'}
               </div>
             </div>
           </div>
@@ -80,11 +84,20 @@ export const WealthQueueView: React.FC<WealthQueueViewProps> = ({
             </h2>
           </div>
           <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-            Assigned PWA: {assignedPwa}
+            Assigned PWA: {isDealDataStale ? '\u2014' : assignedPwa}
           </span>
         </div>
 
-        {isUnlocked ? (
+        {isDealDataStale ? (
+          <div className="p-8">
+            {/* The dossier in state is the previous borrower's. Consent,
+                balances and the KYC completion badge are all deal-specific. */}
+            <StaleRecordNotice
+              dealName={borrowerEntity}
+              what="the wealth onboarding dossier"
+            />
+          </div>
+        ) : isUnlocked ? (
           <div className="p-8 sm:p-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
             <div className="space-y-3 max-w-2xl">
               <div className="flex items-center gap-3 flex-wrap">

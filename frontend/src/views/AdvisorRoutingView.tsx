@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PayoffItem, EntityResolutionData } from '../types';
+import { StaleRecordNotice } from '../components/StaleRecordNotice';
 import {
   ArrowLeft,
   ArrowRight,
@@ -36,6 +37,8 @@ export interface AdvisorCandidate {
 interface AdvisorRoutingViewProps {
   deal: PayoffItem;
   entityData: EntityResolutionData;
+  /** The entity record in state belongs to a different deal; withhold it. */
+  isDealDataStale?: boolean;
   onBackToAnalysis: () => void;
   onProceedToRetention: () => void;
 }
@@ -43,12 +46,17 @@ interface AdvisorRoutingViewProps {
 export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
   deal,
   entityData,
+  isDealDataStale = false,
   onBackToAnalysis,
   onProceedToRetention,
 }) => {
-  const primaryGrounded =
-    entityData.grounded_members?.find((m) => m.is_guarantor) ||
-    entityData.grounded_members?.[0];
+  // When the entity record in state is the previous deal's, fall back to the
+  // pipeline row, which is always the selected deal. Naming the wrong
+  // principal on an outbound introduction is the failure mode here.
+  const primaryGrounded = isDealDataStale
+    ? undefined
+    : entityData.grounded_members?.find((m) => m.is_guarantor) ||
+      entityData.grounded_members?.[0];
   const principalName = primaryGrounded?.name || deal.primary_guarantor || 'Marcus Vance';
   const commercialRM = deal.commercial_rm || 'Greg Miller';
 
@@ -218,7 +226,7 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
         specialtyTags: ['CRE Disposition Proceeds', 'Pass-Through Entity Wealth', 'Qualified Intermediary Coordination'],
         capacityLabel: 'Optimal',
         capacityPct: 72,
-        capacityDetail: '68 of 95 client relationships; capacity for 2 new UHNW families in Q3',
+        capacityDetail: '68 of 95 client relationships; capacity for 2 new families in Q3',
         relationshipToPrincipals: 'Primary wealth advisor for David Cole (Marcus Vance\'s co-investor in Riverfront Phase I); prior estate consultation with Vance 2018 Family Trust.',
         relationshipEntity: 'David Cole (Co-Investor) & Vance 2018 Family Trust',
         isRecommended: true,
@@ -395,6 +403,13 @@ Office: (614) 480-3320 | ${commercialRM.toLowerCase().replace(' ', '.')}@hunting
           Advisor Routing &amp; Client Introduction
         </h1>
       </div>
+
+      {isDealDataStale && (
+        <StaleRecordNotice
+          dealName={deal.borrower_entity}
+          what="the resolved entity record"
+        />
+      )}
 
       {/* Main 2-Column Inspection Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">

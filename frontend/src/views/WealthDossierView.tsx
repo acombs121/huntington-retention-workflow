@@ -1,5 +1,6 @@
 import React from 'react';
 import { WealthOnboardingData } from '../types';
+import { StaleRecordNotice } from '../components/StaleRecordNotice';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -11,14 +12,35 @@ import {
 
 interface WealthDossierViewProps {
   data: WealthOnboardingData;
+  /** The dossier in state belongs to a different deal. */
+  isDealDataStale?: boolean;
   onBackToQueue: () => void;
 }
 
 export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
   data,
+  isDealDataStale = false,
   onBackToQueue,
 }) => {
   const clientDisplayName = data.target_client ? data.target_client.split('(')[0].trim() : 'Client';
+
+  // Every field on this page is the client's own: name, household id, taxpayer
+  // status, custodial shell. If the dossier in state was fetched for a
+  // different deal, there is nothing here that can honestly be shown.
+  if (isDealDataStale) {
+    return (
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12 md:py-16 space-y-8">
+        <button
+          onClick={onBackToQueue}
+          className="inline-flex items-center gap-2 text-xs uppercase font-bold tracking-wider text-slate-500 hover:text-[#006738] dark:text-slate-400 dark:hover:text-white transition"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back to Client Queue</span>
+        </button>
+        <StaleRecordNotice what="the onboarding dossier" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12 md:py-16 space-y-12">

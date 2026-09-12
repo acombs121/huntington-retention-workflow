@@ -84,6 +84,17 @@ Sale price                    $8,500,000
   = net equity to seller       $2,902,700   ← the only retainable pool
 ```
 
+> [!IMPORTANT]
+> **That $2,902,700 is gross of two real deductions.** It nets the payoff quote and
+> estimated closing costs, and nothing else. It does **not** subtract the
+> **yield-maintenance prepayment premium** — the signal graph records the borrower asking
+> Huntington's own servicing desk to price one, so the demo asserts the premium exists —
+> nor the seller's **capital-gains and depreciation-recapture liability** on a taxable
+> cash-out. Both reduce what can actually be deposited, which is precisely the quantity the
+> Tier 1 case is about. The figure is retained because every downstream number is derived
+> from it; present it as an **upper bound on retainable proceeds**, not as a settlement
+> figure.
+
 Using Book Scout's own flagship deal, net equity is **~56% of the payoff amount** (implied LTV ~61%). Applying the 78% flight rate and the capture rate to the full $7.49B therefore **overstates the addressable pool**. Two corrections are needed before the ROI is defensible:
 
 1. **Convert payoff volume → equity volume** using the portfolio's average LTV at disposition.
@@ -121,7 +132,7 @@ That places **$13.33B outside the book Book Scout claims to monitor** — and it
 
 - Annual at-risk proceeds vs. **$59.1B** Commercial Banking deposit base — sizes the problem against a real denominator.
 - Tier 2 wealth capture vs. **$49.6B** total AUM (up 41% YoY) — shows the wealth ask is incremental, not heroic.
-- Commercial Banking NIM of **3.28%** — an anchor for sanity-checking the 85 bps net deposit spread assumption.
+- Commercial Banking NIM of **3.28%** — an anchor for the **asset** side of the book. Note what it does not check: the 85 bps Tier 1 figure is a **funds-transfer-pricing credit** (marginal wholesale funding displaced, less the 4.85% APY paid to the client), not asset yield minus deposit rate. See §4b.
 
 ---
 
@@ -283,7 +294,8 @@ The model's 65.0 bps is conservative to both years.
 
 | Metric | Model Formula / Input | Value | Authority / Source |
 | :--- | :--- | :--- | :--- |
-| **Tier 1 Treasury ICS & 1031 Escrow Spread** | 65% volume allocation | **85.0 bps** | ⚠️ **Internal management estimate** — pending confirmation against Huntington Commercial Treasury Management FTP net spread. Sanity-checkable against the 3.28% Commercial Banking NIM in 10-Q Table 25. |
+| **Tier 1 Treasury ICS & 1031 Escrow Spread** | 65% volume allocation, expressed as an **FTP credit** | **85.0 bps** | ⚠️ **Internal management estimate** — pending confirmation against Huntington Commercial Treasury Management's FTP curve. A deposit's value to the bank is the marginal wholesale funding it displaces less the rate paid to the customer; it is **not** asset yield minus deposit rate. The 3.28% Commercial Banking NIM prices the asset side and is not a check on this row. |
+| **Implied marginal funding curve** | 4.85% APY paid to the client + 85.0 bps FTP credit | **≈ 5.70%** | ⚠️ **Derived here, verified nowhere.** This is the input to challenge and **Huntington Treasury owns it** — nothing in this repo substantiates a funding curve. If Treasury's marginal cost is below 5.70%, Tier 1 contribution falls proportionately. The ~4.88% implied coupon on the maturing Vance facility (per-diem $692.50 on $5.18M UPB) is a seasoned 2018-vintage asset yield on a loan being repaid at par — not a cost of funds, and not the comparison. |
 | **Tier 2 Wealth Management AUM Fee** | 35% volume allocation | **65.0 bps** | ✅ **Derived from HNB Call Report Schedule RC-T (2026-06-30).** Filing implies **65.7 bps**; the model holds 65.0, 1.1% conservative. See §2b. |
 | **Tier 1 average duration** | IRC §1031 caps an exchange at 180 days | **120 days** | ⛔ **Correction.** Tier 1 is transient escrow and treasury float, not a standing deposit. An annual rate cannot be applied at face value. |
 | **Undiscounted blended margin** | `(0.65 × 85 bps) + (0.35 × 65 bps)` | ~~78.0 bps~~ | ❌ **Superseded** — ignores Tier 1 duration. |

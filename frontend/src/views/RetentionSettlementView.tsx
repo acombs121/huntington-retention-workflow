@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ValuationData, QuarantineState, WireInstructionData, PayoffItem } from '../types';
+import { StaleRecordNotice } from '../components/StaleRecordNotice';
 import {
   Sliders,
   Landmark,
@@ -17,6 +18,8 @@ import {
 interface RetentionSettlementViewProps {
   deal?: PayoffItem;
   valuation: ValuationData;
+  /** Valuation / settlement packet in state belong to a different deal. */
+  isDealDataStale?: boolean;
   onSalePriceChange: (price: number) => void;
   taxStrategy: 'cash_out' | '1031_exchange';
   onTaxStrategyChange: (strategy: 'cash_out' | '1031_exchange') => void;
@@ -33,6 +36,7 @@ interface RetentionSettlementViewProps {
 export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = ({
   deal,
   valuation,
+  isDealDataStale = false,
   onSalePriceChange,
   taxStrategy,
   onTaxStrategyChange,
@@ -57,7 +61,7 @@ export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = (
 
   const handleCopy = () => {
     const text = `THE HUNTINGTON NATIONAL BANK - BORROWER SETTLEMENT ROUTING PACKET
-DocuSign Envelope ID: ${wireInstructions.docusign_envelope_id || 'ENV-HBAN-20260904-8821'}
+DocuSign Envelope ID: ${wireInstructions.docusign_envelope_id || 'Pending envelope creation'}
 Callback Authentication Line: ${wireInstructions.callback_verification_line || '(614) 480-4401 (Direct Banker Authentication Line)'}
 
 Bank: ${wireInstructions.bank_name}
@@ -99,9 +103,11 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
               Liquidity Retention &amp; Settlement
             </h1>
-            <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-[#E8F5E9] dark:bg-emerald-950/60 text-[#006738] dark:text-emerald-300 border border-[#A7F3D0] dark:border-emerald-800">
-              Proceeds: ${(valuation.net_equity_proceeds / 1000000).toFixed(2)}M
-            </span>
+            {!isDealDataStale && (
+              <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-[#E8F5E9] dark:bg-emerald-950/60 text-[#006738] dark:text-emerald-300 border border-[#A7F3D0] dark:border-emerald-800">
+                Proceeds: ${(valuation.net_equity_proceeds / 1000000).toFixed(2)}M
+              </span>
+            )}
             <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
               Detected: {deal?.tax_strategy_detected?.split('(')[0]?.trim() || 'Taxable Cash-Out'} ({deal?.flight_confidence_score || 94}% Match)
             </span>
@@ -127,7 +133,19 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
         </div>
       )}
 
+      {/* Every figure below -- proceeds, settlement account, consent state --
+          comes from a per-deal fetch. If any of them belongs to a different
+          borrower, none of it is shown. A settlement packet rendered under the
+          wrong name is the worst artefact this screen can produce. */}
+      {isDealDataStale && (
+        <StaleRecordNotice
+          dealName={deal?.borrower_entity}
+          what="the settlement and consent record"
+        />
+      )}
+
       {/* Main 2-Column Staging Layout with Generous Whitespace */}
+      {!isDealDataStale && (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         
         {/* Left Column: Financial Configuration (6 cols) */}
@@ -189,6 +207,14 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
 
             <div className="pt-2 text-[11px] text-slate-400">
               Full net seller equity of ${(valuation.net_equity_proceeds / 1000000).toFixed(2)}M flows directly into liquid cash-out settlement structure.
+            </div>
+
+            {/* Disclosure. The netting above stops at closing costs. */}
+            <div className="text-[11px] leading-relaxed text-slate-400 dark:text-slate-500">
+              Gross of the yield-maintenance prepayment premium and of the seller's
+              capital-gains and depreciation-recapture liability. Both reduce the amount
+              actually available to deposit, so this is an upper bound on retainable
+              proceeds rather than a settlement figure.
             </div>
 
             {/* Internal triage estimate only. Never assert this value to the client. */}
@@ -386,7 +412,7 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
             
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-medium text-slate-400 hidden sm:inline">
-                {wireInstructions.docusign_envelope_id || 'ENV-HBAN-20260904-8821'}
+                {wireInstructions.docusign_envelope_id || 'Pending envelope creation'}
               </span>
               <button
                 onClick={handleCopy}
@@ -464,9 +490,10 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
         </div>
 
       </div>
+      )}
 
       {/* Bottom Dual-Sided Handoff Banner */}
-      {!quarantineState.quarantined && (
+      {!isDealDataStale && !quarantineState.quarantined && (
         <div className="p-6 sm:p-8 rounded-2xl bg-[#E8F5E9]/70 dark:bg-emerald-950/40 border border-[#A7F3D0] dark:border-emerald-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-full bg-[#006738] text-white">

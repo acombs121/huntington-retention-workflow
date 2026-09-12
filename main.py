@@ -29,6 +29,8 @@ from pydantic import BaseModel, Field
 from iap_jwt_middleware import get_authenticated_user
 from domain.models import PayoffStatement
 from domain.liquidity_engine import LiquidityEngine
+from domain.demo_clock import rebase as rebase_demo_dates
+from domain.demo_clock import rebase_fixture as rebase_demo_fixture
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("huntington_book_scout")
@@ -705,13 +707,13 @@ SIGNAL_GRAPHS: Dict[str, Dict[str, Any]] = {
                 "tier": "entity",
                 "status": "verified",
                 "badge": "BORROWER ENTITY",
-                "subtitle": "Ohio C-Corporation",
+                "subtitle": "Ohio S-Corporation",
                 "properties": {
-                    "Tax Entity": "Commercial C-Corporation",
+                    "Tax Entity": "Subchapter S Corporation",
                     "Industry": "Advanced Manufacturing / Machine Tooling",
                     "Operating DDA": "Huntington Business Commercial Checking"
                 },
-                "agent_relevance": "Operating corporate borrower selling manufacturing facility.",
+                "agent_relevance": "Operating corporate borrower selling the manufacturing facility. The corporation holds title, so the corporation -- not Arthur personally -- is the exchanging taxpayer on any IRC §1031 replacement.",
                 "x": 470,
                 "y": 200
             },
@@ -736,14 +738,15 @@ SIGNAL_GRAPHS: Dict[str, Dict[str, Any]] = {
                 "label": "Arthur Pendelton",
                 "tier": "principal",
                 "status": "verified",
-                "badge": "100% OWNER / GUARANTOR",
-                "subtitle": "President & Sole Shareholder",
+                "badge": "70% OWNER / GUARANTOR",
+                "subtitle": "President & Majority Shareholder",
                 "properties": {
-                    "Ownership": "100.0% Common Stock",
+                    "Ownership": "70.0% Voting Common",
+                    "Co-Shareholder": "Janet Pendelton, 30% common, joint personal guarantor",
                     "Guaranty": "Unconditional Personal SBA Guaranty",
                     "Known HBAN Balances": "$890,000.00 Operating DDA"
                 },
-                "agent_relevance": "Sole principal executing 1031 like-kind replacement property acquisition.",
+                "agent_relevance": "Majority shareholder and personal guarantor. His interest in the replacement property runs through his stock in the corporation, which holds title and is the exchanging taxpayer.",
                 "x": 660,
                 "y": 220
             },
@@ -802,13 +805,13 @@ SIGNAL_GRAPHS: Dict[str, Dict[str, Any]] = {
             {"id": "e2_7492", "source": "src_sba_core", "target": "note_sba", "label": "CORE_LEDGER", "type": "primary"},
             {"id": "e3_7492", "source": "note_sba", "target": "entity_buckeye", "label": "BORROWER_OBLIGOR", "type": "primary"},
             {"id": "e4_7492", "source": "contract_1031", "target": "entity_qi", "label": "ASSIGNS_PROCEEDS_TO", "type": "primary"},
-            {"id": "e5_7492", "source": "entity_buckeye", "target": "principal_arthur", "label": "SOLE_OWNER_100PCT", "type": "primary"},
+            {"id": "e5_7492", "source": "entity_buckeye", "target": "principal_arthur", "label": "BENEFICIAL_OWNER_70PCT", "type": "primary"},
             {"id": "e6_7492", "source": "contract_1031", "target": "sig_qi_confirmed", "label": "NAMES_INTERMEDIARY", "type": "signal"},
             {"id": "e7_7492", "source": "note_sba", "target": "sig_escrow_target", "label": "EQUITY_RECON", "type": "signal"},
             {"id": "e8_7492", "source": "sig_qi_confirmed", "target": "verdict_node_1031", "label": "SELECTS_ESCROW_PRODUCT", "type": "verdict"},
             {"id": "e9_7492", "source": "sig_escrow_target", "target": "verdict_node_1031", "label": "QUALIFIES_ESCROW_DEP", "type": "verdict"},
             {"id": "e10_7492", "source": "entity_qi", "target": "sig_qi_confirmed", "label": "QI_DESIGNATION", "type": "primary"},
-            {"id": "e11_7492", "source": "principal_arthur", "target": "sig_escrow_target", "label": "BENEFICIAL_INTEREST", "type": "primary"}
+            {"id": "e11_7492", "source": "entity_buckeye", "target": "sig_escrow_target", "label": "EXCHANGING_TAXPAYER", "type": "primary"}
         ]
     },
     "PO-2026-6104": {
@@ -1225,10 +1228,13 @@ async def get_payoff_queue(
             "book_scale_volume": "$33.30 Billion",
             "historical_flight_risk_rate": "78%",
             "branch_network_count": "1,400 Branches (21 States)",
-            "sba_ranking": "Top-2 National SBA 7(a) Lender",
+            # No numeric SBA rank. The Call Report's "small business" schedule
+            # is keyed to original loan amount, not SBA program participation,
+            # so nothing in this repo substantiates a placement.
+            "sba_position": "Among the top national SBA 7(a) lenders by approved loan count",
             "csa_leverage_ratio": "2x CSA Leverage (1 CSA : 4 PWAs)"
         },
-        "payoff_items": items
+        "payoff_items": rebase_demo_dates(items)
     }
 
 
@@ -1245,7 +1251,7 @@ async def get_flight_risk_trace(
     trace = DETECTION_TRACES.get(payoff_id)
     if not trace:
         raise HTTPException(status_code=404, detail=f"Flight risk trace for deal '{payoff_id}' not found.")
-    return trace
+    return rebase_demo_dates(trace)
 
 
 @app.get("/api/signal-graph")
@@ -1261,7 +1267,7 @@ async def get_signal_graph(
     graph = SIGNAL_GRAPHS.get(payoff_id)
     if not graph:
         raise HTTPException(status_code=404, detail=f"Spanner signal graph for deal '{payoff_id}' not found.")
-    return graph
+    return rebase_demo_dates(graph)
 
 
 @app.get("/api/entity-resolution")
@@ -1273,6 +1279,16 @@ async def get_entity_resolution(
     Provides Gemini 3.7 Flash multimodal document extraction returning
     borrower-specific LLC ownership topology, bounding boxes, and document grounding.
     """
+    payload = rebase_demo_dates(_entity_resolution_payload(payoff_id))
+    # Stamp the live value after the re-base, never before: `resolution_timestamp`
+    # is a wall-clock reading and the re-base cannot tell it apart from an
+    # authored date.
+    payload["resolution_timestamp"] = datetime.now(timezone.utc).isoformat()
+    return payload
+
+
+def _entity_resolution_payload(payoff_id: str) -> Dict[str, Any]:
+    """The authored entity-resolution fixture for one deal, before re-basing."""
     deal = next((p for p in PAYOFF_QUEUE if p["id"] == payoff_id), None)
     if not deal:
         raise HTTPException(status_code=404, detail=f"Payoff deal '{payoff_id}' not found.")
@@ -1410,7 +1426,7 @@ async def get_entity_resolution(
                 "is_guarantor": True,
                 "is_signatory": True,
                 "exclusion_status": "Included / Full Commercial Profiling",
-                "known_hban_accounts": ["Commercial DDA #..4401", "Operating Reserve #..9182"],
+                "known_hban_accounts": ["Commercial DDA #..4109", "Operating Reserve #..9182"],
                 "known_hban_balance": deal["known_hban_balances"],
                 "bounding_box": {
                     "ymin": 248, "xmin": 120, "ymax": 310, "xmax": 680,
@@ -1487,6 +1503,11 @@ async def get_quarantine_status(
     user: Dict[str, Any] = Depends(get_authenticated_user)
 ) -> Dict[str, Any]:
     """Returns the current status of the GLBA Quarantined Consent Gate for a specific deal."""
+    # Deliberately not passed through domain.demo_clock. The only dates a
+    # quarantine record carries are the live consent timestamp and the digest
+    # taken over it; there is no authored transaction date here. Shifting a
+    # consent timestamp would falsify the one record whose whole value is
+    # saying when the client actually said yes.
     get_payoff_by_id(payoff_id)
     if payoff_id not in quarantine_states:
         quarantine_states[payoff_id] = get_default_quarantine(payoff_id)
@@ -1540,7 +1561,10 @@ async def get_wire_instructions(
         sale_price=sale_price,
         tax_strategy=strategy,
     )
-    return assessment.settlement_wire.model_dump()
+    return rebase_demo_fixture(
+        assessment.settlement_wire.model_dump(),
+        live_fields=("letter_id", "date"),
+    )
 
 
 @app.get("/api/wealth-onboarding")
@@ -1551,6 +1575,25 @@ async def get_wealth_onboarding_dossier(
     """
     Returns the 80% pre-staged Private Wealth Advisor (PWA) onboarding scaffolding:
     KYC/CIP, SEI Custodial Shell, Draft IPS framework, and Automated Quarterly Review Dossier.
+    """
+    return rebase_demo_dates(_wealth_onboarding_payload(payoff_id))
+
+
+# One borrower, one operating DDA. The dossier used to build an account number
+# out of the payoff id, which produced "#..8821" -- that is the *facility*
+# number, not a deposit account. These are the accounts entity resolution
+# reports for each principal, and they are the only ones the demo should show.
+PRIMARY_DDA_BY_PAYOFF: Dict[str, str] = {
+    "PO-2026-8821": "#..4109",
+    "PO-2026-7492": "#..1102",
+    "PO-2026-6104": "#..9012",
+}
+
+
+def _wealth_onboarding_payload(payoff_id: str) -> Dict[str, Any]:
+    """The authored wealth dossier for one deal, before re-basing.
+
+    Two branches below -- quarantined and consented. They must stay in step.
     """
     payoff = get_payoff_by_id(payoff_id)
     if not payoff.credit_risk_rating.lower().startswith("pass"):
@@ -1615,7 +1658,7 @@ async def get_wealth_onboarding_dossier(
         "payoff_id": payoff_id,
         "assigned_pwa": pwa_title,
         "target_client": f"{payoff.primary_guarantor} (Non-guarantor co-owners excluded pending affirmative opt-in)",
-        "household_id": f"HH-{payoff.borrower_entity[:8].replace(' ', '').upper()}-4401",
+        "household_id": f"HH-{payoff.borrower_entity[:8].replace(' ', '').upper()}-{payoff_id.split('-')[-1]}",
         "staged_kyc_cip": {
             "completion_percentage": 82,
             "verified_fields": [
@@ -1623,7 +1666,7 @@ async def get_wealth_onboarding_dossier(
                 {"field": "Entity Structure", "value": f"{payoff.borrower_entity} / Family Trust", "status": "Verified (Articles of Org)"},
                 {"field": "Taxpayer Identification", "value": "EIN on file (Commercial Credit Vault)", "status": "Verified"},
                 {"field": "Residential Address", "value": f"Guarantor File: {payoff.primary_guarantor}, Columbus, OH", "status": "Verified"},
-                {"field": "Primary Banking Source", "value": f"Huntington Commercial DDA #..{payoff_id.split('-')[-1]}", "status": "Verified"},
+                {"field": "Primary Banking Source", "value": f"Huntington Commercial DDA {PRIMARY_DDA_BY_PAYOFF.get(payoff_id, 'on file (Commercial Credit Vault)')}", "status": "Verified"},
                 {"field": "Source of Wealth", "value": f"Commercial Real Estate Disposition ({payoff.property_name})", "status": "Pending Closing Settlement"}
             ],
             "pending_advisor_actions": [

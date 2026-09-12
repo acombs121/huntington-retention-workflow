@@ -3,6 +3,7 @@ Integration Tests for Huntington Book Scout FastAPI Endpoints
 Verifies multi-deal valuation, entity resolution, wire instructions, and GLBA quarantine gate.
 """
 import json
+from datetime import date, datetime, timezone
 
 import pytest
 from starlette.testclient import TestClient
@@ -277,7 +278,12 @@ def test_payoffs_queue_endpoint():
     # round marketing number. See docs/CITATIONS.md §4a.
     assert data["capacity_meter"]["book_scale_volume"] == "$33.30 Billion"
     assert data["capacity_meter"]["branch_network_count"] == "1,400 Branches (21 States)"
-    assert data["capacity_meter"]["sba_ranking"] == "Top-2 National SBA 7(a) Lender"
+    # No numeric placement is claimed: the Call Report's small-business
+    # schedule is keyed to original loan amount, not SBA program participation.
+    assert "sba_ranking" not in data["capacity_meter"]
+    position = data["capacity_meter"]["sba_position"]
+    assert "Among the top national SBA 7(a) lenders" in position
+    assert not any(token in position for token in ("Top-2", "#1", "#2", "No. 1"))
     assert data["capacity_meter"]["csa_leverage_ratio"] == "2x CSA Leverage (1 CSA : 4 PWAs)"
     assert len(data["payoff_items"]) == 3
     assert data["payoff_items"][0]["id"] == "PO-2026-8821"
@@ -568,6 +574,123 @@ def test_signal_graph_404_not_found():
     resp = client.get("/api/signal-graph?payoff_id=PO-INVALID-9999")
     assert resp.status_code == 404
     assert "not found" in resp.json()["detail"].lower()
+
+
+# ---------------------------------------------------------------------------
+# Wave 5 -- the clock, the account number, and deal 2's own entity
+# ---------------------------------------------------------------------------
+
+
+def test_served_dates_track_the_wall_clock():
+    """The countdown must be true on the day the demo is given, not on one day in 2026.
+
+    `days_to_close` was a hardcoded integer next to a hardcoded closing date.
+    They agreed only on 2026-09-04. Whatever today is, the served closing date
+    must be exactly `days_to_close` away from it.
+    """
+    items = client.get("/api/payoffs").json()["payoff_items"]
+    assert {i["id"]: i["days_to_close"] for i in items} == {
+        "PO-2026-8821": 12,
+        "PO-2026-7492": 24,
+        "PO-2026-6104": 45,
+    }
+    today = date.today()
+    for item in items:
+        closing = date.fromisoformat(item["scheduled_closing_date"])
+        assert (closing - today).days == item["days_to_close"], item["id"]
+        # The payoff demand was received before the closing, always.
+        assert date.fromisoformat(item["payoff_statement_date"]) < closing
+
+
+def test_dates_that_are_not_transaction_dates_stay_put():
+    """The borrower's formation year and the note's maturity are not on the clock."""
+    vance = client.get("/api/entity-resolution?payoff_id=PO-2026-8821").json()
+    assert vance["borrower_entity"]["filing_date"] == "2018-04-12"
+    assert any("Vance 2018 Family Trust" in m["name"] for m in vance["grounded_members"])
+
+    graph = client.get("/api/signal-graph?payoff_id=PO-2026-7492").json()
+    note = next(n for n in graph["nodes"] if n["id"] == "note_sba")
+    assert note["properties"]["Maturity"] == "2029-05-15"
+
+
+def test_settlement_packet_is_dated_today_but_carries_a_rebased_envelope():
+    """The letter date is a live stamp; the envelope id carries an authored date."""
+    packet = client.get("/api/wire-instructions?payoff_id=PO-2026-8821").json()
+    # The engine stamps the letter from UTC; the re-base keys off the local day.
+    assert packet["date"] == datetime.now(timezone.utc).strftime("%B %d, %Y")
+    assert packet["docusign_envelope_id"] == f"ENV-HBAN-{date.today():%Y%m%d}-8821"
+
+
+def test_one_borrower_one_operating_dda():
+    """The dossier must name the account entity resolution actually resolved.
+
+    It used to build the number from the payoff id, which yielded "#..8821" --
+    the facility number, not a deposit account -- while entity resolution named
+    a third number for the same borrower.
+    """
+    expected = {
+        "PO-2026-8821": "#..4109",
+        "PO-2026-7492": "#..1102",
+        "PO-2026-6104": "#..9012",
+    }
+    for payoff_id, dda in expected.items():
+        entity = client.get(f"/api/entity-resolution?payoff_id={payoff_id}").json()
+        accounts = [a for m in entity["grounded_members"] for a in m["known_hban_accounts"]]
+        assert any(dda in a for a in accounts), f"{payoff_id}: {accounts}"
+
+        client.post("/api/quarantine", json={"payoff_id": payoff_id, "verbal_consent_recorded": True,
+                                             "recorded_by": "Greg Miller (Commercial RM)"})
+        try:
+            dossier = client.get(f"/api/wealth-onboarding?payoff_id={payoff_id}").json()
+            source = next(
+                f for f in dossier["staged_kyc_cip"]["verified_fields"]
+                if f["field"] == "Primary Banking Source"
+            )
+            assert source["value"].endswith(dda), source["value"]
+            # The facility number is not a deposit account.
+            suffix = payoff_id.split("-")[-1]
+            assert f"DDA #..{suffix}" not in source["value"]
+        finally:
+            client.post("/api/quarantine", json={"payoff_id": payoff_id, "verbal_consent_recorded": False})
+
+
+def test_deal_two_graph_agrees_with_its_own_entity_resolution():
+    """Buckeye is an S-corp owned 70/30, in both places that describe it."""
+    entity = client.get("/api/entity-resolution?payoff_id=PO-2026-7492").json()
+    assert entity["borrower_entity"]["tax_classification"] == "Subchapter S Corporation"
+    owners = {m["name"]: m for m in entity["grounded_members"]}
+    assert owners["Arthur Pendelton"]["ownership_pct"] == 70.0
+    assert owners["Janet Pendelton"]["ownership_pct"] == 30.0
+
+    graph = client.get("/api/signal-graph?payoff_id=PO-2026-7492").json()
+    buckeye = next(n for n in graph["nodes"] if n["id"] == "entity_buckeye")
+    arthur = next(n for n in graph["nodes"] if n["id"] == "principal_arthur")
+    assert buckeye["subtitle"] == "Ohio S-Corporation"
+    assert buckeye["properties"]["Tax Entity"] == "Subchapter S Corporation"
+    assert arthur["badge"] == "70% OWNER / GUARANTOR"
+    assert arthur["properties"]["Ownership"] == "70.0% Voting Common"
+    # Janet is surfaced as a property rather than a node: the node and edge
+    # counts on the chips are hardcoded and must keep matching the arrays.
+    assert "Janet Pendelton" in arthur["properties"]["Co-Shareholder"]
+
+    blob = json.dumps(graph)
+    for retracted in ("C-Corporation", "Sole Shareholder", "100.0% Common Stock", "SOLE_OWNER_100PCT"):
+        assert retracted not in blob, retracted
+
+    # The corporation holds title, so the corporation is the exchanging
+    # taxpayer. Naming the wrong taxpayer is what actually blows up a 1031.
+    assert "exchanging taxpayer" in buckeye["agent_relevance"]
+    exchange_edges = [e for e in graph["edges"] if e["target"] == "sig_escrow_target"]
+    assert all(e["source"] != "principal_arthur" for e in exchange_edges)
+
+
+def test_graph_chips_match_the_arrays_they_describe():
+    """nodes_matched / edges_traversed are hardcoded; they must not drift."""
+    for payoff_id in ("PO-2026-8821", "PO-2026-7492", "PO-2026-6104"):
+        graph = client.get(f"/api/signal-graph?payoff_id={payoff_id}").json()
+        stats = graph["spanner_stats"]
+        assert stats["nodes_matched"] == len(graph["nodes"]), payoff_id
+        assert stats["edges_traversed"] == len(graph["edges"]), payoff_id
 
 
 

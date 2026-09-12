@@ -9,7 +9,7 @@ export interface CapacityMeter {
   book_scale_volume: string;
   historical_flight_risk_rate: string;
   branch_network_count?: string;
-  sba_ranking?: string;
+  sba_position?: string;
   csa_leverage_ratio?: string;
 }
 
@@ -143,6 +143,9 @@ export interface ValuationData {
 }
 
 export interface QuarantineState {
+  /** Present on every API response; the views use it to reject a record
+   *  fetched for a different deal. Optional because the seed object predates it. */
+  payoff_id?: string;
   quarantined: boolean;
   verbal_consent_recorded: boolean;
   recorded_by: string | null;
@@ -190,6 +193,8 @@ export interface IPSAllocation {
 }
 
 export interface WealthOnboardingData {
+  /** Present on every API response; see QuarantineState.payoff_id. */
+  payoff_id?: string;
   status: string;
   quarantined: boolean;
   assigned_pwa: string;

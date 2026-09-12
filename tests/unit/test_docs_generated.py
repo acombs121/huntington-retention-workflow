@@ -105,6 +105,28 @@ FORBIDDEN = [
     ("legally must wire out", "no statute compels a third-party accommodator"),
     # SOP 50 10 is SBA's origination SOP. A payoff is a servicing event.
     ("SOP 50 10 7", "wrong SOP family for a payoff, and the version is stale"),
+    # --- Wave 5: data contradictions ----------------------------------------
+    # A digest of a record the bank itself writes and stores is not evidence of
+    # anything on its own: whoever can alter the record can recompute the
+    # digest. The append-only audit log supplies that property, not the hash.
+    ("tamper-evident", "a hash the writer can recompute is not evidence of integrity"),
+    ("Tamper-evident", "a hash the writer can recompute is not evidence of integrity"),
+    # Deal 2 described itself two ways. Entity resolution is canonical: an Ohio
+    # Subchapter S corporation owned 70/30 by Arthur and Janet Pendelton.
+    ("C-Corporation", "deal 2 is an S-corp per its own entity resolution"),
+    ("Sole Shareholder", "Arthur holds 70%; Janet holds the other 30%"),
+    ("sole shareholder", "Arthur holds 70%; Janet holds the other 30%"),
+    ("100% OWNER", "Arthur holds 70%; Janet holds the other 30%"),
+    # The exchanging taxpayer is the corporation that holds title. Naming the
+    # principal personally is the one error that actually breaks an exchange.
+    ("Arthur Pendelton personally", "the corporation holds title and is the exchanging taxpayer"),
+    # One borrower, one operating DDA. 4401 is the banker's direct line, the ICS
+    # account and deal 2's escrow file; the DDA is 4109.
+    ("#..4401", "4401 is not a deposit account; the operating DDA is #..4109"),
+    ("DDA #..8821", "8821 is the credit facility, not a deposit account"),
+    # The SBA rank the code used to serve. The existing "Top-2 SBA" entry does
+    # not match this string -- "National" sits between the two halves.
+    ("Top-2 National SBA", "unverified SBA rank"),
 ]
 
 

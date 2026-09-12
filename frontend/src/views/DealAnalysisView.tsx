@@ -8,6 +8,7 @@ import {
   GitGraph,
 } from 'lucide-react';
 import { SignalGraphModal } from '../components/SignalGraphModal';
+import { StaleRecordNotice } from '../components/StaleRecordNotice';
 
 interface PrincipalRelationship {
   principalName: string;
@@ -32,7 +33,7 @@ function getPrincipalRelationship(deal: PayoffItem, entityData: EntityResolution
   if (deal.id === 'PO-2026-7492') {
     return {
       principalName: 'Arthur Pendelton',
-      principalRole: 'President & Founder (100% Equity)',
+      principalRole: 'President & Majority Shareholder (70% Equity)',
       tenureYears: 9,
       startDate: 'September 2017',
       tenureSummary: '9-year commercial relationship spanning SBA 7(a) facility, equipment line of credit, and commercial depository accounts.',
@@ -78,7 +79,7 @@ function getPrincipalRelationship(deal: PayoffItem, entityData: EntityResolution
     principalRole: primaryGrounded?.role || 'Managing Member & Majority Owner (85% Equity)',
     tenureYears: 14,
     startDate: 'May 2012',
-    tenureSummary: '14-year foundational relationship. Originated with commercial treasury management and operating DDA (#..4401), expanding to CRE term financing (#CC-8821) in 2018.',
+    tenureSummary: '14-year foundational relationship. Originated with commercial treasury management and operating DDA (#..4109), expanding to CRE term financing (#CC-8821) in 2018.',
     assignedRM: deal.commercial_rm || 'Greg Miller',
     rmTitle: 'Senior Vice President, Commercial Real Estate Banking',
     lastTouchpointDate: 'August 18, 2026',
@@ -96,6 +97,8 @@ function getPrincipalRelationship(deal: PayoffItem, entityData: EntityResolution
 interface DealAnalysisViewProps {
   deal: PayoffItem;
   entityData: EntityResolutionData;
+  /** The entity record in state belongs to a different deal; withhold it. */
+  isDealDataStale?: boolean;
   onBackToPipeline: () => void;
   onProceedToRetention: () => void;
 }
@@ -103,6 +106,7 @@ interface DealAnalysisViewProps {
 export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
   deal,
   entityData,
+  isDealDataStale = false,
   onBackToPipeline,
   onProceedToRetention,
 }) => {
@@ -162,10 +166,15 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
                   Title Payoff Demand
                 </h2>
               </div>
-              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#006738] dark:text-palette-accent">
-                <CheckCircle2 className="w-3 h-3" />
-                <span>DLP Verified</span>
-              </span>
+              {/* The DLP attestation belongs to the entity-resolution record. If
+                  that record is not this deal's, the badge is not this deal's
+                  either. */}
+              {!isDealDataStale && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#006738] dark:text-palette-accent">
+                  <CheckCircle2 className="w-3 h-3" />
+                  <span>DLP Verified</span>
+                </span>
+              )}
             </div>
 
             {/* Hero Payoff Balance */}
@@ -248,13 +257,32 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
                 </span>
               </div>
             </div>
+
+            {/* Disclosure, not a defect. Net proceeds here are sale price less
+                the payoff quote less closing costs -- nothing else. */}
+            <p className="pt-1 text-[11px] leading-relaxed text-slate-400 dark:text-palette-ink-4">
+              Gross of the yield-maintenance prepayment premium and of the seller's tax
+              liability on a taxable disposition. Both reduce the amount actually available
+              to deposit; treat this as an upper bound, not a settlement figure.
+            </p>
           </div>
 
         </div>
 
         {/* Right Column: Ownership & Relationship (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
-          
+
+          {/* Everything in this column comes from the per-deal entity record.
+              If that record is the previous borrower's, show nothing rather
+              than showing their owners and balances under this name. */}
+          {isDealDataStale && (
+            <StaleRecordNotice
+              dealName={deal.borrower_entity}
+              what="the ownership and relationship record"
+            />
+          )}
+
+          {!isDealDataStale && (<>
           {/* Card 1: Beneficial Ownership */}
           <div className="bg-white dark:bg-palette-surface border border-slate-200/80 dark:border-palette-surface-3 rounded-2xl p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-palette-surface-3">
@@ -359,6 +387,7 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
               </div>
             </div>
           </div>
+          </>)}
 
         </div>
 

@@ -108,6 +108,7 @@ export const App: React.FC = () => {
           <DealAnalysisView
             deal={state.selectedDeal}
             entityData={state.entityResolution}
+            isDealDataStale={state.isDealDataStale}
             onBackToPipeline={() => setActiveView('pipeline')}
             onProceedToRetention={() => setActiveView('routing')}
           />
@@ -117,6 +118,7 @@ export const App: React.FC = () => {
           <AdvisorRoutingView
             deal={state.selectedDeal}
             entityData={state.entityResolution}
+            isDealDataStale={state.isDealDataStale}
             onBackToAnalysis={() => setActiveView('analysis')}
             onProceedToRetention={() => setActiveView('retention')}
           />
@@ -126,6 +128,7 @@ export const App: React.FC = () => {
           <RetentionSettlementView
             deal={state.selectedDeal}
             valuation={state.valuation}
+            isDealDataStale={state.isDealDataStale}
             onSalePriceChange={actions.setSalePrice}
             taxStrategy={state.taxStrategy}
             onTaxStrategyChange={actions.setTaxStrategy}
@@ -144,6 +147,7 @@ export const App: React.FC = () => {
           <WealthQueueView
             deal={state.selectedDeal}
             wealthOnboarding={state.wealthOnboarding}
+            isDealDataStale={state.isDealDataStale}
             quarantineState={state.quarantineState}
             valuation={state.valuation}
             onOpenDossier={() => setActiveView('wealth_dossier')}
@@ -159,6 +163,7 @@ export const App: React.FC = () => {
             <WealthQueueView
               deal={state.selectedDeal}
               wealthOnboarding={state.wealthOnboarding}
+              isDealDataStale={state.isDealDataStale}
               quarantineState={state.quarantineState}
               valuation={state.valuation}
               onOpenDossier={() => setActiveView('wealth_dossier')}
@@ -170,6 +175,7 @@ export const App: React.FC = () => {
           ) : (
             <WealthDossierView
               data={state.wealthOnboarding}
+              isDealDataStale={state.isDealDataStale}
               onBackToQueue={() => setActiveView('wealth_queue')}
             />
           )
