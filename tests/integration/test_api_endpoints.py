@@ -66,7 +66,7 @@ def test_entity_resolution_multi_deal_parameterization():
     data_v = resp_vance.json()
     assert data_v["borrower_entity"]["name"] == "Vance Riverfront Properties IV, LLC"
     assert "PASSED" in data_v["dlp_status"]
-    assert "GLBA Reg P & FCRA § 604" in data_v["dlp_status"]
+    assert "GLBA § 501(b)" in data_v["dlp_status"]
     
     elena = next(m for m in data_v["grounded_members"] if m["name"] == "Elena Vance")
     assert elena["is_guarantor"] is False
@@ -94,7 +94,7 @@ def test_entity_resolution_multi_deal_parameterization():
 
 
 def test_wire_instructions_deal_parameterization():
-    """Verifies wire instructions use active deal entity, ALTA Pillar 2 DocuSign packet, and QI routing."""
+    """Verifies wire instructions use active deal entity, borrower-directed DocuSign packet, and QI routing."""
     # 1031 Exchange on Buckeye
     response = client.get("/api/wire-instructions?payoff_id=PO-2026-7492&strategy=1031_exchange&sale_price=3150000.00")
     assert response.status_code == 200
@@ -102,7 +102,7 @@ def test_wire_instructions_deal_parameterization():
     assert "Buckeye Precision Tooling Corp." in data["account_title"]
     assert "HBAN-QI-8819-01" == data["account_number"]
     assert data["indicative_net_disbursement"] == 1588250.00
-    assert data["alta_pillar_2_compliant"] is True
+    assert data["borrower_directed_packet"] is True
     assert "Borrower Settlement Routing Packet" in data["packet_type"]
     assert data["callback_verification_line"] == "(614) 480-4401 (Direct Banker Authentication Line)"
     assert data["docusign_envelope_id"].startswith("ENV-HBAN-")
@@ -113,7 +113,7 @@ def test_wire_instructions_deal_parameterization():
     vance_wire = client.get("/api/wire-instructions?payoff_id=PO-2026-8821&strategy=cash_out&sale_price=8500000.00")
     assert vance_wire.status_code == 200
     vw_data = vance_wire.json()
-    assert vw_data["alta_pillar_2_compliant"] is True
+    assert vw_data["borrower_directed_packet"] is True
     assert vw_data["independent_qi_partner"] is None
 
 
@@ -368,7 +368,7 @@ def test_validation_errors_return_422():
 
 
 def test_wealth_onboarding_rejects_substandard_credit_risk():
-    """Verifies OCC SR 11-7 model risk rule rejecting non-Pass credit risk deals."""
+    """Verifies the credit-policy gate rejecting non-Pass credit risk deals."""
     from main import PAYOFF_QUEUE
     substandard_deal = dict(PAYOFF_QUEUE[0])
     substandard_deal["id"] = "PO-2026-SUBSTD"
@@ -378,7 +378,7 @@ def test_wealth_onboarding_rejects_substandard_credit_risk():
     try:
         resp = client.get("/api/wealth-onboarding?payoff_id=PO-2026-SUBSTD")
         assert resp.status_code == 422
-        assert "OCC SR 11-7" in resp.json()["detail"]
+        assert "Huntington credit-policy gating" in resp.json()["detail"]
     finally:
         PAYOFF_QUEUE.remove(substandard_deal)
 

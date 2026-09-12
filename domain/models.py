@@ -69,13 +69,13 @@ class StatutoryDepositoryRoute(BaseModel):
     routing_destination: str
     deposit_credit_pct: float = 100.0
     finra_rule_2040_compliant: bool = True
-    occ_sr11_7_designation: str = "Relationship Prioritization Triage Estimate"
+    model_risk_designation: str = "Relationship Prioritization Triage Estimate"
 
 
 class SettlementWireInstruction(BaseModel):
     """
     Verified bank settlement account routing packet delivered to borrower for seller title authorization,
-    accompanied by official bank verification letter for ALTA Pillar 2 callback authentication.
+    accompanied by official bank verification letter supporting the title company's independent call-back authentication.
     """
     letter_id: str
     date: str
@@ -97,7 +97,7 @@ class SettlementWireInstruction(BaseModel):
     packet_type: str = "Borrower Settlement Routing Packet & Official Bank Verification Letter"
     docusign_envelope_id: str = "ENV-HBAN-20260904-8821"
     delivery_channel: str = "Borrower Direct Execution (DocuSign Envelope) -> Seller Authorization to Title"
-    alta_pillar_2_compliant: bool = True
+    borrower_directed_packet: bool = True
     callback_verification_line: str = "(614) 480-4401 (Direct Banker Authentication Line)"
     independent_qi_partner: Optional[str] = None
 
@@ -134,7 +134,7 @@ class LiquidityAssessment(BaseModel):
             "routing_destination": self.depository_route.routing_destination,
             "deposit_credit_pct": self.depository_route.deposit_credit_pct,
             "finra_rule_2040_compliant": self.depository_route.finra_rule_2040_compliant,
-            "occ_sr11_7_designation": self.depository_route.occ_sr11_7_designation,
+            "model_risk_designation": self.depository_route.model_risk_designation,
         }
 
 

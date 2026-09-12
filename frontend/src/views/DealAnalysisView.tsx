@@ -241,10 +241,10 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
               </div>
               <div>
                 <span className="text-slate-400 dark:text-palette-ink-4 block">
-                  {deal.unstated_sale_price ? 'Model Tier' : 'Contract Price'}
+                  {deal.unstated_sale_price ? 'Valuation Basis' : 'Contract Price'}
                 </span>
                 <span className="font-semibold text-slate-800 dark:text-palette-ink mt-0.5 block">
-                  {deal.unstated_sale_price ? 'OCC Tier 3' : `$${(deal.indicative_valuation / 1000000).toFixed(2)}M`}
+                  {deal.unstated_sale_price ? 'Internal Triage Only' : `$${(deal.indicative_valuation / 1000000).toFixed(2)}M`}
                 </span>
               </div>
             </div>

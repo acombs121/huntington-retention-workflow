@@ -21,7 +21,7 @@ The designated institutional deposit destination chosen to preserve client wealt
 _Avoid_: DepositStrategy, TaxPath, BankAccountType
 
 **Settlement Wire Instruction / Routing Packet**:
-The verified bank wire authorization packet delivered directly to the commercial borrower via DocuSign specifying ABA routing, segregated escrow account numbers, and official bank verification letters for ALTA Pillar 2 callback compliance.
+The verified bank wire authorization packet delivered directly to the commercial borrower via DocuSign specifying ABA routing, segregated escrow account numbers, and official bank verification letters supporting the title company's independent call-back authentication.
 _Avoid_: WireLetter, WireData, DirectTitleWire
 
 **Retention Workflow**:
@@ -39,5 +39,5 @@ The formal bank-broker-dealer structure governing referrals from unregistered Hu
 _Avoid_: Fee Split, Wealth Commission, AUM Referral Bonus, "non-affiliated retail channel", "Huntington Advisors" (the entity is *Huntington Financial Advisors*)
 
 **SBA 7(a) Liquidity Event**:
-A commercial loan payoff arising from Huntington's top-2 national SBA portfolio across 1,400 branches in 21 states, representing an entrepreneur exit, business disposition, or partner buyout requiring SBA SOP 50 10 7 compliance.
+A commercial loan payoff arising from Huntington's top-2 national SBA portfolio across 1,400 branches in 21 states, representing an entrepreneur exit, business disposition, or partner buyout.
 _Avoid_: Small Business Loan, Retail Payoff

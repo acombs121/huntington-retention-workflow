@@ -139,20 +139,20 @@ def test_legacy_valuation_dict_compatibility(default_payoff: PayoffStatement):
         "routing_destination",
         "deposit_credit_pct",
         "finra_rule_2040_compliant",
-        "occ_sr11_7_designation",
+        "model_risk_designation",
     }
     assert set(legacy_dict.keys()) == expected_keys
     assert legacy_dict["sale_price"] == 8500000.00
     assert legacy_dict["net_equity_proceeds"] == 2902700.00
 
 
-def test_alta_pillar_2_wire_packet_compliance(default_payoff: PayoffStatement):
+def test_borrower_directed_wire_packet(default_payoff: PayoffStatement):
     """
-    Verifies ALTA Pillar 2 DocuSign delivery packet metadata and independent QI routing.
+    Verifies borrower-directed DocuSign delivery packet metadata and independent QI routing.
     """
     cash_out_assessment = LiquidityEngine.assess(default_payoff, tax_strategy="cash_out")
     co_wire = cash_out_assessment.settlement_wire
-    assert co_wire.alta_pillar_2_compliant is True
+    assert co_wire.borrower_directed_packet is True
     assert "Borrower Settlement Routing Packet" in co_wire.packet_type
     assert co_wire.docusign_envelope_id.startswith("ENV-HBAN-")
     assert co_wire.callback_verification_line == "(614) 480-4401 (Direct Banker Authentication Line)"
@@ -160,7 +160,7 @@ def test_alta_pillar_2_wire_packet_compliance(default_payoff: PayoffStatement):
 
     qi_assessment = LiquidityEngine.assess(default_payoff, tax_strategy="1031_exchange")
     qi_wire = qi_assessment.settlement_wire
-    assert qi_wire.alta_pillar_2_compliant is True
+    assert qi_wire.borrower_directed_packet is True
     assert qi_wire.independent_qi_partner == "IPX1031 (Investment Property Exchange Services, Inc.)"
     assert qi_wire.account_title == f"IPX1031 as QI for {default_payoff.seller_entity} / Huntington 1031 Escrow"
 

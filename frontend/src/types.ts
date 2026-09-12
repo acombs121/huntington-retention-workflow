@@ -119,7 +119,7 @@ export interface EntityResolutionData {
     grounding_source: string;
     submarket_grounding: string;
     capitalization_formula: string;
-    occ_sr11_7_notice: string;
+    model_risk_notice: string;
   };
 }
 
@@ -139,7 +139,7 @@ export interface ValuationData {
   routing_destination: string;
   deposit_credit_pct: number;
   finra_rule_2040_compliant: boolean;
-  occ_sr11_7_designation: string;
+  model_risk_designation: string;
 }
 
 export interface QuarantineState {
@@ -172,7 +172,7 @@ export interface WireInstructionData {
   packet_type?: string;
   docusign_envelope_id?: string;
   delivery_channel?: string;
-  alta_pillar_2_compliant?: boolean;
+  borrower_directed_packet?: boolean;
   callback_verification_line?: string;
   independent_qi_partner?: string | null;
 }

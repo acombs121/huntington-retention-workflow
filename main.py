@@ -477,7 +477,7 @@ SIGNAL_GRAPHS: Dict[str, Dict[str, Any]] = {
                 "properties": {
                     "ALTA Identifier": "ALTA-OH-7721",
                     "Escrow Location": "Downtown Columbus Commercial Unit",
-                    "Security Mandate": "ALTA Best Practices Pillar 2 Verified Call-Back"
+                    "Wire Verification": "Independent call-back authentication before disbursement (ALTA Best Practices — voluntary industry standard)"
                 },
                 "agent_relevance": "Settlement agent receiving the official Huntington payoff verification letter.",
                 "x": 470,
@@ -511,7 +511,7 @@ SIGNAL_GRAPHS: Dict[str, Dict[str, Any]] = {
                     "Equity Stake": "15.0% Minority Interest",
                     "Guaranty Status": "Non-Guarantor (No Commercial Guarantee)",
                     "Source of Record": "LLC Operating Agreement, credit file (document extraction)",
-                    "CDD Coverage": "Below the 25% FinCEN beneficial-owner threshold; absent from BSA certification",
+                    "CDD Coverage": "Below the 25% FinCEN beneficial-owner threshold, so beneficial-ownership certification would not capture her",
                     "NPI Handling Status": "Quarantined pending opt-in (GLBA Reg P / FCRA § 604 framework)",
                     "Exclusion Sentry": "Firewalled from Wealth Advisory CRM Pending Opt-In"
                 },
@@ -1157,7 +1157,7 @@ class ValuationResponse(BaseModel):
     routing_destination: str
     deposit_credit_pct: float
     finra_rule_2040_compliant: bool
-    occ_sr11_7_designation: str
+    model_risk_designation: str
 
 class QuarantineToggleRequest(BaseModel):
     payoff_id: Optional[str] = "PO-2026-8821"
@@ -1286,7 +1286,7 @@ async def get_entity_resolution(
             "total_pages": 18,
             "inspected_page": 8,
             "resolution_timestamp": now_iso,
-            "dlp_status": "PASSED: Corporate credit agreement; personal financial records and consumer credit data purged pre-ingestion under GLBA Reg P & FCRA § 604.",
+            "dlp_status": "PASSED: Corporate credit agreement; personal financial records and consumer credit-bureau data stripped pre-ingestion under the bank's GLBA § 501(b) information-security safeguards program.",
             "borrower_entity": {
                 "name": deal["borrower_entity"],
                 "jurisdiction": "Ohio Corporation",
@@ -1329,7 +1329,7 @@ async def get_entity_resolution(
                 "grounding_source": f"Credit Vault Doc #SBA-7492 trailing Q1 in-place NOI: ${deal['noi_trailing_q1']:,.2f}",
                 "submarket_grounding": f"Dublin Road Industrial Submarket Benchmark cap rate: {deal['submarket_cap_rate']*100:.2f}%.",
                 "capitalization_formula": f"NOI ÷ Cap Rate = ${deal['noi_trailing_q1']:,.2f} ÷ {deal['submarket_cap_rate']} = ${deal['indicative_valuation']:,.2f} Indicative Triage Valuation.",
-                "occ_sr11_7_notice": "Designated strictly as 'Indicative Triage Estimate for Relationship Prioritization' per OCC Bulletin 2011-12 / Fed SR 11-7."
+                "model_risk_notice": "Designated strictly as 'Indicative Triage Estimate for Relationship Prioritization' per OCC Bulletin 2011-12 / Fed SR 11-7."
             }
         }
     elif deal["id"] == "PO-2026-6104":
@@ -1340,7 +1340,7 @@ async def get_entity_resolution(
             "total_pages": 12,
             "inspected_page": 5,
             "resolution_timestamp": now_iso,
-            "dlp_status": "PASSED: Medical facility credit agreement; physician personal credit data purged pre-ingestion under GLBA Reg P & FCRA § 604.",
+            "dlp_status": "PASSED: Medical facility credit agreement; physician personal credit-bureau data stripped pre-ingestion under the bank's GLBA § 501(b) information-security safeguards program.",
             "borrower_entity": {
                 "name": deal["borrower_entity"],
                 "jurisdiction": "Ohio Limited Liability Company",
@@ -1383,7 +1383,7 @@ async def get_entity_resolution(
                 "grounding_source": f"Credit Vault Doc #CC-6104 trailing Q1 in-place NOI: ${deal['noi_trailing_q1']:,.2f}",
                 "submarket_grounding": f"Bethel Road Medical Submarket Benchmark cap rate: {deal['submarket_cap_rate']*100:.2f}%.",
                 "capitalization_formula": f"NOI ÷ Cap Rate = ${deal['noi_trailing_q1']:,.2f} ÷ {deal['submarket_cap_rate']} = ${deal['indicative_valuation']:,.2f} Indicative Triage Valuation.",
-                "occ_sr11_7_notice": "Designated strictly as 'Indicative Triage Estimate for Relationship Prioritization' per OCC Bulletin 2011-12 / Fed SR 11-7."
+                "model_risk_notice": "Designated strictly as 'Indicative Triage Estimate for Relationship Prioritization' per OCC Bulletin 2011-12 / Fed SR 11-7."
             }
         }
 
@@ -1395,7 +1395,7 @@ async def get_entity_resolution(
         "total_pages": 14,
         "inspected_page": 11,
         "resolution_timestamp": now_iso,
-        "dlp_status": "PASSED: Consumer credit bureaus, personal 1040s, and FinCEN CDD records purged pre-ingestion under GLBA Reg P & FCRA § 604.",
+        "dlp_status": "PASSED: Consumer credit-bureau data and personal tax returns stripped pre-ingestion under the bank's GLBA § 501(b) information-security safeguards program. Beneficial-ownership facts are read from the entity's own formation and credit documents; BSA/CDD records remain under BSA data governance and are not copied into the wealth pipeline.",
         "borrower_entity": {
             "name": deal["borrower_entity"],
             "jurisdiction": "Ohio Limited Liability Company",
@@ -1423,12 +1423,12 @@ async def get_entity_resolution(
                 "ownership_pct": 15.0,
                 "is_guarantor": False,
                 "is_signatory": False,
-                "exclusion_status": "Excluded from Wealth Profiling (Non-Guarantor / GLBA Reg P & FCRA § 604)",
+                "exclusion_status": "Excluded from Wealth Profiling (Non-Guarantor / NPI handling standard — voluntary control)",
                 "known_hban_accounts": ["Joint Relationship Profile #JH-7712 (Quarantined)"],
                 "known_hban_balance": 0.00,
                 "bounding_box": {
                     "ymin": 330, "xmin": 120, "ymax": 390, "xmax": 680,
-                    "text_snippet": "Elena Vance, holding a 15% non-managing equity interest. Non-guarantor; programmatically excluded from profiling under GLBA Reg P and FCRA § 604."
+                    "text_snippet": "Elena Vance, holding a fifteen percent (15%) non-managing Membership Interest, who shall not be required to execute any Guaranty..."
                 }
             },
             {
@@ -1452,7 +1452,7 @@ async def get_entity_resolution(
             "grounding_source": f"Credit Vault Doc #CC-8821 trailing Q1 in-place NOI: ${deal['noi_trailing_q1']:,.2f}",
             "submarket_grounding": f"Franklin County Q1 2026 Appraisal Benchmark cap rate: {deal['submarket_cap_rate']*100:.2f}%.",
             "capitalization_formula": f"NOI ÷ Cap Rate = ${deal['noi_trailing_q1']:,.2f} ÷ {deal['submarket_cap_rate']} = ${deal['indicative_valuation']:,.2f} Indicative Triage Valuation.",
-            "occ_sr11_7_notice": "Designated strictly as 'Internal Liquidity Triage Heuristic for Relationship Prioritization' (OCC Bulletin 2011-12 / SR 11-7 Tier 3). Client-facing property valuation muzzled."
+            "model_risk_notice": "Designated strictly as 'Internal Liquidity Triage Heuristic for Relationship Prioritization' under OCC Bulletin 2011-12 / Fed SR 11-7. The guidance defines no model tiers; we expect Huntington's own MRM policy to tier this at its lowest risk level, subject to that team's classification. Client-facing property valuation muzzled."
         }
     }
 
@@ -1507,7 +1507,7 @@ async def toggle_quarantine_status(
     now_iso = datetime.now(timezone.utc).isoformat()
     
     if req.verbal_consent_recorded:
-        audit_data = f"{target_id}:{req.recorded_by}:{now_iso}:GLBA-15USC6801-COMPLIANT".encode("utf-8")
+        audit_data = f"{target_id}:{req.recorded_by}:{now_iso}:CROSS-LOB-CONSENT-RECORD".encode("utf-8")
         crypto_hash = hashlib.sha256(audit_data).hexdigest()
         quarantine_states[target_id] = {
             "payoff_id": target_id,
@@ -1556,7 +1556,7 @@ async def get_wealth_onboarding_dossier(
     if not payoff.credit_risk_rating.lower().startswith("pass"):
         raise HTTPException(
             status_code=422,
-            detail=f"Wealth onboarding rejected: Loan risk rating '{payoff.credit_risk_rating}' violates OCC SR 11-7 model risk governance (Pass rating required)."
+            detail=f"Wealth onboarding rejected: Loan risk rating '{payoff.credit_risk_rating}' violates Huntington credit-policy gating for wealth referral (Pass rating required)."
         )
     q_state = quarantine_states.get(payoff_id, get_default_quarantine(payoff_id))
     is_quarantined = q_state.get("quarantined", True)
@@ -1568,13 +1568,13 @@ async def get_wealth_onboarding_dossier(
             "quarantined": True,
             "payoff_id": payoff_id,
             "assigned_pwa": pwa_title,
-            "target_client": "[QUARANTINED] Commercial Guarantor Profile (Affirmative Opt-In Required Under GLBA Reg P & FCRA § 604)",
+            "target_client": "[QUARANTINED] Commercial Guarantor Profile (Affirmative Opt-In Required — NPI Handling Standard, Voluntary Control)",
             "household_id": "HH-QUARANTINED-PENDING-CONSENT",
             "staged_kyc_cip": {
                 "completion_percentage": 0,
                 "verified_fields": [
                     {"field": "Client Nonpublic Personal Information (NPI)", "value": "[QUARANTINED - Firewalled at Commercial Bank Perimeter Pending Client Opt-In]", "status": "Quarantined"},
-                    {"field": "Taxpayer Identification & CDD", "value": "[QUARANTINED UNDER GLBA REG P & FCRA § 604]", "status": "Quarantined"},
+                    {"field": "Taxpayer Identification", "value": "[QUARANTINED — NPI HANDLING STANDARD]", "status": "Quarantined"},
                     {"field": "Residential & Banking Coordinates", "value": "[QUARANTINED - Commercial Credit Vault Firewalled]", "status": "Quarantined"}
                 ],
                 "pending_advisor_actions": [
@@ -1595,7 +1595,7 @@ async def get_wealth_onboarding_dossier(
                 "horizon": "Unstated",
                 "liquidity_reserve_sleeve": "$0.00 (Locked)",
                 "asset_allocation_scaffold": [],
-                "fiduciary_disclaimer": "Scaffolding withheld. Under OCC Reg 9 fiduciary standards and GLBA, asset allocation scaffolding is unlocked only after affirmative client opt-in and licensed advisor risk discovery."
+                "fiduciary_disclaimer": "Scaffolding withheld. Under OCC Reg 9 fiduciary standards, and under our own NPI handling standard as a voluntary control, asset allocation scaffolding is unlocked only after affirmative client opt-in and licensed advisor risk discovery."
             },
             "ongoing_servicing_dossier": {
                 "annual_reviews_automated": False,

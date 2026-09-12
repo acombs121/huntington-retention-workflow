@@ -720,7 +720,7 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
                       $340,000
                     </td>
                     <td className="py-3.5 px-4 text-slate-600 dark:text-slate-300 leading-relaxed">
-                      Annual OCC SR 11-7 validation, penetration testing, and VPC-SC compliance.
+                      Annual OCC Bulletin 2011-12 model validation, penetration testing, and VPC-SC compliance.
                     </td>
                   </tr>
                 </tbody>
@@ -755,12 +755,12 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
                 Chief Risk Officer (CRO) Compliance Matrix
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Statutory and regulatory audit clearance across six institutional defense domains.
+                Statutory and regulatory audit clearance across seven institutional defense domains.
               </p>
             </div>
             <span className="text-xs font-bold uppercase tracking-wider text-[#006738] dark:text-emerald-400 bg-[#E8F5E9] dark:bg-emerald-950/60 px-3 py-1.5 rounded-full border border-[#A7F3D0] flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-[#006738]" />
-              6 of 6 Audit Cleared
+              7 of 7 Audit Cleared
             </span>
           </div>
 
@@ -771,11 +771,11 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#006738] dark:text-emerald-400 shrink-0" />
                 <span className="text-xs font-bold text-slate-900 dark:text-white">
-                  ALTA Pillar 2 &amp; UCC Article 4A
+                  Borrower-Directed Settlement Routing
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Bank delivers verified routing packet directly to borrower via DocuSign; borrower submits to title with dual-call telephone verification line.
+                The bank issues no instruction to title. The routing packet is delivered to the borrower via DocuSign; he executes and submits it as the seller&rsquo;s own closing authorization, with a bank verification letter and call-back line for the title company&rsquo;s independent authentication. Settlement practice and escrow-agreement authority, not a statutory requirement.
               </p>
             </div>
 
@@ -784,11 +784,11 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#006738] dark:text-emerald-400 shrink-0" />
                 <span className="text-xs font-bold text-slate-900 dark:text-white">
-                  GLBA Pre-Ingestion DLP &amp; FCRA &sect; 604
+                  GLBA &sect; 501(b) Safeguards &mdash; Pre-Ingestion DLP
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Automated Cloud DLP scrubs non-guarantor PII prior to pipeline ingestion. Data quarantined until RM records verbal opt-in.
+                Automated Cloud DLP strips consumer credit-bureau data and personal tax returns before pipeline ingestion, under the Interagency Guidelines Establishing Information Security Standards the OCC appends to 12 C.F.R. Part 30. Non-guarantor NPI stays quarantined until the RM records verbal opt-in &mdash; a voluntary standard we hold ourselves to, not a triggered obligation.
               </p>
             </div>
 
@@ -832,11 +832,11 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#006738] dark:text-emerald-400 shrink-0" />
                 <span className="text-xs font-bold text-slate-900 dark:text-white">
-                  OCC Bulletin 2011-12 / SR 11-7 (Tier 3)
+                  Model Risk Governance — OCC Bulletin 2011-12
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Designated as internal triage heuristic and administrative drafting, not automated appraisal or underwriting. Client valuation muzzled.
+                Designated as an internal triage heuristic and administrative drafting, not automated appraisal or underwriting. Client valuation muzzled. The guidance sets no model tiers; we expect Huntington&rsquo;s own MRM policy to tier this at its lowest risk level, subject to that team&rsquo;s classification.
               </p>
             </div>
 
@@ -850,6 +850,22 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 Huntington Private Bank integration via SEI Data Cloud (Snowflake Secure Data Sharing Zero-ETL) directly into Private Bank IPS modeling.
+              </p>
+            </div>
+
+            {/* Reg 7 */}
+            <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs space-y-2">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#006738] dark:text-emerald-400 shrink-0" />
+                <span className="text-xs font-bold text-slate-900 dark:text-white">
+                  Conflicts, Tying &amp; Fair Treatment
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                <strong>No credit condition.</strong> Payoff terms, extensions and pricing are unaffected by where the seller directs proceeds &mdash; consistent with Huntington&rsquo;s anti-tying policy under <strong>12 U.S.C. &sect; 1972</strong>. The deposit leg sits in the traditional-bank-product exception; the wealth referral is not conditioned on credit at all, and the RM fee is nominal and non-contingent.
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                On <strong>unfair or deceptive practices</strong> (FTC Act &sect; 5, which the OCC supervises national banks against; Dodd-Frank UDAAP reaches consumers, so a commercial LLC borrower is largely outside it): the borrower executes his own disbursement instruction and the bank issues no instruction to title. Outreach prioritization uses only credit-rating and proceeds-size inputs &mdash; no demographic inputs, and no credit decision, so no adverse action arises.
               </p>
             </div>
 

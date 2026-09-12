@@ -88,11 +88,11 @@ class LiquidityEngine:
                 strategy_type="IRC §1031 Like-Kind Exchange (Independent QI Safe Harbor)",
                 strategy_product="Huntington 1031 Qualified Escrow Depository (Partnered with IPX1031)",
                 yield_apy=4.75,
-                statutory_basis="Treas. Reg. § 1.1031(k)-1(g)(3) Qualified Escrow Safe Harbor; Partner QI (IPX1031); In-House DST Cross-Sell Strictly Firewalled per § 1.1031(k)-1(k)(2).",
+                statutory_basis="Treas. Reg. § 1.1031(k)-1(g)(3) Qualified Escrow Safe Harbor, with the routine-financial-services carve-out at § 1.1031(k)-1(k)(2)(ii) confirming the bank is not a disqualified person; independent QI (IPX1031). In-house DST placement is firewalled separately, as a securities-conflict control rather than a tax requirement.",
                 routing_destination="Huntington 1031 Qualified Escrow Depository / Independent QI: IPX1031 (Acct: QI-ESCROW-8821)",
                 deposit_credit_pct=100.0,
                 finra_rule_2040_compliant=True,
-                occ_sr11_7_designation="Relationship Prioritization Triage Estimate",
+                model_risk_designation="Relationship Prioritization Triage Estimate",
             )
             wire_account_title = f"IPX1031 as QI for {payoff.seller_entity} / Huntington 1031 Escrow"
             wire_account_number = "HBAN-QI-8819-01"
@@ -110,7 +110,7 @@ class LiquidityEngine:
                 routing_destination="Huntington Business Premier Commercial ICS (Acct: HBAN-ICS-4401)",
                 deposit_credit_pct=100.0,
                 finra_rule_2040_compliant=True,
-                occ_sr11_7_designation="Relationship Prioritization Triage Estimate",
+                model_risk_designation="Relationship Prioritization Triage Estimate",
             )
             wire_account_title = f"{payoff.seller_entity} / Business Premier ICS Sweep"
             wire_account_number = "HBAN-4401-9921-00"
@@ -146,7 +146,7 @@ class LiquidityEngine:
             packet_type="Borrower Settlement Routing Packet & Official Bank Verification Letter",
             docusign_envelope_id=f"ENV-HBAN-20260904-{payoff.id.split('-')[-1]}",
             delivery_channel="Borrower Direct Execution (DocuSign Envelope) -> Seller Authorization to Title",
-            alta_pillar_2_compliant=True,
+            borrower_directed_packet=True,
             callback_verification_line="(614) 480-4401 (Direct Banker Authentication Line)",
             independent_qi_partner=qi_partner,
         )

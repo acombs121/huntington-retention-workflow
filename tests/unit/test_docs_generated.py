@@ -68,6 +68,43 @@ FORBIDDEN = [
     ("top-2 national SBA", "unverified SBA rank"),
     ("#1 or #2 SBA", "unverified SBA rank"),
     ("6,500 approved", "unverified SBA loan count"),
+    # --- Wave 4: retracted legal authority -----------------------------------
+    # SR letters are Federal Reserve documents. The OCC's model-risk issuance
+    # is Bulletin 2011-12; there has never been an "OCC SR" letter.
+    ("OCC SR 11-7", "no such document; the OCC issuance is Bulletin 2011-12"),
+    # OCC Bulletin 2011-12 / SR 11-7 sets principles proportionate to model
+    # risk. It defines no numbered model tiers; those are an institution's own
+    # MRM taxonomy.
+    ("OCC Tier 3", "the guidance defines no model tiers"),
+    ("SR 11-7 (Tier 3)", "the guidance defines no model tiers"),
+    ("SR 11-7 Tier 3", "the guidance defines no model tiers"),
+    ("Model Tier 3", "the guidance defines no model tiers"),
+    # ALTA Best Practices are voluntary trade-association guidance, Pillar 2 is
+    # escrow trust accounting, and UCC Article 4A governs funds transfers --
+    # none of them speaks to a settlement agent's disbursement authority.
+    ("ALTA Pillar 2", "voluntary guidance, wrong pillar, and not an authority for disbursement routing"),
+    ("UCC Article 4A", "governs funds transfers, not settlement disbursement authority"),
+    ("UCC 4A", "governs funds transfers, not settlement disbursement authority"),
+    # GLBA Sec. 502(e) is an exception to the nonaffiliated-third-party
+    # disclosure rule. The advisor handoff is intra-institutional, so asserting
+    # it contradicts the project's own topology correction.
+    ("GLBA Sec. 502(e)", "asserts a nonaffiliated-third-party topology the repo already corrected"),
+    ("502(e)", "asserts a nonaffiliated-third-party topology the repo already corrected"),
+    # FCRA Sec. 604 governs permissible purposes for consumer reports. It is
+    # not the authority for a marketing purpose-limitation control, for a DLP
+    # control, or for anything touching BSA/CDD records.
+    ("FCRA § 604 Rule", "no consumer report is in the pipeline"),
+    ("under GLBA Reg P & FCRA § 604", "wrong authority for DLP, CDD and purpose limitation"),
+    ("FinCEN CDD records", "Reg P and FCRA do not reach BSA data, and the repo bills CDD extraction as absorbed labour"),
+    # Sec. 1.1031(k)-1(k)(2) is the agency prong whose (ii) carve-out is what
+    # permits the bank to hold the escrow. Citing it bare, as a prohibition,
+    # inverts the repo's own argument.
+    ("1.1031(k)-1(k).", "cites the carve-out the bank relies on as if it were the prohibition"),
+    # Nothing in Sec. 1031 compels proceeds to a third-party accommodator; if
+    # it did, the Qualified Escrow Depository product could not exist.
+    ("legally must wire out", "no statute compels a third-party accommodator"),
+    # SOP 50 10 is SBA's origination SOP. A payoff is a servicing event.
+    ("SOP 50 10 7", "wrong SOP family for a payoff, and the version is stale"),
 ]
 
 

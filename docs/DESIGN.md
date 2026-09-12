@@ -61,7 +61,7 @@ All autonomous agent tags in runtime telemetry and orchestration logs are strict
 | **`[DETECTION_AGENT]`** | `#7FD1A9` | HBAN Mint Accent (`palette.accent`) | Fedwire clearing telemetry & title demand queue fusion |
 | **`[CLASSIFICATION_AGENT]`**| `#E38341` | HBAN Brand Warn (`palette.warn`) | Liquidity event triage & commercial flight risk categorization |
 | **`[ENTITY_AGENT]`** | `#B8EFE4` | HBAN Sage Prosperous (`hban.sage-prosperous`) | Gemini 3.7 Flash multimodal OCR & beneficial ownership resolution |
-| **`[COMPLIANCE_GATE]`** | `#E5736A` | HBAN Brand Crit (`palette.crit`) | GLBA Reg P & FCRA § 604 non-guarantor firewall sentry |
+| **`[COMPLIANCE_GATE]`** | `#E5736A` | HBAN Brand Crit (`palette.crit`) | NPI handling standard (voluntary control) non-guarantor firewall sentry |
 | **`[ENRICHMENT_AGENT]`** | `#7ECF1C` | HBAN Abundant Green (`hban.green-abundant`)| Executive 1-pager synthesis & unencumbered equity sizing |
 | **`[ROUTING_AGENT]`** | `#A7F3D0` | HBAN Mint Border (`hban.mint-border`) | Wealth market advisor matching, capacity, & CSA leverage |
 | **`[OUTREACH_AGENT]`** | `#7FD1A9` | HBAN Mint Accent (`palette.accent`) | Warm intro briefing generation for commercial bankers |

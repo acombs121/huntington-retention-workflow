@@ -58,7 +58,7 @@ export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = (
   const handleCopy = () => {
     const text = `THE HUNTINGTON NATIONAL BANK - BORROWER SETTLEMENT ROUTING PACKET
 DocuSign Envelope ID: ${wireInstructions.docusign_envelope_id || 'ENV-HBAN-20260904-8821'}
-ALTA Pillar 2 Callback Authentication Line: ${wireInstructions.callback_verification_line || '(614) 480-4401 (Direct Banker Authentication Line)'}
+Callback Authentication Line: ${wireInstructions.callback_verification_line || '(614) 480-4401 (Direct Banker Authentication Line)'}
 
 Bank: ${wireInstructions.bank_name}
 ABA Routing: ${wireInstructions.aba_routing}
@@ -325,7 +325,7 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
                   Cross-LOB Consent Gate &amp; Reg R Referral Record
                 </h2>
                 <span className="text-[11px] text-slate-400 block font-normal mt-0.5">
-                  15 U.S.C. &sect; 6801 &bull; SEC Regulation R Networking
+                  SEC Regulation R Networking &mdash; Referral Record
                 </span>
               </div>
               <span className={`text-xs font-bold uppercase tracking-wider ${quarantineState.quarantined ? 'text-slate-400' : 'text-[#006738] dark:text-emerald-400'}`}>
@@ -474,10 +474,10 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
             </div>
             <div className="space-y-1">
               <div className="text-base font-bold text-slate-900 dark:text-white">
-                Client Verbal Consent Verified (GLBA Sec. 502(e))
+                Client Verbal Consent Recorded &mdash; Cross-Line-of-Business Marketing Consent
               </div>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                {wireInstructions?.managing_member || 'The commercial client'} has authorized Private Wealth engagement. Pre-verified KYC documentation and custodial onboarding shell are ready for wealth advisory intake.
+                {wireInstructions?.managing_member || 'The commercial client'} has authorized Private Wealth engagement. Pre-verified KYC documentation and custodial onboarding shell are ready for wealth advisory intake. Voluntary control: the advisor handoff is intra-institutional, so this is not a Reg P prerequisite. It also serves as the Regulation R referral record.
               </p>
             </div>
           </div>

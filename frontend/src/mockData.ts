@@ -359,7 +359,7 @@ export const initialEntityResolution: EntityResolutionData = {
   total_pages: 14,
   inspected_page: 11,
   resolution_timestamp: "2026-09-04T14:15:00Z",
-  dlp_status: "PASSED: Consumer credit bureaus, personal 1040s, and FinCEN CDD records purged pre-ingestion under GLBA Reg P & FCRA § 604.",
+  dlp_status: "PASSED: Consumer credit-bureau data and personal tax returns stripped pre-ingestion under the bank's GLBA § 501(b) information-security safeguards program. Beneficial-ownership facts are read from the entity's own formation and credit documents; BSA/CDD records remain under BSA data governance and are not copied into the wealth pipeline.",
   borrower_entity: {
     name: "Vance Riverfront Properties IV, LLC",
     jurisdiction: "Ohio Limited Liability Company",
@@ -390,7 +390,7 @@ export const initialEntityResolution: EntityResolutionData = {
       ownership_pct: 15.0,
       is_guarantor: false,
       is_signatory: false,
-      exclusion_status: "Excluded from Wealth Profiling (Non-Guarantor / GLBA Reg P & FCRA § 604)",
+      exclusion_status: "Excluded from Wealth Profiling (Non-Guarantor / NPI handling standard — voluntary control)",
       known_hban_accounts: ["Joint Relationship Profile #JH-7712 (Quarantined)"],
       known_hban_balance: 0.00,
       bounding_box: {
@@ -398,7 +398,7 @@ export const initialEntityResolution: EntityResolutionData = {
         xmin: 120,
         ymax: 390,
         xmax: 680,
-        text_snippet: "Elena Vance, holding a 15% non-managing equity interest. Non-guarantor; programmatically excluded from profiling under GLBA Reg P and FCRA § 604."
+        text_snippet: "Elena Vance, holding a fifteen percent (15%) non-managing Membership Interest, who shall not be required to execute any Guaranty..."
       }
     },
     {
@@ -425,7 +425,7 @@ export const initialEntityResolution: EntityResolutionData = {
     grounding_source: "Credit Vault Doc #CC-8821 trailing Q1 in-place NOI: $637,500.00",
     submarket_grounding: "Franklin County Q1 2026 Appraisal Benchmark cap rate: 7.50% (grounded dynamically via Vertex AI Search against internal commercial appraisal benchmarks).",
     capitalization_formula: "NOI / Cap Rate = $637,500 / 0.075 = $8,500,000.00 Indicative Triage Valuation.",
-    occ_sr11_7_notice: "Designated strictly as 'Internal Liquidity Triage Heuristic for Relationship Prioritization' (OCC Bulletin 2011-12 / SR 11-7 Tier 3). Client-facing property valuation muzzled."
+    model_risk_notice: "Designated strictly as 'Internal Liquidity Triage Heuristic for Relationship Prioritization' under OCC Bulletin 2011-12 / Fed SR 11-7. The guidance defines no model tiers; we expect Huntington's own MRM policy to tier this at its lowest risk level, subject to that team's classification. Client-facing property valuation muzzled."
   }
 };
 
@@ -445,7 +445,7 @@ export const initialValuation: ValuationData = {
   routing_destination: "Huntington Business Premier Commercial ICS (Acct: HBAN-ICS-4401)",
   deposit_credit_pct: 100.0,
   finra_rule_2040_compliant: true,
-  occ_sr11_7_designation: "Relationship Prioritization Triage Estimate"
+  model_risk_designation: "Relationship Prioritization Triage Estimate"
 };
 
 export const initialQuarantineState: QuarantineState = {
@@ -478,7 +478,7 @@ export const initialWireInstructions: WireInstructionData = {
   packet_type: "Borrower Settlement Routing Packet & Official Bank Verification Letter",
   docusign_envelope_id: "ENV-HBAN-20260904-8821",
   delivery_channel: "Borrower Direct Execution (DocuSign Envelope) -> Seller Authorization to Title",
-  alta_pillar_2_compliant: true,
+  borrower_directed_packet: true,
   callback_verification_line: "(614) 480-4401 (Direct Banker Authentication Line)",
   independent_qi_partner: null
 };
@@ -487,13 +487,13 @@ export const initialWealthOnboarding: WealthOnboardingData = {
   status: "Quarantined",
   quarantined: true,
   assigned_pwa: "Sarah Jenkins, CFP, Senior Private Wealth Advisor",
-  target_client: "[QUARANTINED] Commercial Guarantor Profile (Affirmative Opt-In Required Under GLBA Reg P & FCRA § 604)",
+  target_client: "[QUARANTINED] Commercial Guarantor Profile (Affirmative Opt-In Required — NPI Handling Standard, Voluntary Control)",
   household_id: "HH-QUARANTINED-PENDING-CONSENT",
   staged_kyc_cip: {
     completion_percentage: 0,
     verified_fields: [
       { field: "Client Nonpublic Personal Information (NPI)", value: "[QUARANTINED - Firewalled at Commercial Bank Perimeter Pending Client Opt-In]", status: "Quarantined" },
-      { field: "Taxpayer Identification & CDD", value: "[QUARANTINED UNDER GLBA REG P & FCRA § 604]", status: "Quarantined" },
+      { field: "Taxpayer Identification", value: "[QUARANTINED — NPI HANDLING STANDARD]", status: "Quarantined" },
       { field: "Residential & Banking Coordinates", value: "[QUARANTINED - Commercial Credit Vault Firewalled]", status: "Quarantined" }
     ],
     pending_advisor_actions: [
@@ -514,7 +514,7 @@ export const initialWealthOnboarding: WealthOnboardingData = {
     horizon: "Unstated",
     liquidity_reserve_sleeve: "$0.00 (Locked)",
     asset_allocation_scaffold: [],
-    fiduciary_disclaimer: "Scaffolding withheld. Under OCC Reg 9 fiduciary standards and GLBA, asset allocation scaffolding is unlocked only after affirmative client opt-in and licensed advisor risk discovery."
+    fiduciary_disclaimer: "Scaffolding withheld. Under OCC Reg 9 fiduciary standards, and under our own NPI handling standard as a voluntary control, asset allocation scaffolding is unlocked only after affirmative client opt-in and licensed advisor risk discovery."
   },
   ongoing_servicing_dossier: {
     annual_reviews_automated: false,
@@ -666,7 +666,7 @@ RETURN b.legal_name, p.name, p.guaranty_status, p.glba_quarantined,
         properties: {
           "ALTA Identifier": "ALTA-OH-7721",
           "Escrow Location": "Downtown Columbus Commercial Unit",
-          "Security Mandate": "ALTA Best Practices Pillar 2 Verified Call-Back"
+          "Wire Verification": "Independent call-back authentication before disbursement (ALTA Best Practices — voluntary industry standard)"
         },
         agent_relevance: "Settlement agent receiving the official Huntington payoff verification letter.",
         x: 470,
@@ -700,7 +700,7 @@ RETURN b.legal_name, p.name, p.guaranty_status, p.glba_quarantined,
           "Equity Stake": "15.0% Minority Interest",
           "Guaranty Status": "Non-Guarantor (No Commercial Guarantee)",
           "Source of Record": "LLC Operating Agreement, credit file (document extraction)",
-          "CDD Coverage": "Below the 25% FinCEN beneficial-owner threshold; absent from BSA certification",
+          "CDD Coverage": "Below the 25% FinCEN beneficial-owner threshold, so beneficial-ownership certification would not capture her",
           "NPI Handling Status": "Quarantined pending opt-in (GLBA Reg P / FCRA § 604 framework)",
           "Exclusion Sentry": "Firewalled from Wealth Advisory CRM Pending Opt-In"
         },

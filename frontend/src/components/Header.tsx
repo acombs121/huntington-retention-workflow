@@ -131,7 +131,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 disabled={isQuarantined}
                 onClick={() => !isQuarantined && onViewChange('wealth_dossier')}
-                title={isQuarantined ? "Locked by GLBA Privacy Barrier (Commercial Client Opt-In Required)" : "Onboarding Dossier"}
+                title={isQuarantined ? "Locked by NPI Privacy Barrier (Commercial Client Opt-In Required)" : "Onboarding Dossier"}
                 className={`relative py-2.5 text-[11px] 2xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
                   isQuarantined
                     ? 'opacity-40 cursor-not-allowed text-emerald-300/40'

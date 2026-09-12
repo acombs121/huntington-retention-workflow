@@ -688,7 +688,7 @@
     <td><strong>50%–65% IRC §1031 Exchange Rate</strong></td>
     <td><strong>Marcus & Millichap (NYSE: MMI) Research & NAR Commercial Studies</strong></td>
     <td>&bull; <strong>Marcus & Millichap:</strong> Over 60% of middle-market private client investment sales execute an IRC §1031 exchange.<br>&bull; <strong>Ling & Petrova Study (Univ. of Florida / Syracuse Univ.):</strong> Analyzed 1.6M commercial transactions ($4.8T volume); taxable LLCs and private owners utilize 1031s to defer 30%–42% combined federal, NIIT, state, and depreciation recapture taxes.</td>
-    <td>Proves that without an immediate, integrated institutional 1031 Qualified Escrow Depository (Partner QI Network), 50%–65% of commercial proceeds legally must wire out to third-party accommodators on closing day.</td>
+    <td>Where a seller elects a 1031 exchange — 50%–65% of middle-market private dispositions, per Marcus & Millichap and NAR — the proceeds cannot land in the seller's operating account without destroying the deferral. Absent an integrated bank escrow product they leave for an outside accommodator <strong>by default, not by legal compulsion</strong>: Treas. Reg. § 1.1031(k)-1(g)(3) expressly permits a qualified escrow account at a financial institution, and § 1.1031(k)-1(k)(2)(ii) confirms routine escrow services do not disqualify the bank. That gap is the retention opportunity.</td>
     </tr>
     </tbody></table>
   </div>
@@ -884,10 +884,10 @@
     <th>Operational Implementation in Book Scout</th>
     </tr></thead><tbody>
     <tr>
-    <td><strong>Wire Fraud & Title Routing</strong></td>
-    <td><strong>ALTA Pillar 2</strong> (Escrow Accounting & Wire Verification); <strong>UCC Article 4A-202</strong></td>
-    <td>American Land Title Association / UCC</td>
-    <td>Lenders lack standing to instruct settlement escrow directly. Book Scout delivers a DocuSign Settlement Routing Packet directly to the borrower for seller authorization, supported by Huntington's official bank verification letter and direct callback authentication line at <strong>(614) 480-4401</strong>.</td>
+    <td><strong>Settlement Disbursement Routing & Wire-Fraud Control</strong></td>
+    <td class="cell-estimate">Escrow agreement, state escrow law and agency principles — the settlement agent disburses on its own principals' executed instructions. <strong>ALTA Title Insurance and Settlement Company Best Practices</strong> are cited only as <em>voluntary industry guidance</em>, not law. ⚠️ <strong>No statute or regulation is claimed for this row.</strong> Earlier drafts cited a numbered ALTA best-practices pillar (which covers escrow trust accounting) together with the uniform funds-transfer article (which governs payment orders between banks and their customers). Neither speaks to a settlement agent's disbursement authority; both have been withdrawn.</td>
+    <td>Contract / state escrow law; American Land Title Association (trade association)</td>
+    <td>A lender has no authority to instruct disbursement of the seller's net proceeds. Book Scout delivers a DocuSign Settlement Routing Packet to the borrower, who executes and submits it as the seller's own closing authorization, supported by Huntington's bank verification letter and direct call-back authentication line at <strong>(614) 480-4401</strong>. This is standard settlement practice and title-company wire-fraud policy, not a regulatory requirement.</td>
     </tr>
     <tr>
     <td><strong>Broker-Dealer Referral Compliance</strong></td>
@@ -896,10 +896,22 @@
     <td>Commercial RMs receive deposit FTP credit only on bank scorecards; zero securities commissions, referral splits, or AUM-contingent compensation.</td>
     </tr>
     <tr>
-    <td><strong>Nonpublic Personal Information (NPI)</strong></td>
-    <td><strong>GLBA Reg P (12 CFR Part 1016)</strong>; <strong>FCRA § 604 (15 U.S.C. § 1681b)</strong>; <strong>Regulation V (12 CFR Part 1022)</strong></td>
+    <td><strong>Conflicts, Tying & Fair Treatment</strong></td>
+    <td><strong>12 U.S.C. § 1972</strong> (anti-tying); <strong>FTC Act § 5 (15 U.S.C. § 45)</strong> — the FTC does not enforce against banks, but the OCC supervises national banks against the same unfair-or-deceptive standard</td>
+    <td>Federal Reserve / OCC</td>
+    <td><strong>No credit condition.</strong> Payoff terms, extensions and pricing are unaffected by where the seller directs proceeds, consistent with Huntington's anti-tying policy. § 1972 has an exception for traditional bank products of the same bank, which covers the deposit leg; the wealth referral leg is not obviously inside it, which is why the workflow conditions nothing on credit and the RM's referral fee stays nominal and non-contingent. On unfair-or-deceptive exposure from a lender-prepared authorization delivered in the borrower's most time-pressured week: the borrower executes his own disbursement instruction, the bank issues no instruction to title, and the packet is framed as closing safety. Dodd-Frank UDAAP reaches "consumers," so a commercial LLC borrower is largely outside it. Outreach prioritization uses only credit rating and estimated proceeds — no demographic inputs and no credit decision, so no adverse-action obligation arises.</td>
+    </tr>
+    <tr>
+    <td><strong>Information Security Program (Pre-Ingestion DLP)</strong></td>
+    <td><strong>GLBA § 501(b) (15 U.S.C. § 6801(b))</strong>; <strong>Interagency Guidelines Establishing Information Security Standards</strong>, appended by the OCC to <strong>12 C.F.R. Part 30</strong></td>
+    <td>OCC</td>
+    <td class="cell-estimate">Automated Cloud DLP strips consumer credit-bureau data and personal tax returns before ingestion. Beneficial-ownership facts are read from the entity's own formation and credit documents. <strong>BSA/CDD records remain under BSA data governance and are not copied into the wealth pipeline.</strong> ⚠️ Confirm the Part 30 appendix designation with information-security compliance before it goes on a slide; it is deliberately not asserted here.</td>
+    </tr>
+    <tr>
+    <td><strong>NPI Handling Firewall</strong></td>
+    <td><strong>GLBA Reg P (12 CFR Part 1016)</strong>, including <strong>§ 1016.13</strong> for the Ameriprise service-provider relationship; <strong>FCRA (15 U.S.C. § 1681 et seq.)</strong>; <strong>Regulation V (12 CFR Part 1022)</strong></td>
     <td>CFPB / FTC</td>
-    <td>Automated Cloud DLP purges consumer credit reports, personal 1040s, and FinCEN CDD records pre-ingestion. Non-guarantors (Elena Vance) are programmatically excluded from profiling. Quarantined Consent Gate requires affirmative borrower opt-in.</td>
+    <td>Cited as the <strong>governing framework, applied as a conservative internal standard rather than as a triggered obligation</strong> — a passive member of a commercial LLC may not meet the statutory definition of a consumer. Non-guarantors (Elena Vance) are programmatically excluded from profiling, and the staged wealth profile is quarantined until the borrower's affirmative opt-in is recorded. The consent gate is self-imposed; the advisor handoff is intra-institutional, so Reg P opt-out does not attach to it.</td>
     </tr>
     <tr>
     <td><strong>Like-Kind Exchange Safe Harbor</strong></td>
@@ -917,7 +929,7 @@
     <td><strong>Model Risk Governance</strong></td>
     <td><strong>OCC Bulletin 2011-12 / Fed SR 11-7</strong></td>
     <td>OCC / Federal Reserve Board</td>
-    <td>NOI capitalization heuristic is designated strictly as an "Internal Liquidity Triage Heuristic for Relationship Prioritization" (Tier 3). Prohibited from generating client-facing appraisal estimates or automated credit underwriting.</td>
+    <td class="cell-estimate">NOI capitalization heuristic is designated strictly as an "Internal Liquidity Triage Heuristic for Relationship Prioritization." Prohibited from generating client-facing appraisal estimates or automated credit underwriting. ⚠️ The guidance sets principles proportionate to model risk; it does <strong>not</strong> define numbered model tiers. Earlier drafts asserted a numbered tier as if it were a regulatory classification. Any tier number must come from Huntington's own MRM policy, and MRM should classify this before it is asserted.</td>
     </tr>
     </tbody></table>
   </div>

@@ -136,7 +136,7 @@ export const WealthQueueView: React.FC<WealthQueueViewProps> = ({
             </div>
             <div className="max-w-lg mx-auto space-y-2">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                Relationship Quarantined by GLBA Privacy Barrier
+                Relationship Quarantined by NPI Privacy Barrier
               </h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
                 The commercial payoff for {borrowerEntity} is active, but verbal opt-in consent has not yet been recorded by Commercial RM {commercialRM}.
