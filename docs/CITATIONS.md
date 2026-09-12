@@ -1,6 +1,6 @@
-# Huntington Book Scout 2.0: Authoritative Citations & Source Index
+# Huntington Book Scout: Authoritative Citations & Source Index
 
-This document establishes the primary sources, statutory authorities, SEC filings, regulatory guidance, and empirical industry benchmarks for all headline figures across **Huntington Book Scout 2.0 (v6.0)**, including [`PRD.md`](PRD.md), [`overview.html`](../frontend/public/overview.html), and [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md).
+This document establishes the primary sources, statutory authorities, SEC filings, regulatory guidance, and empirical industry benchmarks for all headline figures across **Huntington Book Scout (v6.0)**, including [`PRD.md`](PRD.md), [`overview.html`](../frontend/public/overview.html), and [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md).
 
 ---
 
@@ -319,7 +319,7 @@ The model's 65.0 bps is conservative to both years.
 
 ## 5. Regulatory, Statutory & Security Standards
 
-| Standard / Requirement | Legal / Statutory Citation | Regulatory Body | Operational Implementation in Book Scout 2.0 |
+| Standard / Requirement | Legal / Statutory Citation | Regulatory Body | Operational Implementation in Book Scout |
 | :--- | :--- | :--- | :--- |
 | **Wire Fraud & Title Routing** | **ALTA Pillar 2** (Escrow Accounting & Wire Verification); **UCC Article 4A-202** | American Land Title Association / UCC | Lenders lack standing to instruct settlement escrow directly. Book Scout delivers a DocuSign Settlement Routing Packet directly to the borrower for seller authorization, supported by Huntington's official bank verification letter and direct callback authentication line at **(614) 480-4401**. |
 | **Broker-Dealer Referral Compliance** | **SEC Regulation R (17 CFR § 247.700)**; **FINRA Rule 2040(a)** | SEC / FINRA | Commercial RMs receive deposit FTP credit only on bank scorecards; zero securities commissions, referral splits, or AUM-contingent compensation. |

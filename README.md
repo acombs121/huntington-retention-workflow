@@ -1,6 +1,6 @@
 # Huntington Book Scout: Intelligent Liquidity Orchestration
 
-Production-grade, interactive full-stack Google Cloud Run application for **Huntington Book Scout: Intelligent Liquidity Orchestration** (v6.0 - Book Scout 2.0). Built strictly in accordance with the **Google Cloud Run Demo Standard** (`/cloud-run-demo`), the approved **Huntington Bank Corporate Design Specification** ([`docs/DESIGN.md`](docs/DESIGN.md), `brand_kit.html`), and **Functional Specifications** ([`docs/PRD.md`](docs/PRD.md), [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)).
+Production-grade, interactive full-stack Google Cloud Run application for **Huntington Book Scout: Intelligent Liquidity Orchestration** (v6.0). Built strictly in accordance with the **Google Cloud Run Demo Standard** (`/cloud-run-demo`), the approved **Huntington Bank Corporate Design Specification** ([`docs/DESIGN.md`](docs/DESIGN.md), `brand_kit.html`), and **Functional Specifications** ([`docs/PRD.md`](docs/PRD.md), [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)).
 
 ---
 
@@ -73,7 +73,7 @@ huntington-book-scout/
 │   ├── src/views/               # 7 production workflow views across Commercial & Wealth personas
 │   └── src/components/          # Swiss editorial design components, Header, AdminPanel
 ├── docs/                        # Consolidated specifications, architecture & audit reports
-│   ├── PRD.md                   # Full functional & regulatory specification (v6.0 - Book Scout 2.0)
+│   ├── PRD.md                   # Full functional & regulatory specification (v6.0)
 │   ├── DEMO_SCRIPT.md           # Presenter click-path & 10-minute executive briefing
 │   ├── DESIGN.md                # Huntington Bank corporate design tokens & palette
 │   ├── CONTEXT.md               # Ubiquitous domain language & data invariants
@@ -226,4 +226,4 @@ Following rigorous adversarial reviews conducted via independent auditor subagen
 6. **Strict Visual & Code Quality Standards**: Enforces a strict zero-emoji ASCII standard across all frontend source files, validated continuously via automated CI scripts.
 
 ---
-*Huntington Book Scout v6.0 (Book Scout 2.0) — Proving dual-sided agentic capacity leverage: scaling wealth management with existing headcount across both Commercial and Wealth.*
+*Huntington Book Scout v6.0 — Proving dual-sided agentic capacity leverage: scaling wealth management with existing headcount across both Commercial and Wealth.*

@@ -403,7 +403,7 @@ def build_citations() -> str:
         '  <div class="header-bar">',
         "    <div>",
         '      <div class="header-title">Authoritative Citations &amp; Evidence Registry</div>',
-        '      <div class="header-subtitle">Huntington Book Scout 2.0 (v6.0) &bull; '
+        '      <div class="header-subtitle">Huntington Book Scout (v6.0) &bull; '
         "Generated from docs/CITATIONS.md</div>",
         "    </div>",
         "  </div>",
@@ -544,7 +544,7 @@ def _demo_header() -> str:
     return """    <header class="header-bar">
       <div class="title-area">
         <div class="brand-eyebrow">Institutional Executive Presentation &bull; C-Level Blueprint</div>
-        <h1>Huntington Book Scout 2.0 <span class="green-mark">Customer Demo Script</span></h1>
+        <h1>Huntington Book Scout <span class="green-mark">Customer Demo Script</span></h1>
         <p>Executive Presentation Walkthrough, Spanner Graph Grounding Defense, &amp; OCC/GLBA Regulatory Safe Harbors (v6.0)</p>
       </div>
       <div class="header-actions">
