@@ -658,7 +658,11 @@
         <div class="dim-col">
           <div class="dim-title">Presenter Action</div>
           <div class="dim-desc"><ul class="doc-list">
-<li>Click Marcus Vance. Watch the agent decompose <code>Vance Riverfront Properties IV, LLC</code> with verified citations on scanned credit certificates (<code>⧉ LOS Facility #CC-8821</code>).</li>
+<li>Click Marcus Vance. Watch the agent decompose <code>Vance Riverfront Properties IV, LLC</code> into its beneficial owners, each one traced back to the page it came from.</li>
+<li>Click each name in <strong>Beneficial Ownership</strong> and let the <strong>Document Grounding</strong> panel follow:</li>
+</ul>
+<div class="script-quote"><em>"Every one of these three is a claim, and every claim points at a region of a document we already hold — the Credit Agreement and Incumbency Certificate in our own credit vault, page eleven of fourteen. The highlight moves as I move. That is the extracted language and the coordinates it was read from, not a summary of it. If the agent asserts an ownership percentage, you can put your finger on the sentence it came from."</em></div>
+<ul class="doc-list">
 <li>Point out the <strong>Automated Pre-Ingestion DLP</strong>:</li>
 </ul>
 <div class="script-quote"><em>"Notice what the agent did NOT ingest. It stripped consumer credit-bureau data and personal tax returns before processing — that is our GLBA § 501(b) safeguards control, not a privacy notice. Beneficial-ownership facts are read from the entity's own formation and credit documents; BSA/CDD records stay under BSA data governance and are never copied into this pipeline. Elena Vance—a 15% non-guarantor member—is programmatically excluded. She never applied for this credit and she is not a party to it. Using her ownership interest, which we only hold because it appears in the operating agreement, to build a wealth profile is a purpose-limitation problem we refuse to create. If we ever wanted to look at her personally we would need a permissible purpose under FCRA, and we do not have one here. So we do not look."</em></div>
@@ -673,7 +677,7 @@
         <div class="dim-col">
           <div class="dim-title">What is Shown in the Demo</div>
           <div class="dim-desc"><ul class="doc-list">
-<li>The <strong>Deal Analysis</strong> workspace: entity decomposition with green bounding-box citations on scanned credit documents, DLP Verified badge, non-guarantor exclusion flags, cap rate benchmark, payment record, and last touchpoint.</li>
+<li>The <strong>Deal Analysis</strong> workspace: the payoff demand and its <strong>Document Grounding</strong> panel on the left, the extracted <strong>Beneficial Ownership</strong> and principal relationship on the right, and the liquidity band beneath both. Selecting an owner moves the highlighted region on the page and swaps the quoted document language and its coordinates. The panel renders the extracted text at its recorded position on the page — a rendering of what the resolver returned, not an image of the document. DLP Verified badge, non-guarantor exclusion flags, cap rate benchmark, payment record, and last touchpoint.</li>
 </ul></div>
         </div>
         <div class="dim-col">

@@ -95,14 +95,16 @@ flowchart LR
 *Demonstrate multimodal extraction with pre-ingestion DLP, non-guarantor privacy exclusions, and internal triage heuristics governed under OCC Bulletin 2011-12.*
 
 - **Presenter Action**:
-  1. Click Marcus Vance. Watch the agent decompose `Vance Riverfront Properties IV, LLC` with verified citations on scanned credit certificates (`⧉ LOS Facility #CC-8821`).
-  2. Point out the **Automated Pre-Ingestion DLP**:
+  1. Click Marcus Vance. Watch the agent decompose `Vance Riverfront Properties IV, LLC` into its beneficial owners, each one traced back to the page it came from.
+  2. Click each name in **Beneficial Ownership** and let the **Document Grounding** panel follow:
+     - *"Every one of these three is a claim, and every claim points at a region of a document we already hold — the Credit Agreement and Incumbency Certificate in our own credit vault, page eleven of fourteen. The highlight moves as I move. That is the extracted language and the coordinates it was read from, not a summary of it. If the agent asserts an ownership percentage, you can put your finger on the sentence it came from."*
+  3. Point out the **Automated Pre-Ingestion DLP**:
      - *"Notice what the agent did NOT ingest. It stripped consumer credit-bureau data and personal tax returns before processing — that is our GLBA § 501(b) safeguards control, not a privacy notice. Beneficial-ownership facts are read from the entity's own formation and credit documents; BSA/CDD records stay under BSA data governance and are never copied into this pipeline. Elena Vance—a 15% non-guarantor member—is programmatically excluded. She never applied for this credit and she is not a party to it. Using her ownership interest, which we only hold because it appears in the operating agreement, to build a wealth profile is a purpose-limitation problem we refuse to create. If we ever wanted to look at her personally we would need a permissible purpose under FCRA, and we do not have one here. So we do not look."*
-  3. Point out the **internal liquidity triage** principle:
+  4. Point out the **internal liquidity triage** principle:
      - *"The title letter omits the contract sale price. Rather than having an AI hallucinate an appraisal, Book Scout works from the underwritten baseline and trailing NOI to size the relationship internally. That calculation is strictly muzzled from the client; Greg Miller never asserts a property value to Marcus Vance. You'll see the sizing band itself at settlement in a moment."*
-  4. Click **[Route to Wealth Advisor]** to advance to Advisor Routing.
+  5. Click **[Route to Wealth Advisor]** to advance to Advisor Routing.
 - **What is Shown in the Demo**:
-  - The **Deal Analysis** workspace: entity decomposition with green bounding-box citations on scanned credit documents, DLP Verified badge, non-guarantor exclusion flags, cap rate benchmark, payment record, and last touchpoint.
+  - The **Deal Analysis** workspace: the payoff demand and its **Document Grounding** panel on the left, the extracted **Beneficial Ownership** and principal relationship on the right, and the liquidity band beneath both. Selecting an owner moves the highlighted region on the page and swaps the quoted document language and its coordinates. The panel renders the extracted text at its recorded position on the page — a rendering of what the resolver returned, not an image of the document. DLP Verified badge, non-guarantor exclusion flags, cap rate benchmark, payment record, and last touchpoint.
 - **Production Implementation Blueprint**:
   - **Gemini Enterprise Agent Platform (fka Vertex AI Platform)** running `gemini-3.7-flash`; Google Cloud DLP; Core LOS REST integration; Cloud Run `CalculatorTool`.
 
