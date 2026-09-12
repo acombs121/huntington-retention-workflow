@@ -224,96 +224,22 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
             </div>
           </div>
 
-          {/* Card 2: Document Grounding -- the source regions behind the
-              Beneficial Ownership rows across the grid. Placed here so the
-              document reads left and the extracted output reads right, on one
-              horizontal band, which is the move the script asks for when the
-              presenter clicks a member's name. */}
-          <DocumentGroundingCard
-            entityData={entityData}
-            selectedMemberName={activeRegion}
-            onSelectMember={setSelectedRegion}
-          />
-
         </div>
 
-        {/* Right Column: Ownership & Relationship (5 cols) */}
+        {/* Right Column: Principal Relationship (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
 
           {/* Everything in this column comes from the per-deal entity record.
               If that record is the previous borrower's, show nothing rather
-              than showing their owners and balances under this name. */}
+              than showing their relationship history under this name. */}
           {isDealDataStale && (
             <StaleRecordNotice
               dealName={deal.borrower_entity}
-              what="the ownership and relationship record"
+              what="the relationship record"
             />
           )}
 
           {!isDealDataStale && (<>
-          {/* Card 1: Beneficial Ownership */}
-          <div className="bg-white dark:bg-palette-surface border border-slate-200/80 dark:border-palette-surface-3 rounded-2xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-palette-surface-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-palette-ink">
-                Beneficial Ownership
-              </h2>
-              <span className="text-xs font-semibold text-[#006738] dark:text-palette-accent">
-                EIN Verified
-              </span>
-            </div>
-
-            <div className="divide-y divide-slate-100 dark:divide-palette-surface-3">
-              {entityData.grounded_members?.map((member) => {
-                const isExcluded = member.exclusion_status && member.exclusion_status.includes('Excluded');
-
-                const isActiveRegion = member.name === activeRegion;
-
-                return (
-                  <button
-                    key={member.name}
-                    type="button"
-                    onClick={() => setSelectedRegion(member.name)}
-                    aria-pressed={isActiveRegion}
-                    title={`Show the source region for ${member.name}`}
-                    className={`w-full text-left py-3 first:pt-0 last:pb-0 -mx-2 px-2 rounded-lg transition-colors ${
-                      isActiveRegion
-                        ? 'bg-[#006738]/[0.06] dark:bg-palette-accent/10'
-                        : 'hover:bg-slate-50 dark:hover:bg-palette-surface-2'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-slate-900 dark:text-palette-ink">
-                        {member.name}
-                      </span>
-                      {member.ownership_pct > 0 && (
-                        <span className="text-xs font-semibold text-slate-500 dark:text-palette-ink-3">
-                          {member.ownership_pct}% Equity
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between mt-1 text-xs">
-                      <span className="text-slate-400 dark:text-palette-ink-4">
-                        {member.role}
-                      </span>
-                      {member.known_hban_balance > 0 && (
-                        <span className="text-slate-600 dark:text-palette-ink-2 font-medium">
-                          ${(member.known_hban_balance / 1000000).toFixed(2)}M on deposit
-                        </span>
-                      )}
-                    </div>
-
-                    {isExcluded && (
-                      <div className="mt-1.5 inline-flex items-center text-[10px] font-medium text-amber-700 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">
-                        Excluded &bull; Non-guarantor
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Card 2: Relationship to Principal */}
           <div className="bg-white dark:bg-palette-surface border border-slate-200/80 dark:border-palette-surface-3 rounded-2xl p-6 shadow-sm space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-palette-surface-3">
@@ -373,6 +299,26 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
         </div>
 
       </div>
+
+      {/* Document grounding, full width.
+
+          The page is shown at full size through a window rather than
+          shrunk to fit a column -- a letter page scaled into a sidebar is
+          unreadable, and an unreadable exhibit proves nothing. At this
+          width the clause can actually be read from across a boardroom,
+          which is the entire point of showing it. */}
+      {isDealDataStale ? (
+        <StaleRecordNotice
+          dealName={deal.borrower_entity}
+          what="the ownership record and its source document"
+        />
+      ) : (
+        <DocumentGroundingCard
+          entityData={entityData}
+          selectedMemberName={activeRegion}
+          onSelectMember={setSelectedRegion}
+        />
+      )}
 
       {/* Liquidity & Net Proceeds, full width.
 

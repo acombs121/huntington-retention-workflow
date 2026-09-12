@@ -73,6 +73,7 @@ All autonomous agent tags in runtime telemetry and orchestration logs are strict
 
 - **Primary Sans-Serif Stack**: `'Mulish', 'Muli', 'Apex New', 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif`
 - **Zero Monospace Policy**: **100% sans-serif** typography across all UI, financial tables, headers, and telemetry labels. Code/monospace fonts are strictly prohibited.
+- **One documented exception — the document facsimile**: `DocumentGroundingCard` renders the scanned credit document in `Georgia, "Times New Roman", serif`. This is not chrome; it is the artifact being inspected. Every document viewer distinguishes content from interface this way, and a legal instrument set in the product's own UI face would read as another panel rather than as evidence. The exception is scoped to the page surface inside the viewer frame — the surrounding card, the ownership list, the region readout and the DLP note all remain sans-serif.
 - **Financial Tabular Numbers**: Formatted using `tabular-nums` (`font-variant-numeric: tabular-nums`) with bold sans-serif weight.
 - **Typographic Scale & Swiss Hierarchy**:
   - `Section Kicker / Eyebrow`: 11px / Uppercase / Tracking Widest (`text-xs font-bold uppercase tracking-widest text-[#006738]`)
