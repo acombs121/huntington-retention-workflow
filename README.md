@@ -1,6 +1,6 @@
-# Huntington Horizon: Intelligent Liquidity Orchestration
+# Huntington Book Scout: Intelligent Liquidity Orchestration
 
-Production-grade, interactive full-stack Google Cloud Run application for **Huntington Horizon: Intelligent Liquidity Orchestration** (v6.0 - Horizon 2.0). Built strictly in accordance with the **Google Cloud Run Demo Standard** (`/cloud-run-demo`), the approved **Huntington Bank Corporate Design Specification** ([`docs/DESIGN.md`](docs/DESIGN.md), `brand_kit.html`), and **Functional Specifications** ([`docs/PRD.md`](docs/PRD.md), [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)).
+Production-grade, interactive full-stack Google Cloud Run application for **Huntington Book Scout: Intelligent Liquidity Orchestration** (v6.0 - Book Scout 2.0). Built strictly in accordance with the **Google Cloud Run Demo Standard** (`/cloud-run-demo`), the approved **Huntington Bank Corporate Design Specification** ([`docs/DESIGN.md`](docs/DESIGN.md), `brand_kit.html`), and **Functional Specifications** ([`docs/PRD.md`](docs/PRD.md), [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md)).
 
 ---
 
@@ -10,7 +10,7 @@ Huntington is a **top-2 national SBA 7(a) lender** operating **1,400 branches ac
 
 ### The Two-Sided Capacity Bottleneck
 1. **Commercial Side:** Commercial RMs focus on loan production and lack the bandwidth for 6–8 hours of manual discovery, entity resolution, and valuation across siloed systems per deal.
-2. **Wealth Side (Onboarding & Servicing Limits):** Manual onboarding takes 2–3 weeks, and ongoing fiduciary servicing caps Private Wealth Advisors (PWAs) at ~80 accounts unassisted (expanded to 95–100 accounts via 2x Client Service Associate leverage under Horizon). Flooding advisors with leads trades a commercial bottleneck for an acute wealth bottleneck.
+2. **Wealth Side (Onboarding & Servicing Limits):** Manual onboarding takes 2–3 weeks, and ongoing fiduciary servicing caps Private Wealth Advisors (PWAs) at ~80 accounts unassisted (expanded to 95–100 accounts via 2x Client Service Associate leverage under Book Scout). Flooding advisors with leads trades a commercial bottleneck for an acute wealth bottleneck.
 3. **The 1031 Exchange Leakage:** 50–65% of commercial property dispositions execute an IRC §1031 like-kind exchange. If funds touch commercial operating checking, tax deferral is voided, forcing funds to leak to third-party Qualified Intermediaries (QIs).
 4. **Institutional Operating Realities:** 
    - **Ameriprise Retail Investment Program:** Huntington Financial Advisors (HFA) transitions its retail brokerage, advisory and insurance support to the Ameriprise Financial Institutions Group ([announced Feb 4, 2026](https://www.ameriprise.com/newsroom/news-releases/huntington-bank-selects-ameriprise-financial-as-its-new-retail-investment-program-provider)). **Huntington employs the advisors and the client stays a Huntington customer**; Ameriprise provides the platform, clearing and back office and acts as the supervising broker-dealer. The handoff is therefore intra-institutional (Reg P opt-out does not attach; Ameriprise NPI access is a service-provider relationship under 12 C.F.R. § 1016.13), while SEC Reg R and FINRA Rule 2040 constrain RM compensation to deposit FTP credit plus a nominal, non-contingent referral fee — zero securities fee-splitting.
@@ -48,7 +48,7 @@ Interactive design system showcasing corporate green palettes (`#004724`, `#0067
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                  HUNTINGTON HORIZON MONOSTACK                                   │
+│                                  HUNTINGTON BOOK SCOUT MONOSTACK                                   │
 ├───────────────────────────────┬─────────────────────────────────┬───────────────────────────────┤
 │ FRONTEND (React 18 + Vite)    │ REASONING ORCHESTRATOR          │ CLOUD RUN DEPLOYMENT          │
 │ • Tailwind CSS + shadcn/ui    │ • Gemini Enterprise Agent       │ • python:3.11-slim Container  │
@@ -63,7 +63,7 @@ Interactive design system showcasing corporate green palettes (`#004724`, `#0067
 
 ### Codebase Organization
 ```text
-huntington-horizon/
+huntington-book-scout/
 ├── domain/                      # Commercial Liquidity Engine (pure domain models & netting math)
 │   ├── models.py                # PayoffStatement, LiquidityAssessment, ValuationMetrics
 │   └── liquidity_engine.py      # Capitalization, debt payoff, closing costs, statutory routes
@@ -73,13 +73,13 @@ huntington-horizon/
 │   ├── src/views/               # 7 production workflow views across Commercial & Wealth personas
 │   └── src/components/          # Swiss editorial design components, Header, AdminPanel
 ├── docs/                        # Consolidated specifications, architecture & audit reports
-│   ├── PRD.md                   # Full functional & regulatory specification (v6.0 - Horizon 2.0)
+│   ├── PRD.md                   # Full functional & regulatory specification (v6.0 - Book Scout 2.0)
 │   ├── DEMO_SCRIPT.md           # Presenter click-path & 10-minute executive briefing
 │   ├── DESIGN.md                # Huntington Bank corporate design tokens & palette
 │   ├── CONTEXT.md               # Ubiquitous domain language & data invariants
 │   ├── AUDIT_REPORT.md          # Architectural baseline validation
 │   ├── critique.md              # Adversarial pre-mortem review
-│   └── huntington-horizon.pdf   # Compiled executive whitepaper & architecture blueprint
+│   └── huntington-book-scout.pdf   # Compiled executive whitepaper & architecture blueprint
 ├── tests/                       # 31 automated unit and integration tests (pytest)
 │   ├── unit/                    # Liquidity engine invariant tests (net equity, floor, 1031, ALTA Pillar 2)
 │   └── integration/             # FastAPI endpoint tests (IAP, quarantine, valuation, onboarding, flight-risk trace, signal-graph, 404/422 validations)
@@ -179,7 +179,7 @@ Run both the FastAPI backend and Vite frontend proxy concurrently bound strictly
 
 Detailed in [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) and viewable interactively at `/demo_script.html`:
 
-1. **Step 1 (00:00–01:30) - The Problem & The $4.5B Flight Cliff**: Review the two-sided capacity bottleneck: Commercial discovery drag (~7 hrs) vs. Wealth onboarding/servicing capacity limit (80 accounts unassisted -> 95–100 accounts with Horizon CSA leverage).
+1. **Step 1 (00:00–01:30) - The Problem & The $4.5B Flight Cliff**: Review the two-sided capacity bottleneck: Commercial discovery drag (~7 hrs) vs. Wealth onboarding/servicing capacity limit (80 accounts unassisted -> 95–100 accounts with Book Scout CSA leverage).
 2. **Step 2 (01:30–03:30) - Commercial Payoff Surveillance**: Inspect the commercial loan payoff queue. Review Riverfront Commercial Commons at T-12 days with imminent 78% flight risk.
 3. **Step 3 (03:30–06:00) - Credit & Title Verification**: Select Marcus Vance. Gemini 3.7 Flash decomposes `Vance Riverfront Properties IV, LLC` with verified entity grounding on scanned credit certificates. Resolve unstated contract sale price via trailing NOI ($637.5k) capitalized at 7.50% cap rate grounded via Vertex AI Search. Adjust the **Sale Price Slider** live from $8.5M to $9.0M, dynamically recalculating net proceeds to $3.35M.
 4. **Step 4 (06:00–08:30) - Deposit Retention & Wealth Referral**: Review Greg Miller's relationship call guide. Configure Huntington 1031 Qualified Escrow Depository or Commercial Business Premier ICS sweep. Record GLBA verbal consent, generate Borrower Settlement Routing Packet, and hand off to Private Wealth Advisor Sarah Jenkins.
@@ -226,4 +226,4 @@ Following rigorous adversarial reviews conducted via independent auditor subagen
 6. **Strict Visual & Code Quality Standards**: Enforces a strict zero-emoji ASCII standard across all frontend source files, validated continuously via automated CI scripts.
 
 ---
-*Huntington Horizon v6.0 (Horizon 2.0) — Proving dual-sided agentic capacity leverage: scaling wealth management with existing headcount across both Commercial and Wealth.*
+*Huntington Book Scout v6.0 (Book Scout 2.0) — Proving dual-sided agentic capacity leverage: scaling wealth management with existing headcount across both Commercial and Wealth.*

@@ -1,4 +1,4 @@
-# Huntington Horizon: Ubiquitous Domain Language
+# Huntington Book Scout: Ubiquitous Domain Language
 
 Intelligent liquidity orchestration and deposit retention workflow bridging Commercial Real Estate and SBA 7(a) loan payoffs with Commercial Treasury Management and Private Wealth Management advisory across Huntington's 1,400 branches in 21 states.
 

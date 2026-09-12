@@ -38,23 +38,23 @@ function getTopFactorsForDeal(deal: PayoffItem): DealTraceAnalysis {
   if (deal.id === 'PO-2026-8821') {
     return {
       classificationTitle: 'Commercial Sale / Taxable Cash-Out',
-      summaryText: 'Confirmed third-party asset sale with $2.90M net seller equity and zero replacement debt, creating an immediate 48-hour deposit flight risk.',
+      summaryText: 'Third-party asset sale evidenced by an inbound title payoff demand, with an estimated $2.90M net seller equity and no replacement debt at Huntington, creating an immediate 48-hour deposit flight risk.',
       factors: [
         {
-          title: 'Zero Replacement Debt Found',
-          description: 'A core ledger and LOS check across 1,400 branches found zero renewal or replacement credit applications, ruling out an internal refinance.',
+          title: 'No Replacement Debt at Huntington',
+          description: 'A core ledger and LOS check across Huntington systems found zero renewal or replacement credit applications. This rules out an internal refinance; pipelines at other lenders are not visible to us.',
         },
         {
           title: 'Direct Cash Disbursement (No QI Intermediary)',
-          description: 'Title settlement instructions confirm funds wire directly to borrower operating account; zero Qualified Intermediary detected, ruling out a 1031 exchange.',
+          description: 'Title settlement instructions direct funds to the borrower operating account rather than a Qualified Intermediary, which indicates a taxable sale rather than a 1031 exchange.',
         },
         {
           title: 'Inbound Title Payoff Demand',
-          description: 'First American Title requested final payoff calculation for escrow closing scheduled in 12 days.',
+          description: 'First American Title requested final payoff calculation for escrow closing scheduled in 12 days. This is the factor that separates a sale from a refinance.',
         },
         {
-          title: 'High Net Liquid Proceeds ($2.90M)',
-          description: '$8.50M valuation leaves $2.90M net cash after debt payoff and closing costs, at immediate risk of external wire departure.',
+          title: 'High Net Liquid Proceeds (~$2.90M est.)',
+          description: 'An estimated $8.50M valuation leaves roughly $2.90M net cash after debt payoff and closing costs, at immediate risk of external wire departure.',
         },
       ],
       pathways: [
@@ -234,7 +234,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
   }, [selectedId]);
 
   const [resolvedUserName, setResolvedUserName] = useState<string>(() => {
-    return localStorage.getItem('horizon_user_name') || userName || 'Greg';
+    return localStorage.getItem('book_scout_user_name') || userName || 'Greg';
   });
 
   useEffect(() => {
@@ -600,7 +600,7 @@ export const PayoffPipelineView: React.FC<PayoffPipelineViewProps> = ({
                 <div className="pl-6 text-slate-400">&bull; Match 1: Sarah Jenkins (Score: 98% &bull; Book: 84 accounts &bull; Headroom: Available &bull; Specialty: CRE Liquidity)</div>
                 <div><span className="text-slate-500">[03:41:44.204]</span> <span className="font-bold text-[#A7F3D0]">[ROUTING_AGENT]</span> Capacity verification: Sarah Jenkins manages 84 families; well within 95–100 capacity threshold under 2x CSA leverage.</div>
                 <div><span className="text-slate-500">[03:41:48.090]</span> <span className="font-bold text-[#7FD1A9]">[OUTREACH_AGENT]</span> Pre-generating warm intro email for commercial banker Greg Miller to Marcus Vance &amp; Sarah Jenkins.</div>
-                <div><span className="text-slate-500">[03:42:04.918]</span> <span className="font-bold text-[#7FD1A9]">[ORCHESTRATION_ENGINE]</span> Overnight batch completed in 4m 18s. Horizon dashboard updated for morning review.</div>
+                <div><span className="text-slate-500">[03:42:04.918]</span> <span className="font-bold text-[#7FD1A9]">[ORCHESTRATION_ENGINE]</span> Overnight batch completed in 4m 18s. Book Scout dashboard updated for morning review.</div>
               </div>
             </div>
           </div>

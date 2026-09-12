@@ -1,5 +1,5 @@
 """
-Huntington Horizon: Domain Models
+Huntington Book Scout: Domain Models
 Explicit domain types for Commercial Liquidity Orchestration.
 Follows ubiquitous language documented in docs/CONTEXT.md.
 """

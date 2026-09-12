@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Huntington Book Scout — Commercial Deposit Retention</title>
+
+<!-- Mulish is the Huntington brand typeface. Loaded from Google Fonts. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   RESET
+   =========================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   Include this ENTIRE file in every presentation.
+   Slides are authored at 1920×1080 and scaled as a whole.
+   =========================================== */
+
+/* 1. Lock the browser viewport */
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+/* 2. Full-window deck viewport */
+.deck-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+/* 3. Fixed 16:9 design canvas.
+   JavaScript sets transform: translate(...) scale(...). */
+.deck-stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+
+/* 4. Slides stack inside the fixed stage.
+   Content must be laid out at 1920×1080, not reflowed per device. */
+.slide {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+
+.slide.active,
+.slide.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+/* 5. Keep media inside authored slide bounds */
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* 6. Presentation chrome stays outside the slide design system */
+.deck-controls {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+/* 7. Print one fixed-size slide per page */
+@media print {
+    html,
+    body {
+        width: 1920px;
+        height: auto;
+        overflow: visible;
+        background: #fff;
+    }
+
+    .deck-viewport {
+        position: static;
+        overflow: visible;
+        background: #fff;
+    }
+
+    .deck-stage {
+        position: static;
+        width: auto;
+        height: auto;
+        transform: none !important;
+        background: none;
+    }
+
+    .slide {
+        position: relative;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        width: 1920px;
+        height: 1080px;
+        break-after: page;
+        page-break-after: always;
+    }
+
+    .slide:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+
+    .deck-controls {
+        display: none !important;
+    }
+}
+
+/* 8. Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+/* ===========================================
+   DESIGN TOKENS — "PITCH PINE"
+   The product's own dark palette, at boardroom scale.
+   Change these to retheme the entire deck.
+   =========================================== */
+:root {
+    /* Surfaces */
+    --stage-bg:   #070B0A;   /* Letterbox area outside the 16:9 stage */
+    --slide-bg:   #0E1412;   /* Pitch pine — the base surface */
+    --surface-2:  #182521;   /* Raised panels */
+    --surface-3:  #22302A;   /* Hairlines and dim strokes */
+
+    /* Ink */
+    --ink:    #F2F5F1;
+    --ink-2:  #C6D0CA;
+    --ink-3:  #8F9C95;
+    --ink-4:  #66736C;
+
+    /* Accents */
+    --mint:   #7FD1A9;       /* Primary accent — signal, capability, upside */
+    --good:   #33A072;
+    --warn:   #E38341;
+    --crit:   #E5736A;       /* Reserved for the cost of the status quo */
+
+    /* The lead-time rings the bank cannot currently observe. Dim, but
+       deliberately above hairline value so they read as unlit, not absent. */
+    --arc-dim: #31423A;
+
+    /* Typography — authored at 1920×1080 stage size */
+    --font: 'Mulish', sans-serif;
+
+    /* Motion */
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --dur:  0.85s;
+}
+
+/* ===========================================
+   SLIDE BASE
+   =========================================== */
+.slide {
+    font-family: var(--font);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* Book Scout field — one flat tonal shift grounds the frame.
+   Deliberately no glow, bloom, or gradient mesh. */
+.ground-field {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(to top, #131C18 0%, #0E1412 46%);
+}
+
+/* Content frame. Every slide shares the same margins. */
+.frame {
+    position: absolute;
+    inset: 92px 110px 78px 110px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Narrow frame — used when the arc diagram occupies the right side. */
+.frame.narrow { width: 940px; right: auto; }
+
+/* ===========================================
+   MASTHEAD / FOOT CHROME
+   =========================================== */
+.masthead {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+}
+
+.masthead .pip {
+    width: 13px;
+    height: 13px;
+    background: var(--mint);
+    border-radius: 2px;
+    flex: none;
+}
+
+.foot {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--surface-3);
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+}
+
+.frame.narrow .foot { width: 940px; }
+
+/* ===========================================
+   TYPE SCALE
+   =========================================== */
+.eyebrow {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.30em;
+    text-transform: uppercase;
+    color: var(--mint);
+}
+
+.eyebrow.alarm { color: var(--crit); }
+
+.headline {
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -0.038em;
+}
+
+.headline.xl { font-size: 82px; }
+.headline.lg { font-size: 68px; }
+
+.headline em { font-style: normal; color: var(--mint); }
+.headline em.alarm { color: var(--crit); }
+
+.standfirst {
+    font-size: 25px;
+    font-weight: 400;
+    line-height: 1.56;
+    color: var(--ink-3);
+}
+
+.standfirst strong { font-weight: 800; color: var(--ink); }
+
+/* Closing line — the sentence the presenter lands on. */
+.landing {
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--ink);
+    border-left: 3px solid var(--mint);
+    padding-left: 26px;
+}
+
+/* All financial and temporal figures are tabular. */
+.figure {
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.035em;
+}
+
+/* ===========================================
+   DETECTION ARCS
+   Concentric lead-time rings emanating from the closing
+   date at the right edge. The recurring device of the deck:
+   dim on slide 1, live on slide 2, a watermark on slide 3.
+   =========================================== */
+.arcs {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 1000px;
+    height: 1080px;
+    pointer-events: none;
+}
+
+.arcs.watermark {
+    opacity: 0.5;
+    right: -180px;
+}
+
+.arc-line {
+    fill: none;
+    stroke-width: 2;
+    stroke: var(--arc-dim);
+    stroke-dasharray: 3200;
+    stroke-dashoffset: 3200;
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.33, 1, 0.68, 1),
+                stroke 0.6s ease;
+}
+
+.slide.visible .arc-line { stroke-dashoffset: 0; }
+
+/* Dim rings = lead time the bank cannot currently observe. */
+.arc-line.arc-1 { transition-delay: 0.55s; }
+.arc-line.arc-2 { transition-delay: 0.70s; }
+.arc-line.arc-3 { transition-delay: 0.85s; }
+.arc-line.arc-4 { transition-delay: 1.00s; }
+
+/* The only observable ring today. */
+.arc-line.live-crit { stroke: var(--crit); stroke-width: 3; }
+
+/* Rings Book Scout makes observable. */
+.arc-line.live-mint { stroke: var(--mint); stroke-width: 3; }
+
+/* Arc labels sit on top of the rings. The knockout stroke is painted
+   underneath the fill in the slide background colour, so a ring passing
+   behind a label breaks cleanly around it instead of striking it through. */
+.arc-tick,
+.arc-caption {
+    paint-order: stroke fill;
+    stroke: var(--slide-bg);
+    stroke-width: 8px;
+    stroke-linejoin: round;
+}
+
+.arc-tick {
+    font-family: var(--font);
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    fill: var(--ink-4);
+    opacity: 0;
+    transition: opacity 0.7s ease;
+}
+
+.slide.visible .arc-tick { opacity: 1; }
+
+.arc-tick.on-crit { fill: var(--crit); }
+.arc-tick.on-mint { fill: var(--mint); }
+
+.arc-tick.t1 { transition-delay: 1.10s; }
+.arc-tick.t2 { transition-delay: 1.20s; }
+.arc-tick.t3 { transition-delay: 1.30s; }
+.arc-tick.t4 { transition-delay: 1.40s; }
+
+.arc-caption {
+    font-family: var(--font);
+    font-size: 19px;
+    font-weight: 600;
+    fill: var(--ink-3);
+    opacity: 0;
+    transition: opacity 0.7s ease 1.55s;
+}
+
+.slide.visible .arc-caption { opacity: 1; }
+
+.close-marker {
+    opacity: 0;
+    transition: opacity 0.6s ease 0.45s;
+}
+
+.slide.visible .close-marker { opacity: 1; }
+
+.close-marker.crit { fill: var(--crit); }
+.close-marker.mint { fill: var(--mint); }
+
+/* ===========================================
+   COST BAR  (slide 1)
+   The operational price of arriving late.
+   =========================================== */
+.cost-bar {
+    display: flex;
+    border-left: 3px solid var(--crit);
+    background: var(--surface-2);
+}
+
+.cost-cell {
+    padding: 26px 34px;
+    border-right: 1px solid var(--surface-3);
+    flex: 1;
+}
+
+.cost-cell:last-child { border-right: 0; }
+
+.cost-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+}
+
+.cost-figure {
+    margin-top: 10px;
+    font-size: 44px;
+    color: var(--ink);
+}
+
+.cost-figure .unit {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0;
+    color: var(--ink-4);
+    margin-left: 8px;
+}
+
+/* ===========================================
+   NUMBERED BEATS  (slide 2)
+   Three steps, hairline separated.
+   =========================================== */
+.beats { display: flex; flex-direction: column; }
+
+.beat {
+    display: grid;
+    grid-template-columns: 84px 1fr;
+    align-items: start;
+    padding: 21px 0;
+    border-top: 1px solid var(--surface-3);
+}
+
+.beat:last-child { border-bottom: 1px solid var(--surface-3); }
+
+.beat-num {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    color: var(--mint);
+    font-variant-numeric: tabular-nums;
+    padding-top: 8px;
+}
+
+.beat-title {
+    font-size: 31px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+}
+
+.beat-note {
+    margin-top: 9px;
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--ink-3);
+    max-width: 780px;
+}
+
+.beat-note strong { font-weight: 800; color: var(--ink-2); }
+
+/* ===========================================
+   TWO-COLUMN SPLIT  (slide 3)
+   =========================================== */
+.split {
+    display: grid;
+    grid-template-columns: 950px 1fr;
+    gap: 0 64px;
+    flex: 1;
+    min-height: 0;
+}
+
+.col-right {
+    border-left: 1px solid var(--surface-3);
+    padding-left: 64px;
+}
+
+.col-head {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--surface-3);
+}
+
+/* --- Headline figures --- */
+.figures {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 44px;
+    margin-top: 34px;
+}
+
+.fig-block { }
+
+.fig-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+}
+
+.fig-value {
+    margin-top: 12px;
+    font-size: 62px;
+    color: var(--mint);
+}
+
+.fig-block.muted .fig-value { color: var(--ink-2); }
+
+.fig-note {
+    margin-top: 12px;
+    font-size: 18px;
+    line-height: 1.45;
+    color: var(--ink-3);
+}
+
+/* --- Provenance line --- */
+.provenance {
+    margin-top: 34px;
+    font-size: 21px;
+    line-height: 1.5;
+    color: var(--ink-3);
+    max-width: 900px;
+}
+
+.provenance strong { font-weight: 800; color: var(--ink-2); }
+
+/* --- Upside block, clearly separated from the promise --- */
+.upside {
+    margin-top: 30px;
+    background: var(--surface-2);
+    border-left: 3px solid var(--warn);
+    padding: 24px 30px;
+}
+
+.upside-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--warn);
+}
+
+.upside-text {
+    margin-top: 11px;
+    font-size: 21px;
+    line-height: 1.5;
+    color: var(--ink-2);
+}
+
+.upside-text strong {
+    font-weight: 800;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- Future work entries --- */
+.next-item {
+    padding: 26px 0;
+    border-bottom: 1px solid var(--surface-3);
+}
+
+.next-item:first-of-type { padding-top: 28px; }
+
+.next-title {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+}
+
+.next-title .rank {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--mint);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.12em;
+}
+
+.next-note {
+    margin-top: 10px;
+    padding-left: 42px;
+    font-size: 19px;
+    line-height: 1.48;
+    color: var(--ink-3);
+}
+
+.next-note strong { font-weight: 800; color: var(--ink-2); }
+
+/* ===========================================
+   ENTRANCE ANIMATION
+   Transition-based so it replays on every slide change.
+   =========================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity var(--dur) var(--ease),
+                transform var(--dur) var(--ease);
+}
+
+.slide.visible .reveal {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Explicit stagger classes — more predictable than nth-child,
+   which breaks whenever the markup order changes. */
+.d1 { transition-delay: 0.05s; }
+.d2 { transition-delay: 0.16s; }
+.d3 { transition-delay: 0.27s; }
+.d4 { transition-delay: 0.40s; }
+.d5 { transition-delay: 0.52s; }
+.d6 { transition-delay: 0.64s; }
+.d7 { transition-delay: 0.76s; }
+.d8 { transition-delay: 0.88s; }
+.d9 { transition-delay: 1.00s; }
+.d10 { transition-delay: 1.12s; }
+.d11 { transition-delay: 1.24s; }
+.d12 { transition-delay: 1.55s; }
+
+/* ===========================================
+   DECK CHROME (outside the slide design system)
+   =========================================== */
+.deck-controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(242, 245, 241, 0.34);
+    user-select: none;
+}
+
+.deck-controls .dots { display: flex; gap: 9px; }
+
+.deck-controls .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(242, 245, 241, 0.20);
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.deck-controls .dot:hover { background: rgba(127, 209, 169, 0.55); }
+.deck-controls .dot.on { background: var(--mint); transform: scale(1.25); }
+
+.deck-controls .count { font-variant-numeric: tabular-nums; }
+
+/* ===========================================
+   INLINE EDITING CHROME
+   Hidden until the top-left hotzone is hovered, or E is pressed.
+   Uses a stroke icon rather than an emoji, per house style.
+   =========================================== */
+.edit-hotzone {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 80px;
+    height: 80px;
+    z-index: 10000;
+    cursor: pointer;
+}
+
+.edit-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-2);
+    border: 1px solid var(--surface-3);
+    border-radius: 4px;
+    color: var(--ink-3);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, color 0.2s ease, border-color 0.2s ease;
+    z-index: 10001;
+}
+
+.edit-toggle.show,
+.edit-toggle.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.edit-toggle.active {
+    color: var(--mint);
+    border-color: var(--mint);
+}
+
+.edit-banner {
+    position: fixed;
+    top: 20px;
+    left: 76px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    height: 44px;
+    background: var(--surface-2);
+    border: 1px solid var(--mint);
+    border-radius: 4px;
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mint);
+    z-index: 10001;
+}
+
+.edit-banner.show { display: flex; }
+
+/* Editable targets get a faint outline while edit mode is on. */
+body.editing [contenteditable="true"] {
+    outline: 1px dashed rgba(127, 209, 169, 0.5);
+    outline-offset: 5px;
+    cursor: text;
+}
+
+body.editing [contenteditable="true"]:focus {
+    outline: 1px solid var(--mint);
+    background: rgba(127, 209, 169, 0.06);
+}
+</style>
+</head>
+<body>
+
+<!-- ===========================================
+     EDIT CHROME
+     =========================================== -->
+<div class="edit-hotzone" aria-hidden="true"></div>
+<button class="edit-toggle" id="editToggle" title="Edit mode (E)" aria-label="Toggle edit mode">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 20h9"></path>
+    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+  </svg>
+</button>
+<div class="edit-banner" id="editBanner">Edit mode &nbsp;&bull;&nbsp; Ctrl+S to save</div>
+
+<div class="deck-viewport">
+  <main class="deck-stage" id="deckStage">
+
+    <!-- ===========================================
+         SLIDE 1 — THE PROBLEM
+         We are blind until it is already too late.
+         =========================================== -->
+    <section class="slide" aria-label="The problem">
+
+      <div class="ground-field"></div>
+
+      <!-- Lead-time rings. Only the innermost is observable today. -->
+      <svg class="arcs" viewBox="0 0 1000 1080" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path class="arc-line arc-1" d="M 1000,-320 A 860,860 0 0 0 1000,1400"/>
+        <path class="arc-line arc-2" d="M 1000,-120 A 660,660 0 0 0 1000,1200"/>
+        <path class="arc-line arc-3" d="M 1000,70  A 470,470 0 0 0 1000,1010"/>
+        <path class="arc-line arc-4 live-crit" d="M 1000,350 A 190,190 0 0 0 1000,730"/>
+
+        <circle class="close-marker crit" cx="1000" cy="540" r="9"/>
+
+        <text class="arc-tick t1" x="164" y="534">T&#8211;120</text>
+        <text class="arc-tick t2" x="364" y="534">T&#8211;90</text>
+        <text class="arc-tick t3" x="554" y="534">T&#8211;60</text>
+        <text class="arc-tick t4 on-crit" x="806" y="534">T&#8211;12</text>
+
+        <text class="arc-caption" x="988" y="576" text-anchor="end">The only ring we see today</text>
+      </svg>
+
+      <div class="frame narrow">
+
+        <header class="masthead reveal d1"><span class="pip"></span>Huntington Book Scout</header>
+
+        <p class="eyebrow alarm reveal d2" style="margin-top:96px;">The Problem</p>
+
+        <h1 class="headline xl reveal d3" style="margin-top:26px;">
+          We find out <em class="alarm">12&nbsp;days</em><br>
+          before. The cash is<br>
+          gone <em class="alarm">3&nbsp;days</em> after.
+        </h1>
+
+        <p class="standfirst reveal d5" style="margin-top:46px;max-width:880px;">
+          A customer sells a commercial building and repays the loan. The bank
+          gets the loan money back. What leaves is the
+          <strong>customer&rsquo;s cash</strong> &mdash; usually
+          <strong>$2M to $10M</strong>.
+        </p>
+
+        <div class="cost-bar reveal d7" style="margin-top:62px;">
+          <div class="cost-cell">
+            <div class="cost-label">Loan operations</div>
+            <div class="cost-figure figure">3&ndash;5<span class="unit">days</span></div>
+          </div>
+          <div class="cost-cell">
+            <div class="cost-label">Banker research</div>
+            <div class="cost-figure figure">4&ndash;6<span class="unit">hrs</span></div>
+          </div>
+          <div class="cost-cell">
+            <div class="cost-label">Cash departs in</div>
+            <div class="cost-figure figure">48&ndash;72<span class="unit">hrs</span></div>
+          </div>
+        </div>
+
+        <footer class="foot reveal d12">
+          <span>Commercial Deposit Retention</span>
+          <span>01</span>
+        </footer>
+
+      </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 2 — WHAT IT DOES / VALUE PROPOSITION
+         Same diagram as slide 1, now fully lit.
+         =========================================== -->
+    <section class="slide" aria-label="What Book Scout does">
+
+      <div class="ground-field"></div>
+
+      <!-- The same rings, now observable. -->
+      <svg class="arcs" viewBox="0 0 1000 1080" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path class="arc-line arc-1 live-mint" d="M 1000,-320 A 860,860 0 0 0 1000,1400"/>
+        <path class="arc-line arc-2 live-mint" d="M 1000,-120 A 660,660 0 0 0 1000,1200"/>
+        <path class="arc-line arc-3 live-mint" d="M 1000,70  A 470,470 0 0 0 1000,1010"/>
+        <path class="arc-line arc-4 live-mint" d="M 1000,350 A 190,190 0 0 0 1000,730"/>
+
+        <circle class="close-marker mint" cx="1000" cy="540" r="9"/>
+
+        <text class="arc-tick t1 on-mint" x="164" y="534">T&#8211;120</text>
+        <text class="arc-tick t2 on-mint" x="364" y="534">T&#8211;90</text>
+        <text class="arc-tick t3 on-mint" x="554" y="534">T&#8211;60</text>
+        <text class="arc-tick t4 on-mint" x="806" y="534">T&#8211;12</text>
+
+        <text class="arc-caption" x="164" y="576">Months of warning, not days</text>
+      </svg>
+
+      <div class="frame narrow">
+
+        <header class="masthead reveal d1"><span class="pip"></span>Huntington Book Scout</header>
+
+        <p class="eyebrow reveal d2" style="margin-top:56px;">What It Does</p>
+
+        <h1 class="headline xl reveal d3" style="margin-top:26px;">
+          Book Scout sees it<br>
+          <em>120 days</em> out.
+        </h1>
+
+        <div class="beats" style="margin-top:44px;">
+
+          <div class="beat reveal d5">
+            <div class="beat-num">01</div>
+            <div>
+              <div class="beat-title">It watches</div>
+              <p class="beat-note">
+                Reads the loan systems every night across
+                <strong>11,099 commercial facilities</strong>, and flags the
+                ones about to pay off.
+              </p>
+            </div>
+          </div>
+
+          <div class="beat reveal d7">
+            <div class="beat-num">02</div>
+            <div>
+              <div class="beat-title">It reads</div>
+              <p class="beat-note">
+                Classifies each payoff as a <strong>sale</strong>, a
+                <strong>refinance</strong>, or a <strong>1031 exchange</strong>
+                &mdash; and cites the source document for every fact.
+              </p>
+            </div>
+          </div>
+
+          <div class="beat reveal d9">
+            <div class="beat-num">03</div>
+            <div>
+              <div class="beat-title">It prepares the file</div>
+              <p class="beat-note">
+                The banker receives a finished brief, not a research task.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <p class="landing reveal d11" style="margin-top:40px;margin-bottom:34px;">
+          The banker starts in the morning &mdash; not two weeks later.
+        </p>
+
+        <footer class="foot reveal d12">
+          <span>Commercial Deposit Retention</span>
+          <span>02</span>
+        </footer>
+
+      </div>
+    </section>
+
+    <!-- ===========================================
+         SLIDE 3 — THE RETURN, AND WHAT COMES NEXT
+         Left: the promise, then the upside, kept separate.
+         Right: where the same machinery goes.
+         =========================================== -->
+    <section class="slide" aria-label="Return on investment and future work">
+
+      <div class="ground-field"></div>
+
+      <!-- The arc device recedes to a watermark on the closing slide. -->
+      <svg class="arcs watermark" viewBox="0 0 1000 1080" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path class="arc-line arc-1" d="M 1000,-320 A 860,860 0 0 0 1000,1400"/>
+        <path class="arc-line arc-2" d="M 1000,-120 A 660,660 0 0 0 1000,1200"/>
+        <path class="arc-line arc-3" d="M 1000,70  A 470,470 0 0 0 1000,1010"/>
+      </svg>
+
+      <div class="frame">
+
+        <header class="masthead reveal d1"><span class="pip"></span>Huntington Book Scout</header>
+
+        <p class="eyebrow reveal d2" style="margin-top:56px;">The Return</p>
+
+        <h1 class="headline lg reveal d3" style="margin-top:22px;">
+          It pays for itself on <em>saved hours alone</em>.
+        </h1>
+
+        <div class="split" style="margin-top:46px;">
+
+          <!-- === LEFT: THE BUSINESS CASE === -->
+          <div class="col-left">
+
+            <div class="col-head reveal d4">Today &mdash; the promise</div>
+
+            <div class="figures">
+              <div class="fig-block reveal d5">
+                <div class="fig-label">Capacity returned, per year</div>
+                <div class="fig-value figure">$1.62M&ndash;$2.43M</div>
+                <div class="fig-note">5.5 to 8.3 banker FTEs, at $292,302 loaded cost</div>
+              </div>
+              <div class="fig-block muted reveal d6">
+                <div class="fig-label">Cost to run Book Scout</div>
+                <div class="fig-value figure">$1.25M</div>
+                <div class="fig-note">Cloud, licences, audits, two-person team</div>
+              </div>
+            </div>
+
+            <p class="provenance reveal d7">
+              Every input above comes from
+              <strong>Huntington&rsquo;s own public filings</strong>. Nothing in
+              this case depends on a customer changing behaviour.
+            </p>
+
+            <div class="upside reveal d8">
+              <div class="upside-label">Upside &mdash; not in the business case</div>
+              <p class="upside-text">
+                <strong>$899M</strong> of customer cash is in play each year.
+                Retaining <strong>34%</strong> of it covers Book Scout on its own.
+                Treat anything above that as profit, never as a promise.
+              </p>
+            </div>
+
+          </div>
+
+          <!-- === RIGHT: WHERE IT GOES NEXT === -->
+          <div class="col-right">
+
+            <div class="col-head reveal d4">Next &mdash; the same machinery</div>
+
+            <div class="next-item reveal d9">
+              <div class="next-title"><span class="rank">01</span>Renewal defense</div>
+              <p class="next-note">
+                Point the same radar at maturities on the
+                <strong>$33.3B</strong> commercial book. Defends net interest
+                income, not fee income.
+              </p>
+            </div>
+
+            <div class="next-item reveal d10">
+              <div class="next-title"><span class="rank">02</span>Covenant monitoring</div>
+              <p class="next-note">
+                The same document reader, run <strong>quarterly</strong> on
+                every facility instead of once per exit.
+              </p>
+            </div>
+
+            <div class="next-item reveal d11">
+              <div class="next-title"><span class="rank">03</span>The control pattern</div>
+              <p class="next-note">
+                A worked, documented example of governed AI in a bank. It
+                unblocks the next ten projects.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
+        <footer class="foot reveal d12">
+          <span>Commercial Deposit Retention</span>
+          <span>03</span>
+        </footer>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===========================================
+     DECK CHROME — progress, kept outside the stage
+     =========================================== -->
+<nav class="deck-controls" id="deckControls" aria-label="Slide navigation">
+  <span class="count" id="slideCount">01 / 03</span>
+  <span class="dots" id="slideDots"></span>
+</nav>
+
+<script>
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   Keyboard, wheel, touch, and dot navigation.
+   The stage is scaled as a whole — slides never reflow.
+   =========================================== */
+class SlidePresentation {
+    constructor() {
+        this.slides  = Array.from(document.querySelectorAll('.slide'));
+        this.stage   = document.getElementById('deckStage');
+        this.dotsEl  = document.getElementById('slideDots');
+        this.countEl = document.getElementById('slideCount');
+        this.current = 0;
+
+        this.buildDots();
+        this.setupStageScale();
+        this.setupKeyboardNav();
+        this.setupWheelNav();
+        this.setupTouchNav();
+        this.showSlide(0);
+    }
+
+    /* --- Progress dots --- */
+    buildDots() {
+        this.slides.forEach((_, i) => {
+            const b = document.createElement('button');
+            b.className = 'dot';
+            b.type = 'button';
+            b.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+            b.addEventListener('click', () => this.showSlide(i));
+            this.dotsEl.appendChild(b);
+        });
+        this.dots = Array.from(this.dotsEl.children);
+    }
+
+    /* --- Uniform scale of the 1920×1080 canvas, letterboxed --- */
+    setupStageScale() {
+        const scale = () => {
+            const factor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+            const x = (window.innerWidth  - 1920 * factor) / 2;
+            const y = (window.innerHeight - 1080 * factor) / 2;
+            this.stage.style.transform = `translate(${x}px, ${y}px) scale(${factor})`;
+        };
+        scale();
+        window.addEventListener('resize', scale);
+    }
+
+    /* --- Arrows, space, page keys, home/end --- */
+    setupKeyboardNav() {
+        document.addEventListener('keydown', (e) => {
+            // Never hijack keys while the user is editing text.
+            if (e.target.getAttribute && e.target.getAttribute('contenteditable') === 'true') return;
+
+            switch (e.key) {
+                case 'ArrowRight':
+                case 'ArrowDown':
+                case 'PageDown':
+                case ' ':
+                    e.preventDefault(); this.next(); break;
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                case 'PageUp':
+                    e.preventDefault(); this.prev(); break;
+                case 'Home':
+                    e.preventDefault(); this.showSlide(0); break;
+                case 'End':
+                    e.preventDefault(); this.showSlide(this.slides.length - 1); break;
+            }
+        });
+    }
+
+    /* --- Wheel, throttled so one gesture moves one slide --- */
+    setupWheelNav() {
+        let locked = false;
+        window.addEventListener('wheel', (e) => {
+            if (locked || Math.abs(e.deltaY) < 18) return;
+            locked = true;
+            (e.deltaY > 0) ? this.next() : this.prev();
+            setTimeout(() => { locked = false; }, 700);
+        }, { passive: true });
+    }
+
+    /* --- Horizontal swipe --- */
+    setupTouchNav() {
+        let x0 = null, y0 = null;
+        window.addEventListener('touchstart', (e) => {
+            x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+        }, { passive: true });
+        window.addEventListener('touchend', (e) => {
+            if (x0 === null) return;
+            const dx = e.changedTouches[0].clientX - x0;
+            const dy = e.changedTouches[0].clientY - y0;
+            if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)) {
+                (dx < 0) ? this.next() : this.prev();
+            }
+            x0 = y0 = null;
+        }, { passive: true });
+    }
+
+    next() { this.showSlide(this.current + 1); }
+    prev() { this.showSlide(this.current - 1); }
+
+    showSlide(index) {
+        const target = Math.max(0, Math.min(index, this.slides.length - 1));
+
+        // Re-arm the entrance transitions when returning to a slide.
+        this.slides.forEach((slide, i) => {
+            const on = (i === target);
+            slide.classList.toggle('active', on);
+            slide.classList.toggle('visible', on);
+            slide.setAttribute('aria-hidden', on ? 'false' : 'true');
+        });
+
+        this.dots.forEach((d, i) => d.classList.toggle('on', i === target));
+        this.countEl.textContent =
+            String(target + 1).padStart(2, '0') + ' / ' +
+            String(this.slides.length).padStart(2, '0');
+
+        this.current = target;
+    }
+}
+
+/* ===========================================
+   INLINE TEXT EDITOR
+   Hover the top-left hotzone or press E. Ctrl+S downloads
+   a copy of the file with the edits baked in.
+   =========================================== */
+class InlineEditor {
+    constructor(deck) {
+        this.deck     = deck;
+        this.isActive = false;
+        this.toggleEl = document.getElementById('editToggle');
+        this.bannerEl = document.getElementById('editBanner');
+
+        // Any element holding prose is editable.
+        this.targets = Array.from(document.querySelectorAll(
+            '.slide h1, .slide p, .slide .beat-title, .slide .cost-label, ' +
+            '.slide .cost-figure, .slide .fig-label, .slide .fig-value, ' +
+            '.slide .fig-note, .slide .col-head, .slide .upside-label, ' +
+            '.slide .next-title, .slide .masthead, .slide .foot span'
+        ));
+
+        this.storageKey = 'book-scout-pitch-edits';
+        this.restore();
+        this.bindChrome();
+        this.bindSave();
+    }
+
+    /* --- Restore any previously saved edits --- */
+    restore() {
+        let saved;
+        try { saved = JSON.parse(localStorage.getItem(this.storageKey) || 'null'); }
+        catch (err) { saved = null; }
+        if (!saved) return;
+        this.targets.forEach((el, i) => {
+            if (typeof saved[i] === 'string') el.innerHTML = saved[i];
+        });
+    }
+
+    persist() {
+        try {
+            localStorage.setItem(
+                this.storageKey,
+                JSON.stringify(this.targets.map((el) => el.innerHTML))
+            );
+        } catch (err) { /* storage may be unavailable; editing still works */ }
+    }
+
+    toggleEditMode() {
+        this.isActive = !this.isActive;
+        document.body.classList.toggle('editing', this.isActive);
+        this.toggleEl.classList.toggle('active', this.isActive);
+        this.bannerEl.classList.toggle('show', this.isActive);
+
+        this.targets.forEach((el) => {
+            if (this.isActive) {
+                el.setAttribute('contenteditable', 'true');
+                el.addEventListener('input', this.persistBound);
+            } else {
+                el.removeAttribute('contenteditable');
+                el.removeEventListener('input', this.persistBound);
+            }
+        });
+
+        if (!this.isActive) this.persist();
+    }
+
+    /* --- Hotzone hover needs a JS grace period. A CSS sibling
+           selector fails because pointer-events breaks the chain. --- */
+    bindChrome() {
+        this.persistBound = () => this.persist();
+
+        const hotzone = document.querySelector('.edit-hotzone');
+        let hideTimeout = null;
+
+        const show = () => { clearTimeout(hideTimeout); this.toggleEl.classList.add('show'); };
+        const hide = () => {
+            hideTimeout = setTimeout(() => {
+                if (!this.isActive) this.toggleEl.classList.remove('show');
+            }, 400);
+        };
+
+        hotzone.addEventListener('mouseenter', show);
+        hotzone.addEventListener('mouseleave', hide);
+        this.toggleEl.addEventListener('mouseenter', show);
+        this.toggleEl.addEventListener('mouseleave', hide);
+
+        hotzone.addEventListener('click', () => this.toggleEditMode());
+        this.toggleEl.addEventListener('click', () => this.toggleEditMode());
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.key === 'e' || e.key === 'E') &&
+                !(e.target.getAttribute && e.target.getAttribute('contenteditable') === 'true')) {
+                this.toggleEditMode();
+            }
+        });
+    }
+
+    /* --- Ctrl+S / Cmd+S exports the edited deck --- */
+    bindSave() {
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+                e.preventDefault();
+                this.download();
+            }
+        });
+    }
+
+    download() {
+        // Clone the document, strip edit state, and serialise it.
+        const clone = document.documentElement.cloneNode(true);
+        clone.querySelectorAll('[contenteditable]').forEach((el) => el.removeAttribute('contenteditable'));
+        clone.querySelectorAll('.slide').forEach((el) => el.classList.remove('active', 'visible'));
+        const banner = clone.querySelector('#editBanner');
+        if (banner) banner.classList.remove('show');
+
+        const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+        const url  = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+        const a    = document.createElement('a');
+        a.href = url;
+        a.download = 'book-scout-pitch.html';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+}
+
+/* === BOOT === */
+const deck   = new SlidePresentation();
+const editor = new InlineEditor(deck);
+</script>
+
+</body>
+</html>

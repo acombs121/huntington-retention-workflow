@@ -1,5 +1,5 @@
 /**
- * Huntington Horizon: Retention Workflow State Module
+ * Huntington Book Scout: Retention Workflow State Module
  * Deep custom hook encapsulating all commercial liquidity domain state,
  * remote API synchronization, optimistic calculations, and compliance gates.
  * Adheres strictly to Zero-Mock runtime discipline and in-flight operation locking.

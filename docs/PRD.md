@@ -1,4 +1,4 @@
-# Huntington Horizon: Intelligent Liquidity Orchestration
+# Huntington Book Scout: Intelligent Liquidity Orchestration
 ## Prototype Specification & Executive Demonstration Blueprint (v5.2)
 **Document Version:** 5.2 (Dual-Sided Capacity Leverage & Enterprise GCP Agentic Blueprint)  
 **Target Audience:** Executive Committee Review, Huntington Bancshares Incorporated (HBAN)  
@@ -8,7 +8,7 @@
 
 ---
 ### Document Overview
-This document specifies the working software prototype and demonstration narrative for **Huntington Horizon**. It focuses strictly on what is built and demonstrated in a 10-minute executive briefing, to prove a single core thesis: **can an intelligent agent let Huntington scale its wealth management franchise with existing headcount — by monitoring a book no human team could cover, absorbing the manual discovery across Commercial, eliminating onboarding and ongoing servicing friction across Wealth, and safeguarding both taxable cash-out and IRC §1031 exchange liquidity?**
+This document specifies the working software prototype and demonstration narrative for **Huntington Book Scout**. It focuses strictly on what is built and demonstrated in a 10-minute executive briefing, to prove a single core thesis: **can an intelligent agent let Huntington scale its wealth management franchise with existing headcount — by monitoring a book no human team could cover, absorbing the manual discovery across Commercial, eliminating onboarding and ongoing servicing friction across Wealth, and safeguarding both taxable cash-out and IRC §1031 exchange liquidity?**
 
 The secondary proof is financial: that this capacity leverage converts directly into retained deposits, escrow custody, and AUM.
 
@@ -26,7 +26,7 @@ Huntington cannot scale wealth management by asking bankers to work harder. The 
 > **Empirical Premise (Provenance):** The ~78% flight rate cited in §6 derives from internal Treasury Management analysis of 2023–2025 commercial payoff-to-outflow patterns (net proceeds wiring to non-Huntington institutions within 5 business days of payoff). A Phase 1 pilot validation target, not an audited certainty.
 
 ### 1.2 The Solution: Dual-Sided Agentic Capacity Leverage
-Horizon gives a **fixed team the reach of a much larger one** by having an intelligent agent do the work no human team can do at scale — on *both* sides of the relationship handoff:
+Book Scout gives a **fixed team the reach of a much larger one** by having an intelligent agent do the work no human team can do at scale — on *both* sides of the relationship handoff:
 1. **Monitors the Entire Book (Human-Impossible Scale):** Continuously monitors all commercial servicing queues for title-company Payoff Statement Requests — coverage no headcount plan could achieve manually.
 2. **Absorbs Commercial Discovery via Gemini Multimodal Intelligence:** Uses Google Cloud **Gemini Enterprise Agent Platform** with native multimodal ingestion to inspect raw scanned credit agreements, deeds, and incumbency certificates directly, mapping borrowing LLCs to beneficial owners with pixel-level bounding-box citations—eliminating multi-hour manual discovery.
 3. **Reasons Over Messy Reality with Grounded Intelligence:** Detects missing information (e.g., unstated contract sale prices) and calculates indicative net proceeds using in-place trailing Net Operating Income (NOI) capitalized via submarket cap rates **grounded dynamically via Vertex AI Search** against internal commercial appraisal benchmarks.
@@ -34,13 +34,13 @@ Horizon gives a **fixed team the reach of a much larger one** by having an intel
 5. **Absorbs Wealth Onboarding & Ongoing Servicing:** Pre-stages the advisor's administrative scaffolding behind a **GLBA-compliant Quarantined Consent Gate**—pre-filling KYC/CIP records, configuring an SEI custodial shell, drafting an Investment Policy Statement (IPS) framework, and assembling ongoing quarterly portfolio review briefs. Onboarding compresses from weeks to days, and ongoing servicing capacity expands from 80 to **95–100 accounts per advisor (+20–25%)** via 2x CSA operational leverage, with sub-$3M transactional accounts routed to the Centralized Wealth Advisory Hub.
 6. **Surfaces Only the Qualified Few via Deterministic Sentry:** Applies objective credit risk ratings and FINRA Rule 2040 non-fee splitting checks deterministically, ensuring bankers spend human time only on pre-vetted, ready-to-action relationships.
 
-> **The Scaling Claim (stated plainly):** *No human team could monitor a $4.5B payoff book in real time. Horizon monitors all of it, absorbs multi-hour discovery on the commercial side, and pre-stages onboarding and ongoing fiduciary servicing on the wealth side. The same headcount—commercial and wealth—now covers a franchise it physically could not have covered before. That is how Huntington scales wealth management without scaling the org chart.*
+> **The Scaling Claim (stated plainly):** *No human team could monitor a $4.5B payoff book in real time. Book Scout monitors all of it, absorbs multi-hour discovery on the commercial side, and pre-stages onboarding and ongoing fiduciary servicing on the wealth side. The same headcount—commercial and wealth—now covers a franchise it physically could not have covered before. That is how Huntington scales wealth management without scaling the org chart.*
 
 > **Scope Note:** This prototype proves the **CRE loan payoff** case end-to-end (incorporating both taxable cash-out and IRC §1031 exchange paths). The same detect-resolve-stage pattern extends to middle-market M&A exits and ESOP transitions in a later phase.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│              THE CORE HORIZON LOOP — DUAL-SIDED CAPACITY LEVERAGE AT BOOK SCALE                 │
+│              THE CORE BOOK SCOUT LOOP — DUAL-SIDED CAPACITY LEVERAGE AT BOOK SCALE                 │
 ├──────────────────────────────┬──────────────────────────────────┬───────────────────────────────┤
 │ 1. MONITOR ALL (T-14)        │ 2. AGENT ABSORBS THE WORK        │ 3. SURFACE QUALIFIED FEW      │
 │ • Watches entire $4.5B book  │ • Gemini Multimodal extracts LLC │ • Exclusion Sentry (Pass)     │
@@ -57,12 +57,12 @@ Horizon gives a **fixed team the reach of a much larger one** by having an intel
 ```
 
 ### Step 1: Book-Scale Monitoring & Ingestion (Day T-14)
-* Horizon continuously monitors **all** commercial servicing queues (core servicing feeds)—coverage a human team cannot provide. Among thousands of events, it ingests a Payoff Statement Request (scanned PDF) from First American Title for *Riverfront Commercial Commons* (Borrower: `Vance Riverfront Properties IV, LLC`).
+* Book Scout continuously monitors **all** commercial servicing queues (core servicing feeds)—coverage a human team cannot provide. Among thousands of events, it ingests a Payoff Statement Request (scanned PDF) from First American Title for *Riverfront Commercial Commons* (Borrower: `Vance Riverfront Properties IV, LLC`).
 * Loan debt payoff balance: **$5,214,800**. Scheduled closing date: **14 days out**.
 
 ### Step 2: The Agent Absorbs the Commercial Discovery Load (Day T-14)
 * **The Work Being Absorbed:** Resolving this opportunity manually requires an RM to pull the credit file, read the incumbency certificate, check the guaranty agreement, cross-reference CRM entities, and inspect tax flags—consuming **6–8 hours across three disconnected systems, per deal.**
-* **The Agent at Work:** Powered by the **Gemini Enterprise Agent Platform (fka Vertex AI Platform)** running `gemini-3.7-flash`, Horizon natively processes the raw scanned documents. Utilizing multimodal visual layout understanding, it extracts:
+* **The Agent at Work:** Powered by the **Gemini Enterprise Agent Platform (fka Vertex AI Platform)** running `gemini-3.7-flash`, Book Scout natively processes the raw scanned documents. Utilizing multimodal visual layout understanding, it extracts:
   - *Borrower's Certificate of Incumbency* and *Commercial Guaranty Agreement* (contractual credit documents under standard GLBA affiliate disclosures—strictly avoiding FinCEN AML/CDD vaults).
   - Resolves beneficial ownership: **Marcus Vance** (85% Managing Member & Unconditional Guarantor) and **Elena Vance** (15% Member).
   - Generates **visual bounding-box citations** highlighting exact evidentiary clauses on the scanned document images. **Elapsed agent time: seconds.**
@@ -80,7 +80,7 @@ Horizon gives a **fixed team the reach of a much larger one** by having an intel
   8. Stages an actionable briefing note: *"Title letter omits sale price. Staged at $8.5M based on grounded Q1 NOI ($637.5k @ 7.5% cap rate). Estimated net equity: $2.9M. Confirm contract price and 1031 status on call."*
 
 ### Step 4: Automated Qualification — Surfacing Only the Vetted Few (Exclusion Sentry)
-* Horizon screens deterministically to guarantee compliance and protect banker time:
+* Book Scout screens deterministically to guarantee compliance and protect banker time:
   - **Credit Risk Rating:** Confirms rating is **Pass (Rating 2)**. (Criticized, Special Mention, Substandard, or SAG/Workout loans are automatically suppressed.)
   - **ECOA / Regulation B Fair Lending Guardrail:** Filtering relies strictly on objective credit ratings and a minimum liquidity floor ($\ge \$500,000$ net proceeds); zero subjective demographic or geographic AI scoring.
   - **FINRA Rule 2040 Compliance:** Confirms the Commercial RM receives **100% Shadow Deposit Credit** on their cost-of-funds scorecard and collaboration points, with zero securities transaction fee-splitting.
@@ -90,10 +90,10 @@ Horizon gives a **fixed team the reach of a much larger one** by having an intel
 * The system **never** sends automated cold emails or marketing outreach to Marcus Vance. The human touch is reserved for the banker.
 * **The High-Value 4-Minute Call:** Greg Miller calls Marcus: *"Marcus, congratulations on getting Riverfront Commons under contract! I saw the payoff calculation come through from First American. Let's make sure that $2.9M net proceeds works immediately for you upon closing. I’d like to bring in Sarah Jenkins from Private Bank to structure our 4.85% Treasury sweep, and send First American our direct settlement wire instructions so the funds land safely on Day 0."*
 * Marcus confirms he is cashing out (no 1031) and agrees to the introduction. Greg clicks **[Approve Wealth Introduction & Deliver Wire Form]**.
-* Horizon instantly generates the **Huntington Verified Settlement Wire Instruction Form**, pre-filled for First American Title, ensuring net proceeds are routed directly to Huntington.
+* Book Scout instantly generates the **Huntington Verified Settlement Wire Instruction Form**, pre-filled for First American Title, ensuring net proceeds are routed directly to Huntington.
 
 ### Step 6: Wealth-Side Capacity Leverage — Onboarding & Ongoing Servicing (Day T-8)
-* **The Work Being Absorbed (Wealth Side):** Manual onboarding consumes **4–6 hours of advisor time** and stretches over **2–3 weeks**. Ongoing servicing (quarterly reviews, asset allocation tracking) limits an advisor to 80–100 clients. Horizon absorbs both:
+* **The Work Being Absorbed (Wealth Side):** Manual onboarding consumes **4–6 hours of advisor time** and stretches over **2–3 weeks**. Ongoing servicing (quarterly reviews, asset allocation tracking) limits an advisor to 80–100 clients. Book Scout absorbs both:
   1. **GLBA Quarantined Consent Gate:** Staged wealth assets remain strictly isolated behind an internal compliance partition until Greg records Marcus's verbal consent.
   2. **KYC/CIP Pre-Fill:** Populates client identity and verification fields from commercial credit records (subject to advisor verification), eliminating redundant data entry.
   3. **SEI Custodial Shell Configuration:** Provisions a staged SEI Wealth Platform account shell and a *proposed* conservative asset-allocation model matched to Marcus's liquidity horizon.
@@ -107,7 +107,7 @@ Horizon gives a **fixed team the reach of a much larger one** by having an intel
   - **Day T-0 (Closing):** Wire settles directly into Marcus's commercial Business Premier ICS account backed by **Insured Cash Sweep (ICS)**, providing multi-million-dollar FDIC insurance and 4.85% yield. **The 48-hour flight trigger is completely neutralized on Day 0.**
   - **Day T+10 (Wealth Advisory):** With liquidity secured, Sarah completes full fiduciary discovery. Marcus transitions $2.0M into his discretionary **SEI Wealth Platform** Family Trust account, leaving $900k in commercial operating reserves.
 * **Path B (IRC §1031 Exchange Alternate Path):**
-  - If Marcus flags 1031 intent, funds cannot touch Business Premier ICS. Horizon routes the wire instructions to the **Huntington 1031 Qualified Escrow Depository (Partner QI Network)** under Treas. Reg. § 1.1031(k)-1(g)(3).
+  - If Marcus flags 1031 intent, funds cannot touch Business Premier ICS. Book Scout routes the wire instructions to the **Huntington 1031 Qualified Escrow Depository (Partner QI Network)** under Treas. Reg. § 1.1031(k)-1(g)(3).
   - Proceeds are held in a **Huntington Qualified Escrow Depository** yielding 4.75% during the statutory 45-day identification / 180-day closing window, under an **independent, unaffiliated Qualified Intermediary (IPX1031)**—retaining $2.9M in institutional deposits that would otherwise be wired to external exchange accommodators. Huntington's role is strictly limited to the routine banking safe harbor of Treas. Reg. § 1.1031(k)-1(k)(2)(ii); the bank does **not** act as Qualified Intermediary for its own borrower, and in-house DST/securities placement is firewalled for the duration of the exchange window to preserve the client's deferral.
 
 ---
@@ -147,7 +147,7 @@ Embedded inside a styled Salesforce Financial Services Cloud (FSC) shell, featur
 │  Filter: Exclusion Sentry Active │                                     │  [PERSONA: SWITCH TO PWA VIEW]  │
 └──────────────────────────────────┴─────────────────────────────────────┴─────────────────────────────────┘
 ```
-*\*\* "Known HBAN Position" reflects only Huntington-resolvable balances: resolved deal equity ($2.9M) plus existing commercial operating balances ($2.1M). Horizon does not compute or assert an aggregate personal net worth; any client-provided net-worth figure originates from the most recent PFS on file in the commercial credit file, not agent inference.*
+*\*\* "Known HBAN Position" reflects only Huntington-resolvable balances: resolved deal equity ($2.9M) plus existing commercial operating balances ($2.1M). Book Scout does not compute or assert an aggregate personal net worth; any client-provided net-worth figure originates from the most recent PFS on file in the commercial credit file, not agent inference.*
 
 * **Pane 1 (Priority Radar + Synthetic Capacity Meter):** Demonstrates dual-sided leverage explicitly—thousands of events screened, manual discovery absorbed, ongoing servicing hours unlocked, and live machine inference status. Each queue row exposes a **reasoning trace** whose footer opens the **Spanner Graph Grounding Console** (`[Spanner Graph]`), providing a visual, near-full-page network topology of entity and behavioral signals backed by Cloud Spanner Graph.
 * **Pane 2 (Household Topology & Grounding Evidence):** Interactive entity graph mapping commercial LLCs to beneficial owners, equipped with clickable citation pills linking directly to document bounding boxes.
@@ -156,11 +156,11 @@ Embedded inside a styled Salesforce Financial Services Cloud (FSC) shell, featur
 ---
 ## 4. Simplified Technical Architecture
 
-Horizon utilizes a clean **Single Orchestrator + Deterministic Tools** pattern built natively on the **Gemini Enterprise Agent Platform (fka Vertex AI Platform)**:
+Book Scout utilizes a clean **Single Orchestrator + Deterministic Tools** pattern built natively on the **Gemini Enterprise Agent Platform (fka Vertex AI Platform)**:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                    HORIZON PROTOTYPE STACK                                      │
+│                                    BOOK SCOUT PROTOTYPE STACK                                      │
 ├───────────────────────────────┬─────────────────────────────────┬───────────────────────────────┤
 │ DATA INGESTION & STORAGE      │ REASONING ORCHESTRATOR          │ GOVERNANCE & UI INTEGRATION   │
 │ • Core Servicing (core servicing) │ • Gemini Enterprise Agent       │ • Apigee X API Gateway        │
@@ -175,7 +175,7 @@ Horizon utilizes a clean **Single Orchestrator + Deterministic Tools** pattern b
 ```
 
 ### 4.1 Native Multimodal Grounding vs. Document AI Redundancy
-Rather than running multi-hop OCR through Document AI and passing text dumps to an LLM, Horizon leverages **Gemini 3.7 Flash native multimodal document understanding**. It ingests raw scanned PDFs/TIFFs directly, preserving 2D spatial layouts, notary stamps, signature lines, and complex settlement tables, returning structured JSON paired with **pixel bounding-box coordinates** for UI grounding.
+Rather than running multi-hop OCR through Document AI and passing text dumps to an LLM, Book Scout leverages **Gemini 3.7 Flash native multimodal document understanding**. It ingests raw scanned PDFs/TIFFs directly, preserving 2D spatial layouts, notary stamps, signature lines, and complex settlement tables, returning structured JSON paired with **pixel bounding-box coordinates** for UI grounding.
 
 ### 4.2 Deterministic Tool Boundary
 The LLM is strictly confined to unstructured document understanding, contextual planning, and narrative drafting. All financial arithmetic and regulatory filtering are executed by deterministic code:
@@ -185,7 +185,7 @@ The LLM is strictly confined to unstructured document understanding, contextual 
 * `ExclusionSentryTool.screen()`: Evaluates objective regulatory risk ratings and minimum liquidity hurdles under strict ECOA/Reg B deterministic parameters.
 
 ### 4.3 High-Fidelity Signal Grounding via Google Cloud Spanner Graph (ISO GQL)
-To eliminate hallucination and prove how autonomous detection agents achieve high-fidelity liquidity classifications (e.g., 94% confidence on commercial sale cash-out vs. 96% on 1031 exchange vs. 91% on refinance), Horizon integrates natively with **Google Cloud Spanner Graph**:
+To eliminate hallucination and prove how autonomous detection agents achieve high-fidelity liquidity classifications (e.g., 94% confidence on commercial sale cash-out vs. 96% on 1031 exchange vs. 91% on refinance), Book Scout integrates natively with **Google Cloud Spanner Graph**:
 1. **Deterministic Graph Topology:** Organizes enterprise commercial relationships across 5 connected ontological tiers:
    - *Data Ingestion Core:* core servicing feeds, title insurance demands (RightFax eFax), county deed records, and commercial LOS pipelines.
    - *Contract & Entity Layer:* Commercial notes, pass-through borrowing LLCs, and incumbency certificates.
@@ -195,7 +195,7 @@ To eliminate hallucination and prove how autonomous detection agents achieve hig
 2. **Spanner Graph Grounding Console:** An interactive, near-full-page modal accessible via `[Spanner Graph]` in the footer of each deal's reasoning-trace panel, rendering an SVG network graph with interactive node inspection, real-time Spanner ISO GQL query telemetry, and dynamic multi-deal topology comparison.
 
 ### 4.4 Cloud Run Prototype Monostack & Security Implementation
-To guarantee zero-cost idle operation, rapid executive iteration, and enterprise-grade security, the Horizon working demonstration conforms strictly to Google Cloud Run standardized monostack architecture:
+To guarantee zero-cost idle operation, rapid executive iteration, and enterprise-grade security, the Book Scout working demonstration conforms strictly to Google Cloud Run standardized monostack architecture:
 1. **Monostack Container Architecture:** 
    - **Frontend:** React 18 + Vite + Tailwind CSS + shadcn/ui primitives.
    - **Backend:** Python 3.11 FastAPI application serving APIs and the compiled SPA bundle.
@@ -205,34 +205,34 @@ To guarantee zero-cost idle operation, rapid executive iteration, and enterprise
    - **DRS Org Policy Protection:** Zero GCP project-level IAM bindings for `domain:google.com`; end-user access is granted directly at the Cloud Run IAP resource level (`roles/iap.httpsResourceAccessor`).
    - **Cryptographic JWT Verification:** FastAPI backend cryptographically validates the `X-Goog-IAP-JWT-Assertion` header using cached Google public keys, verifying audience (`/projects/${PROJECT_NUMBER}/locations/${GCP_REGION}/services/${APP_NAME}`) and user email.
 3. **Credentials & Resource Governance:**
-   - **Zero Service Account Keys:** Zero JSON keys generated or downloaded. Local dev uses Application Default Credentials (ADC) via `gcloud auth application-default login`; Cloud Run uses a dedicated runtime Service Account (`huntington-horizon-sa`, $\le 30$ chars) with least privilege (`roles/aiplatform.user`).
+   - **Zero Service Account Keys:** Zero JSON keys generated or downloaded. Local dev uses Application Default Credentials (ADC) via `gcloud auth application-default login`; Cloud Run uses a dedicated runtime Service Account (`huntington-book-scout-sa`, $\le 30$ chars) with least privilege (`roles/aiplatform.user`).
    - **Scale-to-Zero Idle Defaults:** Deployed with `--min-instances=0` (zero compute cost when idle) and `--max-instances=3` (safety cap).
    - **Local Host Binding Invariant:** Local servers listen strictly on `127.0.0.1:${LOCAL_PORT:-8080}`; local Vite dev server proxies `/api` and `/ws`.
 4. **Mandatory Admin Panel & Diagnostic Telemetry:**
    - **Gear Icon:** Positioned on the **far right** of the primary application header (`<Settings className="w-4 h-4" />`), opening a slide-over technical sheet.
-   - **Diagnostic Telemetry Badges:** Displays live badges for AI Platform (**Gemini Enterprise Agent Platform (fka Vertex AI Platform)**), Model Baseline (`gemini-3.7-flash`), GCP Project (`hban-wealth-innovation`), Runtime Service Account (`huntington-horizon-sa`), and IAP Auth status.
+   - **Diagnostic Telemetry Badges:** Displays live badges for AI Platform (**Gemini Enterprise Agent Platform (fka Vertex AI Platform)**), Model Baseline (`gemini-3.7-flash`), GCP Project (`hban-wealth-innovation`), Runtime Service Account (`huntington-book-scout-sa`), and IAP Auth status.
    - **Quick Links:** Direct links to interactive `/brand_kit.html` and `/demo_script.html`.
 
 ---
 ## 5. Explicit Operational & Regulatory Boundaries (What We Do NOT Do)
 
-1. **No Core Loan Servicing:** Horizon does not process interest payments, principal curtailments, or escrow disbursements.
-2. **No Payoff Execution:** Horizon calculates indicative payoff figures for planning; it does not execute wire transfers or extinguish debt.
-3. **No Legal Lien Releases:** Horizon does not generate or record mortgage satisfactions, deed reconveyances, or UCC-3 termination filings. These remain strictly within loan operations and settlement agent controls.
-4. **No Replacement of Licensed Advice (Advice Guardrail):** Horizon absorbs *administrative* discovery and onboarding scaffolding only. It does **not** conduct fiduciary discovery, render suitability determinations, or author investment recommendations. All KYC/CIP entries, SEI allocation models, and draft IPS documents are **draft scaffolding requiring licensed-advisor review and authorship**; the licensed advisor owns every suitability and investment decision. This guardrail is written to satisfy whichever standard governs the destination channel — **OCC Reg 9 (12 C.F.R. § 9)** fiduciary duties for Private Bank trust/discretionary relationships, or **SEC Reg BI** / FINRA 2111 for HFA retail brokerage relationships on the Ameriprise platform. See `CITATIONS.md` §1a.
-5. **No Aggregate Net-Worth Inference:** Horizon surfaces only Huntington-resolvable positions and documented credit application facts; it does not compute or assert total personal net worth.
+1. **No Core Loan Servicing:** Book Scout does not process interest payments, principal curtailments, or escrow disbursements.
+2. **No Payoff Execution:** Book Scout calculates indicative payoff figures for planning; it does not execute wire transfers or extinguish debt.
+3. **No Legal Lien Releases:** Book Scout does not generate or record mortgage satisfactions, deed reconveyances, or UCC-3 termination filings. These remain strictly within loan operations and settlement agent controls.
+4. **No Replacement of Licensed Advice (Advice Guardrail):** Book Scout absorbs *administrative* discovery and onboarding scaffolding only. It does **not** conduct fiduciary discovery, render suitability determinations, or author investment recommendations. All KYC/CIP entries, SEI allocation models, and draft IPS documents are **draft scaffolding requiring licensed-advisor review and authorship**; the licensed advisor owns every suitability and investment decision. This guardrail is written to satisfy whichever standard governs the destination channel — **OCC Reg 9 (12 C.F.R. § 9)** fiduciary duties for Private Bank trust/discretionary relationships, or **SEC Reg BI** / FINRA 2111 for HFA retail brokerage relationships on the Ameriprise platform. See `CITATIONS.md` §1a.
+5. **No Aggregate Net-Worth Inference:** Book Scout surfaces only Huntington-resolvable positions and documented credit application facts; it does not compute or assert total personal net worth.
 6. **GLBA & FCRA Quarantined Consent Gate:** Financial information obtained from commercial credit agreements is strictly quarantined. Staged wealth profiles are not injected into SEI Wealth Platform or retail CRM until the commercial RM records the borrower's **affirmative verbal consent** during the T-12 call.
-7. **Model Risk Management (OCC Bulletin 2011-12 / Fed SR 11-7):** Property valuations and proceeds estimates produced by Horizon are designated as **"Indicative Triage Estimates for Relationship Prioritization."** They are never used for credit underwriting, collateral evaluation, or regulatory capital calculations, exempting the workflow from full-scale credit model validation mandates while upholding model governance standards.
+7. **Model Risk Management (OCC Bulletin 2011-12 / Fed SR 11-7):** Property valuations and proceeds estimates produced by Book Scout are designated as **"Indicative Triage Estimates for Relationship Prioritization."** They are never used for credit underwriting, collateral evaluation, or regulatory capital calculations, exempting the workflow from full-scale credit model validation mandates while upholding model governance standards.
 8. **ECOA / Regulation B Fair Lending Compliance:** Borrower qualification by Exclusion Sentry is governed strictly by objective, deterministic parameters (regulatory credit rating Pass Tier 1/2 and $\ge \$500,000$ net liquidity floor). Zero demographic, socioeconomic, or geographic machine learning scoring is utilized.
 
 ---
 ## 6. Financial Model — Dual-Sided Capacity Leverage & Retained Value
 
-Horizon's value is presented in two linked layers: **(A) capacity leverage** (the core headcount-scaling thesis across both Commercial and Wealth) and **(B) retained financial value**.
+Book Scout's value is presented in two linked layers: **(A) capacity leverage** (the core headcount-scaling thesis across both Commercial and Wealth) and **(B) retained financial value**.
 
 ### 6.1 Layer A — Dual-Sided Capacity Leverage (The Core Thesis)
 
-| Metric | Manual Baseline (Today) | With Horizon |
+| Metric | Manual Baseline (Today) | With Book Scout |
 | :--- | :---: | :---: |
 | **Commercial** discovery + staging per qualified deal | ~6–8 hours (RM, 3 systems) | ~4 minutes (agent) + ~4 min (RM call) |
 | **Wealth** onboarding effort per new relationship | ~4–6 hours; ~2–3 weeks elapsed | ~80% pre-staged; ~3 days elapsed |
@@ -241,7 +241,7 @@ Horizon's value is presented in two linked layers: **(A) capacity leverage** (th
 | IRC §1031 exchange liquidity captured | **0%** (wires out to 3rd-party accommodators) | **Captured in Huntington Qualified Escrow Depository** (independent QI: IPX1031) |
 | Net new RM **or** PWA headcount required to scale | Requires material FTE additions | **Zero net new headcount** |
 
-> **The Headcount Sentence:** *Commercial discovery was un-staffable at book scale, and wealth onboarding and ongoing servicing throttled advisor capacity at 80 accounts. Horizon absorbs both—surfacing invisible opportunities, accelerating onboarding from weeks to days, and providing automated servicing dossiers and 2x CSA operational leverage that expand advisor capacity to 95–100 accounts (+20–25%). This converts an un-staffable workload into an automated one on both sides of the bank with zero net new headcount.*
+> **The Headcount Sentence:** *Commercial discovery was un-staffable at book scale, and wealth onboarding and ongoing servicing throttled advisor capacity at 80 accounts. Book Scout absorbs both—surfacing invisible opportunities, accelerating onboarding from weeks to days, and providing automated servicing dossiers and 2x CSA operational leverage that expand advisor capacity to 95–100 accounts (+20–25%). This converts an un-staffable workload into an automated one on both sides of the bank with zero net new headcount.*
 
 ### 6.2 Layer B — Retained Financial Value (Interactive Sensitivity)
 
@@ -352,7 +352,7 @@ To satisfy CFO scrutiny, the $1.25M annual operating run-rate is componentized a
 | Time | Presenter Actions & Spoken Dialogue | What is Shown in the Demo (UI & Model Feedback) | Production Implementation Blueprint | Executive Impact |
 | :--- | :--- | :--- | :--- | :--- |
 | **00:00–01:30** | **The Problem (Two-Sided Bottleneck & 1031 Flight):** Frame the goal: scaling wealth with existing headcount. A $33.3B commercial real estate book turning over ~$7.5B in payoffs a year that no human team can monitor; 1031 exchanges leaking to third parties; and wealth advisors capped at 80 clients. This is a capacity crisis end-to-end. | Context slide: $33.3B target book, ~$7.5B annual payoff volume, ~$899M of seller equity at risk of leaving the bank, two-sided bottleneck diagram (Commercial discovery drag vs. Wealth onboarding/servicing wall). | BigQuery analytical telemetry on historical loan payoffs; Cloud Storage historical flight registry. | CEO & CFO align: doing more with existing headcount across both lines of business. |
-| **01:30–03:30** | **The Book No Human Can Watch:** Open Horizon in FSC. Point to the **Synthetic Capacity Meter** (~15 hrs discovery absorbed, 3 active inferences running). Show First American Title's payoff surfacing at T-12. | **Pane 1 (Priority Radar):** Synthetic Capacity Meter (`11,099 facilities screened ▸ 3 qualified & staged`). Dynamic critical queue sorted by close date. Green "Pass Tier 2" credit badge. | Google Cloud Pub/Sub ingesting core servicing events into Cloud Run event-driven microservices. | Head of Commercial sees leverage, not an intrusive time-and-motion audit. |
+| **01:30–03:30** | **The Book No Human Can Watch:** Open Book Scout in FSC. Point to the **Synthetic Capacity Meter** (~15 hrs discovery absorbed, 3 active inferences running). Show First American Title's payoff surfacing at T-12. | **Pane 1 (Priority Radar):** Synthetic Capacity Meter (`11,099 facilities screened ▸ 3 qualified & staged`). Dynamic critical queue sorted by close date. Green "Pass Tier 2" credit badge. | Google Cloud Pub/Sub ingesting core servicing events into Cloud Run event-driven microservices. | Head of Commercial sees leverage, not an intrusive time-and-motion audit. |
 | **03:30–06:00** | **The Agentic Proof (Multimodal Grounding & Dynamic Slider):** Click Marcus Vance. Watch Gemini 3.7 Flash extract LLC ownership with **visual bounding-box highlights**. Show missing sale price resolved via trailing NOI grounded by Vertex AI Search ($8.5M @ 7.5% cap rate). Adjust sale price slider live from $8.5M to $9.0M. | **Pane 2 & 3:** Interactive household topology map with clickable source citations (`⧉ Credit Vault #CC-8821`). Live streaming token feedback; interactive slider dynamically re-computing net proceeds to $3.35M. | Gemini Enterprise Agent Platform (`gemini-3.7-flash`) native multimodal document understanding; Vertex AI Search grounding; Cloud Run `CalculatorTool`. | CTO & CIO see state-of-the-art multimodal AI; CFO sees automated analyst judgment. |
 | **06:00–08:30** | **The Human Touch + The Wealth Bottleneck Solved:** Step into Greg's 4-minute call. Click **[Approve & Deliver Wire Form]**, generating First American's wire letter. Toggle **Persona Switcher** to Sarah Jenkins (PWA): show pre-staged KYC/CIP, SEI shell, and **Automated Quarterly Review Dossier**. Say: *"We achieve 2x CSA operational leverage, expanding senior PWA capacity to 95–100 relationships (+20–25%) while routing transactional accounts to our Centralized Wealth Hub."* | **Pane 3:** Generated PDF wire instruction letter with First American Title pre-filled. PWA view displays 80% completed KYC/CIP, pre-configured SEI shell, and quarterly relationship review template. | Apigee X API Gateway mTLS routing to SEI Wealth Platform Gateway; DocuSign REST APIs; Cloud Spanner household graph. | Head of Wealth sees onboarding friction solved AND ongoing advisor capacity expanded under Reg BI. |
 | **08:30–09:15** | **Institutional Guardrails (CRO Defense):** Open compliance audit drawer: highlight green badges for **FINRA 2040 non-fee splitting**, **GLBA Quarantined Consent Gate**, **OCC SR 11-7 Triage Designation**, and **1031 QI Escrow routing**. | Slide-out compliance drawer displaying green verification badges, tamper-evident dual-ID hash, and zero-data-logging boundary certifications. | Cloud KMS customer-managed encryption keys (CMEK); VPC Service Controls (VPC-SC perimeter); Cloud Audit Logs immutable trail. | Chief Risk Officer sees airtight compliance, privacy, and model risk boundaries. |
@@ -374,13 +374,13 @@ To satisfy CFO scrutiny, the $1.25M annual operating run-rate is componentized a
 ### Anticipated Executive Q&A (Presenter Prep)
 
 * **"How does this scale wealth management with existing headcount if advisors are already at capacity?"**  
-  → Horizon eliminates both wealth bottlenecks: it compresses administrative onboarding from ~3 weeks to ~3 days, and provides automated quarterly review dossiers and 2x CSA operational leverage that expand advisor capacity from 80 to 95–100 relationships (+20–25%) without adding staff. We deliberately do **not** claim 150 accounts per advisor — high-touch fiduciary maintenance makes that infeasible; sub-$3M transactional accounts route to the Centralized Wealth Advisory Hub instead (§1.2, §6.1).
+  → Book Scout eliminates both wealth bottlenecks: it compresses administrative onboarding from ~3 weeks to ~3 days, and provides automated quarterly review dossiers and 2x CSA operational leverage that expand advisor capacity from 80 to 95–100 relationships (+20–25%) without adding staff. We deliberately do **not** claim 150 accounts per advisor — high-touch fiduciary maintenance makes that infeasible; sub-$3M transactional accounts route to the Centralized Wealth Advisory Hub instead (§1.2, §6.1).
 
 * **"What if the borrower is doing a 1031 exchange? Won't the deposit leave anyway?"**  
-  → That’s why Horizon includes native 1031 detection. When an exchange is identified, proceeds are routed into a **Huntington Qualified Escrow Depository** under Treas. Reg. § 1.1031(k)-1(g)(3), administered by an **independent, unaffiliated Qualified Intermediary (IPX1031)**. Huntington cannot serve as QI for its own borrower under the disqualified-person rules of Treas. Reg. § 1.1031(k)-1(k), so the bank's role is confined to the routine banking safe harbor as escrow depository. This preserves institutional deposits during the 180-day exchange window without jeopardizing the client's deferral (§1.1, §2 Step 7).
+  → That’s why Book Scout includes native 1031 detection. When an exchange is identified, proceeds are routed into a **Huntington Qualified Escrow Depository** under Treas. Reg. § 1.1031(k)-1(g)(3), administered by an **independent, unaffiliated Qualified Intermediary (IPX1031)**. Huntington cannot serve as QI for its own borrower under the disqualified-person rules of Treas. Reg. § 1.1031(k)-1(k), so the bank's role is confined to the routine banking safe harbor as escrow depository. This preserves institutional deposits during the 180-day exchange window without jeopardizing the client's deferral (§1.1, §2 Step 7).
 
 * **"If commercial RMs never did this work, how can we claim capacity leverage?"**  
-  → We don’t claim saved hours on work people were doing; we claim **manual discovery absorbed**—work that was un-staffable at book scale. Horizon monitors 100% of the book and hands the RM a pre-screened, ready-to-call relationship, converting invisible liquidity into actionable pipeline (§1.1, §2 Step 2).
+  → We don’t claim saved hours on work people were doing; we claim **manual discovery absorbed**—work that was un-staffable at book scale. Book Scout monitors 100% of the book and hands the RM a pre-screened, ready-to-call relationship, converting invisible liquidity into actionable pipeline (§1.1, §2 Step 2).
 
 * **"How do you ensure the agent didn't hallucinate the 7.5% cap rate or property value?"**  
   → Valuations are strictly grounded via Vertex AI Search against internal commercial appraisal benchmarks and regional indices, paired with deterministic arithmetic tools. Every metric in the dossier displays a clickable source citation badge (§2 Step 3, §4.2).
@@ -392,7 +392,7 @@ To satisfy CFO scrutiny, the $1.25M annual operating run-rate is componentized a
   → The compute is minimal ($15k/yr); the $1.25M fully-loaded budget funds high-availability Cloud Spanner, Apigee X integration, enterprise compliance audits, and a dedicated 2-person platform engineering and MLOps pod (§6.3).
 
 * **"Does this automate investment advice or violate Reg BI?"**  
-  → Absolutely not. Horizon produces administrative drafting and operational scaffolding only. Every suitability determination, risk tolerance evaluation, and asset allocation decision is authored and signed by the licensed Series 7/66/CFP advisor (§5.4).
+  → Absolutely not. Book Scout produces administrative drafting and operational scaffolding only. Every suitability determination, risk tolerance evaluation, and asset allocation decision is authored and signed by the licensed Series 7/66/CFP advisor (§5.4).
 
 ---
-*Huntington Horizon v5.2 Specification — Built to prove dual-sided agentic capacity leverage: scaling wealth management with existing headcount across both Commercial and Wealth.*
+*Huntington Book Scout v5.2 Specification — Built to prove dual-sided agentic capacity leverage: scaling wealth management with existing headcount across both Commercial and Wealth.*

@@ -693,32 +693,35 @@ RETURN b.legal_name, p.name, p.guaranty_status, p.glba_quarantined,
         label: "Elena Vance",
         tier: "principal",
         status: "quarantined",
-        badge: "GLBA QUARANTINED (15%)",
+        badge: "NPI QUARANTINED (15%)",
         subtitle: "Passive Member / Non-Guarantor",
         properties: {
           "Equity Stake": "15.0% Minority Interest",
           "Guaranty Status": "Non-Guarantor (No Commercial Guarantee)",
-          "GLBA Reg P Status": "Quarantined / Nonpublic Personal Info (NPI)",
+          "Source of Record": "LLC Operating Agreement, credit file (document extraction)",
+          "CDD Coverage": "Below the 25% FinCEN beneficial-owner threshold; absent from BSA certification",
+          "NPI Handling Status": "Quarantined pending opt-in (GLBA Reg P / FCRA § 604 framework)",
           "Exclusion Sentry": "Firewalled from Wealth Advisory CRM Pending Opt-In"
         },
-        agent_relevance: "Exclusion Sentry boundary test: non-guarantor PII is firewalled from retail wealth systems.",
+        agent_relevance: "Exclusion Sentry boundary test. She sits below the 25% CDD threshold, so she appears only in the operating agreement, invisible to every structured system, and is firewalled from retail wealth systems.",
         x: 660,
         y: 320
       },
       {
         id: "sig_no_refi",
-        label: "Zero Replacement Refinance",
+        label: "No Replacement Facility at Huntington",
         tier: "signal",
         status: "flagged",
         badge: "BEHAVIORAL SIGNAL",
         subtitle: "+35% Flight Risk Weight",
         properties: {
           "Core Query": "Core Ledger + LOS Cross-System Footprint Scan",
-          "Branches Checked": "1,400 HBAN Branches",
+          "Scope of Visibility": "Huntington systems only (~1,400 offices)",
           "Pending Pipelines": "0 Applications / 0 Term Sheets",
-          "Deterministic Finding": "Completely Eliminates Internal Refinance"
+          "Finding": "Rules out a replacement facility at Huntington",
+          "Limitation": "External lender pipelines are not observable"
         },
-        agent_relevance: "Disproves refinancing hypothesis; confirms asset disposition in progress.",
+        agent_relevance: "Rules out an internal refinance. An external refinance cannot be excluded from bank-held data alone; that requires the inbound title demand.",
         x: 850,
         y: 120
       },
@@ -732,27 +735,29 @@ RETURN b.legal_name, p.name, p.guaranty_status, p.glba_quarantined,
         properties: {
           "Exhibit Audit": "Full Multimodal OCR on Title Demand Exhibits A-E",
           "Intermediary Status": "No Qualified Intermediary (QI) Named",
-          "Funds Destination": "Direct Constructive Receipt in Seller Operating Checking",
-          "Deterministic Finding": "Classifies Deal as Taxable Liquidity Cash-Out"
+          "Funds Destination": "Payoff demand directs proceeds to the borrower, not a QI",
+          "Finding": "Indicates a taxable cash-out rather than a 1031 exchange",
+          "Inference Type": "Negative inference, valid because the demand names a recipient"
         },
-        agent_relevance: "Confirms proceeds will touch client operating accounts, triggering Huntington Treasury ICS.",
+        agent_relevance: "Proceeds are directed to client operating accounts rather than a 1031 escrow, which is what triggers the Treasury ICS play.",
         x: 850,
         y: 240
       },
       {
         id: "sig_equity_delta",
-        label: "Net Equity Prize: $2,902,700",
+        label: "Est. Net Equity Prize: $2,902,700",
         tier: "signal",
         status: "flagged",
         badge: "LIQUIDITY PRIZE",
-        subtitle: "Triangulated Cap Rate 7.50%",
+        subtitle: "Estimated at 7.50% Cap Rate",
         properties: {
-          "Indicative Valuation": "$8,500,000.00 ($637.5k NOI capitalized @ 7.50%)",
+          "Indicative Valuation": "$8,500,000.00 est. ($637.5k NOI capitalized @ 7.50%)",
+          "Valuation Basis": "Cap-rate estimate; sale price not observed (no settlement statement)",
           "Payoff Extinguishment": "$5,214,800.00",
           "Estimated Closing Costs": "$382,500.00 (4.5% Standard Commercial Rate)",
-          "Net Liquid Proceeds": "$2,902,700.00 At-Risk Seller Equity"
+          "Net Liquid Proceeds": "$2,902,700.00 At-Risk Seller Equity (estimated)"
         },
-        agent_relevance: "Calculates exact relationship retention prize to drive urgency tiering.",
+        agent_relevance: "Sizes the retention opportunity to drive urgency tiering. The valuation input is an estimate, so the figure is indicative rather than settled.",
         x: 850,
         y: 360
       },
@@ -765,11 +770,12 @@ RETURN b.legal_name, p.name, p.guaranty_status, p.glba_quarantined,
         subtitle: "Urgency: Critical (T-12 Days)",
         properties: {
           "Composite Confidence": "94.2% Deterministic Graph Fusion",
+          "Confidence Basis": "Anchored on the inbound title payoff demand (T-12); maturity screening alone does not separate a sale from a refinance",
           "Urgency Window": "Critical (12 Calendar Days to Closing)",
           "Recommended Product": "Huntington Business Premier ICS (4.85% APY)",
           "Wealth Scaffolding": "Pre-Staged Series 7/66 Intake Shell (Quarantined)"
         },
-        agent_relevance: "Final deterministic verdict grounding the Commercial RM T-12 phone briefing.",
+        agent_relevance: "Final verdict grounding the Commercial RM T-12 phone briefing. Classification firms up when the title demand lands; the earlier signals set the watchlist.",
         x: 850,
         y: 490
       }

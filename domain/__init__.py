@@ -1,5 +1,5 @@
 """
-Huntington Horizon: Domain Package
+Huntington Book Scout: Domain Package
 Core banking business logic, financial models, and statutory routing engines.
 """
 from domain.models import (

@@ -168,13 +168,32 @@ function splitLabel(label: string, maxChars: number = 26): string[] {
   return lines.length > 0 ? lines : [label];
 }
 
+/** One heading treatment for every section in the inspector pane. */
+const SECTION_HEADING =
+  'flex items-center gap-1.5 mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500';
+
+/** One chip geometry. The fixed height is what keeps the metadata row even. */
+const CHIP =
+  'inline-flex h-5 items-center rounded border px-2 text-[10px] font-semibold tabular-nums whitespace-nowrap';
+
+/** Keyword gutter width for the GQL block. Sized so MATCH/RETURN/GRAPH sit on one line. */
+const GQL_GUTTER = '62px';
+
 function formatGqlRest(rest: string): React.ReactNode {
-  // Highlight Spanner Graph node labels like :BorrowerEntity, :Principal, :CreditFacility in bold blue
-  const parts = rest.split(/(:[A-Za-z0-9_]+)/g);
+  // Highlight Spanner Graph node labels (:BorrowerEntity, :Principal, ...) and let
+  // quoted literals recede, so the traversal shape reads before the identifiers do.
+  const parts = rest.split(/(:[A-Za-z0-9_]+|'[^']*')/g);
   return parts.map((part, i) => {
     if (part.startsWith(':')) {
       return (
-        <span key={i} className="text-blue-700 font-bold">
+        <span key={i} className="font-bold text-blue-700">
+          {part}
+        </span>
+      );
+    }
+    if (part.startsWith("'")) {
+      return (
+        <span key={i} className="text-slate-500">
           {part}
         </span>
       );
@@ -184,25 +203,29 @@ function formatGqlRest(rest: string): React.ReactNode {
 }
 
 function formatGqlClause(queryStr: string): React.ReactNode[] {
+  // The design system bans monospace, so clause alignment has to come from layout
+  // rather than from a fixed-width font: a two-column grid with a fixed keyword
+  // gutter makes every clause body start at the same x. Continuation lines render
+  // with an empty gutter so they hang under the clause they belong to.
   const lines = queryStr.trim().split('\n');
   return lines.map((line, idx) => {
-    const match = line.match(/^(\s*)(GRAPH|OPTIONAL MATCH|MATCH|RETURN|WHERE|AND)\b(.*)$/i);
-    if (match) {
-      const [, indent, keyword, rest] = match;
-      return (
-        <div key={idx} className="flex items-start py-0.5" style={{ paddingLeft: `${(indent?.length || 0) * 6}px` }}>
-          <span className="font-extrabold text-[#004724] tracking-tight shrink-0 mr-1.5 uppercase text-[11px]">
-            {keyword}
-          </span>
-          <span className="text-slate-800 break-all font-medium text-[11px] leading-snug">
-            {formatGqlRest(rest)}
-          </span>
-        </div>
-      );
-    }
+    const match = line.match(
+      /^(\s*)(OPTIONAL MATCH|ORDER BY|GRAPH|MATCH|RETURN|WHERE|LIMIT|LET|AND|OR)\b(.*)$/i
+    );
+    const keyword = match ? match[2] : '';
+    const rest = match ? match[3] : line.trim();
     return (
-      <div key={idx} className="py-0.5 text-slate-800 text-[11px] leading-snug">
-        {line}
+      <div
+        key={idx}
+        className="grid items-baseline gap-x-2"
+        style={{ gridTemplateColumns: `${GQL_GUTTER} 1fr` }}
+      >
+        <span className="text-right text-[10px] font-extrabold uppercase leading-[1.55] tracking-tight text-[#004724]">
+          {keyword}
+        </span>
+        <span className="text-[11px] font-medium leading-[1.55] text-slate-800 [overflow-wrap:anywhere]">
+          {formatGqlRest(rest)}
+        </span>
       </div>
     );
   });
@@ -1355,7 +1378,7 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
                 </span>
                 <span className="flex items-center space-x-1.5 whitespace-nowrap">
                   <span className="w-2.5 h-2.5 rounded-full bg-red-600 inline-block shrink-0" />
-                  <span>GLBA Quarantined</span>
+                  <span>NPI Quarantined</span>
                 </span>
                 <span className="flex items-center space-x-1.5 whitespace-nowrap">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#008559] inline-block shrink-0" />
@@ -1371,25 +1394,28 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
               <div className="p-5 flex flex-col space-y-5">
                 {/* Node Identity Card */}
                 <div>
-                  <div className="flex items-center justify-between">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded tracking-wide uppercase ${
+                  {/* Badge and tier share one type size so their cap-heights line up.
+                      The badge uses min-h rather than a fixed height because a long
+                      label ("PRIMARY GUARANTOR (85%)") has to be free to wrap. */}
+                  <div className="flex items-start justify-between gap-2">
+                    <span className={`inline-flex min-h-5 items-center rounded border px-2 text-[10px] font-bold uppercase tracking-wide ${
                       activeNode.status === 'quarantined'
-                        ? 'bg-red-50 text-red-700 border border-red-200'
+                        ? 'bg-red-50 text-red-700 border-red-200'
                         : activeNode.tier === 'verdict'
-                          ? 'bg-[#008559]/10 text-[#008559] border border-[#008559]/20'
+                          ? 'bg-[#008559]/10 text-[#008559] border-[#008559]/20'
                           : activeNode.tier === 'signal'
-                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                            : 'bg-slate-100 text-slate-700 border border-slate-200'
+                            ? 'bg-blue-50 text-blue-700 border-blue-200'
+                            : 'bg-slate-100 text-slate-700 border-slate-200'
                     }`}>
                       {activeNode.badge}
                     </span>
-                    <div className="flex items-center space-x-1.5">
+                    <div className="flex shrink-0 items-center gap-1.5">
                       {activeNode.isPinned && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200">
+                        <span className={`${CHIP} border-amber-200 bg-amber-100 text-amber-800`}>
                           PINNED
                         </span>
                       )}
-                      <span className="text-[11px] text-slate-400 uppercase font-semibold">
+                      <span className="inline-flex min-h-5 items-center text-[10px] font-semibold uppercase text-slate-400">
                         Tier: {activeNode.tier}
                       </span>
                     </div>
@@ -1406,42 +1432,42 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
 
                 {/* Quarantined Compliance Warning */}
                 {activeNode.status === 'quarantined' && (
-                  <div className="p-3.5 bg-red-50 border border-red-200 rounded-lg text-xs text-red-800 space-y-1.5">
-                    <div className="flex items-center space-x-1.5 font-bold text-red-900">
-                      <Lock className="w-3.5 h-3.5 text-red-600" />
-                      <span>GLBA & FCRA Firewall Active</span>
-                    </div>
-                    <p className="leading-relaxed text-[11px]">
-                      Nonpublic Personal Information (NPI) of non-guarantor beneficial owners is firewalled from retail wealth systems until affirmative verbal opt-in consent is documented.
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                    <h4 className={`${SECTION_HEADING} text-red-800`}>
+                      <Lock className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                      <span>NPI Firewall Active</span>
+                    </h4>
+                    <p className="text-[11px] leading-relaxed text-red-800">
+                      Nonpublic Personal Information of non-guarantor beneficial owners is firewalled from retail wealth systems until affirmative verbal opt-in consent is documented. Held to the GLBA Reg P and FCRA &sect;&nbsp;604 standard as a conservative control, regardless of whether a commercial-entity member meets the statutory definition of a consumer.
                     </p>
                   </div>
                 )}
 
                 {/* Agent Relevance Box */}
-                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-lg space-y-1.5">
-                  <div className="flex items-center space-x-1.5 text-xs font-bold text-slate-800 uppercase tracking-wider">
-                    <Cpu className="w-3.5 h-3.5 text-[#008559]" />
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                  <h4 className={SECTION_HEADING}>
+                    <Cpu className="w-3.5 h-3.5 text-[#008559] shrink-0" />
                     <span>Agent Grounding Relevance</span>
-                  </div>
-                  <p className="text-xs text-slate-700 leading-relaxed">
+                  </h4>
+                  <p className="text-[11px] leading-relaxed text-slate-700">
                     {activeNode.agent_relevance}
                   </p>
                 </div>
 
                 {/* Properties Table */}
                 <div>
-                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">
-                    Node Attributes & Verified Records
+                  <h4 className={SECTION_HEADING}>
+                    <span>Node Attributes &amp; Verified Records</span>
                   </h4>
                   <div className="border border-slate-200 rounded-lg overflow-hidden">
-                    <table className="w-full text-xs">
+                    <table className="w-full text-[11px]">
                       <tbody className="divide-y divide-slate-100">
                         {Object.entries(activeNode.properties).map(([key, value]) => (
                           <tr key={key} className="hover:bg-slate-50/50">
-                            <td className="px-3 py-2 text-slate-500 font-medium bg-slate-50/40 w-2/5">
+                            <td className="px-3 py-2 text-slate-500 font-medium bg-slate-50/40 w-2/5 align-top">
                               {key}
                             </td>
-                            <td className="px-3 py-2 text-slate-900 font-semibold w-3/5 break-words tabular-nums">
+                            <td className="px-3 py-2 text-slate-900 font-semibold w-3/5 break-words tabular-nums align-top">
                               {value}
                             </td>
                           </tr>
@@ -1451,29 +1477,36 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
                   </div>
                 </div>
 
-                {/* Live Spanner ISO GQL Query - Swiss Sans-Serif Container */}
+                {/* Executed query and its run metadata */}
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-1.5 text-xs font-bold text-slate-700 uppercase tracking-wider">
-                      <Code className="w-3.5 h-3.5 text-[#008559]" />
-                      <span>Executed Spanner ISO GQL</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-semibold tabular-nums">
-                        {graphData.spanner_stats.query_latency_ms}ms
-                      </span>
-                      <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 text-[10px] font-medium tabular-nums">
-                        {graphData.spanner_stats.nodes_matched} nodes • {graphData.spanner_stats.edges_traversed} edges
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-3.5 bg-[#F8F9FA] rounded-xl border border-slate-200/90 text-xs font-sans space-y-1 shadow-sm">
+                  <h4 className={SECTION_HEADING}>
+                    <Code className="w-3.5 h-3.5 text-[#008559] shrink-0" />
+                    <span>Executed Spanner ISO GQL</span>
+                  </h4>
+
+                  <div className="rounded-lg border border-slate-200 bg-[#F8F9FA] p-3 space-y-0.5">
                     {formatGqlClause(graphData.spanner_stats.gql_query || 'GRAPH HuntingtonCommercialGraph\nMATCH (n)\nRETURN n')}
                   </div>
-                  <div className="flex items-center justify-between mt-2 text-[10px] text-slate-400 font-medium px-1">
-                    <span>Engine: {graphData.spanner_stats.engine}</span>
-                    <span>Instance: {graphData.spanner_stats.instance}</span>
+
+                  {/* Uniform chip geometry — same height, padding, weight and size —
+                      so the row reads as one object rather than three odd shapes.
+                      Nodes and edges are split into separate chips because the
+                      combined "13 nodes • 13 edges" string wrapped in the narrow pane. */}
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    <span className={`${CHIP} border-emerald-200 bg-emerald-50 text-emerald-800`}>
+                      {graphData.spanner_stats.query_latency_ms} ms
+                    </span>
+                    <span className={`${CHIP} border-slate-200 bg-slate-100 text-slate-600`}>
+                      {graphData.spanner_stats.nodes_matched} nodes
+                    </span>
+                    <span className={`${CHIP} border-slate-200 bg-slate-100 text-slate-600`}>
+                      {graphData.spanner_stats.edges_traversed} edges
+                    </span>
                   </div>
+
+                  <p className="mt-2 px-0.5 text-[10px] leading-relaxed text-slate-400">
+                    {graphData.spanner_stats.engine} &middot; {graphData.spanner_stats.instance}
+                  </p>
                 </div>
               </div>
             ) : (

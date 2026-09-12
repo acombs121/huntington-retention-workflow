@@ -23,7 +23,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error caught by Horizon ErrorBoundary:', error, errorInfo);
+    console.error('Uncaught error caught by Book Scout ErrorBoundary:', error, errorInfo);
     this.setState({ error, errorInfo });
   }
 
@@ -49,7 +49,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   Application Runtime Diagnostic
                 </h1>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Huntington Horizon 2.0 &bull; Exception Boundary Intercept
+                  Huntington Book Scout 2.0 &bull; Exception Boundary Intercept
                 </p>
               </div>
             </div>

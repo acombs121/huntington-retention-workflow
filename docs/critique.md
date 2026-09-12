@@ -1,7 +1,7 @@
-# Executive Adversarial Review: Huntington Horizon (PRD v5.1)
+# Executive Adversarial Review: Huntington Book Scout (PRD v5.1)
 
 **Reviewer Role:** Hostile Enterprise Technical Auditor & Banking Risk Reviewer  
-**Target Document:** [PRD.md](file:///Users/alexcombs/Projects/huntington-horizon/PRD.md) (*Huntington Horizon: Intelligent Liquidity Orchestration v5.1*)  
+**Target Document:** [PRD.md](file:///Users/alexcombs/Projects/huntington-horizon/PRD.md) (*Huntington Book Scout: Intelligent Liquidity Orchestration v5.1*)  
 **Primary Mandate:** Interrogate whether the PRD credibly proves dual-sided headcount scaling, genuinely showcases Google Cloud Platform’s differentiated agentic capabilities, and withstands scrutiny from HBAN’s Executive Committee, Chief Risk Officer, and Enterprise Architecture teams.
 
 ---
@@ -25,8 +25,8 @@
 ### Gap 2.1: The Post-Day-3 Wealth Capacity Wall (The Ongoing Fiduciary Burden)
 * **What the PRD Claims:** Pre-staging ~80% of onboarding scaffolding (KYC/CIP, SEI shell, draft IPS) compresses onboarding from ~3 weeks to ~3 days, allowing existing Private Wealth Advisors (PWAs) to scale relationship intake with zero net new headcount (§1.2, §6.1).
 * **The Reality:** A PWA’s capacity limit (~80–100 high-net-worth relationships) is **not** dictated primarily by administrative onboarding paperwork. It is dictated by **ongoing fiduciary servicing**: quarterly portfolio reviews, trust and estate coordination, tax-loss harvesting, client phone calls, and bespoke advisory meetings.
-* **The Failure Mode:** If Horizon successfully captures 30 to 50 new multi-million dollar relationships per advisor per year, the advisor bottleneck does not disappear—it simply hits a hard wall 6 months later. Clients who receive high-touch onboarding will experience degraded ongoing service, leading to AUM churn.
-* **Remediation:** Explicitly define **Ongoing Agentic Servicing** in the PRD. Horizon shouldn't just stage Day-0 onboarding; it must support automated quarterly briefing dossiers, portfolio drift alerts, and meeting prep packages to prove how PWAs can manage **150+ relationships** rather than 80 without degrading service quality.
+* **The Failure Mode:** If Book Scout successfully captures 30 to 50 new multi-million dollar relationships per advisor per year, the advisor bottleneck does not disappear—it simply hits a hard wall 6 months later. Clients who receive high-touch onboarding will experience degraded ongoing service, leading to AUM churn.
+* **Remediation:** Explicitly define **Ongoing Agentic Servicing** in the PRD. Book Scout shouldn't just stage Day-0 onboarding; it must support automated quarterly briefing dossiers, portfolio drift alerts, and meeting prep packages to prove how PWAs can manage **150+ relationships** rather than 80 without degrading service quality.
 
 ### Gap 2.2: The IRC §1031 Exchange Fatal Blind Spot
 * **What the PRD Claims:** In Pane 3 ([PRD.md:115](file:///Users/alexcombs/Projects/huntington-horizon/PRD.md#L115)), the PRD casually states `• 1031 Exchange Flag: NO`.
@@ -37,7 +37,7 @@
   3. If Greg Miller calls Marcus pitching a Treasury sweep without knowing Marcus is in a 1031 identification period, Greg looks uninformed, and Huntington loses credibility.
 * **Remediation:** Turn this weakness into a competitive advantage:
   - Add an **agentic 1031 Detection & Intermediary Routing Rule**: The agent inspects the purchase agreement/title documents for exchange language.
-  - If 1031 is YES: Instead of a generic sweep, Horizon stages a **Huntington Escrow / Qualified Intermediary (QI) Deposit Solution** or introduces Huntington’s **Delaware Statutory Trust (DST) / 1031 Advisory Desk**, preserving the deposit within Huntington’s institutional custody during the 180-day exchange window.
+  - If 1031 is YES: Instead of a generic sweep, Book Scout stages a **Huntington Escrow / Qualified Intermediary (QI) Deposit Solution** or introduces Huntington’s **Delaware Statutory Trust (DST) / 1031 Advisory Desk**, preserving the deposit within Huntington’s institutional custody during the 180-day exchange window.
 
 ### Gap 2.3: The Title Settlement Wire Instructions Disconnect
 * **What the PRD Claims:** Net proceeds settle into Marcus’s Business Premier ICS account on Day T-0 (§2 Step 7).
@@ -124,7 +124,7 @@ The PRD has good disclaimers in §5, but an adversarial review reveals severe re
 ### Gap 5.3: Model Risk Management (OCC Bulletin 2011-12 / Fed SR 11-7)
 * **The Institutional Reality:** In an OCC-regulated regional bank with >$100B assets (HBAN is ~$190B), any model that calculates property valuations ($8.5M) and net equity ($2.9M) must undergo rigorous **Model Validation (SR 11-7)**.
 * **The Risk:** The OCC will reject an unvalidated LLM generating commercial valuations.
-* **The Fix:** Clarify in §4 and §5 that Horizon's valuation is explicitly designated as an **"Indicative Triage Estimate for Relationship Prioritization"**, and never used for formal underwriting, collateral release, or credit decisions.
+* **The Fix:** Clarify in §4 and §5 that Book Scout's valuation is explicitly designated as an **"Indicative Triage Estimate for Relationship Prioritization"**, and never used for formal underwriting, collateral release, or credit decisions.
 
 ---
 

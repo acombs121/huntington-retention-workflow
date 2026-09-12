@@ -1,6 +1,6 @@
 # Design Specification & Brand Kit (`DESIGN.md`)
 
-This document codifies the visual identity, design tokens, typography scale, component geometry, and interaction standards for **Huntington Horizon**, adhering strictly to the Huntington Bancshares corporate brand guidelines and the **Google Cloud Run Demo** architectural specification.
+This document codifies the visual identity, design tokens, typography scale, component geometry, and interaction standards for **Huntington Book Scout**, adhering strictly to the Huntington Bancshares corporate brand guidelines and the **Google Cloud Run Demo** architectural specification.
 
 ---
 
@@ -100,6 +100,6 @@ All autonomous agent tags in runtime telemetry and orchestration logs are strict
 - **Gear Icon Placement**: Must be placed on the **far right** of the primary top navigation bar.
 - **Icon Specifications**: SVG stroke icon (Lucide `Settings`), with `hover:rotate-45` smooth transition (200ms) and `active:scale-[0.98]`.
 - **Slide-Out Drawer (`w-full max-w-md`)**:
-  - Displays live telemetry badges: AI Platform (**Gemini Enterprise Agent Platform (fka Vertex AI Platform)**), Model Baseline (`gemini-3.7-flash`), Cloud Run Direct IAP Status, and Runtime SA (`huntington-horizon-sa`).
+  - Displays live telemetry badges: AI Platform (**Gemini Enterprise Agent Platform (fka Vertex AI Platform)**), Model Baseline (`gemini-3.7-flash`), Cloud Run Direct IAP Status, and Runtime SA (`huntington-book-scout-sa`).
   - Contains direct links to `/brand_kit.html` and `/demo_script.html`.
   - Dismissable via backdrop click, Escape key, or close button `X`.

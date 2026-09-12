@@ -1,5 +1,5 @@
 """
-Huntington Horizon: Commercial Liquidity Engine
+Huntington Book Scout: Commercial Liquidity Engine
 Deep domain module for Commercial Real Estate loan payoff assessment.
 """
 from datetime import datetime, timezone

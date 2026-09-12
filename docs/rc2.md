@@ -65,7 +65,7 @@
 
 ---
 
-## How this schedule is used in the Horizon model
+## How this schedule is used in the Book Scout model
 
 The **nonfarm nonresidential** block above is the small-business CRE carve-out
 subtracted from the 10-Q's reported CRE balance to isolate the target segment.

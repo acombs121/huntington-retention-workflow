@@ -1,4 +1,4 @@
-# Huntington Horizon: Master Claims & Numbers Verification Audit
+# Huntington Book Scout: Master Claims & Numbers Verification Audit
 
 **Audit Date:** September 4, 2026  
 **Target Document:** Initial Prototype ([`frontend/index.html`](../frontend/index.html)) & [`PRD.md`](PRD.md)  
@@ -37,7 +37,7 @@ Every claim, numerical metric, legal statute, and financial equation appearing o
 * **Verdict:** **VERIFIED**
 
 ### 3. Qualified Escrow Safe Harbor & 180-Day Exchange Window
-* **Claim in `index.html`:** *"Horizon... routes wire instructions to the Huntington 1031 Qualified Escrow Depository (Partner QI Network) under Treas. Reg. § 1.1031(k)-1(g)(3)... Retains the $2.9M institutional deposit for 180 days."*
+* **Claim in `index.html`:** *"Book Scout... routes wire instructions to the Huntington 1031 Qualified Escrow Depository (Partner QI Network) under Treas. Reg. § 1.1031(k)-1(g)(3)... Retains the $2.9M institutional deposit for 180 days."*
 * **Statutory Citation:** [26 C.F.R. § 1.1031(k)-1(g)(3)](https://www.law.cornell.edu/cfr/text/26/1.1031(k)-1) (*Qualified escrow accounts*); [26 C.F.R. § 1.1031(k)-1(k)(2)(ii)](https://www.law.cornell.edu/cfr/text/26/1.1031(k)-1) (*Routine financial services exception*); [IRC § 1031(a)(3)](https://www.law.cornell.edu/uscode/text/26/1031).
 * **Legal Substance:** Under § 1.1031(k)-1(g)(3), holding exchange proceeds in an escrow account does not trigger constructive receipt if the escrow holder is not a disqualified person and the escrow agreement limits the taxpayer's withdrawal rights under paragraph (g)(6). Paragraph (k)(2)(ii) explicitly clarifies that *"routine financial, title insurance, escrow, or trust services for the taxpayer by a financial institution"* do **not** make the institution disqualified. IRC § 1031(a)(3) dictates the strict **45-day identification** and **180-day exchange completion** periods.
 * **Verdict:** **VERIFIED**
@@ -88,7 +88,7 @@ Every claim, numerical metric, legal statute, and financial equation appearing o
   * **Michael Kitces (Kitces Research):** Synthesizing Dunbar's Number and cognitive limits in wealth management, high-touch financial advisors cap out at **80 to 100 active client households**. Beyond 100, memory recall and ongoing fiduciary servicing suffer severe degradation.
   * **Cerulli Associates (U.S. High-Net-Worth Report):** PWAs managing $2M–$10M+ client portfolios average **75 to 90 client relationships**.
   * **Charles Schwab RIA Benchmarking Study (2024–2026):** Median clients per professional is **70 to 85 households**.
-  * **Huntington Horizon Operating Leverage:** Rejecting the unfeasible claim of 150 accounts per advisor, senior PWAs are capped at **95–100 relationships**. Leverage is unlocked via **2x Client Service Associate (CSA) operational leverage** (1 CSA : 4 PWAs) using automated KYC/CIP and quarterly review dossiers, while sub-$3M transactional accounts route to the Centralized Wealth Advisory Hub.
+  * **Huntington Book Scout Operating Leverage:** Rejecting the unfeasible claim of 150 accounts per advisor, senior PWAs are capped at **95–100 relationships**. Leverage is unlocked via **2x Client Service Associate (CSA) operational leverage** (1 CSA : 4 PWAs) using automated KYC/CIP and quarterly review dossiers, while sub-$3M transactional accounts route to the Centralized Wealth Advisory Hub.
 * **Verdict:** **VERIFIED & INSTITUTIONALLY GROUNDED**
 
 ### 4. Commercial RM Discovery Drag (6 to 8 Hours per Deal)

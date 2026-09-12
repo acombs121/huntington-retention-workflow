@@ -113,7 +113,7 @@ const AssumptionDial: React.FC<AssumptionDialProps> = ({
 };
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({
-  appName = 'Huntington Horizon',
+  appName = 'Huntington Book Scout',
   brandKitUrl = '/brand_kit.html',
   demoScriptUrl = '/demo_script.html',
   citationsUrl = '/citations.html',
@@ -491,7 +491,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         <span className="text-xs font-medium">Runtime SA</span>
                       </div>
                       <span className="text-xs font-semibold text-slate-900 dark:text-white">
-                        huntington-horizon-sa
+                        huntington-book-scout-sa
                       </span>
                     </div>
                   </div>
@@ -519,7 +519,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
               {/* Footer */}
               <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                <span className="font-bold tracking-wider uppercase text-[11px]">HBAN-HORIZON-V5.2</span>
+                <span className="font-bold tracking-wider uppercase text-[11px]">HBAN-BOOKSCOUT-V5.2</span>
                 <span>Enterprise Banking Platform</span>
               </div>
             </div>

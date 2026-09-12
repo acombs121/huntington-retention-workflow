@@ -35,30 +35,34 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-40 w-full border-b border-[#003319] bg-[#004724] text-white shadow-md">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
         
-        {/* Left: Huntington Bank Official Logo & Horizon Title */}
+        {/* Left: Huntington Bank Official Logo & Book Scout Title.
+            No right margin below 2xl: this row is justify-between, so the margin
+            was pure overflow in the 1280-1535 band where space is tightest. */}
         <div
           onClick={() => onViewChange(persona === 'commercial_rm' ? 'pipeline' : 'wealth_queue')}
-          className="flex items-center gap-3.5 sm:gap-4 cursor-pointer select-none group py-1 shrink-0 mr-4 xl:mr-8"
+          className="flex items-center gap-3 sm:gap-3.5 cursor-pointer select-none group py-1 shrink-0 2xl:mr-6"
         >
           <img
             src="/huntington-logo-white.png"
             alt="Huntington Bank"
-            className="h-12 sm:h-14 md:h-[58px] w-auto object-contain transition-transform duration-150 group-hover:scale-[1.02]"
+            className="h-12 sm:h-14 xl:h-12 2xl:h-[58px] w-auto object-contain transition-transform duration-150 group-hover:scale-[1.02]"
             style={{ filter: 'brightness(0) invert(1)' }}
           />
           <div className="h-8 w-px bg-white/20 hidden sm:block" />
-          <span className="hidden sm:inline-block font-black italic tracking-tight text-white text-2xl leading-none select-none relative -top-[1px]">
-            Horizon
+          <span className="hidden sm:inline-block font-black italic tracking-tight text-white text-2xl xl:text-xl 2xl:text-2xl leading-none select-none relative -top-[1px]">
+            Book Scout
           </span>
         </div>
 
-        {/* Center: Contextual Navigation Tabs (Swiss Editorial Underline Indicators - 4-Step Workflows) */}
-        <nav className="hidden lg:flex items-center gap-4 xl:gap-7 shrink-0">
+        {/* Center: Contextual Navigation Tabs (Swiss Editorial Underline Indicators).
+            Revealed at xl, not lg: at 1024 the three header children need ~1275px
+            against 960px available, so the tabs could never fit there. */}
+        <nav className="hidden xl:flex items-center gap-4 2xl:gap-6 shrink-0">
           {persona === 'commercial_rm' ? (
             <>
               <button
                 onClick={() => onViewChange('pipeline')}
-                className={`relative py-2.5 text-[11px] xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
+                className={`relative py-2.5 text-[11px] 2xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
                   activeView === 'pipeline'
                     ? 'text-white'
                     : 'text-emerald-200/75 hover:text-white'
@@ -71,7 +75,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
               <button
                 onClick={() => onViewChange('analysis')}
-                className={`relative py-2.5 text-[11px] xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
+                className={`relative py-2.5 text-[11px] 2xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
                   activeView === 'analysis'
                     ? 'text-white'
                     : 'text-emerald-200/75 hover:text-white'
@@ -84,7 +88,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
               <button
                 onClick={() => onViewChange('routing')}
-                className={`relative py-2.5 text-[11px] xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
+                className={`relative py-2.5 text-[11px] 2xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
                   activeView === 'routing'
                     ? 'text-white'
                     : 'text-emerald-200/75 hover:text-white'
@@ -97,7 +101,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
               <button
                 onClick={() => onViewChange('retention')}
-                className={`relative py-2.5 text-[11px] xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
+                className={`relative py-2.5 text-[11px] 2xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
                   activeView === 'retention'
                     ? 'text-white'
                     : 'text-emerald-200/75 hover:text-white'
@@ -113,7 +117,7 @@ export const Header: React.FC<HeaderProps> = ({
             <>
               <button
                 onClick={() => onViewChange('wealth_queue')}
-                className={`relative py-2.5 text-[11px] xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
+                className={`relative py-2.5 text-[11px] 2xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
                   activeView === 'wealth_queue'
                     ? 'text-white'
                     : 'text-emerald-200/75 hover:text-white'
@@ -128,7 +132,7 @@ export const Header: React.FC<HeaderProps> = ({
                 disabled={isQuarantined}
                 onClick={() => !isQuarantined && onViewChange('wealth_dossier')}
                 title={isQuarantined ? "Locked by GLBA Privacy Barrier (Commercial Client Opt-In Required)" : "Onboarding Dossier"}
-                className={`relative py-2.5 text-[11px] xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
+                className={`relative py-2.5 text-[11px] 2xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
                   isQuarantined
                     ? 'opacity-40 cursor-not-allowed text-emerald-300/40'
                     : activeView === 'wealth_dossier'
@@ -157,7 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
                   onViewChange('pipeline');
                 }
               }}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs whitespace-nowrap transition ${
+              className={`flex items-center gap-1.5 px-3 2xl:px-3.5 py-1.5 rounded-full text-xs whitespace-nowrap transition ${
                 persona === 'commercial_rm' && activeView !== 'executive'
                   ? 'bg-[#006738] text-white font-bold border border-[#7ECF1C]/40 shadow-sm'
                   : 'text-emerald-200/75 hover:text-white font-medium'
@@ -173,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({
                   onViewChange('wealth_queue');
                 }
               }}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs whitespace-nowrap transition ${
+              className={`flex items-center gap-1.5 px-3 2xl:px-3.5 py-1.5 rounded-full text-xs whitespace-nowrap transition ${
                 persona === 'wealth_advisor' && activeView !== 'executive'
                   ? 'bg-[#006738] text-white font-bold border border-[#7ECF1C]/40 shadow-sm'
                   : 'text-emerald-200/75 hover:text-white font-medium'
@@ -196,7 +200,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Mandatory Admin Panel Gear Icon (far right) */}
           <AdminPanel
-            appName="Huntington Horizon"
+            appName="Huntington Book Scout"
             brandKitUrl="/brand_kit.html"
             demoScriptUrl="/demo_script.html"
             onViewExecutive={() => onViewChange('executive')}

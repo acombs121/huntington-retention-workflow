@@ -1,5 +1,5 @@
 /**
- * Huntington Horizon — Business Case Assumption Model
+ * Huntington Book Scout — Business Case Assumption Model
  * ---------------------------------------------------
  * Single source of truth for every number that drives the Executive Analytics
  * view. Split deliberately into three provenance tiers so the room can see

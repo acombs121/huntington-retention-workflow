@@ -1,5 +1,5 @@
 """
-Integration Tests for Huntington Horizon FastAPI Endpoints
+Integration Tests for Huntington Book Scout FastAPI Endpoints
 Verifies multi-deal valuation, entity resolution, wire instructions, and GLBA quarantine gate.
 """
 import pytest
@@ -15,7 +15,7 @@ def test_health_endpoint():
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "ok"
-    assert data["service"] == "huntington-horizon"
+    assert data["service"] == "huntington-book-scout"
     assert data["version"] == "6.0.0"
 
 
@@ -471,14 +471,27 @@ def test_signal_graph_endpoint_vance():
     assert len(data["nodes"]) >= 10
     assert len(data["edges"]) >= 10
 
-    # Verify Elena Vance is quarantined
+    # Verify Elena Vance is quarantined. The badge says NPI rather than GLBA:
+    # a passive member of a commercial LLC is arguably not a GLBA "consumer",
+    # so the frameworks are cited as the governing standard, not as a trigger.
     elena = next(n for n in data["nodes"] if n["id"] == "principal_elena")
     assert elena["status"] == "quarantined"
-    assert "GLBA" in elena["badge"]
+    assert "QUARANTINED" in elena["badge"]
+    assert "GLBA" not in elena["badge"]
+    # Her provenance must stay disclosed: 15% is below the FinCEN CDD threshold,
+    # so she exists only in the operating agreement, not in BSA records.
+    assert "25%" in elena["properties"]["CDD Coverage"]
+    assert "Operating Agreement" in elena["properties"]["Source of Record"]
 
-    # Verify verdict node
+    # The refinance signal must stay scoped to Huntington's own systems.
+    no_refi = next(n for n in data["nodes"] if n["id"] == "sig_no_refi")
+    assert "Huntington" in no_refi["label"]
+    assert "not observable" in no_refi["properties"]["Limitation"]
+
+    # Verify verdict node, and that the 94% is tied to the title demand.
     verdict = next(n for n in data["nodes"] if n["tier"] == "verdict")
     assert "Cash-Out" in verdict["label"]
+    assert "T-12" in verdict["properties"]["Confidence Basis"]
 
 
 def test_signal_graph_endpoint_buckeye_1031():
