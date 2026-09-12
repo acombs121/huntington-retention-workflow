@@ -163,71 +163,117 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
       </div>
 
       {/* Main 2-Column Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
         {/* Left Column: Deal & Liquidity Reality (7 cols) */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className="lg:col-span-7 flex flex-col">
           
-          {/* Card 1: Title & Payoff Demand */}
-          <div className="bg-white dark:bg-palette-surface border border-slate-200/80 dark:border-palette-surface-3 rounded-2xl p-6 shadow-sm space-y-5">
-            <div className="flex items-center justify-between">
+          {/* Card 1: Title Payoff Demand & Liquidity */}
+          <div className="h-full flex flex-col justify-between bg-white dark:bg-palette-surface border border-slate-200/80 dark:border-palette-surface-3 rounded-2xl p-6 shadow-sm space-y-4">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-palette-surface-3">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-slate-400 dark:text-palette-ink-3" />
                 <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-palette-ink">
-                  Title Payoff Demand
+                  Title Payoff Demand &amp; Liquidity
                 </h2>
               </div>
-              {/* The DLP attestation belongs to the entity-resolution record. If
-                  that record is not this deal's, the badge is not this deal's
-                  either. */}
-              {!isDealDataStale && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#006738] dark:text-palette-accent">
-                  <CheckCircle2 className="w-3 h-3" />
-                  <span>DLP Verified</span>
+              <div className="flex items-center gap-3">
+                {!isDealDataStale && (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#006738] dark:text-palette-accent">
+                    <CheckCircle2 className="w-3 h-3" />
+                    <span>DLP Verified</span>
+                  </span>
+                )}
+                <span className="text-xs font-semibold text-[#006738] dark:text-palette-accent">
+                  {(deal.submarket_cap_rate * 100).toFixed(1)}% Cap Rate
                 </span>
-              )}
+              </div>
             </div>
 
-            {/* Hero Payoff Balance */}
-            <div className="pt-1">
-              <span className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-palette-ink-4 block">
-                Total Payoff Balance
-              </span>
-              <div className="text-3xl font-bold text-slate-900 dark:text-palette-ink tabular-nums tracking-tight mt-0.5">
-                ${deal.existing_debt_upb.toLocaleString()}
+            {/* Dual Hero: Payoff Balance + Net Proceeds */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <span className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-palette-ink-4 block">
+                  Total Payoff Balance
+                </span>
+                <div className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-palette-ink tabular-nums tracking-tight mt-0.5">
+                  ${deal.existing_debt_upb.toLocaleString()}
+                </div>
+                <p className="text-xs text-slate-400 dark:text-palette-ink-4 mt-1">
+                  ${deal.per_diem_interest.toFixed(0)}/day per diem &bull; Closing {deal.scheduled_closing_date}
+                </p>
               </div>
-              <p className="text-xs text-slate-400 dark:text-palette-ink-4 mt-1">
-                ${deal.per_diem_interest.toFixed(0)}/day per diem &bull; Closing {deal.scheduled_closing_date}
-              </p>
+              <div>
+                <span className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-palette-ink-4 block">
+                  {deal.unstated_sale_price ? 'Indicative Valuation' : 'Estimated Net Equity'}
+                </span>
+                <div className="text-2xl sm:text-3xl font-bold text-[#006738] dark:text-palette-accent tabular-nums tracking-tight mt-0.5">
+                  ~${((deal.unstated_sale_price ? deal.indicative_valuation : deal.estimated_net_equity) / 1000000).toFixed(2)}M
+                </div>
+                <p className="text-xs text-slate-400 dark:text-palette-ink-4 mt-1">
+                  {deal.unstated_sale_price ? 'Internal Triage' : 'Contract Price'} &bull; {(deal.submarket_cap_rate * 100).toFixed(2)}% Benchmark
+                </p>
+              </div>
             </div>
 
             {/* Clean Key-Value Grid */}
-            <div className="pt-4 border-t border-slate-100 dark:border-palette-surface-3 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="pt-3 border-t border-slate-100 dark:border-palette-surface-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div>
                 <span className="text-slate-400 dark:text-palette-ink-4 block">Property</span>
-                <span className="font-semibold text-slate-800 dark:text-palette-ink mt-0.5 block">
+                <span className="font-semibold text-slate-800 dark:text-palette-ink mt-0.5 block truncate">
                   {deal.property_name}
                 </span>
-                <span className="text-slate-500 dark:text-palette-ink-3 text-[11px]">
+                <span className="text-slate-500 dark:text-palette-ink-3 text-[11px] block truncate">
                   {deal.property_address}
                 </span>
               </div>
               <div>
                 <span className="text-slate-400 dark:text-palette-ink-4 block">Title &amp; Escrow</span>
-                <span className="font-semibold text-slate-800 dark:text-palette-ink mt-0.5 block">
+                <span className="font-semibold text-slate-800 dark:text-palette-ink mt-0.5 block truncate">
                   {deal.title_company}
                 </span>
-                <span className="text-slate-500 dark:text-palette-ink-3 text-[11px]">
+                <span className="text-slate-500 dark:text-palette-ink-3 text-[11px] block truncate">
                   File #{deal.escrow_file_number} &bull; {deal.settlement_officer}
                 </span>
               </div>
+            </div>
+
+            {/* Financial Line Items & Disclosure */}
+            <div className="pt-3 border-t border-slate-100 dark:border-palette-surface-3 text-xs space-y-1.5">
+              <div className="grid grid-cols-3 gap-2 text-[11px]">
+                <div>
+                  <span className="text-slate-400 dark:text-palette-ink-4 block">Trailing Q1 NOI</span>
+                  <span className="font-semibold text-slate-700 dark:text-palette-ink tabular-nums mt-0.5 block">
+                    ${deal.noi_trailing_q1.toLocaleString()}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 dark:text-palette-ink-4 block">Cap Rate Benchmark</span>
+                  <span className="font-semibold text-slate-700 dark:text-palette-ink mt-0.5 block">
+                    {(deal.submarket_cap_rate * 100).toFixed(2)}%
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 dark:text-palette-ink-4 block">
+                    {deal.unstated_sale_price ? 'Valuation Basis' : 'Contract Price'}
+                  </span>
+                  <span className="font-semibold text-slate-700 dark:text-palette-ink mt-0.5 block">
+                    {deal.unstated_sale_price ? 'Internal Triage Only' : `$${(deal.indicative_valuation / 1000000).toFixed(2)}M`}
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-[10px] sm:text-[11px] leading-relaxed text-slate-400 dark:text-palette-ink-4 pt-0.5">
+                Gross of the yield-maintenance prepayment premium and of the seller's tax liability on a taxable disposition. Both reduce the amount actually available to deposit; treat this as an upper bound, not a settlement figure.
+              </p>
             </div>
           </div>
 
         </div>
 
         {/* Right Column: Principal Relationship (5 cols) */}
-        <div className="lg:col-span-5 space-y-6">
+        <div className="lg:col-span-5 flex flex-col">
 
           {/* Everything in this column comes from the per-deal entity record.
               If that record is the previous borrower's, show nothing rather
@@ -239,9 +285,9 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
             />
           )}
 
-          {!isDealDataStale && (<>
-          {/* Card 2: Relationship to Principal */}
-          <div className="bg-white dark:bg-palette-surface border border-slate-200/80 dark:border-palette-surface-3 rounded-2xl p-6 shadow-sm space-y-5">
+          {!isDealDataStale && (
+          /* Card 2: Relationship to Principal */
+          <div className="h-full flex flex-col justify-between bg-white dark:bg-palette-surface border border-slate-200/80 dark:border-palette-surface-3 rounded-2xl p-6 shadow-sm space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-palette-surface-3">
               <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-palette-ink">
                 Principal Relationship
@@ -254,15 +300,15 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
             {/* Principal & Tenure Hero */}
             <div className="flex items-baseline justify-between gap-4">
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-palette-ink">
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-palette-ink tracking-tight">
                   {relationship.principalName}
                 </h3>
-                <p className="text-xs text-slate-400 dark:text-palette-ink-4">
+                <p className="text-xs text-slate-400 dark:text-palette-ink-4 mt-0.5">
                   RM: {relationship.assignedRM}
                 </p>
               </div>
               <div className="text-right shrink-0">
-                <span className="text-xl font-bold text-[#006738] dark:text-palette-accent tabular-nums block">
+                <span className="text-xl sm:text-2xl font-bold text-[#006738] dark:text-palette-accent tabular-nums block">
                   {relationship.tenureYears} Years
                 </span>
                 <span className="text-[10px] text-slate-400 dark:text-palette-ink-4 block">
@@ -294,7 +340,7 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
               </div>
             </div>
           </div>
-          </>)}
+          )}
 
         </div>
 
@@ -320,67 +366,6 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
         />
       )}
 
-      {/* Liquidity & Net Proceeds, full width.
-
-          This is the conclusion the two columns above argue toward -- the
-          payoff and its documentary grounding on one side, the people and the
-          relationship on the other -- and it is the number the routing
-          decision is actually made on, so it reads better as a full-width
-          band than as the tail of one column. It also keeps the two columns
-          close to even now that Document Grounding has been added to the
-          left. */}
-          <div className="bg-white dark:bg-palette-surface border border-slate-200/80 dark:border-palette-surface-3 rounded-2xl p-6 shadow-sm space-y-5">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-palette-ink">
-                Liquidity &amp; Net Proceeds
-              </h2>
-              <span className="text-xs font-semibold text-[#006738] dark:text-palette-accent">
-                {(deal.submarket_cap_rate * 100).toFixed(1)}% Cap Rate
-              </span>
-            </div>
-
-            {/* Hero Value */}
-            <div className="pt-1">
-              <span className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-palette-ink-4 block">
-                {deal.unstated_sale_price ? 'Indicative Valuation' : 'Estimated Net Equity'}
-              </span>
-              <div className="text-3xl font-bold text-[#006738] dark:text-palette-accent tabular-nums tracking-tight mt-0.5">
-                ~${((deal.unstated_sale_price ? deal.indicative_valuation : deal.estimated_net_equity) / 1000000).toFixed(2)}M
-              </div>
-            </div>
-
-            {/* Financial Line Items */}
-            <div className="pt-4 border-t border-slate-100 dark:border-palette-surface-3 grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
-              <div>
-                <span className="text-slate-400 dark:text-palette-ink-4 block">Trailing Q1 NOI</span>
-                <span className="font-semibold text-slate-800 dark:text-palette-ink tabular-nums mt-0.5 block">
-                  ${deal.noi_trailing_q1.toLocaleString()}
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400 dark:text-palette-ink-4 block">Cap Rate Benchmark</span>
-                <span className="font-semibold text-slate-800 dark:text-palette-ink mt-0.5 block">
-                  {(deal.submarket_cap_rate * 100).toFixed(2)}%
-                </span>
-              </div>
-              <div>
-                <span className="text-slate-400 dark:text-palette-ink-4 block">
-                  {deal.unstated_sale_price ? 'Valuation Basis' : 'Contract Price'}
-                </span>
-                <span className="font-semibold text-slate-800 dark:text-palette-ink mt-0.5 block">
-                  {deal.unstated_sale_price ? 'Internal Triage Only' : `$${(deal.indicative_valuation / 1000000).toFixed(2)}M`}
-                </span>
-              </div>
-            </div>
-
-            {/* Disclosure, not a defect. Net proceeds here are sale price less
-                the payoff quote less closing costs -- nothing else. */}
-            <p className="pt-1 text-[11px] leading-relaxed text-slate-400 dark:text-palette-ink-4">
-              Gross of the yield-maintenance prepayment premium and of the seller's tax
-              liability on a taxable disposition. Both reduce the amount actually available
-              to deposit; treat this as an upper bound, not a settlement figure.
-            </p>
-          </div>
 
       {/* Bottom Action */}
       <div className="flex items-center justify-end pt-2">

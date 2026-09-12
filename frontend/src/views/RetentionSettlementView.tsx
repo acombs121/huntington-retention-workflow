@@ -105,16 +105,13 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
             </h1>
             {!isDealDataStale && (
               <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-[#E8F5E9] dark:bg-emerald-950/60 text-[#006738] dark:text-emerald-300 border border-[#A7F3D0] dark:border-emerald-800">
-                Proceeds: ${(valuation.net_equity_proceeds / 1000000).toFixed(2)}M
+                Estimated Proceeds: ${(valuation.net_equity_proceeds / 1000000).toFixed(2)}M
               </span>
             )}
             <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
               Detected: {deal?.tax_strategy_detected?.split('(')[0]?.trim() || 'Taxable Cash-Out'} ({deal?.flight_confidence_score || 94}% Match)
             </span>
           </div>
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
-            Automated deposit retention workflow configured for taxable cash-out proceeds. Pre-stages Huntington Business Premier ICS sweep with bank verification letters and verifies GLBA client consent.
-          </p>
         </div>
       </div>
 
@@ -343,7 +340,105 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
             )}
           </div>
 
-          {/* Card 3: GLBA Verbal Consent Gate */}
+        </div>
+
+        {/* Right Column: Borrower Settlement Routing Packet & Consent Gate (6 cols) */}
+        <div className="lg:col-span-6 space-y-6">
+          
+          {/* Card 1: Settlement Routing Packet */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm flex flex-col">
+            
+            {/* Packet Toolbar */}
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <FileCheck className="w-4 h-4 text-[#006738] dark:text-emerald-400" />
+                <div>
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                    Settlement Routing Packet
+                  </h3>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-medium text-slate-400 hidden sm:inline">
+                  {wireInstructions.docusign_envelope_id || 'Pending envelope creation'}
+                </span>
+                <button
+                  onClick={handleCopy}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-slate-700 dark:text-slate-300"
+                >
+                  {copied ? <Check className="w-3 h-3 text-[#006738] dark:text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  <span>{copied ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Wire Instruction Dossier */}
+            <div className="p-6 text-xs space-y-4 text-slate-800 dark:text-slate-200 select-text">
+              
+              {/* Target & Property Summary */}
+              <div className="flex items-start justify-between gap-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                  <span className="text-[10px] uppercase font-semibold text-slate-400 block">Title Company / Escrow</span>
+                  <span className="font-bold text-slate-900 dark:text-white text-sm block">
+                    {wireInstructions.title_company}
+                  </span>
+                  <span className="text-slate-400 text-[11px] block">
+                    Attn: {wireInstructions.attention} &bull; File #{wireInstructions.escrow_file}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] uppercase font-semibold text-slate-400 block">Property / Seller</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200 block truncate max-w-[200px]">
+                    {wireInstructions.property}
+                  </span>
+                  <span className="text-slate-400 text-[11px] block truncate max-w-[200px]">
+                    {wireInstructions.seller_entity}
+                  </span>
+                </div>
+              </div>
+
+              {/* Wire Table with Hairline Dividers */}
+              <div className="divide-y divide-slate-100 dark:divide-slate-800/80 text-xs">
+                <div className="py-2.5 flex justify-between">
+                  <span className="text-slate-400">Receiving Depository</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">{wireInstructions.bank_name}</span>
+                </div>
+                <div className="py-2.5 flex justify-between">
+                  <span className="text-slate-400">ABA / Routing</span>
+                  <span className="font-semibold text-slate-900 dark:text-white tabular-nums">{wireInstructions.aba_routing}</span>
+                </div>
+                <div className="py-2.5 flex justify-between">
+                  <span className="text-slate-400">Account Title</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">{wireInstructions.account_title}</span>
+                </div>
+                <div className="py-2.5 flex justify-between">
+                  <span className="text-slate-400">Account Number</span>
+                  <span className="font-semibold text-slate-900 dark:text-white tabular-nums">{wireInstructions.account_number}</span>
+                </div>
+                <div className="py-3 flex justify-between items-baseline">
+                  <span className="font-bold text-slate-900 dark:text-white">Net Equity Disbursement</span>
+                  <span className="text-base font-extrabold text-[#006738] dark:text-emerald-400 tabular-nums">
+                    ${valuation.net_equity_proceeds.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+              </div>
+
+              {/* Special Instructions */}
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
+                <span className="font-semibold text-slate-700 dark:text-slate-300">Instructions: </span>
+                {wireInstructions.special_instructions}
+              </div>
+
+              {/* Quiet Footer */}
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-400 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                <div>Banker: <strong className="text-slate-600 dark:text-slate-300">{wireInstructions.officer_signature}</strong></div>
+                <div>Callback Authentication: <strong className="text-slate-600 dark:text-slate-300">{wireInstructions.callback_verification_line || '(614) 480-4401'}</strong></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Cross-LOB Consent Gate & Reg R Referral Record */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <div>
@@ -394,99 +489,6 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
             </div>
           </div>
 
-        </div>
-
-        {/* Right Column: Borrower Settlement Routing Packet (6 cols) */}
-        <div className="lg:col-span-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm flex flex-col">
-          
-          {/* Packet Toolbar */}
-          <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <FileCheck className="w-4 h-4 text-[#006738] dark:text-emerald-400" />
-              <div>
-                <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                  Settlement Routing Packet
-                </h3>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-medium text-slate-400 hidden sm:inline">
-                {wireInstructions.docusign_envelope_id || 'Pending envelope creation'}
-              </span>
-              <button
-                onClick={handleCopy}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-slate-700 dark:text-slate-300"
-              >
-                {copied ? <Check className="w-3 h-3 text-[#006738] dark:text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                <span>{copied ? 'Copied' : 'Copy'}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Wire Instruction Dossier */}
-          <div className="p-6 text-xs space-y-4 text-slate-800 dark:text-slate-200 select-text">
-            
-            {/* Target & Property Summary */}
-            <div className="flex items-start justify-between gap-4 pb-3 border-b border-slate-100 dark:border-slate-800">
-              <div>
-                <span className="text-[10px] uppercase font-semibold text-slate-400 block">Title Company / Escrow</span>
-                <span className="font-bold text-slate-900 dark:text-white text-sm block">
-                  {wireInstructions.title_company}
-                </span>
-                <span className="text-slate-400 text-[11px] block">
-                  Attn: {wireInstructions.attention} &bull; File #{wireInstructions.escrow_file}
-                </span>
-              </div>
-              <div className="text-right">
-                <span className="text-[10px] uppercase font-semibold text-slate-400 block">Property / Seller</span>
-                <span className="font-semibold text-slate-800 dark:text-slate-200 block truncate max-w-[200px]">
-                  {wireInstructions.property}
-                </span>
-                <span className="text-slate-400 text-[11px] block truncate max-w-[200px]">
-                  {wireInstructions.seller_entity}
-                </span>
-              </div>
-            </div>
-
-            {/* Wire Table with Hairline Dividers */}
-            <div className="divide-y divide-slate-100 dark:divide-slate-800/80 text-xs">
-              <div className="py-2.5 flex justify-between">
-                <span className="text-slate-400">Receiving Depository</span>
-                <span className="font-semibold text-slate-900 dark:text-white">{wireInstructions.bank_name}</span>
-              </div>
-              <div className="py-2.5 flex justify-between">
-                <span className="text-slate-400">ABA / Routing</span>
-                <span className="font-semibold text-slate-900 dark:text-white tabular-nums">{wireInstructions.aba_routing}</span>
-              </div>
-              <div className="py-2.5 flex justify-between">
-                <span className="text-slate-400">Account Title</span>
-                <span className="font-semibold text-slate-900 dark:text-white">{wireInstructions.account_title}</span>
-              </div>
-              <div className="py-2.5 flex justify-between">
-                <span className="text-slate-400">Account Number</span>
-                <span className="font-semibold text-slate-900 dark:text-white tabular-nums">{wireInstructions.account_number}</span>
-              </div>
-              <div className="py-3 flex justify-between items-baseline">
-                <span className="font-bold text-slate-900 dark:text-white">Net Equity Disbursement</span>
-                <span className="text-base font-extrabold text-[#006738] dark:text-emerald-400 tabular-nums">
-                  ${valuation.net_equity_proceeds.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                </span>
-              </div>
-            </div>
-
-            {/* Special Instructions */}
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
-              <span className="font-semibold text-slate-700 dark:text-slate-300">Instructions: </span>
-              {wireInstructions.special_instructions}
-            </div>
-
-            {/* Quiet Footer */}
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-400 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-              <div>Banker: <strong className="text-slate-600 dark:text-slate-300">{wireInstructions.officer_signature}</strong></div>
-              <div>Callback Authentication: <strong className="text-slate-600 dark:text-slate-300">{wireInstructions.callback_verification_line || '(614) 480-4401'}</strong></div>
-            </div>
-          </div>
         </div>
 
       </div>

@@ -38,7 +38,7 @@ SHIPPED_DOCS = GENERATED + [
     REPO / "docs" / "PRD.md",
     REPO / "docs" / "CITATIONS.md",
     REPO / "docs" / "DEMO_SCRIPT.md",
-    REPO / "book-scout-pitch.html",
+    REPO / "frontend" / "public" / "book-scout-pitch.html",
 ]
 
 # Substring, reason. Matched CASE-SENSITIVELY: several of these are proper

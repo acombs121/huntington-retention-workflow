@@ -1821,12 +1821,13 @@ async def serve_spa(full_path: str):
     if full_path == "assets" or full_path.startswith("assets/"):
         raise HTTPException(status_code=404, detail="Asset Not Found")
 
-    # Local dev fallback: serve brand_kit.html or demo_script.html from frontend/public or root
+    # Local dev fallback: serve the reference documents the Admin Panel links to
+    # from frontend/public or root, before a production build exists.
     for candidate_dir in [Path("frontend/public").resolve(), Path(".").resolve()]:
         if candidate_dir.is_dir():
             candidate_file = (candidate_dir / full_path).resolve()
             if (candidate_dir in candidate_file.parents or candidate_file == candidate_dir) and candidate_file.is_file():
-                if full_path in ["brand_kit.html", "demo_script.html", "huntington-book-scout.pdf", "overview.html"]:
+                if full_path in ["book-scout-pitch.html", "brand_kit.html", "demo_script.html", "huntington-book-scout.pdf", "overview.html"]:
                     headers = {}
                     if candidate_file.name.endswith(".html"):
                         headers = {
