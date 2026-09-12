@@ -6,7 +6,9 @@ Production-grade, interactive full-stack Google Cloud Run application for **Hunt
 
 ## 1. Executive Summary & Core Thesis
 
-Huntington is a **top-2 national SBA 7(a) lender** operating **1,400 branches across 21 states**. However, the bank cannot scale its wealth management franchise simply by asking commercial bankers to work harder. The commercial loan book experiences **$4.5B in annual CRE, SBA 7(a), and middle-market loan payoffs**, with **~78% of net liquidity wiring out to external competitors within 48–72 hours**.
+Huntington operates **~1,400 offices across 21 states**. The bank cannot scale its wealth management franchise simply by asking commercial bankers to work harder. Against a **$33.30B commercial CRE target book**, the derived annual payoff volume is **~$7.49B** — and industry benchmarks put deposit flight following a commercial payoff in the **70–85%** range within days of closing.
+
+> Both the payoff volume and the flight rate are **derived or benchmarked, not Huntington figures**. Their provenance is recorded in [`docs/CITATIONS.md`](docs/CITATIONS.md) and is surfaced on-screen in the Admin Panel.
 
 ### The Two-Sided Capacity Bottleneck
 1. **Commercial Side:** Commercial RMs focus on loan production and lack the bandwidth for 6–8 hours of manual discovery, entity resolution, and valuation across siloed systems per deal.
@@ -19,7 +21,7 @@ Huntington is a **top-2 national SBA 7(a) lender** operating **1,400 branches ac
 
 ### The Solution: Dual-Sided Agentic Capacity Leverage
 Powered by the **Gemini Enterprise Agent Platform (fka Vertex AI Platform)** running `gemini-3.7-flash`:
-- **Monitors 100% of the $4.5B book** for title payoff statement requests in real time across commercial CRE and SBA 7(a) portfolios.
+- **Monitors 100% of the $33.30B target book** for title payoff statement requests in real time across commercial CRE and SBA 7(a) portfolios.
 - **Absorbs Commercial Discovery**: Extracts borrowing LLCs to beneficial owners with automated Pre-Ingestion Cloud DLP purging non-guarantors (GLBA Reg P / FCRA § 604) and resolves unstated contract prices via trailing NOI grounded in credit vaults (~7 hrs → 4 min).
 - **Automates Wealth Scaffolding**: Pre-stages KYC/CIP, SEI Data Cloud custodial shells, and draft IPS behind a **GLBA Quarantined Consent Gate**, and automates ongoing quarterly review dossiers (expanding advisor capacity from 80 to 95–100 accounts via 2x CSA operational leverage, with sub-$3M routed to the Centralized Wealth Hub).
 - **Safeguards 1031 Exchange Liquidity**: Automatically routes exchange proceeds to the **Huntington 1031 Qualified Escrow Depository (Partnered with IPX1031)** under Treas. Reg. § 1.1031(k)-1(g)(3), preserving deposits on balance sheet while firewalled from in-house securities per Treas. Reg. § 1.1031(k)-1(k).
@@ -36,7 +38,6 @@ Surveillance on active payoff demands, upcoming loan maturities, and deposit ret
 
 ### Executive Strategic Operating Model
 End-to-end executive briefing detailing the two-sided capacity leverage thesis, regulatory defense matrix, and financial ROI.
-![Executive Strategic Briefing](docs/img/executive_briefing.png)
 
 ### Huntington Corporate Brand Kit
 Interactive design system showcasing corporate green palettes (`#004724`, `#006738`, `#7ECF1C`), Swiss technical typography, and accessible component states.
@@ -55,7 +56,7 @@ Interactive design system showcasing corporate green palettes (`#004724`, `#0067
 │ • Swiss Minimalist Console    │   Platform (gemini-3.7-flash)   │ • Non-root appuser execution  │
 │ • Multi-View Banking Workflow │ • Vertex AI Search Grounding    │ • Cloud Run Native Direct IAP │
 │ • Dual Persona Navigation     │ • Deterministic Tools           │   (--iap --no-invoker-iam)    │
-│ • Dynamic Sale Price Slider   │   - Valuation Calculator        │ • Scale-to-Zero Idle (0-3)    │
+│ • Indicative Valuation Slider │   - Valuation Calculator        │ • Scale-to-Zero Idle (0-3)    │
 │ • 1031 Strategy Fork Toggle   │   - 1031 Exchange Detector      │ • Zero SA Keys (ADC / Runtime)│
 │ • Mandatory Admin Panel       │   - Exclusion Sentry Filter     │ • Least Privilege IAM         │
 └───────────────────────────────┴─────────────────────────────────┴───────────────────────────────┘
@@ -179,9 +180,9 @@ Run both the FastAPI backend and Vite frontend proxy concurrently bound strictly
 
 Detailed in [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) and viewable interactively at `/demo_script.html`:
 
-1. **Step 1 (00:00–01:30) - The Problem & The $4.5B Flight Cliff**: Review the two-sided capacity bottleneck: Commercial discovery drag (~7 hrs) vs. Wealth onboarding/servicing capacity limit (80 accounts unassisted -> 95–100 accounts with Book Scout CSA leverage).
+1. **Step 1 (00:00–01:30) - The Problem & The Deposit Flight Cliff**: Review the two-sided capacity bottleneck: Commercial discovery drag (~7 hrs) vs. Wealth onboarding/servicing capacity limit (80 accounts unassisted -> 95–100 accounts with Book Scout CSA leverage).
 2. **Step 2 (01:30–03:30) - Commercial Payoff Surveillance**: Inspect the commercial loan payoff queue. Review Riverfront Commercial Commons at T-12 days with imminent 78% flight risk.
-3. **Step 3 (03:30–06:00) - Credit & Title Verification**: Select Marcus Vance. Gemini 3.7 Flash decomposes `Vance Riverfront Properties IV, LLC` with verified entity grounding on scanned credit certificates. Resolve unstated contract sale price via trailing NOI ($637.5k) capitalized at 7.50% cap rate grounded via Vertex AI Search. Adjust the **Sale Price Slider** live from $8.5M to $9.0M, dynamically recalculating net proceeds to $3.35M.
+3. **Step 3 (03:30–06:00) - Credit & Title Verification**: Select Marcus Vance. Gemini 3.7 Flash decomposes `Vance Riverfront Properties IV, LLC` with verified entity grounding on scanned credit certificates. Resolve unstated contract sale price via trailing NOI ($637.5k) capitalized at 7.50% cap rate grounded via Vertex AI Search. Adjust the **Indicative Valuation Slider** live from $8.5M to $9.0M, dynamically recalculating net proceeds to $3.35M.
 4. **Step 4 (06:00–08:30) - Deposit Retention & Wealth Referral**: Review Greg Miller's relationship call guide. Configure Huntington 1031 Qualified Escrow Depository or Commercial Business Premier ICS sweep. Record GLBA verbal consent, generate Borrower Settlement Routing Packet, and hand off to Private Wealth Advisor Sarah Jenkins.
 5. **Step 5 (08:30–09:15) - Institutional Guardrails (CRO Defense)**: Review regulatory compliance checks for FINRA Rule 2040, GLBA Quarantined Consent Gate, OCC SR 11-7 Triage Designation, and IRC §1031 Qualified Escrow Safe Harbor.
 6. **Step 6 (09:15–10:00) - Financial ROI & Capacity Economics**: Lead with the **Reclaimed Capacity** card ($1.62M–$2.43M/yr, derived from 10-Q Table 25 — no internal data required). Then walk the **at-risk equity funnel** down from the $33.3B target book to the ~$0.90B genuinely in play, and move the recapture slider around the **34% break-even**. Open the **Admin Panel** (gear icon) to change an assumption live so the room sets its own inputs. Review the componentized $1.25M enterprise run-rate defense.

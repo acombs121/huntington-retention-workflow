@@ -16,14 +16,16 @@ The secondary proof is financial: that this capacity leverage converts directly 
 ## 1. Executive Summary & The Problem
 ### 1.1 The Core Pain: A Capacity Problem Across the Entire Relationship Lifecycle
 Huntington cannot scale wealth management by asking bankers to work harder. The constraint is **human capacity against an un-monitorable book — spanning the entire relationship handoff and lifecycle**:
-* **The Book-Scale Visibility Gap:** Huntington's commercial book generates **$4.5B in annual CRE and middle-market loan payoffs**. Each payoff is a potential wealth event — and **no human team can manually monitor thousands of servicing queues, parse credit files, and resolve entities in real time.** This work is not being done today; it physically exceeds human bandwidth.
+* **The Book-Scale Visibility Gap:** Huntington's commercial book generates a derived **~$7.49B in annual CRE and middle-market loan payoffs** against a **$33.30B** target book. Each payoff is a potential wealth event — and **no human team can manually monitor thousands of servicing queues, parse credit files, and resolve entities in real time.** This work is not being done today; it physically exceeds human bandwidth.
 * **The 48–72 Hour Wire Flight & Title Disbursement Deadline:** When a commercial borrower sells an asset, net equity proceeds ($2M–$10M+) routinely wire out to Wall Street wirehouses or independent wealth platforms within **48–72 hours** of closing. Critically, title companies execute wires based on the **Seller's Closing Settlement Disbursement Instructions**, signed by the borrower days before closing. If Huntington does not engage before those instructions are filed, the liquidity is lost permanently.
 * **The Two-Sided Bottleneck + Ongoing Servicing Limit:**
-  - *Commercial side:* Commercial RMs focus on loan production and cannot watch for exits at scale. Discovery, entity resolution, and valuation require **6–8 hours across three systems per deal**—un-staffable across a $4.5B book.
+  - *Commercial side:* Commercial RMs focus on loan production and cannot watch for exits at scale. Discovery, entity resolution, and valuation require **6–8 hours across three systems per deal**—un-staffable across a book this size.
   - *Wealth side (Onboarding & Servicing):* Even when a lead is captured, a Private Wealth Advisor (PWA) manages ~80–100 client relationships. Manual onboarding takes **2–3 weeks**, but more importantly, **ongoing fiduciary servicing** (quarterly portfolio reviews, estate planning coordination, tax-loss harvesting) consumes advisor bandwidth. Merely flooding advisors with leads trades a commercial bottleneck for an acute wealth bottleneck, leading to relationship churn.
 * **The IRC §1031 Exchange Leakage:** In commercial real estate dispositions ($5M–$20M), **over 50–65% of sellers execute an IRC §1031 Like-Kind Exchange** to defer capital gains and depreciation recapture. Under IRS rules (Treas. Reg. § 1.1031(k)-1(k)), if sale proceeds touch the borrower's commercial operating account, the tax deferral is voided, and commercial banks cannot act directly as the Qualified Intermediary due to disqualified person rules. Unless Huntington provides an immediate **1031 Qualified Escrow Depository (Partner QI Network)** solution under Treas. Reg. § 1.1031(k)-1(g)(3), 1031 proceeds legally must wire away to third-party exchange accommodators.
 
-> **Empirical Premise (Provenance):** The ~78% flight rate cited in §6 derives from internal Treasury Management analysis of 2023–2025 commercial payoff-to-outflow patterns (net proceeds wiring to non-Huntington institutions within 5 business days of payoff). A Phase 1 pilot validation target, not an audited certainty.
+> **Empirical Premise (Provenance):** The ~78% flight rate cited in §6 is an **industry benchmark, not a Huntington measurement.** No internal Huntington study underlies it and none should be claimed. Published commercial deposit-attrition work places post-payoff flight in the **70–85%** range; 78% is the midpoint. Treat it as a **Phase 1 pilot validation target** whose first job is to be replaced by Huntington's own measured rate.
+>
+> Sensitivity: across the full 70–85% band the break-even recapture moves only between **31.2% and 37.9%**, and the capacity case does not depend on this input at all.
 
 ### 1.2 The Solution: Dual-Sided Agentic Capacity Leverage
 Book Scout gives a **fixed team the reach of a much larger one** by having an intelligent agent do the work no human team can do at scale — on *both* sides of the relationship handoff:
@@ -34,7 +36,7 @@ Book Scout gives a **fixed team the reach of a much larger one** by having an in
 5. **Absorbs Wealth Onboarding & Ongoing Servicing:** Pre-stages the advisor's administrative scaffolding behind a **GLBA-compliant Quarantined Consent Gate**—pre-filling KYC/CIP records, configuring an SEI custodial shell, drafting an Investment Policy Statement (IPS) framework, and assembling ongoing quarterly portfolio review briefs. Onboarding compresses from weeks to days, and ongoing servicing capacity expands from 80 to **95–100 accounts per advisor (+20–25%)** via 2x CSA operational leverage, with sub-$3M transactional accounts routed to the Centralized Wealth Advisory Hub.
 6. **Surfaces Only the Qualified Few via Deterministic Sentry:** Applies objective credit risk ratings and FINRA Rule 2040 non-fee splitting checks deterministically, ensuring bankers spend human time only on pre-vetted, ready-to-action relationships.
 
-> **The Scaling Claim (stated plainly):** *No human team could monitor a $4.5B payoff book in real time. Book Scout monitors all of it, absorbs multi-hour discovery on the commercial side, and pre-stages onboarding and ongoing fiduciary servicing on the wealth side. The same headcount—commercial and wealth—now covers a franchise it physically could not have covered before. That is how Huntington scales wealth management without scaling the org chart.*
+> **The Scaling Claim (stated plainly):** *No human team could monitor a payoff book this size in real time. Book Scout monitors all of it, absorbs multi-hour discovery on the commercial side, and pre-stages onboarding and ongoing fiduciary servicing on the wealth side. The same headcount—commercial and wealth—now covers a franchise it physically could not have covered before. That is how Huntington scales wealth management without scaling the org chart.*
 
 > **Scope Note:** This prototype proves the **CRE loan payoff** case end-to-end (incorporating both taxable cash-out and IRC §1031 exchange paths). The same detect-resolve-stage pattern extends to middle-market M&A exits and ESOP transitions in a later phase.
 
@@ -43,7 +45,7 @@ Book Scout gives a **fixed team the reach of a much larger one** by having an in
 │              THE CORE BOOK SCOUT LOOP — DUAL-SIDED CAPACITY LEVERAGE AT BOOK SCALE                 │
 ├──────────────────────────────┬──────────────────────────────────┬───────────────────────────────┤
 │ 1. MONITOR ALL (T-14)        │ 2. AGENT ABSORBS THE WORK        │ 3. SURFACE QUALIFIED FEW      │
-│ • Watches entire $4.5B book  │ • Gemini Multimodal extracts LLC │ • Exclusion Sentry (Pass)     │
+│ • Watches entire $33.3B book │ • Gemini Multimodal extracts LLC │ • Exclusion Sentry (Pass)     │
 │   (no human team can)        │ • Detects unstated sale price    │ • RM: 4-min warm call (not 7hr)│
 │ • 1st American Title payoff  │ • Grounds NOI ($637k @ 7.5% cap) │ • Delivers Wire Routing Form  │
 │   on Riverfront Commons      │ • Models ~$2.9M net proceeds     │ • PWA: 80% pre-staged onboard │
@@ -151,7 +153,7 @@ Embedded inside a styled Salesforce Financial Services Cloud (FSC) shell, featur
 
 * **Pane 1 (Priority Radar + Synthetic Capacity Meter):** Demonstrates dual-sided leverage explicitly—thousands of events screened, manual discovery absorbed, ongoing servicing hours unlocked, and live machine inference status. Each queue row exposes a **reasoning trace** whose footer opens the **Spanner Graph Grounding Console** (`[Spanner Graph]`), providing a visual, near-full-page network topology of entity and behavioral signals backed by Cloud Spanner Graph.
 * **Pane 2 (Household Topology & Grounding Evidence):** Interactive entity graph mapping commercial LLCs to beneficial owners, equipped with clickable citation pills linking directly to document bounding boxes.
-* **Pane 3 (Agent Staging Console):** Command center showing grounded calculations, real-time sale price slider, 1031 tax routing toggle, GLBA consent gate indicator, and wire instruction generation.
+* **Pane 3 (Agent Staging Console):** Command center showing grounded calculations, real-time indicative valuation slider, 1031 tax routing toggle, GLBA consent gate indicator, and wire instruction generation.
 
 ---
 ## 4. Simplified Technical Architecture
@@ -164,7 +166,7 @@ Book Scout utilizes a clean **Single Orchestrator + Deterministic Tools** patter
 ├───────────────────────────────┬─────────────────────────────────┬───────────────────────────────┤
 │ DATA INGESTION & STORAGE      │ REASONING ORCHESTRATOR          │ GOVERNANCE & UI INTEGRATION   │
 │ • Core Servicing (core servicing) │ • Gemini Enterprise Agent       │ • Apigee X API Gateway        │
-│ • Cloud Pub/Sub (Event Bus)   │   Platform (gemini-3.7-flash)   │ • Salesforce FSC Embedded App │
+│ • Cloud Pub/Sub (Event Bus)   │   Platform (gemini-3.7-flash)   │ • CRM Embedded Application    │
 │ • Cloud Spanner (Entity Graph)│ • Vertex AI Search (Grounding)  │ • DocuSign REST APIs          │
 │ • BigQuery (Credit Vault)     │ • Deterministic Cloud Run Tools │ • SEI Wealth Platform Gateway │
 │ • Memorystore (Redis Cache)   │   - Payoff Calculator Tool      │ • 1031 QI Custody Gateway     │
@@ -237,7 +239,7 @@ Book Scout's value is presented in two linked layers: **(A) capacity leverage** 
 | **Commercial** discovery + staging per qualified deal | ~6–8 hours (RM, 3 systems) | ~4 minutes (agent) + ~4 min (RM call) |
 | **Wealth** onboarding effort per new relationship | ~4–6 hours; ~2–3 weeks elapsed | ~80% pre-staged; ~3 days elapsed |
 | **Wealth** ongoing fiduciary servicing capacity | ~80 relationships per PWA | **~95–100 relationships per PWA (+20–25%)** (automated review dossiers + 2x CSA leverage) |
-| Portion of $4.5B payoff book monitorable in real time | Effectively **<5%** (capacity-bound) | **100%** |
+| Portion of the payoff book monitorable in real time | Effectively **<5%** (capacity-bound) | **100%** |
 | IRC §1031 exchange liquidity captured | **0%** (wires out to 3rd-party accommodators) | **Captured in Huntington Qualified Escrow Depository** (independent QI: IPX1031) |
 | Net new RM **or** PWA headcount required to scale | Requires material FTE additions | **Zero net new headcount** |
 
@@ -254,7 +256,7 @@ Book Scout's value is presented in two linked layers: **(A) capacity leverage** 
 
 **Portfolio baseline — the funnel, not a headline number**
 
-The prior version of this model multiplied a "$4.5B payoff book" by a capture rate.
+An earlier version of this model multiplied a "$4.5B payoff book" by a capture rate. That headline is **superseded** and must not be reused.
 That conflated four distinct steps. The corrected derivation is explicit at each stage:
 
 | Step | Value | Provenance |
@@ -341,7 +343,7 @@ To satisfy CFO scrutiny, the $1.25M annual operating run-rate is componentized a
 | :--- | :---: | :--- |
 | **Gemini Multimodal Ingestion & Vertex AI Search** | $15,000 | ~12,500 multimodal document inferences/yr (≈2,500 liquidity events × 5 docs), grounding queries, and embeddings |
 | **Cloud Spanner (Multi-Region HA Graph) & Pub/Sub** | $65,000 | Real-time commercial-to-personal household topology and event streaming |
-| **Apigee X API Gateway & Salesforce FSC Connectors** | $180,000 | Enterprise API management, mutual TLS, and CRM bidirectional sync |
+| **Apigee X API Gateway & CRM Connectors** | $180,000 | Enterprise API management, mutual TLS, and CRM bidirectional sync |
 | **Dedicated Platform Engineering & MLOps Pod** | $650,000 | 2 dedicated platform engineers (maintenance, CI/CD, prompt regression testing) |
 | **Model Risk Governance, SOC2 & Security Audits** | $340,000 | Annual OCC SR 11-7 validation, penetration testing, and VPC-SC compliance |
 | **Total Annual Enterprise Operating Budget** | **$1,250,000** | **Fully-loaded production enterprise run-rate** |
@@ -353,7 +355,7 @@ To satisfy CFO scrutiny, the $1.25M annual operating run-rate is componentized a
 | :--- | :--- | :--- | :--- | :--- |
 | **00:00–01:30** | **The Problem (Two-Sided Bottleneck & 1031 Flight):** Frame the goal: scaling wealth with existing headcount. A $33.3B commercial real estate book turning over ~$7.5B in payoffs a year that no human team can monitor; 1031 exchanges leaking to third parties; and wealth advisors capped at 80 clients. This is a capacity crisis end-to-end. | Context slide: $33.3B target book, ~$7.5B annual payoff volume, ~$899M of seller equity at risk of leaving the bank, two-sided bottleneck diagram (Commercial discovery drag vs. Wealth onboarding/servicing wall). | BigQuery analytical telemetry on historical loan payoffs; Cloud Storage historical flight registry. | CEO & CFO align: doing more with existing headcount across both lines of business. |
 | **01:30–03:30** | **The Book No Human Can Watch:** Open Book Scout in FSC. Point to the **Synthetic Capacity Meter** (~15 hrs discovery absorbed, 3 active inferences running). Show First American Title's payoff surfacing at T-12. | **Pane 1 (Priority Radar):** Synthetic Capacity Meter (`11,099 facilities screened ▸ 3 qualified & staged`). Dynamic critical queue sorted by close date. Green "Pass Tier 2" credit badge. | Google Cloud Pub/Sub ingesting core servicing events into Cloud Run event-driven microservices. | Head of Commercial sees leverage, not an intrusive time-and-motion audit. |
-| **03:30–06:00** | **The Agentic Proof (Multimodal Grounding & Dynamic Slider):** Click Marcus Vance. Watch Gemini 3.7 Flash extract LLC ownership with **visual bounding-box highlights**. Show missing sale price resolved via trailing NOI grounded by Vertex AI Search ($8.5M @ 7.5% cap rate). Adjust sale price slider live from $8.5M to $9.0M. | **Pane 2 & 3:** Interactive household topology map with clickable source citations (`⧉ Credit Vault #CC-8821`). Live streaming token feedback; interactive slider dynamically re-computing net proceeds to $3.35M. | Gemini Enterprise Agent Platform (`gemini-3.7-flash`) native multimodal document understanding; Vertex AI Search grounding; Cloud Run `CalculatorTool`. | CTO & CIO see state-of-the-art multimodal AI; CFO sees automated analyst judgment. |
+| **03:30–06:00** | **The Agentic Proof (Multimodal Grounding & Dynamic Slider):** Click Marcus Vance. Watch Gemini 3.7 Flash extract LLC ownership with **visual bounding-box highlights**. Show missing sale price resolved via trailing NOI grounded by Vertex AI Search ($8.5M @ 7.5% cap rate). Adjust the indicative valuation slider live from $8.5M to $9.0M. | **Pane 2 & 3:** Interactive household topology map with clickable source citations (`⧉ Credit Vault #CC-8821`). Live streaming token feedback; interactive slider dynamically re-computing net proceeds to $3.35M. | Gemini Enterprise Agent Platform (`gemini-3.7-flash`) native multimodal document understanding; Vertex AI Search grounding; Cloud Run `CalculatorTool`. | CTO & CIO see state-of-the-art multimodal AI; CFO sees automated analyst judgment. |
 | **06:00–08:30** | **The Human Touch + The Wealth Bottleneck Solved:** Step into Greg's 4-minute call. Click **[Approve & Deliver Wire Form]**, generating First American's wire letter. Toggle **Persona Switcher** to Sarah Jenkins (PWA): show pre-staged KYC/CIP, SEI shell, and **Automated Quarterly Review Dossier**. Say: *"We achieve 2x CSA operational leverage, expanding senior PWA capacity to 95–100 relationships (+20–25%) while routing transactional accounts to our Centralized Wealth Hub."* | **Pane 3:** Generated PDF wire instruction letter with First American Title pre-filled. PWA view displays 80% completed KYC/CIP, pre-configured SEI shell, and quarterly relationship review template. | Apigee X API Gateway mTLS routing to SEI Wealth Platform Gateway; DocuSign REST APIs; Cloud Spanner household graph. | Head of Wealth sees onboarding friction solved AND ongoing advisor capacity expanded under Reg BI. |
 | **08:30–09:15** | **Institutional Guardrails (CRO Defense):** Open compliance audit drawer: highlight green badges for **FINRA 2040 non-fee splitting**, **GLBA Quarantined Consent Gate**, **OCC SR 11-7 Triage Designation**, and **1031 QI Escrow routing**. | Slide-out compliance drawer displaying green verification badges, tamper-evident dual-ID hash, and zero-data-logging boundary certifications. | Cloud KMS customer-managed encryption keys (CMEK); VPC Service Controls (VPC-SC perimeter); Cloud Audit Logs immutable trail. | Chief Risk Officer sees airtight compliance, privacy, and model risk boundaries. |
 | **09:15–10:00** | **The Bottom Line (Three Layers):** Show Layer A (zero net new headcount) and Layer C (**reclaimed capacity, $1.62M–$2.43M/yr, sourced entirely from 10-Q Table 25**). Then introduce Layer B retained liquidity **as upside**: walk the funnel to ~$0.90B at risk and move the recapture slider around the 34% break-even. Open the Admin Panel and change an assumption live. Show componentized $1.25M budget. Hand floor to CFO. | Capacity case card; at-risk equity funnel with provenance badges; recapture slider anchored on break-even; live assumption dials. | Interactive client-side model (`frontend/src/lib/assumptions.ts`); BigQuery ROI baseline model. | Executive Committee sees a scaling thesis whose primary case they can verify against their own filings, and a revenue case whose assumptions they set themselves. |
@@ -365,7 +367,7 @@ To satisfy CFO scrutiny, the $1.25M annual operating run-rate is componentized a
 2. **Realistic Midwest Domain Data:** All names, addresses, and figures reflect realistic Columbus, OH commercial assets. Zero placeholder text.
 3. **Live Streaming Reasoning Protocol:** Agentic reasoning over the title letter runs live via Gemini Enterprise Agent Platform (`gemini-3.7-flash`) with streaming token feedback and tool-execution indicators. A backup document (*Apex Logistics Payoff Request.pdf*) is pre-loaded to re-run extraction live on stage if challenged.
 4. **Deterministic Fallback Layer:** Background CRM lookups and static UI elements utilize an encrypted local Redis cache to guarantee sub-second UI responsiveness regardless of conference Wi-Fi.
-5. **Interactive Controls:** The **Sale Price Slider**, **1031 Tax Strategy Toggle**, **Persona Switcher**, and **ROI Sensitivity Slider** are built natively into the frontend for live audience interaction.
+5. **Interactive Controls:** The **Indicative Valuation Slider**, **1031 Tax Strategy Toggle**, **Persona Switcher**, and **ROI Sensitivity Slider** are built natively into the frontend for live audience interaction.
 6. **Show-vs-Tell Ledger:** 
    - *Live on Screen:* Multimodal bounding-box extraction, grounded cap-rate calculation, 1031 escrow routing toggle, wire instruction PDF generation, and staged KYC/IPS scaffolding.
    - *Staged Representations:* The final DocuSign signature and automated core wire execution are represented as completed staged states to preserve the 10-minute briefing tempo.

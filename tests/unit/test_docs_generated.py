@@ -24,6 +24,52 @@ GENERATED = [
     REPO / "frontend" / "public" / "demo_script.html",
 ]
 
+# Every document a reader can actually reach. The retracted-content guard used
+# to cover only GENERATED, and an audit found that every correction made in the
+# session that introduced it stopped precisely at that boundary: README.md and
+# PRD.md kept figures the same repo had already retracted, and contradicted
+# themselves a dozen lines later. Widening the guard is the fix; the instances
+# are downstream of it.
+#
+# Deliberately excluded: docs/AUDIT_REPORT.md and docs/critique.md. Those are
+# historical analysis whose job is to discuss the retracted figures.
+SHIPPED_DOCS = GENERATED + [
+    REPO / "README.md",
+    REPO / "docs" / "PRD.md",
+    REPO / "docs" / "CITATIONS.md",
+    REPO / "docs" / "DEMO_SCRIPT.md",
+    REPO / "book-scout-pitch.html",
+]
+
+# Substring, reason. Matched CASE-SENSITIVELY: several of these are proper
+# nouns whose lowercase form is ordinary English. "Executive Briefing" is a
+# screen that does not exist; "a 10-minute executive briefing" is just prose.
+# Where a claim appears in more than one casing, both are listed.
+FORBIDDEN = [
+    ("$3.51B", "at-risk outflow, superseded by $899.4M"),
+    ("2,140", "unsourced nightly scan count, superseded by 11,099"),
+    ("~46 Hours", "invented absorbed load, superseded by ~15"),
+    ("Salesforce FSC", "console that does not exist"),
+    ("Executive Briefing", "screen that does not exist"),
+    ("Select Wealth Advisor", "button that does not exist"),
+    ("Sale Price Slider", "wrong name; the control is the Indicative Valuation Slider"),
+    ("AFS Core", "unevidenced vendor system"),
+    ("nCino", "unevidenced vendor system"),
+    ("ACBS", "unevidenced vendor system"),
+    # Fabricated provenance. No such analysis exists; CITATIONS.md records the
+    # 78% rate as an outside benchmark and says explicitly not to claim it as
+    # a Huntington figure.
+    ("internal Treasury Management analysis", "invented Huntington source"),
+    # SBA ranking. DEMO_SCRIPT.md carries a presenter caution against stating a
+    # rank, because this repo has never verified a current-year placement and
+    # the Call Report's "small business" schedule does not substantiate one.
+    ("Top-2 SBA", "unverified SBA rank"),
+    ("top-2 SBA", "unverified SBA rank"),
+    ("top-2 national SBA", "unverified SBA rank"),
+    ("#1 or #2 SBA", "unverified SBA rank"),
+    ("6,500 approved", "unverified SBA loan count"),
+]
+
 
 def test_generated_docs_are_up_to_date() -> None:
     """`build_docs.py --check` must report no stale output."""
@@ -48,29 +94,20 @@ def test_generated_docs_carry_the_do_not_edit_banner(path: Path) -> None:
     assert "scripts/build_docs.py" in head
 
 
-@pytest.mark.parametrize("path", GENERATED, ids=lambda p: p.name)
-def test_generated_docs_are_free_of_retracted_figures(path: Path) -> None:
-    """Figures the audit retracted must not reappear in a shipped document.
+@pytest.mark.parametrize("path", SHIPPED_DOCS, ids=lambda p: p.name)
+def test_shipped_docs_are_free_of_retracted_content(path: Path) -> None:
+    """Figures and claims the audit retracted must not reappear anywhere shippable.
 
     "$4.5 Billion" is permitted only inside an explicit supersession notice,
     which is how CITATIONS.md records the correction.
     """
     text = path.read_text(encoding="utf-8")
-
-    forbidden = [
-        "$3.51B",          # at-risk outflow, superseded by $899.4M
-        "2,140",           # unsourced nightly scan count, superseded by 11,099
-        "~46 Hours",       # invented absorbed load, superseded by ~15
-        "Salesforce FSC",  # console that does not exist
-        "Executive Briefing",              # screen that does not exist
-        "Select Wealth Advisor",           # button that does not exist
-        "Sale Price Slider",               # wrong name, wrong screen
-        "AFS Core",        # unevidenced vendor system
-        "nCino",           # unevidenced vendor system
-        "ACBS",            # unevidenced vendor system
+    found = [
+        f"{token!r} ({reason})"
+        for token, reason in FORBIDDEN
+        if token in text
     ]
-    found = [token for token in forbidden if token in text]
-    assert not found, f"{path.name} contains retracted content: {found}"
+    assert not found, f"{path.name} contains retracted content:\n  " + "\n  ".join(found)
 
     for line in text.splitlines():
         if "$4.5 Billion" in line or "$4.5B" in line:
