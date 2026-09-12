@@ -494,7 +494,7 @@ SIGNAL_GRAPHS: Dict[str, Dict[str, Any]] = {
                     "Equity Stake": "85.0% Majority Interest",
                     "Guaranty Type": "Full Joint & Several Personal Guarantee",
                     "Known HBAN Liquidity": "$2,100,000.00 in Commercial / Private DDA",
-                    "Wealth Eligibility": "Private Banking / PWA Eligible ($5M+ Total)"
+                    "Tier A Routing Basis": "$4.57M projected personal investable = $2.10M held at Huntington + $2.47M expected proceeds (85% member interest). Clears the $3M Private Bank service tier; the entity's $2.90M is not the routing input."
                 },
                 "agent_relevance": "Primary commercial relationship sponsor targeted for RM outreach and wealth bridge.",
                 "x": 660,
@@ -1599,7 +1599,7 @@ async def get_wealth_onboarding_dossier(
             },
             "ongoing_servicing_dossier": {
                 "annual_reviews_automated": False,
-                "advisor_capacity_expansion": "80 relationships to 95-100 relationships per PWA (2x CSA operational leverage; sub-$3M routed to Centralized Wealth Hub)",
+                "advisor_capacity_expansion": "80 relationships to 95-100 relationships per PWA (2x CSA operational leverage; principals below $3M projected personal investable routed to Centralized Wealth Hub)",
                 "features": [
                     "Automated Quarterly Portfolio Rebalancing Dossier (Locked)",
                     "Tax-Loss Harvesting Alerting Engine (Locked)",
@@ -1648,7 +1648,7 @@ async def get_wealth_onboarding_dossier(
         },
         "ongoing_servicing_dossier": {
             "annual_reviews_automated": True,
-            "advisor_capacity_expansion": "80 relationships to 95-100 relationships per PWA (2x CSA operational leverage; sub-$3M routed to Centralized Wealth Hub)",
+            "advisor_capacity_expansion": "80 relationships to 95-100 relationships per PWA (2x CSA operational leverage; principals below $3M projected personal investable routed to Centralized Wealth Hub)",
             "features": [
                 "Automated Quarterly Portfolio Rebalancing Dossier",
                 "Tax-Loss Harvesting Alerting Engine",

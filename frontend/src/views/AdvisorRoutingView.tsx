@@ -52,6 +52,21 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
   const principalName = primaryGrounded?.name || deal.primary_guarantor || 'Marcus Vance';
   const commercialRM = deal.commercial_rm || 'Greg Miller';
 
+  // Tier 2 gate. Step 1 of the demo promises that wealth engagement never
+  // happens before closing -- it waits until the sponsor's CPA has executed
+  // partnership distributions. Nothing in the code enforced that, so the
+  // promise and the behaviour could drift. The release date is now derived
+  // from the deal's own closing date, and the outbound is queued rather than
+  // sent so the gate is visible on screen rather than asserted in narration.
+  const TIER_2_HOLD_DAYS = 30;
+  const closingDateIso = deal.scheduled_closing_date || '2026-09-16';
+  const wealthReleaseDate = new Date(`${closingDateIso}T00:00:00`);
+  wealthReleaseDate.setDate(wealthReleaseDate.getDate() + TIER_2_HOLD_DAYS);
+  const formatLongDate = (d: Date) =>
+    d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const closingDateLabel = formatLongDate(new Date(`${closingDateIso}T00:00:00`));
+  const wealthReleaseLabel = formatLongDate(wealthReleaseDate);
+
   // Candidate Wealth Advisors grounded in geography, specialty, capacity, and entity relationships
   const getCandidatesForDeal = (d: PayoffItem): AdvisorCandidate[] => {
     if (d.id === 'PO-2026-7492') {
@@ -70,7 +85,7 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
           specialtyTags: ['Industrial Asset Disposition', 'SBA 7(a) Exit Proceeds', 'Depository Yield Optimization'],
           capacityLabel: 'Optimal',
           capacityPct: 72,
-          capacityDetail: '18 active client families; capacity for 2 new relationships in Q3',
+          capacityDetail: '68 of 95 client relationships; capacity for 2 new families in Q3',
           relationshipToPrincipals: `Advisory relationship with Buckeye Precision vendor network; collaborated with commercial team on equipment lines.`,
           relationshipEntity: 'Buckeye Precision Vendor Network',
           isRecommended: true,
@@ -91,7 +106,7 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
           specialtyTags: ['Fixed Income Laddering', 'Concentrated Risk', 'Depository Yield'],
           capacityLabel: 'Available',
           capacityPct: 56,
-          capacityDetail: '14 active client families; ample bandwidth for active commercial liquidity management',
+          capacityDetail: '53 of 95 client relationships; ample bandwidth for commercial liquidity mandates',
           relationshipToPrincipals: 'Secondary advisor on regional industrial supply vendor accounts; no direct family advisory ties.',
           relationshipEntity: 'Industrial Supply Network',
           isRecommended: false,
@@ -112,7 +127,7 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
           specialtyTags: ['Dynasty Trusts', 'Fiduciary Governance', 'Succession Planning'],
           capacityLabel: 'Selective',
           capacityPct: 86,
-          capacityDetail: '12 family office relationships; selective quarterly intake',
+          capacityDetail: '82 of 95 family office relationships; selective quarterly intake',
           relationshipToPrincipals: 'Consulted on Pendelton Family Trust legal documentation in 2022.',
           relationshipEntity: 'Pendelton Family Trust Liaison',
           isRecommended: false,
@@ -137,7 +152,7 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
           specialtyTags: ['Medical Arts Buildings', 'Physician Group Liquidity', 'Practice Recapitalization'],
           capacityLabel: 'Optimal',
           capacityPct: 72,
-          capacityDetail: '18 active client families; capacity for 2 new relationships in Q3',
+          capacityDetail: '68 of 95 client relationships; capacity for 2 new families in Q3',
           relationshipToPrincipals: 'Advises multi-specialty physician practices across Central Ohio; prior consultation with Scioto Medical partners.',
           relationshipEntity: 'Scioto Medical Partners Network',
           isRecommended: true,
@@ -158,7 +173,7 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
           specialtyTags: ['Healthcare Reserves', 'Fixed Income Laddering', 'Cash Management'],
           capacityLabel: 'Available',
           capacityPct: 56,
-          capacityDetail: '14 active client families; ample bandwidth for active commercial liquidity management',
+          capacityDetail: '53 of 95 client relationships; ample bandwidth for commercial liquidity mandates',
           relationshipToPrincipals: 'Advises regional healthcare vendor credit facilities; no personal physician advisory ties.',
           relationshipEntity: 'Healthcare Vendor Network',
           isRecommended: false,
@@ -179,7 +194,7 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
           specialtyTags: ['Physician Asset Protection', 'Dynasty Trusts', 'Fiduciary Governance'],
           capacityLabel: 'Selective',
           capacityPct: 86,
-          capacityDetail: '12 family office relationships; selective quarterly intake',
+          capacityDetail: '82 of 95 family office relationships; selective quarterly intake',
           relationshipToPrincipals: 'Consulted on physician partnership trust structures with hospital legal counsel.',
           relationshipEntity: 'Medical Partnership Trust Liaison',
           isRecommended: false,
@@ -203,7 +218,7 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
         specialtyTags: ['CRE Disposition Proceeds', 'Pass-Through Entity Wealth', 'Qualified Intermediary Coordination'],
         capacityLabel: 'Optimal',
         capacityPct: 72,
-        capacityDetail: '18 active client families; capacity for 2 new UHNW relationships in Q3',
+        capacityDetail: '68 of 95 client relationships; capacity for 2 new UHNW families in Q3',
         relationshipToPrincipals: 'Primary wealth advisor for David Cole (Marcus Vance\'s co-investor in Riverfront Phase I); prior estate consultation with Vance 2018 Family Trust.',
         relationshipEntity: 'David Cole (Co-Investor) & Vance 2018 Family Trust',
         isRecommended: true,
@@ -224,7 +239,7 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
         specialtyTags: ['Depository Yield Optimization', 'Fixed Income Laddering', 'Concentrated Equity Risk'],
         capacityLabel: 'Available',
         capacityPct: 56,
-        capacityDetail: '14 active client families; ample bandwidth for active commercial liquidity management',
+        capacityDetail: '53 of 95 client relationships; ample bandwidth for commercial liquidity mandates',
         relationshipToPrincipals: 'Secondary advisor on Vance Holdings regional supply vendor credit facility; no personal advisory relationship with Marcus or Elena Vance.',
         relationshipEntity: 'Vance Holdings Vendor Network',
         isRecommended: false,
@@ -245,7 +260,7 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
         specialtyTags: ['Dynasty Trusts', 'Fiduciary Governance', 'Generation-Skipping Wealth Transfer'],
         capacityLabel: 'Selective',
         capacityPct: 86,
-        capacityDetail: '12 family office relationships; selective quarterly intake',
+        capacityDetail: '82 of 95 family office relationships; selective quarterly intake',
         relationshipToPrincipals: 'Consulted on Vance 2018 Family Trust documentation with legal counsel in 2021; collaborated with First American Title escrow services.',
         relationshipEntity: 'Vance 2018 Family Trust Legal Liaison',
         isRecommended: false,
@@ -269,12 +284,23 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
   const refId = `INT-${deal.id.replace('PO-2026-', '')}`;
 
   // Default Email Generator based on Advisor & Deal
+  //
+  // Three of the demo's own stated controls used to break inside this one
+  // template, which the presenter is scripted to send in front of the CRO:
+  //   1. It told the client that another Huntington customer (David Cole) was
+  //      a wealth client of the named advisor -- the existence of a customer
+  //      relationship and the products held are nonpublic personal information.
+  //   2. It stated the client's net proceeds, roughly ninety seconds after the
+  //      presenter calls that same figure an internal triage estimate that is
+  //      muzzled from client-facing use.
+  //   3. It asked for the introductory call *before* closing, which Step 1
+  //      promises never happens.
+  // The advisor is now described by capability only, no figure appears, and
+  // the outbound is queued behind the Tier 2 hold.
   const getEmailTemplate = (advisor: AdvisorCandidate) => {
     const firstName = principalName.split(' ')[0] || 'Marcus';
-    const netProceedsM = (deal.estimated_net_equity / 1000000).toFixed(2);
-    const closingDate = deal.scheduled_closing_date || 'September 16, 2026';
 
-    const subject = `Introduction: ${advisor.name} & Huntington Private Wealth Planning | ${deal.property_name}`;
+    const subject = `Following your ${deal.property_name} closing: introduction to ${advisor.name}, Huntington Private Bank`;
 
     const advisorDetailNote =
       advisor.id === 'adv-jenkins'
@@ -282,7 +308,7 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
           ? `Sarah has extensive experience working with Ohio manufacturing principals on liquidity structuring, treasury management, and depository yield optimization.`
           : deal.id === 'PO-2026-6104'
           ? `Sarah has deep experience advising medical practice groups and clinical partners on healthcare facility monetization and liquidity management.`
-          : `Sarah already advises your partner David Cole on his commercial real estate portfolio assets, and she has deep experience coordinating with title escrow teams on tax-deferred reinvestment strategies and depository yield optimization.`
+          : `Sarah has deep experience with Columbus commercial real estate sponsors, including coordination with title and escrow teams on tax-deferred reinvestment strategies and depository yield optimization.`
         : advisor.id === 'adv-gallagher'
         ? `Brian works closely with commercial business owners across Ohio on institutional fixed income management, liquidity preservation, and cash deployment strategies.`
         : `Elena leads our family office fiduciary group, advising commercial principals on estate holding vehicles and multi-generational wealth preservation.`;
@@ -291,13 +317,13 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
 
 It was a pleasure catching up during our annual review meeting at Huntington Center recently to discuss operations and lease performance at ${deal.property_name}.
 
-With your payoff statement from ${deal.title_company} scheduled for closing on ${closingDate}, you will be resolving approximately $${netProceedsM}M in net equity proceeds. I wanted to personally introduce you to my colleague ${advisor.name} (${advisor.certifications}), ${advisor.title} with Huntington Private Bank.
+Once your ${closingDateLabel} closing has settled and your CPA has completed any partnership distributions, I would like to introduce you to my colleague ${advisor.name} (${advisor.certifications}), ${advisor.title} with Huntington Private Bank.
 
 ${advisor.name} specializes in ${advisor.specialty.toLowerCase()}. ${advisorDetailNote}
 
-I have asked ${advisor.name.split(' ')[0]} to connect with you directly for an informal 15-minute introductory conversation prior to your closing date. There is no preparation required on your end, and we will ensure all corporate documentation transfers smoothly between our commercial credit and private wealth desks under our client privacy safeguards.
+There is nothing to decide now and nothing to prepare. This note is simply so you know who to expect. I have asked ${advisor.name.split(' ')[0]} to reach out after ${wealthReleaseLabel} to arrange an informal fifteen-minute conversation, entirely at your convenience.
 
-Please feel free to reply directly to this email, or let me know if you would prefer for my office to coordinate a time for the three of us to meet.
+Your commercial banking team stays exactly where it is through closing. Please reply to me directly if you would prefer we hold off, or if you would rather the three of us meet together.
 
 Best regards,
 
@@ -441,7 +467,7 @@ Office: (614) 480-3320 | ${commercialRM.toLowerCase().replace(' ', '.')}@hunting
                         {advisor.capacityLabel} ({advisor.capacityPct}% book)
                       </span>
                       <span className="text-[11px] text-slate-400 block truncate">
-                        2 new UHNW openings
+                        {advisor.capacityDetail}
                       </span>
                     </div>
 
@@ -453,8 +479,13 @@ Office: (614) 480-3320 | ${commercialRM.toLowerCase().replace(' ', '.')}@hunting
                     </div>
 
                     <div className="col-span-2 pt-0.5">
-                      <span className="text-[10px] uppercase font-semibold text-slate-400 block">Principal Network Tie</span>
-                      <span className="text-xs text-slate-600 dark:text-slate-300 font-medium block leading-relaxed">
+                      <span className="text-[10px] uppercase font-semibold text-slate-400 flex items-center gap-1.5">
+                        Principal Network Tie
+                        <span className="px-1.5 py-px rounded-sm bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 text-[9px] font-bold tracking-wide">
+                          INTERNAL ONLY
+                        </span>
+                      </span>
+                      <span className="text-xs text-slate-600 dark:text-slate-300 font-medium block leading-relaxed mt-0.5">
                         {advisor.relationshipToPrincipals}
                       </span>
                     </div>
@@ -509,17 +540,18 @@ Office: (614) 480-3320 | ${commercialRM.toLowerCase().replace(' ', '.')}@hunting
               <CheckCircle2 className="w-4 h-4 text-[#006738] dark:text-emerald-400 shrink-0 mt-0.5" />
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[#006738] dark:text-emerald-300">
-                  Warm Introduction Dispatched
+                  Introduction Queued &bull; Releases {wealthReleaseLabel}
                 </h4>
                 <p className="text-xs text-slate-700 dark:text-slate-300 mt-0.5">
-                  Sent to <strong>{principalName}</strong> &bull; CC: <strong>{selectedAdvisor.name}</strong> ({selectedAdvisor.email})
+                  Held for <strong>{principalName}</strong> &bull; CC: <strong>{selectedAdvisor.name}</strong> ({selectedAdvisor.email})
                 </p>
                 <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 block font-medium">
-                  Logged in Commercial CRM &bull; {submittedTimestamp} &bull; Ref #{refId}
+                  Logged in Commercial CRM &bull; {submittedTimestamp} &bull; Ref #{refId} &bull; Tier 2 hold: {TIER_2_HOLD_DAYS} days past the {closingDateLabel} closing
                 </span>
               </div>
             </div>
           )}
+
 
           {/* Email Form Fields */}
           <div className="p-6 space-y-4 flex-1 flex flex-col">
@@ -590,15 +622,18 @@ Office: (614) 480-3320 | ${commercialRM.toLowerCase().replace(' ', '.')}@hunting
             </div>
 
             {/* Compliance Note */}
-            <div className="flex items-center gap-2 text-[11px] text-slate-400 pt-1 shrink-0">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#006738] dark:text-emerald-400 shrink-0" />
-              <span>GLBA Reg P Compliant &bull; Personal financials quarantined until verbal opt-in consent.</span>
+            <div className="flex items-start gap-2 text-[11px] text-slate-400 pt-1 shrink-0">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#006738] dark:text-emerald-400 shrink-0 mt-px" />
+              <span>
+                Tier 2 hold enforced &bull; outbound releases {wealthReleaseLabel}, {TIER_2_HOLD_DAYS} days past closing.
+                No valuation figure and no third-party relationship appears in the body. Personal financials stay quarantined until opt-in.
+              </span>
             </div>
 
             {/* Bottom Action Bar */}
             <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4 shrink-0">
               <span className="text-xs text-slate-400">
-                {isSubmitted ? 'Logged in CRM.' : 'Draft auto-saved.'}
+                {isSubmitted ? `Queued in CRM. Releases ${wealthReleaseLabel}.` : 'Draft auto-saved.'}
               </span>
 
               <button
@@ -614,17 +649,17 @@ Office: (614) 480-3320 | ${commercialRM.toLowerCase().replace(' ', '.')}@hunting
                 {isSending ? (
                   <>
                     <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Sending...</span>
+                    <span>Queueing...</span>
                   </>
                 ) : isSubmitted ? (
                   <>
                     <Check className="w-3.5 h-3.5" />
-                    <span>Resend Intro</span>
+                    <span>Re-queue Intro</span>
                   </>
                 ) : (
                   <>
                     <Send className="w-3.5 h-3.5" />
-                    <span>Send Introduction</span>
+                    <span>Queue Introduction</span>
                   </>
                 )}
               </button>

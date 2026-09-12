@@ -521,14 +521,14 @@
 <ul class="doc-list">
 <li><em>The 6-Month Exit Marathon vs. 11th-Hour Payoff Demand</em>: Commercial dispositions and SBA business sales take 6–9 months. Arriving only when a title payoff demand arrives at T-14 means Huntington is engaging at the finish line after CPAs, QIs, and external wealth managers have already been selected.</li>
 <li><em>Commercial Servicing Intake Latency</em>: Title payoff faxes and emails sent to <code>commercial.payoffs@huntington.com</code> take loan ops 3–5 business days to process manually, leaving bankers with zero operational lead time.</li>
-<li><em>Cross-Line-of-Business Handoff Governance (Ameriprise Platform)</em>: Under the <strong>Huntington Financial Advisors (HFA)</strong> arrangement, <strong>the advisors are Huntington employees and the clients remain Huntington customers</strong> — Ameriprise supplies the technology platform, clearing and back office, and acts as the <strong>supervising broker-dealer</strong>. So the commercial-to-wealth handoff is an <em>intra-institutional</em> transfer, not a disclosure to a non-affiliated third party. Ameriprise's receipt of client NPI through the platform is governed as a <strong>service-provider relationship under Reg P (12 C.F.R. § 1016.13)</strong> — contractual confidentiality and use restrictions, not customer opt-out. What <em>does</em> bind the commercial RM is the <strong>SEC Regulation R networking exception</strong>: as an unregistered bank employee, Greg Miller may receive only a nominal, fixed-dollar, non-contingent referral fee and no securities transaction compensation. > ⚠️ <strong>Presenter caution — know which channel you're describing.</strong> The Feb 4, 2026 Ameriprise release covers the <strong>retail investment program (HFA)</strong> only. Huntington <strong>Private Bank</strong> trust/discretionary business runs on <strong>SEI</strong> and is a <em>bank fiduciary</em> activity under <strong>OCC Reg 9</strong> — Reg BI, FINRA 2111 and Ameriprise supervision <strong>do not apply</strong> to it. If a CRO or GC asks why a "Senior Private Wealth Advisor" handoff is labeled Ameriprise-supervised, acknowledge the tiering: Tier A ($3M+) is Private Bank fiduciary; Tier B (sub-$3M, Centralized Wealth Hub) is the HFA/Ameriprise retail channel. See <code>CITATIONS.md</code> §1a.</li>
+<li><em>Cross-Line-of-Business Handoff Governance (Ameriprise Platform)</em>: Under the <strong>Huntington Financial Advisors (HFA)</strong> arrangement, <strong>the advisors are Huntington employees and the clients remain Huntington customers</strong> — Ameriprise supplies the technology platform, clearing and back office, and acts as the <strong>supervising broker-dealer</strong>. So the commercial-to-wealth handoff is an <em>intra-institutional</em> transfer, not a disclosure to a non-affiliated third party. Ameriprise's receipt of client NPI through the platform is governed as a <strong>service-provider relationship under Reg P (12 C.F.R. § 1016.13)</strong> — contractual confidentiality and use restrictions, not customer opt-out. What <em>does</em> bind the commercial RM is the <strong>SEC Regulation R networking exception</strong>: as an unregistered bank employee, Greg Miller may receive only a nominal, fixed-dollar, non-contingent referral fee and no securities transaction compensation. > ⚠️ <strong>Presenter caution — know which channel you're describing.</strong> The Feb 4, 2026 Ameriprise release covers the <strong>retail investment program (HFA)</strong> only. Huntington <strong>Private Bank</strong> trust/discretionary business runs on <strong>SEI</strong> and is a <em>bank fiduciary</em> activity under <strong>OCC Reg 9</strong> — Reg BI, FINRA 2111 and Ameriprise supervision <strong>do not apply</strong> to it. If a CRO or GC asks why a "Senior Private Wealth Advisor" handoff is labeled Ameriprise-supervised, acknowledge the tiering: Tier A ($3M+ in the principal's projected personal investable assets) is Private Bank fiduciary; Tier B (sub-$3M) is the HFA/Ameriprise retail channel. The $3M line is our own service-tier convention, not a regulatory threshold — Reg BI has no dollar trigger. Marcus clears it on $2.10M already held plus his 85% share of the proceeds, not on the entity's $2.90M. See <code>CITATIONS.md</code> §1a.</li>
 <li><em>Private Wealth Servicing Physics</em>: Advisors are constrained by high-touch fiduciary maintenance (quarterly reviews, tax strategy, emotional coaching), not clerical paperwork. Flooding advisors with raw leads degrades service and causes AUM churn.</li>
 <li><em>The 1031 Exchange Leakage</em>: a substantial share of commercial property dispositions — industry estimates commonly cited in the 50–65% range, not a figure Huntington has published — execute IRC §1031 like-kind exchanges. Under Treas. Reg. § 1.1031(k)-1(k), Huntington cannot act as the Qualified Intermediary. Unless Huntington provides an institutional Qualified Escrow Depository partnered with an independent QI, exchange funds legally must wire out.</li>
 </ul>
 <li><strong>The Book Scout Solution</strong>: Powered by the <strong>Gemini Enterprise Agent Platform (fka Vertex AI Platform)</strong> running <code>gemini-3.7-flash</code>:</li>
 <ul class="doc-list">
 <li><strong>Tier 1 (Commercial Balance Sheet Retention — Day 0)</strong>: Retains 100% of entity net proceeds in <strong>Business Premier Insured Cash Sweep (ICS)</strong> at 4.85% APY (multi-million FDIC insurance) or <strong>Institutional 1031 Qualified Escrow Depository</strong>, capturing 85 bps net NIM on Day 0.</li>
-<li><strong>Tier 2 (Post-Distribution Wealth Advisory — Day T+30 to T+60)</strong>: Respects corporate entity boundaries, engaging sponsors after CPA tax distributions. Routes sub-$3M transactional liquidity to the Centralized Wealth Advisory Hub and connects Huntington Private Bank to modern <strong>SEI Data Cloud</strong> (announced March 31, 2026) via Snowflake Secure Data Sharing.</li>
+<li><strong>Tier 2 (Post-Distribution Wealth Advisory — Day T+30 to T+60)</strong>: Respects corporate entity boundaries, engaging sponsors after CPA tax distributions. Routes principals below $3M in projected personal investable assets to the Centralized Wealth Advisory Hub and connects Huntington Private Bank to modern <strong>SEI Data Cloud</strong> (announced March 31, 2026) via Snowflake Secure Data Sharing.</li>
 </ul>
 <li><strong>Quantifiable Business Impact & ROI</strong>:</li>
 <ul class="doc-list">
@@ -694,14 +694,14 @@
         </div>
         <div class="step-badge">90s</div>
       </div>
-      <div class="step-summary">Demonstrate objective, non-discriminatory advisor routing based on proximity, capacity, and CRE specialty, followed by banker-authored warm introduction email dispatch.</div>
+      <div class="step-summary">Demonstrate objective, non-discriminatory advisor routing based on proximity, capacity, and CRE specialty, followed by a banker-authored warm introduction queued behind the Tier 2 post-closing hold.</div>
       <div class="dim-row">
         <div class="dim-col">
           <div class="dim-title">Presenter Action</div>
           <div class="dim-desc"><ul class="doc-list">
 <li>Review the candidate advisor ranking:</li>
 </ul>
-<div class="script-quote"><em>"Notice how Book Scout selects Sarah Jenkins with a 98% match score. The match is grounded in objective criteria: geographic proximity (0.4 miles at Huntington Center Downtown), specialized CRE disposition experience, and verified bandwidth (72% utilized, capacity for 2 new relationships). Crucially, Sarah already advises Marcus's co-investor David Cole, establishing immediate relationship equity."</em></div>
+<div class="script-quote"><em>"Notice how Book Scout selects Sarah Jenkins with a 98% match score. The match is grounded in objective criteria: geographic proximity (0.4 miles at Huntington Center Downtown), specialized CRE disposition experience, and verified bandwidth (72% utilized, capacity for 2 new relationships). There is a fourth input — Sarah already advises a co-investor of Marcus's — and notice how it is labeled: <strong>INTERNAL ONLY</strong>. We rank on it because it is our own record and it genuinely predicts a good match. It never leaves this screen. The existence of another client's advisory relationship is their nonpublic information, not Marcus's context, so it is structurally excluded from anything client-facing."</em></div>
 <ul class="doc-list">
 <li>Contrast with secondary candidates:</li>
 </ul>
@@ -709,16 +709,16 @@
 <ul class="doc-list">
 <li>Review and dispatch the warm introduction email:</li>
 </ul>
-<div class="script-quote"><em>"The email draft is pre-populated on behalf of commercial banker Greg Miller—preserving the banker-client relationship while ensuring complete context transfers smoothly under GLBA safeguards."</em></div>
+<div class="script-quote"><em>"The email draft is pre-populated on behalf of commercial banker Greg Miller, which preserves the banker-client relationship. Read what is <strong>not</strong> in it. No co-investor is named. No valuation figure appears — the $2.90M we were just looking at is an internal triage estimate and it is muzzled from client-facing text. And the ask is for a conversation <strong>after</strong> closing, not before. Step 1 promised we do not pitch wealth to a sponsor twelve days from a closing; this is where that promise is either kept or broken."</em></div>
 <ul class="doc-list">
-<li>Click <strong>[Send Introduction]</strong> and proceed to <strong>[Settlement Setup →]</strong>.</li>
+<li>Click <strong>[Queue Introduction]</strong> — the banner confirms it is <strong>held</strong> until thirty days past the closing date, derived from the deal's own closing date rather than typed in. Then proceed to <strong>[Settlement Setup →]</strong>.</li>
 </ul></div>
         </div>
         <div class="dim-col">
           <div class="dim-title">What is Shown in the Demo</div>
           <div class="dim-desc"><ul class="doc-list">
 <li>Candidate advisor comparison cards with capacity gauges, geographic proximity badges, and verified entity network ties.</li>
-<li>Interactive email composer with pre-populated contextual deal facts, one-click template reset, and dispatched audit timestamp logging in Commercial CRM.</li>
+<li>Interactive email composer with pre-populated contextual deal facts, an internal-only marker on the principal network tie, the Tier 2 hold date derived from the closing date, one-click template reset, and queue audit timestamp logging in Commercial CRM.</li>
 </ul></div>
         </div>
         <div class="dim-col">
@@ -795,7 +795,7 @@
 <li>Review the six green institutional verification badges:</li>
 <li><strong>ALTA Pillar 2 & UCC 4A</strong>: Wire instructions delivered to the borrower for seller authorization; official bank verification letter for callback authentication.</li>
 <li><strong>GLBA Pre-Ingestion DLP</strong>: Consumer bureaus and personal NPI purged at source; non-guarantor individuals excluded for FCRA permissible-purpose hygiene; Ameriprise platform NPI governed by service-provider contract under 12 C.F.R. § 1016.13.</li>
-<li><strong>Channel-Matched Regulation R Networking</strong>: Commercial RM receives 100% hard-dollar commercial deposit FTP credit; nominal, non-contingent referral fee only; zero securities fee-splitting. For <strong>sub-$3M routed to the HFA/Ameriprise retail channel</strong>, Reg R Rule 700 applies and Reg BI supervision sits with Ameriprise as supervising broker-dealer. For <strong>$3M+ routed to Private Bank on SEI</strong>, this is bank fiduciary activity under OCC Reg 9 and Reg R Rule 721 — Reg BI does not apply.</li>
+<li><strong>Channel-Matched Regulation R Networking</strong>: Commercial RM receives 100% hard-dollar commercial deposit FTP credit; nominal, non-contingent referral fee only; zero securities fee-splitting. For principals <strong>below $3M in projected personal investable assets</strong>, routed to the HFA/Ameriprise retail channel, Reg R Rule 700 applies and Reg BI supervision sits with Ameriprise as supervising broker-dealer. For <strong>$3M+</strong>, routed to Private Bank on SEI, this is bank fiduciary activity under OCC Reg 9 and Reg R Rule 721 — Reg BI does not apply. The dollar line is an internal service tier; it selects the channel, and the channel selects the regime.</li>
 <li><strong>1031 Qualified Escrow Safe Harbor</strong>: Institutional escrow partnered with independent QI (IPX1031); in-house DST securities cross-selling strictly firewalled under Treas. Reg. § 1.1031(k)-1(k).</li>
 <li><strong>OCC SR 11-7 Model Tier 3</strong>: Classified as an internal relationship triage heuristic, exempt from credit AVM validation; client-facing valuation muzzled.</li>
 <li><strong>SEI Data Cloud Integration</strong>: Modern cloud-native Snowflake data exchange, eliminating legacy on-premise Trust 3000 batch files.</li>
@@ -833,7 +833,7 @@
           <div class="dim-desc"><ul class="doc-list">
 <li>Show Layer A Capacity Economics:</li>
 </ul>
-<div class="script-quote"><em>"We do not claim an advisor can manage 150 accounts—fiduciary maintenance makes that impossible. We achieve 2x operational leverage for Client Service Associates (1 CSA supporting 4 advisors), cap senior PWAs at 95–100 accounts (+19–25%), and route sub-$3M transactional liquidity to our Centralized Wealth Advisory Hub."</em></div>
+<div class="script-quote"><em>"We do not claim an advisor can manage 150 accounts—fiduciary maintenance makes that impossible. We achieve 2x operational leverage for Client Service Associates (1 CSA supporting 4 advisors), cap senior PWAs at 95–100 accounts (+19–25%), and route principals below $3M in projected personal investable assets to our Centralized Wealth Advisory Hub."</em></div>
 <ul class="doc-list">
 <li>Lead with the capacity case:</li>
 </ul>

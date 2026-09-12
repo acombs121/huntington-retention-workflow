@@ -201,7 +201,7 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
             80 to 95–100 accounts
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-            2x CSA operational leverage (1 CSA : 4 PWAs); sub-$3M routed to Centralized Wealth Hub.
+            2x CSA operational leverage (1 CSA : 4 PWAs); principals below $3M projected personal investable routed to Centralized Wealth Hub.
           </p>
           <div className="pt-3 border-t border-slate-100 dark:border-slate-800 text-xs font-semibold text-[#006738] dark:text-emerald-400">
             +25% capacity &bull; zero net headcount
@@ -805,10 +805,10 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
               </p>
               <ul className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed space-y-1 pl-3">
                 <li>
-                  &bull; <strong className="text-slate-700 dark:text-slate-300">$3M+ &rarr; Private Bank PWA (SEI):</strong> bank fiduciary activity under <strong>OCC Reg 9 (12 C.F.R. &sect; 9)</strong> and the Exchange Act &sect; 3(a)(4)(B)(ii) trust exception (Reg R Rule 721). Reg BI does not apply.
+                  &bull; <strong className="text-slate-700 dark:text-slate-300">$3M+ personal investable &rarr; Private Bank PWA (SEI):</strong> bank fiduciary activity under <strong>OCC Reg 9 (12 C.F.R. &sect; 9)</strong> and the Exchange Act &sect; 3(a)(4)(B)(ii) trust exception (Reg R Rule 721). Reg BI does not apply.
                 </li>
                 <li>
-                  &bull; <strong className="text-slate-700 dark:text-slate-300">Sub-$3M &rarr; Centralized Wealth Hub (HFA / Ameriprise):</strong> retail brokerage under <strong>Reg BI</strong> and FINRA 2111, with Ameriprise as supervising broker-dealer. RM referral governed by Reg R Rule 700.
+                  &bull; <strong className="text-slate-700 dark:text-slate-300">Sub-$3M personal investable &rarr; Centralized Wealth Hub (HFA / Ameriprise):</strong> retail brokerage under <strong>Reg BI</strong> and FINRA 2111, with Ameriprise as supervising broker-dealer. RM referral governed by Reg R Rule 700.
                 </li>
               </ul>
             </div>

@@ -683,7 +683,7 @@ RETURN b.legal_name, p.name, p.guaranty_status, p.glba_quarantined,
           "Equity Stake": "85.0% Majority Interest",
           "Guaranty Type": "Full Joint & Several Personal Guarantee",
           "Known HBAN Liquidity": "$2,100,000.00 in Commercial / Private DDA",
-          "Wealth Eligibility": "Private Banking / PWA Eligible ($5M+ Total)"
+          "Tier A Routing Basis": "$4.57M projected personal investable = $2.10M held at Huntington + $2.47M expected proceeds (85% member interest). Clears the $3M Private Bank service tier; the entity's $2.90M is not the routing input."
         },
         agent_relevance: "Primary commercial relationship sponsor targeted for RM outreach and wealth bridge.",
         x: 660,

@@ -31,8 +31,10 @@ The two verified announcements cover **two different businesses under two differ
 **Why it matters for the boardroom:** a Huntington CRO or General Counsel knows these are separate businesses. Attributing Ameriprise supervision to a Private Bank fiduciary handoff reads as a category error and undermines the credibility of the rest of the compliance matrix.
 
 **Resolution required (product decision, not a doc fix):** state explicitly which tier routes where, then apply the matching regime to each:
-- **Tier A ($3M+ → Private Bank PWA on SEI):** OCC Reg 9 fiduciary standard; Reg R Rule 721; no Reg BI; Ameriprise not in scope.
-- **Tier B (sub-$3M → Centralized Wealth Hub / HFA on Ameriprise):** Reg BI + FINRA 2111; Reg R Rule 700 governs the RM referral fee; Ameriprise is the supervising BD.
+- **Tier A ($3M+ projected personal investable assets → Private Bank PWA on SEI):** OCC Reg 9 fiduciary standard; Reg R Rule 721; no Reg BI; Ameriprise not in scope.
+- **Tier B (sub-$3M projected personal investable assets → Centralized Wealth Hub / HFA on Ameriprise):** Reg BI + FINRA 2111; Reg R Rule 700 governs the RM referral fee; Ameriprise is the supervising BD.
+
+> **The $3M line is an internal service-tier convention, not a regulatory threshold.** Reg BI has no dollar trigger and OCC Reg 9 turns on fiduciary capacity, not account size. The dollar figure selects the *channel*; the channel selects the regime. It is also measured on the **individual principal's** projected investable assets (balances already held plus their share of expected proceeds), never on the borrowing entity's transaction size.
 
 A dually-hatted advisor can serve both, but the *product* being recommended determines the regime — so the dossier must label each staged artifact with its channel.
 
