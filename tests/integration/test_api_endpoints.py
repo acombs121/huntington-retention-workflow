@@ -22,6 +22,21 @@ def test_health_endpoint():
     assert data["version"] == "6.0.0"
 
 
+def test_version_alignment():
+    """Asserts app.version == /api/health version == package.json version."""
+    from pathlib import Path
+    package_json_path = Path(__file__).resolve().parents[2] / "frontend" / "package.json"
+    with open(package_json_path, "r", encoding="utf-8") as f:
+        pkg_data = json.load(f)
+    package_version = pkg_data["version"]
+
+    response = client.get("/api/health")
+    assert response.status_code == 200
+    health_version = response.json()["version"]
+
+    assert app.version == health_version == package_version == "6.0.0"
+
+
 def test_valuation_default_vance_deal():
     response = client.post("/api/valuation", json={
         "payoff_id": "PO-2026-8821",
@@ -691,6 +706,16 @@ def test_graph_chips_match_the_arrays_they_describe():
         stats = graph["spanner_stats"]
         assert stats["nodes_matched"] == len(graph["nodes"]), payoff_id
         assert stats["edges_traversed"] == len(graph["edges"]), payoff_id
+
+
+def test_document_routes_require_authentication(monkeypatch):
+    """Verifies that reference document routes enforce authentication in production."""
+    monkeypatch.setenv("K_SERVICE", "huntington-book-scout")
+    for doc in ("demo_script.html", "brand_kit.html", "citations.html"):
+        res = client.get(f"/{doc}")
+        assert res.status_code == 401
+        assert "Unauthorized" in res.json()["detail"]
+
 
 
 

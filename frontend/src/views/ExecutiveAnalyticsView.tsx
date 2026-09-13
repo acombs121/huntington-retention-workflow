@@ -690,7 +690,7 @@ export const ExecutiveAnalyticsView: React.FC<ExecutiveAnalyticsViewProps> = ({
                   <tr className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
                     <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white flex items-center gap-2.5">
                       <Building2 className="w-4 h-4 text-[#006738] shrink-0" />
-                      Apigee X API Gateway &amp; Salesforce FSC Connectors
+                      Apigee X API Gateway &amp; Commercial CRM Connectors
                     </td>
                     <td className="py-3.5 px-4 text-right font-extrabold text-slate-900 dark:text-white tabular-nums">
                       $180,000

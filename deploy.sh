@@ -33,7 +33,7 @@ set +a
 : "${APP_NAME:?Missing APP_NAME in .env}"
 : "${SERVICE_ACCOUNT_NAME:?Missing SERVICE_ACCOUNT_NAME in .env}"
 : "${GEMINI_MODEL:?Missing GEMINI_MODEL in .env}"
-: "${IAP_ALLOWED_DOMAINS:=google.com}"
+: "${IAP_ALLOWED_DOMAINS:?Missing IAP_ALLOWED_DOMAINS in .env}"
 
 # Setup cleanup trap for temporary files
 IAP_SETTINGS_TMP=""

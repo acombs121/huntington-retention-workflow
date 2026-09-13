@@ -170,8 +170,14 @@ def get_authenticated_user(request: Request) -> Dict[str, Any]:
             logger.error(f"Invalid IAP issuer: {claims.get('iss')}")
             raise HTTPException(status_code=401, detail="Unauthorized: Invalid IAP issuer.")
 
-        # Enforce IAP Allowed Domains at application/JWT level (defaults to google.com)
-        allowed_domains_env = os.getenv("IAP_ALLOWED_DOMAINS", "google.com")
+        # Enforce IAP Allowed Domains at application/JWT level (required; fails loud if unset)
+        allowed_domains_env = os.getenv("IAP_ALLOWED_DOMAINS")
+        if not allowed_domains_env:
+            logger.critical("Fatal: IAP_ALLOWED_DOMAINS environment variable is required in production but not set.")
+            raise HTTPException(
+                status_code=500,
+                detail="Authentication configuration error: IAP_ALLOWED_DOMAINS is required.",
+            )
         allowed_domains = [d.strip().lower() for d in allowed_domains_env.split(",") if d.strip()]
 
         user_email = (claims.get("email") or "").lower()

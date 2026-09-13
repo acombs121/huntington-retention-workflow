@@ -1,0 +1,23 @@
+# Test-only dependencies.
+#
+# WHY THIS FILE EXISTS
+# --------------------
+# The backend suite has always needed pytest, and starlette.testclient has
+# always needed httpx, but neither was declared anywhere. The tests therefore
+# passed only on machines where someone had installed them by hand -- a clean
+# checkout, a fresh container, or CI would fail at import with
+# "No module named pytest", which an audit found and reported as a CI blocker.
+#
+# These are deliberately NOT in requirements.txt: the production Dockerfile
+# installs that file, .dockerignore excludes tests/, and a test runner has no
+# business in the runtime image.
+#
+# Install:  pip install -r requirements-dev.txt
+-r requirements.txt
+
+pytest>=8.0.0
+# Required by starlette.testclient.TestClient. Newer Starlette emits a
+# StarletteDeprecationWarning preferring "httpx2"; httpx is what the suite is
+# verified against today, so it stays here until that migration is done
+# deliberately rather than by a resolver.
+httpx>=0.27.0

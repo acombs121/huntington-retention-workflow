@@ -12,7 +12,8 @@ import {
   ZoomIn,
   ZoomOut,
   Maximize2,
-  SlidersHorizontal
+  SlidersHorizontal,
+  CloudOff
 } from 'lucide-react';
 import { SpannerGraphData, SpannerGraphNode, SpannerGraphEdge } from '../types';
 import { mockSignalGraphs } from '../mockData';
@@ -246,6 +247,13 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
   
   // Synchronous seed data initialization
   const [graphData, setGraphData] = useState<SpannerGraphData>(() => getSeedData(activePayoffId || 'PO-2026-8821'));
+
+  // Provenance of what is currently on screen. The modal opens on client-side
+  // seed data so the canvas is never blank, then swaps in the backend's graph.
+  // Without this, a failed fetch left the seed rendering silently and the
+  // header still claimed a live Spanner traversal -- an audit found the
+  // catch block was empty and the presenter had no way to know.
+  const [graphSource, setGraphSource] = useState<'pending' | 'live' | 'seed'>('pending');
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(() => {
     const seed = getSeedData(activePayoffId || 'PO-2026-8821');
     return seed.nodes.find(n => n.tier === 'verdict')?.id || seed.nodes[0]?.id || null;
@@ -499,14 +507,48 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
 
     // Fetch live backend data without blocking UI
     let isMounted = true;
+    setGraphSource('pending');
     fetch(`/api/signal-graph?payoff_id=${selectedDealId}`)
-      .then((res) => (res.ok ? res.json() : null))
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`/api/signal-graph responded ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data: SpannerGraphData | null) => {
-        if (!isMounted || !data) return;
+        if (!isMounted) return;
+        if (!data || !Array.isArray(data.nodes) || data.nodes.length === 0) {
+          throw new Error('/api/signal-graph returned no usable graph');
+        }
+
         setGraphData(data);
         edgesRef.current = data.edges;
+
+        // Re-seed the simulation from the live nodes. Setting graphData alone
+        // left nodesRef holding the seed topology, so the canvas kept drawing
+        // the pre-seeded graph -- and only corrected itself if the user
+        // happened to toggle layout mode, which re-derives from graphData.
+        const liveNodes = seedNodesForMode(data.nodes, layoutModeRef.current, springSpreadRef.current);
+        nodesRef.current = liveNodes;
+        setSimNodes(liveNodes);
+
+        // The previously selected node may not exist in the live topology.
+        setSelectedNodeId((current) => {
+          if (current && data.nodes.some(n => n.id === current)) return current;
+          return (data.nodes.find(n => n.tier === 'verdict') || data.nodes[0])?.id ?? null;
+        });
+
+        alphaRef.current = 1.0;
+        startSimulation();
+        setGraphSource('live');
       })
-      .catch(() => {});
+      .catch((err) => {
+        if (!isMounted) return;
+        // Fail visibly. The seed data stays on screen so the modal still
+        // renders, but the header stops claiming it came from Spanner.
+        console.error('Signal graph: falling back to client-side seed data.', err);
+        setGraphSource('seed');
+      });
 
     return () => {
       isMounted = false;
@@ -820,6 +862,15 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
                 <span className="text-[11px] text-slate-600 font-medium truncate">
                   {graphData.borrower_entity || graphData.deal_name}
                 </span>
+                {graphSource === 'seed' && (
+                  <span
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300 shrink-0"
+                    title="The Spanner Graph API could not be reached. This topology is client-side seed data, not a live traversal."
+                  >
+                    <CloudOff className="w-3 h-3" />
+                    Seed Data — Not Live
+                  </span>
+                )}
               </div>
               <h2 id="spanner-graph-title" className="text-base font-bold text-slate-900 tracking-tight truncate">
                 Signal Grounding & Topology Engine
@@ -1481,7 +1532,13 @@ export const SignalGraphModal: React.FC<SignalGraphModalProps> = ({
                 <div>
                   <h4 className={SECTION_HEADING}>
                     <Code className="w-3.5 h-3.5 text-[#008559] shrink-0" />
-                    <span>Executed Spanner ISO GQL</span>
+                    {/* "Executed" is a claim about something that happened. It
+                        only holds when the backend answered. */}
+                    <span>
+                      {graphSource === 'seed'
+                        ? 'Spanner ISO GQL (Seed Data — Query Not Executed)'
+                        : 'Executed Spanner ISO GQL'}
+                    </span>
                   </h4>
 
                   <div className="rounded-lg border border-slate-200 bg-[#F8F9FA] p-3 space-y-0.5">

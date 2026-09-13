@@ -50,6 +50,12 @@ FORBIDDEN = [
     ("2,140", "unsourced nightly scan count, superseded by 11,099"),
     ("~46 Hours", "invented absorbed load, superseded by ~15"),
     ("Salesforce FSC", "console that does not exist"),
+    # The abbreviation was banned; the spelled-out form was not, and it shipped
+    # anyway -- in PRD.md, DEMO_SCRIPT.md and the generated demo_script.html,
+    # all three of which are inside SHIPPED_DOCS. A substring guard only bans
+    # the spelling it was given, so ban the vendor rather than one initialism.
+    ("Salesforce", "console that does not exist"),
+    ("Financial Services Cloud", "console that does not exist"),
     ("Executive Briefing", "screen that does not exist"),
     ("Select Wealth Advisor", "button that does not exist"),
     ("Sale Price Slider", "wrong name; the control is the Indicative Valuation Slider"),
@@ -174,6 +180,43 @@ def test_shipped_docs_are_free_of_retracted_content(path: Path) -> None:
                 f"{path.name}: the retracted $4.5B figure appears outside a "
                 f"supersession notice:\n  {line.strip()[:200]}"
             )
+
+
+# Source files that render or serve reader-facing copy. The retracted-content
+# guard used to stop at SHIPPED_DOCS, and an audit found the view layer had sat
+# outside it the whole time: "Salesforce FSC" was banned by name in FORBIDDEN
+# and rendered by ExecutiveAnalyticsView anyway, because a .tsx file was not a
+# document. A claim is no less shipped for being a JSX string.
+def _shipped_sources() -> list[Path]:
+    paths = [REPO / "main.py"]
+    paths += sorted((REPO / "domain").glob("*.py"))
+    for pattern in ("*.ts", "*.tsx"):
+        paths += sorted((REPO / "frontend" / "src").rglob(pattern))
+    return paths
+
+
+# A line carrying this marker is exempt. Deliberately grep-able: a comment that
+# documents a supersession has to name the retracted figure to be worth
+# anything, and that exemption should be visible in review rather than inferred
+# by the test from the shape of the line.
+ALLOW_MARKER = "retracted-ok"
+
+
+@pytest.mark.parametrize("path", _shipped_sources(), ids=lambda p: str(p.relative_to(REPO)))
+def test_shipped_sources_are_free_of_retracted_content(path: Path) -> None:
+    """The view and API layers are shippable surfaces, so the guard covers them."""
+    found = []
+    for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        if ALLOW_MARKER in line:
+            continue
+        for token, reason in FORBIDDEN:
+            if token in line:
+                found.append(f"line {lineno}: {token!r} ({reason})")
+    assert not found, (
+        f"{path.relative_to(REPO)} contains retracted content:\n  "
+        + "\n  ".join(found)
+        + f"\n\nIf an occurrence is deliberate, mark that line with '{ALLOW_MARKER}'."
+    )
 
 
 def test_preflight_checklist_ships_unchecked() -> None:
