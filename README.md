@@ -79,9 +79,8 @@ huntington-book-scout/
 │   ├── DESIGN.md                # Huntington Bank corporate design tokens & palette
 │   ├── CONTEXT.md               # Ubiquitous domain language & data invariants
 │   ├── AUDIT_REPORT.md          # Architectural baseline validation
-│   ├── critique.md              # Adversarial pre-mortem review
-│   └── huntington-book-scout.pdf   # Compiled executive whitepaper & architecture blueprint
-├── tests/                       # 31 automated unit and integration tests (pytest)
+│   └── critique.md              # Adversarial pre-mortem review
+├── tests/                       # 92 automated unit and integration tests (pytest)
 │   ├── unit/                    # Liquidity engine invariant tests (net equity, floor, 1031, settlement packet)
 │   └── integration/             # FastAPI endpoint tests (IAP, quarantine, valuation, onboarding, flight-risk trace, signal-graph, 404/422 validations)
 ├── main.py                      # FastAPI orchestrator, Gemini integration & hardened SPA router
@@ -136,12 +135,17 @@ Run both the FastAPI backend and Vite frontend proxy concurrently bound strictly
 - **Workflow & Operating Guide**: `http://127.0.0.1:5173/demo_script.html` (or `http://127.0.0.1:8080/demo_script.html`)
 
 ### Verification & Test Commands
-- **Automated Test Suites (31 Unit & Integration Tests)**:
+- **Automated Test Suites (92 Backend Tests + 22 Frontend Assertions)**:
   ```bash
-  source .venv/bin/activate && pytest -v
+  source .venv/bin/activate && pip install -r requirements-dev.txt
+  pytest -v
   npm --prefix frontend test
   ```
-  Executes 31 backend tests verifying valuation formulas, statutory routing invariants, borrower-directed DocuSign packet metadata, deal-isolated GLBA quarantine status, 64-character SHA-256 audit hashes, flight-risk algorithmic traces, Spanner Graph ISO GQL signal grounding topologies, and deal-parameterized wealth onboarding, alongside frontend TypeScript checks (`tsc -b`).
+  `requirements-dev.txt` supplies `pytest` and `httpx` (the latter required by
+  `starlette.testclient`); neither is in `requirements.txt`, because that file
+  is what the production image installs.
+
+  Executes 92 backend tests verifying valuation formulas, statutory routing invariants, borrower-directed DocuSign packet metadata, deal-isolated GLBA quarantine status, 64-character SHA-256 audit hashes, flight-risk algorithmic traces, Spanner Graph ISO GQL signal grounding topologies, deal-parameterized wealth onboarding, and a retracted-content guard over every shipped document *and* source file, alongside frontend TypeScript checks (`tsc -b`) and 22 financial-model assertions.
 - **Backend Import & Boot**:
   ```bash
   source .venv/bin/activate
