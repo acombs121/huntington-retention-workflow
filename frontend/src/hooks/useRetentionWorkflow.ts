@@ -358,6 +358,7 @@ export function useRetentionWorkflow(): {
           quarantined: data.quarantined,
           status: data.quarantined ? 'Quarantined' : 'Active / Ready for Advisor Authorship',
         }));
+        setWealthOnboardingFailedFor(selectedPayoffId);
       }
     } catch (e: any) {
       console.error('Error toggling quarantine via API:', e);

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "test": "tsc -b && node scripts/verify-assumptions.mjs",
+    "test": "tsc -b && node scripts/verify-assumptions.mjs && node scripts/verify-routing-quarantine.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

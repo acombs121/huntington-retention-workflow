@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PayoffItem, EntityResolutionData } from '../types';
+import { PayoffItem, EntityResolutionData, QuarantineState } from '../types';
 import { StaleRecordNotice } from '../components/StaleRecordNotice';
 import {
   ArrowLeft,
@@ -10,6 +10,7 @@ import {
   RotateCcw,
   Mail,
   Check,
+  Lock,
 } from 'lucide-react';
 
 export interface AdvisorCandidate {
@@ -39,17 +40,21 @@ interface AdvisorRoutingViewProps {
   entityData: EntityResolutionData;
   /** The entity record in state belongs to a different deal; withhold it. */
   isDealDataStale?: boolean;
-  onBackToAnalysis: () => void;
-  onProceedToRetention: () => void;
+  quarantineState?: QuarantineState;
+  onBackToRetention: () => void;
+  onHandoffToWealth: () => void;
 }
 
 export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
   deal,
   entityData,
   isDealDataStale = false,
-  onBackToAnalysis,
-  onProceedToRetention,
+  quarantineState,
+  onBackToRetention,
+  onHandoffToWealth,
 }) => {
+  const isQuarantined = Boolean(quarantineState?.quarantined);
+
   // When the entity record in state is the previous deal's, fall back to the
   // pipeline row, which is always the selected deal. Naming the wrong
   // principal on an outbound introduction is the failure mode here.
@@ -57,7 +62,10 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
     ? undefined
     : entityData.grounded_members?.find((m) => m.is_guarantor) ||
       entityData.grounded_members?.[0];
-  const principalName = primaryGrounded?.name || deal.primary_guarantor || 'Marcus Vance';
+  const rawPrincipalName = primaryGrounded?.name || deal.primary_guarantor || 'Marcus Vance';
+  const principalName = isQuarantined
+    ? '[Quarantined — Commercial Client Opt-In Required]'
+    : rawPrincipalName;
   const commercialRM = deal.commercial_rm || 'Greg Miller';
 
   // Tier 2 gate. Step 1 of the demo promises that wealth engagement never
@@ -288,7 +296,10 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
       : deal.id === 'PO-2026-6104'
       ? 'sciotomedical.com'
       : 'vanceproperties.com';
-  const clientEmail = `${principalName.toLowerCase().replace(/[^a-z]/g, '.').replace(/\.+/g, '.')}@${clientDomain}`;
+  const rawClientEmail = `${rawPrincipalName.toLowerCase().replace(/[^a-z]/g, '.').replace(/\.+/g, '.')}@${clientDomain}`;
+  const clientEmail = isQuarantined
+    ? '[quarantined@privacy-barrier.internal]'
+    : rawClientEmail;
   const refId = `INT-${deal.id.replace('PO-2026-', '')}`;
 
   // Default Email Generator based on Advisor & Deal
@@ -306,7 +317,7 @@ export const AdvisorRoutingView: React.FC<AdvisorRoutingViewProps> = ({
   // The advisor is now described by capability only, no figure appears, and
   // the outbound is queued behind the Tier 2 hold.
   const getEmailTemplate = (advisor: AdvisorCandidate) => {
-    const firstName = principalName.split(' ')[0] || 'Marcus';
+    const firstName = isQuarantined ? '[Client]' : (rawPrincipalName.split(' ')[0] || 'Marcus');
 
     const subject = `Following your ${deal.property_name} closing: introduction to ${advisor.name}, Huntington Private Bank`;
 
@@ -388,11 +399,11 @@ Office: (614) 480-3320 | ${commercialRM.toLowerCase().replace(' ', '.')}@hunting
       {/* Swiss Editorial Breadcrumb & Navigation Header */}
       <div className="border-b border-slate-200 dark:border-slate-800 pb-8">
         <button
-          onClick={onBackToAnalysis}
+          onClick={onBackToRetention}
           className="inline-flex items-center gap-2 text-xs uppercase font-bold tracking-wider text-slate-500 hover:text-[#006738] dark:text-slate-400 dark:hover:text-white transition mb-3"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Deal Analysis</span>
+          <span>Back to Retention &amp; Settlement</span>
         </button>
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#006738] dark:text-emerald-400">
           <span>Commercial Relationship Management</span>
@@ -496,12 +507,18 @@ Office: (614) 480-3320 | ${commercialRM.toLowerCase().replace(' ', '.')}@hunting
                     <div className="col-span-2 pt-0.5">
                       <span className="text-[10px] uppercase font-semibold text-slate-400 flex items-center gap-1.5">
                         Principal Network Tie
-                        <span className="px-1.5 py-px rounded-sm bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 text-[9px] font-bold tracking-wide">
-                          INTERNAL ONLY
+                        <span className={`px-1.5 py-px rounded-sm text-[9px] font-bold tracking-wide ${
+                          isQuarantined
+                            ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300'
+                            : 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300'
+                        }`}>
+                          {isQuarantined ? 'NPI QUARANTINED' : 'INTERNAL ONLY'}
                         </span>
                       </span>
                       <span className="text-xs text-slate-600 dark:text-slate-300 font-medium block leading-relaxed mt-0.5">
-                        {advisor.relationshipToPrincipals}
+                        {isQuarantined
+                          ? 'Locked by NPI Privacy Barrier (Commercial Client Opt-In Required) — network tie and co-investor details suppressed.'
+                          : advisor.relationshipToPrincipals}
                       </span>
                     </div>
                   </div>
@@ -548,6 +565,21 @@ Office: (614) 480-3320 | ${commercialRM.toLowerCase().replace(' ', '.')}@hunting
               <span>Reset</span>
             </button>
           </div>
+
+          {/* Quarantined Barrier Banner */}
+          {isQuarantined && (
+            <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900 flex items-start gap-3">
+              <Lock className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                  Locked by NPI Privacy Barrier (Commercial Client Opt-In Required)
+                </h4>
+                <p className="text-xs text-amber-800/90 dark:text-amber-300/90 mt-0.5 leading-relaxed">
+                  Warm introduction dispatch, principal coordinates, and co-investor network ties are firewalled until affirmative verbal opt-in is recorded in <strong>Retention &amp; Settlement</strong>.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Submission Success Banner */}
           {isSubmitted && (
@@ -648,16 +680,23 @@ Office: (614) 480-3320 | ${commercialRM.toLowerCase().replace(' ', '.')}@hunting
             {/* Bottom Action Bar */}
             <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4 shrink-0">
               <span className="text-xs text-slate-400">
-                {isSubmitted ? `Queued in CRM. Releases ${wealthReleaseLabel}.` : 'Draft auto-saved.'}
+                {isSubmitted
+                  ? `Queued in CRM. Releases ${wealthReleaseLabel}.`
+                  : isQuarantined
+                  ? 'Locked by NPI Privacy Barrier.'
+                  : 'Draft auto-saved.'}
               </span>
 
               <button
                 type="button"
                 onClick={handleSendEmail}
-                disabled={isSending || !emailSubject.trim() || !emailBody.trim()}
+                disabled={isQuarantined || isSending || !emailSubject.trim() || !emailBody.trim()}
+                title={isQuarantined ? "Locked by NPI Privacy Barrier (Commercial Client Opt-In Required)" : undefined}
                 className={`inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold tracking-wide transition active:scale-[0.98] ${
                   isSubmitted
                     ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300'
+                    : isQuarantined
+                    ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed border border-slate-300 dark:border-slate-700'
                     : 'bg-[#006738] hover:bg-[#1B5630] text-white shadow-xs'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
@@ -665,6 +704,11 @@ Office: (614) 480-3320 | ${commercialRM.toLowerCase().replace(' ', '.')}@hunting
                   <>
                     <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     <span>Queueing...</span>
+                  </>
+                ) : isQuarantined ? (
+                  <>
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Introduction Locked (Opt-In Required)</span>
                   </>
                 ) : isSubmitted ? (
                   <>
@@ -687,10 +731,10 @@ Office: (614) 480-3320 | ${commercialRM.toLowerCase().replace(' ', '.')}@hunting
       <div className="flex items-center justify-end pt-1">
         <button
           type="button"
-          onClick={onProceedToRetention}
+          onClick={onHandoffToWealth}
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold bg-[#006738] hover:bg-[#1B5630] dark:bg-palette-accent-deep dark:hover:bg-[#28845e] text-white shadow-sm transition active:scale-[0.98]"
         >
-          <span>Settlement Setup</span>
+          <span>Proceed to Private Wealth Intake ({selectedAdvisor.name})</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>

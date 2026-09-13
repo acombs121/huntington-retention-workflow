@@ -49,8 +49,8 @@ Before launching the demo:
 flowchart LR
     S1["Step 1 (00:00)<br/>Two-Tier Shield"] --> S2["Step 2 (01:30)<br/>Upstream Radar"]
     S2 --> S3["Step 3 (03:30)<br/>Reconciled DLP"]
-    S3 --> S4["Step 4 (05:00)<br/>Advisor Match"]
-    S4 --> S5["Step 5 (06:30)<br/>Borrower Routing"]
+    S3 --> S4["Step 4 (05:00)<br/>Borrower Routing"]
+    S4 --> S5["Step 5 (07:00)<br/>Advisor Match"]
     S5 --> S6["Step 6 (08:30)<br/>CRO Guardrails"]
     S6 --> S7["Step 7 (09:15)<br/>CFO Economics"]
 ```
@@ -102,7 +102,7 @@ flowchart LR
      - *"Notice what the agent did NOT ingest. It stripped consumer credit-bureau data and personal tax returns before processing — that is our GLBA § 501(b) safeguards control, not a privacy notice. Beneficial-ownership facts are read from the entity's own formation and credit documents; BSA/CDD records stay under BSA data governance and are never copied into this pipeline. Elena Vance—a 15% non-guarantor member—is programmatically excluded. She never applied for this credit and she is not a party to it. Using her ownership interest, which we only hold because it appears in the operating agreement, to build a wealth profile is a purpose-limitation problem we refuse to create. If we ever wanted to look at her personally we would need a permissible purpose under FCRA, and we do not have one here. So we do not look."*
   4. Point out the **internal liquidity triage** principle:
      - *"The title letter omits the contract sale price. Rather than having an AI hallucinate an appraisal, Book Scout works from the underwritten baseline and trailing NOI to size the relationship internally. That calculation is strictly muzzled from the client; Greg Miller never asserts a property value to Marcus Vance. You'll see the sizing band itself at settlement in a moment."*
-  5. Click **[Route to Wealth Advisor]** to advance to Advisor Routing.
+  5. Click **[Proceed to Retention & Settlement]** to advance to Retention & Settlement.
 - **What is Shown in the Demo**:
   - The **Deal Analysis** workspace: the payoff demand and its **Document Grounding** panel on the left, the extracted **Beneficial Ownership** and principal relationship on the right, and the liquidity band beneath both. Selecting an owner moves the highlighted region on the page and swaps the quoted document language and its coordinates. The panel renders the extracted text at its recorded position on the page — a rendering of what the resolver returned, not an image of the document. DLP Verified badge, non-guarantor exclusion flags, cap rate benchmark, payment record, and last touchpoint.
 - **Production Implementation Blueprint**:
@@ -110,27 +110,8 @@ flowchart LR
 
 ---
 
-### Step 4: Objective Wealth Advisor Matching & Warm Introduction Dispatch (05:00–06:30)
-*Demonstrate objective, non-discriminatory advisor routing based on proximity, capacity, and CRE specialty, followed by a banker-authored warm introduction queued behind the Tier 2 post-closing hold.*
-
-- **Presenter Action**:
-  1. Review the candidate advisor ranking:
-     - *"Notice how Book Scout selects Sarah Jenkins with a 98% match score. The match is grounded in objective criteria: geographic proximity (0.4 miles at Huntington Center Downtown), specialized CRE disposition experience, and verified bandwidth (72% utilized, capacity for 2 new relationships). There is a fourth input — Sarah already advises a co-investor of Marcus's — and notice how it is labeled: **INTERNAL ONLY**. We rank on it because it is our own record and it genuinely predicts a good match. It never leaves this screen. The existence of another client's advisory relationship is their nonpublic information, not Marcus's context, so it is structurally excluded from anything client-facing."*
-  2. Contrast with secondary candidates:
-     - *"Brian Gallagher brings excellent corporate treasury fixed-income expertise, but lacks direct principal network ties. Elena Rostova brings deep trust and estate credentials, but is based in Cleveland and near portfolio capacity."*
-  3. Review and dispatch the warm introduction email:
-     - *"The email draft is pre-populated on behalf of commercial banker Greg Miller, which preserves the banker-client relationship. Read what is **not** in it. No co-investor is named. No valuation figure appears — the $2.90M we were just looking at is an internal triage estimate and it is muzzled from client-facing text. And the ask is for a conversation **after** closing, not before. Step 1 promised we do not pitch wealth to a sponsor twelve days from a closing; this is where that promise is either kept or broken."*
-  4. Click **[Queue Introduction]** — the banner confirms it is **held** until thirty days past the closing date, derived from the deal's own closing date rather than typed in. Then proceed to **[Settlement Setup →]**.
-- **What is Shown in the Demo**:
-  - Candidate advisor comparison cards with capacity gauges, geographic proximity badges, and verified entity network ties.
-  - Interactive email composer with pre-populated contextual deal facts, an internal-only marker on the principal network tie, the Tier 2 hold date derived from the closing date, one-click template reset, and queue audit timestamp logging in Commercial CRM.
-- **Production Implementation Blueprint**:
-  - Salesforce Financial Services Cloud advisor capacity index; Apigee X API Gateway mTLS; Commercial CRM audit log event dispatch.
-
----
-
-### Step 5: Consultative Commercial Call & Borrower-Directed Routing (06:30–08:30)
-*Execute the warm banker call, inspect the live DocuSign routing packet delivered directly to the borrower, and showcase modern SEI Data Cloud wealth integration.*
+### Step 4: Consultative Commercial Call & Borrower-Directed Routing (05:00–07:00)
+*Execute the warm banker call, inspect the live DocuSign routing packet delivered directly to the borrower, and record affirmative client consent to lift the NPI Privacy Barrier before advisor engagement.*
 
 - **Presenter Action**:
   1. Review RM Greg Miller's relationship briefing:
@@ -139,14 +120,38 @@ flowchart LR
   3. Inspect the live **Borrower Settlement Routing Packet** in the right workspace:
      - *"Here is the fatal flaw we fixed: a lender has no authority to direct a seller's net proceeds. The settlement agent is the seller's escrow holder and disburses only on the seller's own executed closing instructions — that is the escrow agreement and agency law, not a statute I can point at. And after years of business-email-compromise losses in real estate closings, no title company acts on wire instructions arriving from a third party without independent call-back verification. So Book Scout never instructs title. It generates a Huntington Settlement Account Routing Packet delivered directly to Marcus Vance via DocuSign — the envelope id on screen — which Marcus executes and submits as his own Seller Closing Authorization to First American Title, accompanied by Huntington's bank verification letter and call-back authentication line on `(614) 480-4401`."*
   4. Click **[Record Client Opt-In]** to lift the GLBA Privacy Gate:
-     - *"Clicking Record Client Opt-In logs Marcus's affirmative verbal consent and writes a SHA-256 content digest of that record into a write-once Cloud Audit Log entry under WORM retention. Be precise about which half does the work: the digest on its own proves nothing, because whoever can alter the record can recompute it. The append-only audit log — which this application cannot write to or reach — is what makes the record hard to alter; the digest is how we detect drift between the stored consent and the audited copy. To be precise about why: Sarah is a Huntington employee and Marcus stays a Huntington client, so this handoff does not legally require Reg P consent. We gate it anyway. This is our cross-line-of-business marketing consent and the durable record of a Regulation R referral — it proves the client asked for the introduction, and it timestamps the referral so Greg's compensation stays demonstrably nominal and non-contingent. We would rather hold ourselves to a consent standard the regulation does not strictly demand than explain later why we moved a client's information without asking."*
-  5. Click **[Proceed to Private Wealth Intake (Sarah Jenkins)]** (or toggle the **Persona Switcher** in the header):
-     - *"At Day T+30, after Marcus's CPA has executed partnership distributions, Sarah Jenkins engages. We don't burden Sarah with manual data entry or legacy trust batch files. Huntington Private Bank's migration to the SEI Wealth Platform and SEI Data Cloud (announced March 31, 2026) enables real-time Snowflake Zero-ETL data sharing, delivering verified relationship dossiers. Be precise about the standard here: Sarah is a **Private Bank** advisor and this engagement is staged onto **SEI**, so it is bank fiduciary activity governed by **OCC Regulation 9** — Reg BI and FINRA 2111 apply to the HFA/Ameriprise retail channel, not to this one."*
+     - *"Clicking Record Client Opt-In logs Marcus's affirmative verbal consent and writes a SHA-256 content digest of that record into a write-once Cloud Audit Log entry under WORM retention. Be precise about which half does the work: the digest on its own proves nothing, because whoever can alter the record can recompute it. The append-only audit log — which this application cannot write to or reach — is what makes the record hard to alter; the digest is how we detect drift between the stored consent and the audited copy. To be precise about why: Sarah is a Huntington employee and Marcus stays a Huntington client, so this handoff does not legally require Reg P consent. We gate it anyway. This is our cross-line-of-business marketing consent and the durable record of a Regulation R referral — it proves the client asked for the introduction, and it timestamps the referral so Greg's compensation stays demonstrably nominal and non-contingent. We would rather hold ourselves to a consent standard the regulation does not strictly demand than explain later why we moved a client's information without asking. Notice what this consent moment sets up: until this box is checked, client contact coordinates and wealth dispatch remain completely locked behind the NPI Privacy Barrier."*
+  5. Click **[Proceed to Advisor Routing]**:
+     - *"With client opt-in recorded on the commercial call, we proceed to Advisor Routing to match Marcus with the right wealth specialist."*
 - **What is Shown in the Demo**:
   - Live DocuSign routing packet with official Huntington National Bank Account Verification Letter and direct callback authentication line.
-  - Wealth Hub view displaying staged institutional facts with SEI Data Cloud connectivity and zero AI-generated model portfolios.
+  - Indicative Valuation Slider dynamically recalculating net equity proceeds.
+  - Affirmative consent toggle writing SHA-256 audit digest, unlocking the downstream advisor routing and intake.
 - **Production Implementation Blueprint**:
-  - DocuSign REST APIs; Apigee X API Gateway mTLS; SEI Data Cloud via Snowflake Secure Data Sharing; Cloud Spanner household graph.
+  - DocuSign REST APIs; Apigee X API Gateway mTLS; Cloud Audit Logs WORM trail.
+
+---
+
+### Step 5: Objective Wealth Advisor Matching & Warm Introduction Dispatch (07:00–08:30)
+*Demonstrate objective, non-discriminatory advisor routing based on proximity, capacity, and CRE specialty, followed by a banker-authored warm introduction queued behind the Tier 2 post-closing hold.*
+
+- **Presenter Action**:
+  1. Review the candidate advisor ranking:
+     - *"Notice how Book Scout selects Sarah Jenkins with a 98% match score. The match is grounded in objective criteria: geographic proximity (0.4 miles at Huntington Center Downtown), specialized CRE disposition experience, and verified bandwidth (72% utilized, capacity for 2 new relationships). Because Marcus recorded affirmative consent in the previous step, his contact coordinates are unlocked. Notice the fourth matching input — Sarah already advises a co-investor of Marcus's — and notice how it is labeled: **INTERNAL ONLY**. We rank on it because it is our own record and it genuinely predicts a good match. It never leaves this screen. The existence of another client's advisory relationship is their nonpublic information, not Marcus's context, so it is structurally excluded from anything client-facing."*
+  2. Contrast with secondary candidates:
+     - *"Brian Gallagher brings excellent corporate treasury fixed-income expertise, but lacks direct principal network ties. Elena Rostova brings deep trust and estate credentials, but is based in Cleveland and near portfolio capacity."*
+  3. Review and dispatch the warm introduction email:
+     - *"The email draft is pre-populated on behalf of commercial banker Greg Miller, which preserves the banker-client relationship. Read what is **not** in it. No co-investor is named. No valuation figure appears — the $2.90M we were just looking at is an internal triage estimate and it is muzzled from client-facing text. And the ask is for a conversation **after** closing, not before. Step 1 promised we do not pitch wealth to a sponsor twelve days from a closing; this is where that promise is either kept or broken."*
+  4. Click **[Queue Introduction]** — the banner confirms it is **held** until thirty days past the closing date, derived from the deal's own closing date rather than typed in.
+  5. Click **[Proceed to Private Wealth Intake (Sarah Jenkins)]** (or toggle the **Persona Switcher** in the header):
+     - *"At Day T+30, after Marcus's CPA has executed partnership distributions, Sarah Jenkins engages. We don't burden Sarah with manual data entry or legacy trust batch files. Huntington Private Bank's migration to the SEI Wealth Platform and SEI Data Cloud (announced March 31, 2026) enables real-time Snowflake Zero-ETL data sharing, delivering verified relationship dossiers. Be precise about the standard here: Sarah is a **Private Bank** advisor and this engagement is staged onto **SEI**, so it is bank fiduciary activity governed by **OCC Regulation 9** — Reg BI and FINRA 2111 apply to the HFA/Ameriprise retail channel, not to this one."*
+     > ⚠️ **Presenter note — dual-channel routing basis:** All three queue deals exceed $3M in projected personal investable assets, qualifying for Tier A Private Bank on SEI under OCC Reg 9. Sub-$3M relationships route to the Centralized Wealth Hub on HFA/Ameriprise under SEC Reg BI. Both channels are documented in Executive Analytics.
+- **What is Shown in the Demo**:
+  - Candidate advisor comparison cards with capacity gauges, geographic proximity badges, and verified entity network ties.
+  - Interactive email composer with pre-populated contextual deal facts, an internal-only marker on the principal network tie, the Tier 2 hold date derived from the closing date, one-click template reset, and queue audit timestamp logging in Commercial CRM.
+  - Smooth handoff into Wealth Advisor persona and Onboarding Dossier.
+- **Production Implementation Blueprint**:
+  - Advisor capacity index sourced from the commercial CRM; Apigee X API Gateway mTLS; Commercial CRM audit log event dispatch; SEI Data Cloud via Snowflake Secure Data Sharing.
 
 ---
 

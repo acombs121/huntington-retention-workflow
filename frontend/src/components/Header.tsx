@@ -87,19 +87,6 @@ export const Header: React.FC<HeaderProps> = ({
                 )}
               </button>
               <button
-                onClick={() => onViewChange('routing')}
-                className={`relative py-2.5 text-[11px] 2xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
-                  activeView === 'routing'
-                    ? 'text-white'
-                    : 'text-emerald-200/75 hover:text-white'
-                }`}
-              >
-                Advisor Routing
-                {activeView === 'routing' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#7ECF1C] rounded-full" />
-                )}
-              </button>
-              <button
                 onClick={() => onViewChange('retention')}
                 className={`relative py-2.5 text-[11px] 2xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
                   activeView === 'retention'
@@ -109,6 +96,19 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 Retention &amp; Settlement
                 {activeView === 'retention' && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#7ECF1C] rounded-full" />
+                )}
+              </button>
+              <button
+                onClick={() => onViewChange('routing')}
+                className={`relative py-2.5 text-[11px] 2xl:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition ${
+                  activeView === 'routing'
+                    ? 'text-white'
+                    : 'text-emerald-200/75 hover:text-white'
+                }`}
+              >
+                Advisor Routing
+                {activeView === 'routing' && (
                   <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#7ECF1C] rounded-full" />
                 )}
               </button>
@@ -173,7 +173,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => {
                 onPersonaChange('wealth_advisor');
-                if (['pipeline', 'analysis', 'routing', 'retention', 'executive'].includes(activeView)) {
+                if (['pipeline', 'analysis', 'retention', 'routing', 'executive'].includes(activeView)) {
                   onViewChange('wealth_queue');
                 }
               }}

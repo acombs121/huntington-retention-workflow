@@ -27,7 +27,7 @@ interface RetentionSettlementViewProps {
   onToggleQuarantine: () => void;
   wireInstructions: WireInstructionData;
   onBackToAnalysis: () => void;
-  onHandoffToWealth: () => void;
+  onProceedToAdvisorRouting: () => void;
   isTogglingConsent?: boolean;
   error?: string | null;
   onClearError?: () => void;
@@ -44,7 +44,7 @@ export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = (
   onToggleQuarantine,
   wireInstructions,
   onBackToAnalysis,
-  onHandoffToWealth,
+  onProceedToAdvisorRouting,
   isTogglingConsent = false,
   error = null,
   onClearError,
@@ -92,7 +92,7 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
           className="inline-flex items-center gap-2 text-xs uppercase font-bold tracking-wider text-slate-500 hover:text-[#006738] dark:text-slate-400 dark:hover:text-white transition mb-4"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Advisor Routing</span>
+          <span>Back to Deal Analysis</span>
         </button>
 
         <div className="max-w-3xl space-y-3">
@@ -148,7 +148,7 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
         {/* Left Column: Financial Configuration (6 cols) */}
         <div className="lg:col-span-6 space-y-6">
           
-          {/* Card 1: Dynamic Sale Price Slider */}
+          {/* Card 1: Indicative Valuation Slider */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -512,10 +512,10 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
           </div>
 
           <button
-            onClick={onHandoffToWealth}
+            onClick={onProceedToAdvisorRouting}
             className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full text-xs font-bold tracking-wide bg-[#006738] hover:bg-[#1B5630] text-white shadow-sm transition active:scale-[0.98] whitespace-nowrap self-start sm:self-auto"
           >
-            <span>Proceed to Private Wealth Intake (Sarah Jenkins)</span>
+            <span>Proceed to Advisor Routing</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

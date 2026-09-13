@@ -30,9 +30,24 @@ export const App: React.FC = () => {
 
   const toggleTheme = () => setIsDark(!isDark);
 
-  // Persona & View Routing State
-  const [persona, setPersona] = useState<PersonaType>('commercial_rm');
-  const [activeView, setActiveView] = useState<AppView>('pipeline');
+  // Persona & View Routing State with Session Persistence
+  const [persona, setPersona] = useState<PersonaType>(() => {
+    const saved = sessionStorage.getItem('persona');
+    return (saved === 'commercial_rm' || saved === 'wealth_advisor') ? saved : 'commercial_rm';
+  });
+  const [activeView, setActiveView] = useState<AppView>(() => {
+    const saved = sessionStorage.getItem('activeView');
+    const validViews: AppView[] = ['pipeline', 'analysis', 'retention', 'routing', 'wealth_queue', 'wealth_dossier', 'executive'];
+    return (saved && validViews.includes(saved as AppView)) ? (saved as AppView) : 'pipeline';
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem('activeView', activeView);
+  }, [activeView]);
+
+  useEffect(() => {
+    sessionStorage.setItem('persona', persona);
+  }, [persona]);
 
   // Deep Retention Workflow State Module
   const { state, actions } = useRetentionWorkflow();
@@ -62,7 +77,7 @@ export const App: React.FC = () => {
           setPersona(p);
           if (p === 'commercial_rm' && activeView.startsWith('wealth_')) {
             setActiveView('pipeline');
-          } else if (p === 'wealth_advisor' && ['pipeline', 'analysis', 'routing', 'retention'].includes(activeView)) {
+          } else if (p === 'wealth_advisor' && ['pipeline', 'analysis', 'retention', 'routing'].includes(activeView)) {
             setActiveView('wealth_queue');
           }
         }}
@@ -110,16 +125,6 @@ export const App: React.FC = () => {
             entityData={state.entityResolution}
             isDealDataStale={state.isDealDataStale}
             onBackToPipeline={() => setActiveView('pipeline')}
-            onProceedToRetention={() => setActiveView('routing')}
-          />
-        )}
-
-        {activeView === 'routing' && (
-          <AdvisorRoutingView
-            deal={state.selectedDeal}
-            entityData={state.entityResolution}
-            isDealDataStale={state.isDealDataStale}
-            onBackToAnalysis={() => setActiveView('analysis')}
             onProceedToRetention={() => setActiveView('retention')}
           />
         )}
@@ -135,11 +140,22 @@ export const App: React.FC = () => {
             quarantineState={state.quarantineState}
             onToggleQuarantine={actions.toggleQuarantine}
             wireInstructions={state.wireInstructions}
-            onBackToAnalysis={() => setActiveView('routing')}
-            onHandoffToWealth={handleHandoffToWealth}
+            onBackToAnalysis={() => setActiveView('analysis')}
+            onProceedToAdvisorRouting={() => setActiveView('routing')}
             isTogglingConsent={state.isTogglingConsent}
             error={state.error}
             onClearError={actions.clearError}
+          />
+        )}
+
+        {activeView === 'routing' && (
+          <AdvisorRoutingView
+            deal={state.selectedDeal}
+            entityData={state.entityResolution}
+            isDealDataStale={state.isDealDataStale}
+            quarantineState={state.quarantineState}
+            onBackToRetention={() => setActiveView('retention')}
+            onHandoffToWealth={handleHandoffToWealth}
           />
         )}
 

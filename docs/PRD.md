@@ -115,7 +115,7 @@ Book Scout gives a **fixed team the reach of a much larger one** by having an in
 ---
 ## 3. The Focused 3-Pane Workspace
 
-Embedded inside a styled Salesforce Financial Services Cloud (FSC) shell, featuring a **Persona Switcher** (`[Greg Miller (RM)]` ⇄ `[Sarah Jenkins (PWA)]`), an active **Capacity Meter**, dynamic 1031 switching, and verified grounding badges.
+A standalone, Huntington-branded workspace featuring a **Persona Switcher** (`[Greg Miller (RM)]` ⇄ `[Sarah Jenkins (PWA)]`), an active **Capacity Meter**, dynamic 1031 switching, and verified grounding badges. The workspace is the demo artifact itself; no vendor CRM console is embedded, and none is required to run it.
 
 ```
 ┌──────────────────────────────────┬─────────────────────────────────────┬─────────────────────────────────┐
@@ -374,7 +374,7 @@ To satisfy CFO scrutiny, the $1.25M annual operating run-rate is componentized a
 ---
 ## 8. Demonstration Setup & Presentation Guardrails
 
-1. **Resolution & Environment:** 1920x1080 full screen, embedded in styled Salesforce Financial Services Cloud.
+1. **Resolution & Environment:** 1920x1080 full screen, in the Huntington-branded Book Scout workspace.
 2. **Realistic Midwest Domain Data:** All names, addresses, and figures reflect realistic Columbus, OH commercial assets. Zero placeholder text.
 3. **Live Streaming Reasoning Protocol:** Agentic reasoning over the title letter runs live via Gemini Enterprise Agent Platform (`gemini-3.7-flash`) with streaming token feedback and tool-execution indicators. A backup document (*Apex Logistics Payoff Request.pdf*) is pre-loaded to re-run extraction live on stage if challenged.
 4. **Deterministic Fallback Layer:** Background CRM lookups and static UI elements utilize an encrypted local Redis cache to guarantee sub-second UI responsiveness regardless of conference Wi-Fi.

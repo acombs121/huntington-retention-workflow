@@ -373,7 +373,7 @@ export const DealAnalysisView: React.FC<DealAnalysisViewProps> = ({
           onClick={onProceedToRetention}
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold bg-[#006738] hover:bg-[#1B5630] dark:bg-palette-accent-deep dark:hover:bg-[#28845e] text-white shadow-sm transition active:scale-[0.98]"
         >
-          <span>Route to Wealth Advisor</span>
+          <span>Proceed to Retention &amp; Settlement</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
