@@ -123,6 +123,27 @@ export interface EntityResolutionData {
   };
 }
 
+/** The two statutory deadlines an IRC §1031 exchange runs against, plus the
+ *  financing action they create.
+ *
+ *  Both deadlines are derived server-side from the closing on the relinquished
+ *  property and arrive as ISO dates, not display strings, because the banker's
+ *  question is "how many days do I have" rather than "what is the date".
+ *  Formatting and the days-remaining arithmetic both belong to the view. */
+export interface ExchangeTimeline {
+  relinquished_closing_date: string;
+  /** ISO date, or empty string when the closing date could not be parsed.
+   *  The server returns blank rather than guessing -- a plausible-looking
+   *  wrong statutory deadline is worse than a visibly absent one. */
+  identification_deadline: string;
+  exchange_deadline: string;
+  identification_days_from_closing: number;
+  exchange_days_from_closing: number;
+  statutory_basis: string;
+  replacement_financing_action: string;
+  replacement_financing_owner: string;
+}
+
 export interface ValuationData {
   sale_price: number;
   grounded_noi: number;
@@ -140,6 +161,11 @@ export interface ValuationData {
   deposit_credit_pct: number;
   finra_rule_2040_compliant: boolean;
   model_risk_designation: string;
+
+  /** Null on a taxable sale, which has no statutory clock. The exchange panel
+   *  keys off this null rather than off the strategy string, so the panel and
+   *  the deadlines it renders can never disagree. */
+  exchange_timeline?: ExchangeTimeline | null;
 }
 
 export interface QuarantineState {

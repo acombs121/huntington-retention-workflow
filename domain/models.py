@@ -72,6 +72,37 @@ class StatutoryDepositoryRoute(BaseModel):
     model_risk_designation: str = "Relationship Prioritization Triage Estimate"
 
 
+class ExchangeTimeline(BaseModel):
+    """The IRC §1031 statutory clock.
+
+    Both deadlines run from the closing on the relinquished property, and
+    neither is extendable: IRC § 1031(a)(3) fixes identification at 45 days and
+    completion at 180 days. A missed deadline does not shorten the exchange, it
+    ends it -- the whole gain becomes taxable in the year of the relinquished
+    sale.
+
+    Two consequences the bank cares about, and they pull in opposite directions:
+
+      1. The escrow balance is transient by law. It cannot be modelled as a
+         standing deposit. 180 days is its ceiling, not its expectation.
+      2. The client is a committed buyer inside that window. They must acquire
+         replacement property or lose the deferral. That makes the acquisition
+         loan the larger opportunity, and it is the one the deck omits.
+
+    Populated only on the 1031 route. `None` on a taxable cash-out.
+    """
+    relinquished_closing_date: str
+    identification_deadline: str
+    exchange_deadline: str
+    identification_days_from_closing: int = 45
+    exchange_days_from_closing: int = 180
+    statutory_basis: str = "IRC § 1031(a)(3); Treas. Reg. § 1.1031(k)-1(b)"
+    # The follow-on action. Deliberately phrased as a banker task rather than a
+    # booked outcome -- nothing here has been offered to the client yet.
+    replacement_financing_action: str
+    replacement_financing_owner: str
+
+
 class SettlementWireInstruction(BaseModel):
     """
     Verified bank settlement account routing packet delivered to borrower for seller title authorization,
@@ -148,6 +179,9 @@ class LiquidityAssessment(BaseModel):
     valuation: ValuationMetrics
     depository_route: StatutoryDepositoryRoute
     settlement_wire: SettlementWireInstruction
+    # Present only on the 1031 route. Absence is meaningful: a taxable cash-out
+    # has no statutory clock.
+    exchange_timeline: Optional[ExchangeTimeline] = None
 
     def to_legacy_valuation_dict(self) -> Dict[str, Any]:
         """
@@ -170,6 +204,9 @@ class LiquidityAssessment(BaseModel):
             "deposit_credit_pct": self.depository_route.deposit_credit_pct,
             "finra_rule_2040_compliant": self.depository_route.finra_rule_2040_compliant,
             "model_risk_designation": self.depository_route.model_risk_designation,
+            "exchange_timeline": (
+                self.exchange_timeline.model_dump() if self.exchange_timeline else None
+            ),
         }
 
 

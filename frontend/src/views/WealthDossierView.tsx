@@ -171,9 +171,17 @@ export const WealthDossierView: React.FC<WealthDossierViewProps> = ({
                 <span className="text-slate-400">Custodian</span>
                 <span className="font-semibold text-slate-900 dark:text-white">{data.sei_custodial_shell?.custodian}</span>
               </div>
-              <div className="py-2.5 flex justify-between">
-                <span className="text-slate-400">Cash Depository</span>
-                <span className="font-bold text-[#006738] dark:text-emerald-400">Huntington FDIC Sweep</span>
+              <div className="py-2.5 flex justify-between gap-4">
+                <span className="text-slate-400 shrink-0">Cash Depository</span>
+                {/* Read from the payload. This was the literal "Huntington FDIC
+                    Sweep", which on a §1031 exchange named a client-titled
+                    account -- constructive receipt, and the one destination the
+                    settlement path exists to keep the proceeds out of. The
+                    server distinguishes the two routes; this row was discarding
+                    that and asserting the sweep on both. */}
+                <span className="font-bold text-[#006738] dark:text-emerald-400 text-right">
+                  {data.sei_custodial_shell?.cash_depository_link || '—'}
+                </span>
               </div>
             </div>
           </div>

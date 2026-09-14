@@ -24,13 +24,45 @@ import {
   initialWealthOnboarding,
 } from '../mockData';
 
+export type TaxStrategy = 'cash_out' | '1031_exchange';
+
+/**
+ * The routing strategy implied by a deal's detected classification.
+ *
+ * This mirrors `detected_tax_strategy` in main.py. The server is authoritative
+ * -- it resolves the strategy again on every request, and omitting the
+ * parameter falls back to exactly this rule -- but the UI needs the same answer
+ * locally to seed the toggle and to label the badges, and a toggle that
+ * disagrees with the settlement instruction is worse than no toggle.
+ *
+ * The "eligible" exclusion is load-bearing, not defensive padding. PO-2026-8821
+ * is classified "Taxable Cash-Out (1031 Eligible)": it contains the string
+ * "1031" and is emphatically not an exchange. The borrower may still elect one
+ * before closing, which is why the phrase is there at all, but until he does
+ * the route is taxable. A bare `includes('1031')` would seed the flagship
+ * cash-out deal into a qualified escrow.
+ */
+export function detectedStrategyFor(detected?: string): TaxStrategy {
+  const label = detected || '';
+  const isExchange = label.includes('1031') && !label.toLowerCase().includes('eligible');
+  return isExchange ? '1031_exchange' : 'cash_out';
+}
+
 export interface WorkflowState {
   capacityMeter: CapacityMeter;
   payoffItems: PayoffItem[];
   selectedPayoffId: string;
   selectedDeal: PayoffItem;
   salePrice: number;
-  taxStrategy: 'cash_out' | '1031_exchange';
+  /** The strategy the settlement path is currently being built for. Seeded from
+   *  `detectedTaxStrategy` when a deal is selected; the banker can override it. */
+  taxStrategy: TaxStrategy;
+  /** What the detection layer concluded for the selected deal, independent of
+   *  any override. Kept separate so the UI can say which of the two it is
+   *  showing -- the panel previously hardcoded "Manual Override" on the 1031
+   *  card and "(Default)" on the cash-out card, which was correct only on the
+   *  one deal that happened to be a detected cash-out. */
+  detectedTaxStrategy: TaxStrategy;
   valuation: ValuationData;
   quarantineState: QuarantineState;
   entityResolution: EntityResolutionData;
@@ -63,7 +95,7 @@ export interface WorkflowState {
 export interface WorkflowActions {
   selectDeal: (id: string) => void;
   setSalePrice: (price: number) => void;
-  setTaxStrategy: (strategy: 'cash_out' | '1031_exchange') => void;
+  setTaxStrategy: (strategy: TaxStrategy) => void;
   /**
    * Gate 1. Records the consultative call with the borrower, which is what
    * authorises the settlement packet and the cross-LOB consent below it.
@@ -99,7 +131,15 @@ export function useRetentionWorkflow(): {
 
   // Valuation Parameters
   const [salePrice, setSalePrice] = useState<number>(8500000);
-  const [taxStrategy, setTaxStrategy] = useState<'cash_out' | '1031_exchange'>('cash_out');
+  // Seeded from detection rather than a bare 'cash_out' literal. The initial
+  // deal happens to be a cash-out, so the literal was indistinguishable from
+  // correct behaviour -- which is exactly how the Buckeye exchange came to be
+  // valued and routed as a taxable sale.
+  const [taxStrategy, setTaxStrategy] = useState<TaxStrategy>(() =>
+    detectedStrategyFor(
+      initialPayoffQueue.find((p) => p.id === INITIAL_DEAL_ID)?.tax_strategy_detected
+    )
+  );
   const [valuation, setValuation] = useState<ValuationData>(initialValuation);
 
   // Compliance, Settlement & Wealth Staging
@@ -288,9 +328,18 @@ export function useRetentionWorkflow(): {
       body: JSON.stringify({
         payoff_id: requestedId,
         sale_price: salePrice,
-        noi: selectedDeal.noi_trailing_q1 || 637500.0,
-        cap_rate: selectedDeal.submarket_cap_rate || 0.075,
-        debt_payoff: selectedDeal.payoff_quote_amount || 5214800.0,
+        // Sent only when the deal actually carries a value. These previously
+        // fell back to `637500.0`, `0.075` and `5214800.0` -- the Vance deal's
+        // NOI, cap rate and debt. On any other borrower a missing field would
+        // therefore substitute another borrower's economics rather than reveal
+        // the gap. Omitted, the server values the deal on its own record.
+        ...(selectedDeal.noi_trailing_q1 ? { noi: selectedDeal.noi_trailing_q1 } : {}),
+        ...(selectedDeal.submarket_cap_rate
+          ? { cap_rate: selectedDeal.submarket_cap_rate }
+          : {}),
+        ...(selectedDeal.payoff_quote_amount
+          ? { debt_payoff: selectedDeal.payoff_quote_amount }
+          : {}),
         closing_cost_rate: 0.045,
         tax_strategy: taxStrategy,
       }),
@@ -346,6 +395,16 @@ export function useRetentionWorkflow(): {
       if (targetDeal && targetDeal.indicative_valuation) {
         setSalePrice(targetDeal.indicative_valuation);
       }
+      // Re-seed the strategy from the incoming deal's own detection.
+      //
+      // This was previously left alone, which had two consequences. Selecting
+      // Buckeye -- detected as an IRC §1031 exchange -- kept whatever the
+      // previous deal was set to, normally cash_out, so the exchange was
+      // valued, routed and audited as a taxable sale. And an override applied
+      // on one deal silently followed the banker to the next one, which is the
+      // more dangerous half: the toggle would read "Manual Override" for a
+      // decision nobody made about that borrower.
+      setTaxStrategy(detectedStrategyFor(targetDeal?.tax_strategy_detected));
     },
     [payoffItems]
   );
@@ -370,6 +429,11 @@ export function useRetentionWorkflow(): {
             call_completed: !alreadyLogged,
             client_directed_proceeds: clientDirectedProceeds,
             recorded_by: `${selectedDeal.commercial_rm || 'Greg Miller'} (Commercial RM)`,
+            // The disposition the server writes names the destination account,
+            // so it has to be told which route the banker is actually on. Left
+            // absent, the server falls back to detection -- correct in the
+            // common case, but wrong the moment the banker has overridden.
+            tax_strategy: taxStrategy,
           }),
         });
         if (!res.ok) {
@@ -402,7 +466,7 @@ export function useRetentionWorkflow(): {
         setIsLoggingCall(false);
       }
     },
-    [isLoggingCall, quarantineState.call_logged, selectedPayoffId, selectedDeal],
+    [isLoggingCall, quarantineState.call_logged, selectedPayoffId, selectedDeal, taxStrategy],
   );
 
   // Action: Dispatch the settlement packet to the borrower (Gate 1b).
@@ -564,6 +628,7 @@ export function useRetentionWorkflow(): {
       selectedDeal,
       salePrice,
       taxStrategy,
+      detectedTaxStrategy: detectedStrategyFor(selectedDeal?.tax_strategy_detected),
       valuation,
       quarantineState,
       entityResolution,

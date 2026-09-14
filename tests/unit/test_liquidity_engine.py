@@ -66,6 +66,10 @@ def test_statutory_depository_cash_out_route(default_payoff: PayoffStatement):
     """
     Default cash-out strategy routes into Huntington Business Premier ICS with 4.85% APY
     and 12 U.S.C. § 1831f statutory reciprocal deposit backing.
+
+    The sweep account number is derived from the payoff id of the deal being
+    assessed. It previously carried a literal ``HBAN-4401-9921-00``, so every
+    cash-out in the book was routed to one account number.
     """
     assessment = LiquidityEngine.assess(default_payoff, tax_strategy="cash_out")
 
@@ -78,7 +82,7 @@ def test_statutory_depository_cash_out_route(default_payoff: PayoffStatement):
 
     wire = assessment.settlement_wire
     assert "Business Premier ICS Sweep" in wire.account_title
-    assert wire.account_number == "HBAN-4401-9921-00"
+    assert wire.account_number == "HBAN-ICS-8821-00"
     assert "Business Premier" in wire.special_instructions
 
 
@@ -86,6 +90,11 @@ def test_statutory_depository_1031_exchange_route(default_payoff: PayoffStatemen
     """
     1031 Exchange strategy routes into Huntington 1031 Qualified Escrow Depository with 4.75% APY
     and Treas. Reg. § 1.1031(k)-1(g)(3) Qualified Escrow Safe Harbor covenants.
+
+    The escrow account number is derived from the payoff id of the deal being
+    assessed. It previously carried a literal ``HBAN-QI-8819-01``, which is the
+    escrow-file suffix of a different borrower's title order, so every exchange
+    in the book was routed to one account number.
     """
     assessment = LiquidityEngine.assess(default_payoff, tax_strategy="1031_exchange")
 
@@ -97,7 +106,7 @@ def test_statutory_depository_1031_exchange_route(default_payoff: PayoffStatemen
 
     wire = assessment.settlement_wire
     assert "Huntington 1031 Escrow" in wire.account_title
-    assert wire.account_number == "HBAN-QI-8819-01"
+    assert wire.account_number == "HBAN-QI-8821-01"
     assert "DO NOT DISBURSE OUTSIDE OF HUNTINGTON ESCROW" in wire.special_instructions
 
 
@@ -179,8 +188,14 @@ def test_legacy_valuation_dict_compatibility(default_payoff: PayoffStatement):
         "deposit_credit_pct",
         "finra_rule_2040_compliant",
         "model_risk_designation",
+        # Present on every assessment, not only exchanges. The key is always
+        # emitted so the client can distinguish "this is not an exchange"
+        # (null) from "the server is an older build that does not compute
+        # deadlines" (key absent). A cash-out assessment carries null here.
+        "exchange_timeline",
     }
     assert set(legacy_dict.keys()) == expected_keys
+    assert legacy_dict["exchange_timeline"] is None
     assert legacy_dict["sale_price"] == 8500000.00
     assert legacy_dict["net_equity_proceeds"] == 2902700.00
 
@@ -220,3 +235,138 @@ def test_input_validation_boundary_conditions(default_payoff: PayoffStatement):
         LiquidityEngine.assess(default_payoff, tax_strategy="offshore_haven")
 
 
+@pytest.fixture
+def buckeye_payoff() -> PayoffStatement:
+    """The second demo deal, used to prove account identifiers are deal-scoped.
+
+    A single-deal fixture cannot catch a hardcoded account number, because a
+    constant and a correctly-derived value are indistinguishable when only one
+    deal is ever asserted. That is how ``HBAN-QI-8819-01`` survived.
+    """
+    return PayoffStatement(
+        id="PO-2026-7492",
+        borrower_entity="Buckeye Precision Tooling Corp.",
+        property_name="Buckeye Industrial Campus B",
+        property_address="2255 Innovation Parkway, Dublin, OH 43017",
+        title_company="Chicago Title Insurance Co.",
+        settlement_officer="Mark Henderson",
+        escrow_file_number="CT-2026-4401-OH",
+        payoff_quote_amount=1420000.00,
+        noi_trailing_q1=245700.00,
+        submarket_cap_rate=0.078,
+        known_hban_balances=890000.00,
+        managing_member="Arthur Pendelton",
+        seller_entity="Buckeye Precision Tooling Corp.",
+        scheduled_closing_date="2026-10-08",
+        commercial_rm="Greg Miller",
+    )
+
+
+def test_account_identifiers_are_scoped_to_the_deal(
+    default_payoff: PayoffStatement, buckeye_payoff: PayoffStatement
+):
+    """
+    Two different deals must not settle into the same account number.
+
+    The suffix is taken from the Huntington payoff id, deliberately -- not from
+    `escrow_file_number`, which is the title company's own file reference for
+    their order and carries their numbering, not the bank's.
+    """
+    vance = LiquidityEngine.assess(default_payoff, tax_strategy="1031_exchange")
+    buckeye = LiquidityEngine.assess(buckeye_payoff, tax_strategy="1031_exchange")
+
+    assert vance.settlement_wire.account_number == "HBAN-QI-8821-01"
+    assert buckeye.settlement_wire.account_number == "HBAN-QI-7492-01"
+
+    vance_cash = LiquidityEngine.assess(default_payoff, tax_strategy="cash_out")
+    buckeye_cash = LiquidityEngine.assess(buckeye_payoff, tax_strategy="cash_out")
+
+    assert vance_cash.settlement_wire.account_number == "HBAN-ICS-8821-00"
+    assert buckeye_cash.settlement_wire.account_number == "HBAN-ICS-7492-00"
+
+    # The escrow file number belongs to the title company. It must not leak into
+    # a Huntington account identifier on either deal.
+    assert "8819" not in buckeye.settlement_wire.account_number
+    assert "4401" not in buckeye.settlement_wire.account_number
+
+
+def test_exchange_timeline_absent_on_a_taxable_sale(default_payoff: PayoffStatement):
+    """
+    A cash-out has no statutory clock. There is no 45-day or 180-day deadline to
+    show, so the field is null rather than zeroed or empty-stringed -- the UI
+    keys the exchange panel off this null, not off the strategy string.
+    """
+    assessment = LiquidityEngine.assess(default_payoff, tax_strategy="cash_out")
+    assert assessment.exchange_timeline is None
+    assert assessment.to_legacy_valuation_dict()["exchange_timeline"] is None
+
+
+def test_exchange_timeline_derives_the_statutory_deadlines(buckeye_payoff: PayoffStatement):
+    """
+    IRC §1031(a)(3): the replacement property must be identified within 45 days
+    of the transfer of the relinquished property, and received within 180 days.
+    Both run from the same closing date, and 180 is not 45 plus 180.
+
+    Buckeye closes 2026-10-08, so identification falls on 2026-11-22 and the
+    exchange must complete by 2027-04-06.
+    """
+    assessment = LiquidityEngine.assess(buckeye_payoff, tax_strategy="1031_exchange")
+    timeline = assessment.exchange_timeline
+
+    assert timeline is not None
+    assert timeline.relinquished_closing_date == "2026-10-08"
+    assert timeline.identification_deadline == "2026-11-22"
+    assert timeline.exchange_deadline == "2027-04-06"
+    assert timeline.identification_days_from_closing == 45
+    assert timeline.exchange_days_from_closing == 180
+
+    # The deadlines are derived, not authored, so they must actually be 45 and
+    # 180 days after the closing date rather than two more hardcoded strings.
+    closing = datetime.strptime(timeline.relinquished_closing_date, "%Y-%m-%d").date()
+    ident = datetime.strptime(timeline.identification_deadline, "%Y-%m-%d").date()
+    final = datetime.strptime(timeline.exchange_deadline, "%Y-%m-%d").date()
+    assert (ident - closing).days == 45
+    assert (final - closing).days == 180
+
+
+def test_exchange_timeline_names_the_replacement_financing_owner(buckeye_payoff: PayoffStatement):
+    """
+    The exchange obliges the client to acquire replacement property inside the
+    window. That is an acquisition loan the bank can compete for, and it is the
+    largest item in the scenario -- so the timeline must carry it as an action
+    with a named owner, not leave it implied.
+    """
+    timeline = LiquidityEngine.assess(buckeye_payoff, tax_strategy="1031_exchange").exchange_timeline
+
+    assert timeline is not None
+    assert "replacement property" in timeline.replacement_financing_action.lower()
+    assert timeline.replacement_financing_owner == "Greg Miller"
+
+
+def test_exchange_timeline_declines_to_guess_an_unparseable_closing_date():
+    """
+    A deal with no scheduled closing date has no computable deadlines. The
+    engine returns empty strings rather than substituting today, because a
+    plausible-looking wrong statutory deadline is worse than a blank one.
+    """
+    undated = PayoffStatement(
+        id="PO-2026-0001",
+        borrower_entity="Undated Holdings LLC",
+        property_name="Unscheduled Asset",
+        property_address="1 Nowhere Road, Columbus, OH 43215",
+        title_company="Chicago Title Insurance Co.",
+        settlement_officer="Mark Henderson",
+        escrow_file_number="CT-0000-0000-OH",
+        payoff_quote_amount=1000000.00,
+        noi_trailing_q1=100000.00,
+        submarket_cap_rate=0.08,
+        known_hban_balances=0.00,
+        managing_member="Nobody",
+        seller_entity="Undated Holdings LLC",
+        scheduled_closing_date="",
+    )
+    timeline = LiquidityEngine.assess(undated, tax_strategy="1031_exchange").exchange_timeline
+
+    assert timeline is not None
+    assert timeline.identification_deadline == ""
+    assert timeline.exchange_deadline == ""

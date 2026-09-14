@@ -138,6 +138,7 @@ export const App: React.FC = () => {
             isDealDataStale={state.isDealDataStale}
             onSalePriceChange={actions.setSalePrice}
             taxStrategy={state.taxStrategy}
+            detectedTaxStrategy={state.detectedTaxStrategy}
             onTaxStrategyChange={actions.setTaxStrategy}
             quarantineState={state.quarantineState}
             onToggleQuarantine={actions.toggleQuarantine}

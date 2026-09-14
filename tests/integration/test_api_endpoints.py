@@ -3,12 +3,12 @@ Integration Tests for Huntington Book Scout FastAPI Endpoints
 Verifies multi-deal valuation, entity resolution, wire instructions, and GLBA quarantine gate.
 """
 import json
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import pytest
 from starlette.testclient import TestClient
 
-from main import app
+from main import app, detected_tax_strategy, resolve_tax_strategy
 
 client = TestClient(app)
 
@@ -140,13 +140,20 @@ def test_entity_resolution_multi_deal_parameterization():
 
 
 def test_wire_instructions_deal_parameterization():
-    """Verifies wire instructions use active deal entity, borrower-directed DocuSign packet, and QI routing."""
+    """Verifies wire instructions use active deal entity, borrower-directed DocuSign packet, and QI routing.
+
+    This previously asserted ``HBAN-QI-8819-01`` for Buckeye. ``8819`` is the
+    suffix of the Vance escrow file at First American, so the assertion was
+    locking in a defect: every exchange in the book resolved to one account
+    number belonging to a different borrower's title order. The account number
+    is now derived from the payoff id of the deal being settled.
+    """
     # 1031 Exchange on Buckeye
     response = client.get("/api/wire-instructions?payoff_id=PO-2026-7492&strategy=1031_exchange&sale_price=3150000.00")
     assert response.status_code == 200
     data = response.json()
     assert "Buckeye Precision Tooling Corp." in data["account_title"]
-    assert "HBAN-QI-8819-01" == data["account_number"]
+    assert "HBAN-QI-7492-01" == data["account_number"]
     # The packet is signed by the seller, so it carries a destination and an
     # unfilled election -- never a bank-computed proceeds figure.
     assert "indicative_net_disbursement" not in data
@@ -164,8 +171,163 @@ def test_wire_instructions_deal_parameterization():
     vance_wire = client.get("/api/wire-instructions?payoff_id=PO-2026-8821&strategy=cash_out&sale_price=8500000.00")
     assert vance_wire.status_code == 200
     vw_data = vance_wire.json()
+    assert vw_data["account_number"] == "HBAN-ICS-8821-00"
     assert vw_data["borrower_directed_packet"] is True
     assert vw_data["independent_qi_partner"] is None
+
+    # Omitting the strategy falls back to the strategy the detection layer
+    # concluded for that deal, not to a global cash-out default. Buckeye is
+    # detected as an exchange, so the escrow route must survive the omission.
+    buckeye_default = client.get("/api/wire-instructions?payoff_id=PO-2026-7492&sale_price=3150000.00")
+    assert buckeye_default.status_code == 200
+    assert buckeye_default.json()["account_number"] == "HBAN-QI-7492-01"
+
+    # Vance is detected as "Taxable Cash-Out (1031 Eligible)". Eligibility is
+    # not election: the substring "1031" appears in that label, and a naive
+    # match would route the flagship cash-out deal into a qualified escrow.
+    vance_default = client.get("/api/wire-instructions?payoff_id=PO-2026-8821&sale_price=8500000.00")
+    assert vance_default.status_code == 200
+    assert vance_default.json()["account_number"] == "HBAN-ICS-8821-00"
+
+
+def test_detected_strategy_seeds_routing_and_is_overridable():
+    """The detection layer's conclusion is the default; the banker can override it.
+
+    `tax_strategy_detected` is shown on the pipeline screen, so if routing
+    ignores it the screen and the settlement instruction disagree in front of
+    the room. Detection seeds the decision. It does not make it: an exchange is
+    the taxpayer's election, and a banker who knows the client has abandoned it
+    must be able to say so.
+    """
+    assert detected_tax_strategy("PO-2026-7492") == "1031_exchange"
+    assert detected_tax_strategy("PO-2026-8821") == "cash_out"
+    assert detected_tax_strategy("PO-2026-6104") == "cash_out"
+
+    # An unknown deal cannot be an exchange on the strength of no evidence.
+    assert detected_tax_strategy("PO-9999-0000") == "cash_out"
+
+    # Explicit request wins in both directions.
+    assert resolve_tax_strategy("PO-2026-7492", "cash_out") == "cash_out"
+    assert resolve_tax_strategy("PO-2026-8821", "1031_exchange") == "1031_exchange"
+
+    # Anything that is not a recognised strategy is treated as "no preference
+    # expressed" and falls through to detection, rather than silently routing.
+    assert resolve_tax_strategy("PO-2026-7492", None) == "1031_exchange"
+    assert resolve_tax_strategy("PO-2026-7492", "") == "1031_exchange"
+    assert resolve_tax_strategy("PO-2026-7492", "offshore_haven") == "1031_exchange"
+
+    # And the override survives the round trip through the wire endpoint.
+    overridden = client.get(
+        "/api/wire-instructions?payoff_id=PO-2026-7492&strategy=cash_out&sale_price=3150000.00"
+    )
+    assert overridden.status_code == 200
+    assert overridden.json()["account_number"] == "HBAN-ICS-7492-00"
+
+
+def test_valuation_uses_each_deals_own_financials_when_no_overrides_sent():
+    """An omitted input must not substitute another borrower's economics.
+
+    `sale_price`, `noi`, `cap_rate` and `debt_payoff` were required fields whose
+    defaults were PO-2026-8821's figures, and the handler assigned them onto the
+    payoff unconditionally. Asking for Buckeye's valuation therefore returned
+    $2,902,700 of net proceeds -- the Vance number -- under Buckeye's name. The
+    screen only looked correct because the frontend sends all four every time,
+    and its own fallbacks were the same Vance literals.
+
+    Buckeye: NOI $245,700 at a 7.80% cap is a $3,150,000 value; less $1,420,000
+    of debt and 4.5% closing costs leaves $1,588,250.
+    """
+    buckeye = client.post("/api/valuation", json={"payoff_id": "PO-2026-7492"}).json()
+    assert buckeye["grounded_noi"] == 245700.00
+    assert buckeye["grounded_cap_rate"] == 0.078
+    assert buckeye["debt_payoff"] == 1420000.00
+    assert buckeye["sale_price"] == 3150000.00
+    assert buckeye["estimated_closing_costs"] == 141750.00
+    assert buckeye["net_equity_proceeds"] == 1588250.00
+
+    vance = client.post("/api/valuation", json={"payoff_id": "PO-2026-8821"}).json()
+    assert vance["net_equity_proceeds"] == 2902700.00
+
+    # Two deals, two answers. A shared default would make these equal.
+    assert buckeye["net_equity_proceeds"] != vance["net_equity_proceeds"]
+
+    # Overrides still work -- that is what the sale-price slider sends.
+    slid = client.post("/api/valuation", json={
+        "payoff_id": "PO-2026-7492",
+        "sale_price": 3500000.00,
+    }).json()
+    assert slid["sale_price"] == 3500000.00
+    # The deal's own debt survives an override of an unrelated field.
+    assert slid["debt_payoff"] == 1420000.00
+
+
+def test_valuation_carries_the_exchange_clock_only_for_an_exchange():
+    """/api/valuation exposes the 45/180-day deadlines the banker has to act inside.
+
+    Buckeye closes on a date the demo clock rebases into today's frame, so the
+    deadlines are asserted as offsets from the closing date the same response
+    reports rather than as literals that rot the moment the clock moves.
+    """
+    buckeye = client.post("/api/valuation", json={"payoff_id": "PO-2026-7492"})
+    assert buckeye.status_code == 200
+    timeline = buckeye.json()["exchange_timeline"]
+    assert timeline is not None
+
+    closing = date.fromisoformat(timeline["relinquished_closing_date"])
+    assert date.fromisoformat(timeline["identification_deadline"]) == closing + timedelta(days=45)
+    assert date.fromisoformat(timeline["exchange_deadline"]) == closing + timedelta(days=180)
+    assert "1031" in timeline["statutory_basis"]
+    assert timeline["replacement_financing_owner"]
+
+    # The closing date the timeline is built from must be the one the rest of
+    # the app is showing, not the authored fixture date. A deadline derived
+    # from a stale closing is not in the demo clock's allow-list, so nothing
+    # downstream can correct it.
+    queue = client.get("/api/payoffs").json()["payoff_items"]
+    listed = next(d for d in queue if d["id"] == "PO-2026-7492")
+    assert listed["scheduled_closing_date"] == timeline["relinquished_closing_date"]
+
+    # A taxable sale has no statutory clock.
+    vance = client.post("/api/valuation", json={"payoff_id": "PO-2026-8821"})
+    assert vance.status_code == 200
+    assert vance.json()["exchange_timeline"] is None
+
+
+def test_call_disposition_names_the_route_the_client_was_offered():
+    """The compliance record must not describe constructive receipt on an exchange.
+
+    A single hardcoded ICS sentence recorded that the §1031 borrower directed
+    proceeds into a sweep account titled to himself. That is the one act that
+    voids the deferral, so the record both misstated the call and documented a
+    disqualifying instruction.
+    """
+    try:
+        buckeye = log_call("PO-2026-7492")
+        disposition = buckeye["call_disposition"]
+        assert "Qualified Escrow" in disposition
+        assert "IPX1031" in disposition
+        assert "not to pass through any account titled to the borrower" in disposition
+        assert "ICS" not in disposition
+
+        vance = log_call("PO-2026-8821")
+        assert "Business Premier ICS" in vance["call_disposition"]
+        assert "Qualified Escrow" not in vance["call_disposition"]
+
+        # An explicit override is honoured here too: if the banker has switched
+        # the deal to a taxable sale, the record must say so.
+        reset_deal("PO-2026-7492")
+        resp = client.post("/api/consultative-call", json={
+            "payoff_id": "PO-2026-7492",
+            "call_completed": True,
+            "client_directed_proceeds": True,
+            "recorded_by": "Greg Miller (Commercial RM)",
+            "tax_strategy": "cash_out",
+        })
+        assert resp.status_code == 200
+        assert "Business Premier ICS" in resp.json()["call_disposition"]
+    finally:
+        reset_deal("PO-2026-7492")
+        reset_deal("PO-2026-8821")
 
 
 def test_glba_quarantine_flow():
@@ -542,6 +704,61 @@ def test_wealth_onboarding_deal_parameterization():
 
     # Reset Scioto consent
     client.post("/api/quarantine", json={"payoff_id": "PO-2026-6104", "verbal_consent_recorded": False})
+
+
+def test_wealth_dossier_does_not_present_escrowed_exchange_proceeds_as_investable():
+    """An exchange has no investable balance at the moment the dossier opens.
+
+    Tier 2 wealth release fires at closing + 30 days, which on Buckeye lands
+    before the 45-day identification deadline. The proceeds are therefore still
+    in qualified escrow and legally committed to a purchase the client has not
+    yet named.
+
+    The dossier previously described them the same way it describes a taxable
+    sale: a $500,000 ICS liquidity sleeve, a capital-preservation mandate, and
+    an FDIC pass-through sweep. Each of those is an invitation to allocate money
+    that cannot be allocated, and the sweep is titled to the client -- which is
+    constructive receipt, the one act that voids the deferral.
+    """
+    try:
+        for pid in ("PO-2026-7492", "PO-2026-8821"):
+            log_call(pid)
+            client.post("/api/quarantine", json={
+                "payoff_id": pid,
+                "verbal_consent_recorded": True,
+                "recorded_by": "Greg Miller",
+            })
+
+        exchange = client.get("/api/wealth-onboarding?payoff_id=PO-2026-7492").json()
+        assert exchange["quarantined"] is False
+
+        depository = exchange["sei_custodial_shell"]["cash_depository_link"]
+        assert "Qualified Escrow" in depository
+        assert "Sweep" not in depository
+
+        ips = exchange["draft_ips_scaffolding"]
+        assert "$500,000" not in ips["liquidity_reserve_sleeve"]
+        assert "$0.00" in ips["liquidity_reserve_sleeve"]
+        assert "Capital Preservation" not in ips["mandate"]
+        assert "Replacement Property" in ips["mandate"]
+
+        wealth_source = next(
+            f for f in exchange["staged_kyc_cip"]["verified_fields"]
+            if f["field"] == "Source of Wealth"
+        )
+        assert "1031" in wealth_source["value"]
+        assert "deferred, not realized" in wealth_source["value"]
+
+        # The cash-out deal is genuinely a liquidity event, so it keeps the
+        # sweep and the preservation mandate. If this half regresses, the fix
+        # above has been applied to both branches instead of one.
+        cash_out = client.get("/api/wealth-onboarding?payoff_id=PO-2026-8821").json()
+        assert "Sweep" in cash_out["sei_custodial_shell"]["cash_depository_link"]
+        assert "$500,000" in cash_out["draft_ips_scaffolding"]["liquidity_reserve_sleeve"]
+        assert "Capital Preservation" in cash_out["draft_ips_scaffolding"]["mandate"]
+    finally:
+        for pid in ("PO-2026-7492", "PO-2026-8821"):
+            reset_deal(pid)
 
 
 def test_user_endpoint():

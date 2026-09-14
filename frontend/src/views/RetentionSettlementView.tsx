@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ValuationData, QuarantineState, WireInstructionData, PayoffItem } from '../types';
 import { StaleRecordNotice } from '../components/StaleRecordNotice';
 import {
@@ -17,6 +17,7 @@ import {
   Send,
   AlertTriangle,
   ChevronDown,
+  CalendarClock,
 } from 'lucide-react';
 
 /**
@@ -29,41 +30,97 @@ import {
  * introduction is offered after closing and only as a question -- pitching
  * advisory services to a sponsor days from settlement is the behaviour the
  * whole consent gate exists to prevent.
+ *
+ * This is built per deal rather than declared once. It used to be a module
+ * constant naming Marcus Vance, Riverfront Commons, First American and a 4.85%
+ * ICS sweep -- so on the Buckeye exchange the banker was handed a script that
+ * greeted the wrong person about the wrong building held at the wrong title
+ * company, and offered a product that would have voided the client's tax
+ * deferral. Every one of those is a deal attribute, so every one of them is
+ * read from the deal.
  */
-const CALL_SCRIPT: { beat: string; line: string }[] = [
-  {
-    beat: 'Open — name the reason, plainly',
-    line:
-      "Marcus, it's Greg Miller at Huntington. The payoff quote request came across my desk on the " +
-      'Riverfront Commons facility, so it looks like you have the property under contract. ' +
-      'Congratulations. I wanted to get ahead of the closing mechanics with you rather than have ' +
-      'them land on you the week of settlement.',
-  },
-  {
-    beat: 'Offer closing safety — not a product pitch',
-    line:
-      'The piece I want to make easy is where your net proceeds actually sit on settlement day. ' +
-      'We can have a Business Premier account with Insured Cash Sweep open and ready before you ' +
-      'close, so the funds land in an account titled to your LLC with FDIC passthrough across the ' +
-      'IntraFi network — currently 4.85% APY. Nothing sits uninsured over a weekend.',
-  },
-  {
-    beat: 'Hand control to the client — the bank never instructs title',
-    line:
-      "If that's useful, I'll send the routing packet to you by DocuSign — to you, not to First " +
-      'American. You execute it and submit it as your own seller closing authorization. We include ' +
-      "Huntington's bank verification letter and a direct callback line so their escrow officer " +
-      'can verify it independently before they move a dollar.',
-  },
-  {
+const buildCallScript = (
+  deal: PayoffItem | undefined,
+  taxStrategy: 'cash_out' | '1031_exchange',
+  yieldApy: number,
+): { beat: string; line: string }[] => {
+  const firstName = (deal?.primary_guarantor || 'Marcus Vance').split(' ')[0];
+  const banker = deal?.commercial_rm || 'Greg Miller';
+  const property = deal?.property_name || 'the property';
+  const titleCompany = deal?.title_company || 'the title company';
+  const entity = deal?.borrower_entity || 'your entity';
+  const isExchange = taxStrategy === '1031_exchange';
+
+  // The middle beat is the one that has to diverge. On a taxable sale the offer
+  // is a sweep account titled to the borrower; on an exchange that same account
+  // is constructive receipt and would collapse the deferral, so the offer is
+  // the qualified escrow instead -- and, more valuable to both sides, the
+  // acquisition financing the 180-day window obliges the client to arrange.
+  const proceedsBeat = isExchange
+    ? {
+        beat: 'Protect the exchange — the account matters more than the rate',
+        line:
+          'Because this is a like-kind exchange, the proceeds cannot touch an account with your ' +
+          'name on it at any point — that is constructive receipt and it would collapse the ' +
+          'deferral. We can hold them in our qualified escrow alongside your intermediary, ' +
+          `currently ${yieldApy.toFixed(2)}% APY, so the funds stay compliant and still earn ` +
+          'while you are inside the identification window.',
+      }
+    : {
+        beat: 'Offer closing safety — not a product pitch',
+        line:
+          'The piece I want to make easy is where your net proceeds actually sit on settlement day. ' +
+          'We can have a Business Premier account with Insured Cash Sweep open and ready before you ' +
+          'close, so the funds land in an account titled to your LLC with FDIC passthrough across the ' +
+          `IntraFi network — currently ${yieldApy.toFixed(2)}% APY. Nothing sits uninsured over a weekend.`,
+      };
+
+  const script = [
+    {
+      beat: 'Open — name the reason, plainly',
+      line:
+        `${firstName}, it's ${banker} at Huntington. The payoff quote request came across my desk on the ` +
+        `${property} facility, so it looks like you have the property under contract. ` +
+        'Congratulations. I wanted to get ahead of the closing mechanics with you rather than have ' +
+        'them land on you the week of settlement.',
+    },
+    proceedsBeat,
+    {
+      beat: 'Hand control to the client — the bank never instructs title',
+      line:
+        `If that's useful, I'll send the routing packet to you by DocuSign — to you, not to ` +
+        `${titleCompany}. You execute it and submit it as your own seller closing authorization. We include ` +
+        "Huntington's bank verification letter and a direct callback line so their escrow officer " +
+        'can verify it independently before they move a dollar.',
+    },
+  ];
+
+  // On an exchange the client is contractually obliged to buy inside 180 days.
+  // That is a loan somebody is going to write, and the conversation is useless
+  // if it happens after he has arranged it elsewhere.
+  if (isExchange) {
+    script.push({
+      beat: 'Name the next transaction — the client is already committed to it',
+      line:
+        'One more thing while the clock is running. You have forty-five days from closing to ' +
+        'identify the replacement property and a hundred and eighty to complete the purchase, so ' +
+        `you will be financing an acquisition either way. I would like ${entity} to have our terms ` +
+        'in hand before you are up against the identification date. Can I get our team started on ' +
+        'that now?',
+    });
+  }
+
+  script.push({
     beat: 'The introduction — after closing, and only if he opens the door',
     line:
       "Last thing, and only if it's helpful. Once you're through closing and you know what you're " +
       'doing with the proceeds, I can introduce you to one of our wealth advisors. No need to ' +
       "decide anything now — I'd rather do it after settlement. Would you like me to make that " +
       'introduction?',
-  },
-];
+  });
+
+  return script;
+};
 
 /** Things that turn a good call into a finding. */
 const CALL_GUARDRAILS: string[] = [
@@ -73,6 +130,39 @@ const CALL_GUARDRAILS: string[] = [
   'Do not present the wealth introduction as a requirement, and do not schedule it before closing.',
 ];
 
+/**
+ * Render an ISO date for display.
+ *
+ * Parsed as local calendar parts rather than handed to `new Date(iso)`, which
+ * treats a bare `YYYY-MM-DD` as UTC midnight and therefore renders the previous
+ * day for anyone west of Greenwich. A statutory deadline shown one day early is
+ * a number a banker will act on.
+ */
+const formatDeadline = (iso: string): string => {
+  if (!iso) return '—';
+  const [y, m, d] = iso.split('-').map(Number);
+  if (!y || !m || !d) return iso;
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+};
+
+/** Whole calendar days from today until an ISO date; negative once past. */
+const daysUntil = (iso: string): number | null => {
+  if (!iso) return null;
+  const [y, m, d] = iso.split('-').map(Number);
+  if (!y || !m || !d) return null;
+  const target = new Date(y, m - 1, d);
+  const now = new Date();
+  // Both floored to local midnight so the result is a count of dates, not of
+  // elapsed 24-hour periods -- otherwise the number changes at an arbitrary
+  // time of day rather than at midnight.
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.round((target.getTime() - today.getTime()) / 86400000);
+};
+
 interface RetentionSettlementViewProps {
   deal?: PayoffItem;
   valuation: ValuationData;
@@ -80,6 +170,10 @@ interface RetentionSettlementViewProps {
   isDealDataStale?: boolean;
   onSalePriceChange: (price: number) => void;
   taxStrategy: 'cash_out' | '1031_exchange';
+  /** What the detection layer concluded, independent of any manual override.
+   *  Needed so the two strategy cards can say which of them is the detected
+   *  one; the labels were previously fixed to the shape of a single deal. */
+  detectedTaxStrategy: 'cash_out' | '1031_exchange';
   onTaxStrategyChange: (strategy: 'cash_out' | '1031_exchange') => void;
   quarantineState: QuarantineState;
   onToggleQuarantine: () => void;
@@ -108,6 +202,7 @@ export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = (
   isDealDataStale = false,
   onSalePriceChange,
   taxStrategy,
+  detectedTaxStrategy,
   onTaxStrategyChange,
   quarantineState,
   onToggleQuarantine,
@@ -125,6 +220,14 @@ export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = (
 }) => {
   const [copied, setCopied] = useState(false);
 
+  // Rebuilt whenever the deal or the route changes. The APY comes from the
+  // valuation rather than a literal, so the rate the banker reads aloud is the
+  // one the settlement instruction actually routes to.
+  const callScript = useMemo(
+    () => buildCallScript(deal, taxStrategy, valuation.yield_apy),
+    [deal, taxStrategy, valuation.yield_apy],
+  );
+
   // The talk track is reference material, not the point of the screen. Closed
   // by default so the card leads with the state of the relationship and the
   // two things the banker can actually do; opened when the script is wanted.
@@ -136,6 +239,23 @@ export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = (
   useEffect(() => {
     setScriptOpen(false);
   }, [demoResetNonce, deal?.id]);
+
+  // True when the banker has moved off what detection concluded.
+  //
+  // The two strategy cards below used to assert this statically -- the 1031
+  // card was always badged "Manual Override" and cash-out was always "(Default)"
+  // -- which was right only on a deal detected as a cash-out. On Buckeye, where
+  // detection concluded an exchange, the correct route was labelled as a manual
+  // deviation and the deviation was labelled as the default.
+  const isStrategyOverridden = taxStrategy !== detectedTaxStrategy;
+
+  // The statutory clock, or null on a taxable sale.
+  //
+  // Keyed off the server's null rather than off `taxStrategy === '1031_exchange'`
+  // deliberately. The strategy toggle changes instantly; the valuation behind it
+  // is a round trip. Keying the panel off the toggle would render an exchange
+  // clock over the previous deal's deadlines for the duration of that fetch.
+  const exchangeTimeline = valuation.exchange_timeline ?? null;
 
   // Gate 1. Everything client-facing on this screen hangs off it.
   const callLogged = quarantineState.call_logged === true;
@@ -320,7 +440,7 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
                   </span>
                   <span className="flex items-center gap-2 shrink-0">
                     <span className="text-[10px] text-slate-400 tabular-nums hidden sm:inline">
-                      {CALL_SCRIPT.length} beats · {CALL_GUARDRAILS.length} do-not-say rules
+                      {callScript.length} beats · {CALL_GUARDRAILS.length} do-not-say rules
                     </span>
                     <ChevronDown
                       className={`w-4 h-4 text-slate-400 transition-transform ${
@@ -333,7 +453,7 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
                 {scriptOpen && (
                   <div className="p-4 space-y-5 border-t border-slate-200 dark:border-slate-800">
                     <div className="space-y-4">
-                      {CALL_SCRIPT.map((s, i) => (
+                      {callScript.map((s, i) => (
                         <div key={i} className="flex gap-4">
                           <span className="shrink-0 w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[11px] font-bold flex items-center justify-center tabular-nums">
                             {i + 1}
@@ -504,8 +624,24 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
               </div>
             </div>
 
+            {/* Where the money goes. This asserted a cash-out unconditionally,
+                so on an exchange it told the banker that proceeds legally
+                barred from a client-titled account would flow into one. */}
             <div className="pt-2 text-[11px] text-slate-400">
-              Full net seller equity of ${(valuation.net_equity_proceeds / 1000000).toFixed(2)}M flows directly into liquid cash-out settlement structure.
+              {taxStrategy === '1031_exchange' ? (
+                <>
+                  Estimated exchange proceeds of $
+                  {(valuation.net_equity_proceeds / 1000000).toFixed(2)}M are deferred, not
+                  realized. They route to the qualified escrow and must not pass through any
+                  account titled to the taxpayer.
+                </>
+              ) : (
+                <>
+                  Full net seller equity of $
+                  {(valuation.net_equity_proceeds / 1000000).toFixed(2)}M flows directly into
+                  liquid cash-out settlement structure.
+                </>
+              )}
             </div>
 
             {/* Disclosure. The netting above stops at closing costs. */}
@@ -532,8 +668,15 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
                 <h2 className="text-xs font-bold tracking-tight text-slate-900 dark:text-white uppercase tracking-wider">
                   Detected Retention Structure
                 </h2>
+                {/* Read from the deal. This was the literal string "Taxable
+                    Cash-Out (94% Confidence)", which on Buckeye sat directly
+                    above an escrow route and contradicted the pipeline screen
+                    that had classified the same deal as a §1031 exchange. */}
                 <span className="text-[11px] text-slate-400 block font-medium mt-0.5">
-                  Algorithm Classification: Taxable Cash-Out (94% Confidence)
+                  Algorithm Classification: {deal?.tax_strategy_detected || 'Not classified'}
+                  {typeof deal?.flight_confidence_score === 'number' && (
+                    <> ({Math.round(deal.flight_confidence_score)}% Confidence)</>
+                  )}
                 </span>
               </div>
               <span className="text-xs font-bold text-[#006738] dark:text-emerald-400 uppercase tracking-wider">
@@ -570,8 +713,12 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
                   <div className="py-2.5 flex justify-between gap-4">
                     <span className="text-slate-400">Target Depository</span>
                     {packetUnlocked ? (
+                      // Read from the packet the server generated. This was the
+                      // literal "HBAN-4401-9921-00", which no longer matches
+                      // anything the engine emits and was the same string on
+                      // every borrower in the book.
                       <span className="font-semibold text-slate-800 dark:text-slate-200">
-                        HBAN-4401-9921-00 (Business Premier ICS)
+                        {wireInstructions.account_number} (Business Premier ICS)
                       </span>
                     ) : (
                       // An account number implies an account exists. Opening one
@@ -599,14 +746,19 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
 
                 <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
                   <span className="text-slate-400 text-[11px]">
-                    Need 1031 tax deferral instead?
+                    {isStrategyOverridden
+                      ? 'Detection concluded a 1031 exchange:'
+                      : 'Need 1031 tax deferral instead?'}
                   </span>
                   <button
                     type="button"
                     onClick={() => onTaxStrategyChange('1031_exchange')}
                     className="text-xs font-semibold text-slate-500 hover:text-[#006738] dark:text-slate-400 dark:hover:text-emerald-400 transition"
                   >
-                    Switch to 1031 QI Escrow &rarr;
+                    {isStrategyOverridden
+                      ? 'Revert to 1031 QI Escrow'
+                      : 'Switch to 1031 QI Escrow'}{' '}
+                    &rarr;
                   </button>
                 </div>
               </div>
@@ -624,12 +776,30 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
                       Independent partner QI network (IPX1031 Partnered) for tax-deferred exchange escrow.
                     </p>
                   </div>
-                  <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
-                    Manual Override
+                  <span
+                    className={`shrink-0 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
+                      isStrategyOverridden
+                        ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                        : 'bg-[#006738] text-white'
+                    }`}
+                  >
+                    {isStrategyOverridden ? 'Manual Override' : 'Detected'}
                   </span>
                 </div>
 
                 <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                  <div className="py-2.5 flex justify-between gap-4">
+                    <span className="text-slate-400">Qualified Escrow</span>
+                    {packetUnlocked ? (
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">
+                        {wireInstructions.account_number}
+                      </span>
+                    ) : (
+                      <span className="font-medium text-slate-400 dark:text-slate-500 italic text-right">
+                        Assigned on client instruction
+                      </span>
+                    )}
+                  </div>
                   <div className="py-2.5 flex justify-between">
                     <span className="text-slate-400">QI Partner</span>
                     <span className="font-semibold text-slate-800 dark:text-slate-200">Investment Property Exchange Services (IPX1031)</span>
@@ -638,27 +808,142 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
                     <span className="text-slate-400">Safe Harbor</span>
                     <span className="font-semibold text-[#006738] dark:text-emerald-400">Treas. Reg. § 1.1031(k)-1(k) Compliant</span>
                   </div>
-                  <div className="py-2.5 flex justify-between">
+                  <div className="py-2.5 flex justify-between gap-4">
                     <span className="text-slate-400">Timeline Restriction</span>
-                    <span className="font-medium text-slate-600 dark:text-slate-300">45-day ID / 180-day exchange window</span>
+                    {/* The generic "45-day ID / 180-day exchange window" is the
+                        rule, not this deal's dates. A banker cannot act on a
+                        rule; the panel below turns it into two dates and a
+                        countdown. */}
+                    <span className="font-medium text-slate-600 dark:text-slate-300 text-right">
+                      {exchangeTimeline && exchangeTimeline.identification_deadline
+                        ? `Identify by ${formatDeadline(exchangeTimeline.identification_deadline)} · close by ${formatDeadline(exchangeTimeline.exchange_deadline)}`
+                        : '45-day ID / 180-day exchange window'}
+                    </span>
                   </div>
                 </div>
 
                 <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
                   <span className="text-slate-400 text-[11px]">
-                    Revert to algorithmic detection:
+                    {isStrategyOverridden
+                      ? 'Revert to algorithmic detection:'
+                      : 'Client abandoned the exchange?'}
                   </span>
                   <button
                     type="button"
                     onClick={() => onTaxStrategyChange('cash_out')}
                     className="text-xs font-semibold text-[#006738] hover:underline dark:text-emerald-400 transition"
                   >
-                    &larr; Switch back to Cash-Out (Default)
+                    &larr;{' '}
+                    {isStrategyOverridden
+                      ? 'Switch back to Cash-Out (Detected)'
+                      : 'Override to Taxable Cash-Out'}
                   </button>
                 </div>
               </div>
             )}
           </div>
+
+          {/* Card 3: Statutory Exchange Clock.
+              Rendered only when the server computed a timeline, which it does
+              only for an exchange. Two things live here that existed nowhere in
+              the product before: the dates the client is actually working
+              against, and the loan those dates oblige him to take out. */}
+          {exchangeTimeline && (
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CalendarClock className="w-4 h-4 text-[#006738] dark:text-emerald-400" />
+                  <h2 className="text-xs font-bold tracking-tight text-slate-900 dark:text-white uppercase tracking-wider">
+                    Statutory Exchange Clock
+                  </h2>
+                </div>
+                <span className="text-[11px] text-slate-400 font-medium">
+                  From closing {formatDeadline(exchangeTimeline.relinquished_closing_date)}
+                </span>
+              </div>
+
+              {exchangeTimeline.identification_deadline ? (
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    {
+                      label: `${exchangeTimeline.identification_days_from_closing}-Day Identification`,
+                      iso: exchangeTimeline.identification_deadline,
+                      note: 'Replacement property must be identified in writing.',
+                    },
+                    {
+                      label: `${exchangeTimeline.exchange_days_from_closing}-Day Exchange`,
+                      iso: exchangeTimeline.exchange_deadline,
+                      note: 'Purchase must complete or the deferral is lost.',
+                    },
+                  ].map(({ label, iso, note }) => {
+                    const remaining = daysUntil(iso);
+                    return (
+                      <div
+                        key={label}
+                        className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 space-y-1"
+                      >
+                        <span className="text-[10px] text-slate-400 uppercase font-bold block tracking-wider">
+                          {label}
+                        </span>
+                        <span className="font-extrabold text-slate-900 dark:text-white tabular-nums text-sm block">
+                          {formatDeadline(iso)}
+                        </span>
+                        {remaining !== null && (
+                          <span
+                            className={`text-[11px] font-semibold tabular-nums block ${
+                              remaining < 0
+                                ? 'text-slate-400'
+                                : remaining <= 14
+                                  ? 'text-amber-600 dark:text-amber-500'
+                                  : 'text-[#006738] dark:text-emerald-400'
+                            }`}
+                          >
+                            {remaining < 0
+                              ? `Elapsed ${Math.abs(remaining)} days ago`
+                              : `${remaining} days remaining`}
+                          </span>
+                        )}
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed block pt-0.5">
+                          {note}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                // The server returns blank deadlines rather than guessing from
+                // an unparseable closing date. Say so instead of showing dashes.
+                <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                  No scheduled closing date on file, so the statutory deadlines
+                  cannot be computed. Both windows run from the closing on the
+                  relinquished property.
+                </div>
+              )}
+
+              {/* The largest item in the scenario, and the one the deck never
+                  named. The client is contractually obliged to buy inside the
+                  window -- the only open question is which bank writes it. */}
+              <div className="p-4 rounded-xl border border-[#006738]/30 dark:border-emerald-600/30 bg-emerald-50/25 dark:bg-emerald-950/20 space-y-1.5">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-[10px] text-[#006738] dark:text-emerald-400 uppercase font-bold tracking-wider">
+                    Next Action — Replacement Property Financing
+                  </span>
+                  {exchangeTimeline.replacement_financing_owner && (
+                    <span className="shrink-0 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                      {exchangeTimeline.replacement_financing_owner}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  {exchangeTimeline.replacement_financing_action}
+                </p>
+              </div>
+
+              <p className="text-[10px] leading-relaxed text-slate-400 dark:text-slate-500">
+                {exchangeTimeline.statutory_basis}
+              </p>
+            </div>
+          )}
 
         </div>
 

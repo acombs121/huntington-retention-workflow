@@ -27,7 +27,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from iap_jwt_middleware import get_authenticated_user
-from domain.models import PayoffStatement
+from domain.models import ExchangeTimeline, PayoffStatement
 from domain.liquidity_engine import LiquidityEngine
 from domain.demo_clock import rebase as rebase_demo_dates
 from domain.demo_clock import rebase_fixture as rebase_demo_fixture
@@ -259,13 +259,67 @@ PAYOFF_QUEUE = [
 
 
 def get_payoff_by_id(payoff_id: str) -> PayoffStatement:
-    """Adapts in-memory payoff queue items to the canonical PayoffStatement domain model."""
+    """Adapts in-memory payoff queue items to the canonical PayoffStatement domain model.
+
+    The record is re-based into today's frame before the model is built, so
+    `scheduled_closing_date` is the date the rest of the app is showing.
+
+    This matters more than it looks. The §1031 identification and exchange
+    deadlines are *derived* from the closing date, so feeding the engine the
+    authored 2026-09-28 instead of today's 2026-10-08 produced statutory
+    deadlines ten days early -- and unlike the authored dates, a derived date
+    is not in the demo clock's allow-list, so nothing downstream could correct
+    it. A wrong 45-day deadline is the kind of number a room writes down.
+    """
     if not PAYOFF_QUEUE:
         raise HTTPException(status_code=404, detail="Payoff queue is empty")
     raw = next((p for p in PAYOFF_QUEUE if p["id"] == payoff_id), None)
     if not raw:
         raise HTTPException(status_code=404, detail=f"Payoff deal '{payoff_id}' not found.")
+    raw = rebase_demo_dates(raw)
     return PayoffStatement(**{k: v for k, v in raw.items() if k in PayoffStatement.model_fields})
+
+
+TAX_STRATEGIES = ("cash_out", "1031_exchange")
+
+
+def detected_tax_strategy(payoff_id: str) -> str:
+    """The routing strategy the detection layer concluded for this deal.
+
+    Read from `tax_strategy_detected` on the queue record, which is the same
+    string the pipeline screen shows the banker.
+
+    This exists because every entry point used to default to `cash_out`
+    independently. `PO-2026-7492` is classified as an IRC §1031 exchange at 88%
+    confidence, and was still valued, routed and audited as a taxable sale --
+    into an ICS sweep titled to the borrower, which is the one account a §1031
+    taxpayer must never touch. The detection was correct and nothing read it.
+
+    The banker can still override. Detection seeds the decision; it does not
+    make it. See `resolve_tax_strategy`.
+    """
+    raw = next((p for p in PAYOFF_QUEUE if p["id"] == payoff_id), None)
+    detected = (raw or {}).get("tax_strategy_detected", "") or ""
+    # The "eligible" exclusion is load-bearing, not defensive padding.
+    # PO-2026-8821 is detected as "Taxable Cash-Out (1031 Eligible)" -- it
+    # contains "1031" and is emphatically NOT one. The borrower may still elect
+    # an exchange before closing, which is why the phrase is there at all, but
+    # until he does the route is taxable. A bare `"1031" in detected` would
+    # route the flagship cash-out deal into a qualified escrow.
+    is_exchange = "1031" in detected and "eligible" not in detected.lower()
+    return "1031_exchange" if is_exchange else "cash_out"
+
+
+def resolve_tax_strategy(payoff_id: str, requested: Optional[str]) -> str:
+    """Honour an explicit strategy, otherwise fall back to what was detected.
+
+    `None` means "the caller did not express a preference", which is different
+    from "the caller asked for a cash-out". Defaulting the absent case to
+    `cash_out` is precisely the bug this replaces.
+    """
+    if requested in TAX_STRATEGIES:
+        return requested
+    return detected_tax_strategy(payoff_id)
 
 
 
@@ -286,13 +340,29 @@ class GenerateResponse(BaseModel):
     live: bool = True
 
 class ValuationRequest(BaseModel):
+    """Inputs to the triage valuation.
+
+    Every financial field is an *optional override*. Omitted, the deal's own
+    figures are used.
+
+    They were previously required-with-defaults, and the defaults were
+    PO-2026-8821's numbers -- $8.5M sale price, $637,500 NOI, 7.5% cap rate,
+    $5,214,800 debt. Because the handler assigned them onto the payoff
+    unconditionally, a request naming any other deal was answered with the Vance
+    deal's economics under the other borrower's name. Asking for Buckeye's
+    valuation returned $2,902,700 of net proceeds; Buckeye's actual figure is
+    $1,588,250. The only reason the screen looked right is that the frontend
+    happens to send all four fields on every request.
+    """
     payoff_id: Optional[str] = Field(default="PO-2026-8821")
-    sale_price: float = Field(default=8500000.00, ge=500000.00, le=50000000.00)
-    noi: float = Field(default=637500.00, gt=0)
-    cap_rate: float = Field(default=0.075, gt=0, le=1.0)
-    debt_payoff: float = Field(default=5214800.00, ge=0)
+    sale_price: Optional[float] = Field(default=None, ge=500000.00, le=50000000.00)
+    noi: Optional[float] = Field(default=None, gt=0)
+    cap_rate: Optional[float] = Field(default=None, gt=0, le=1.0)
+    debt_payoff: Optional[float] = Field(default=None, ge=0)
     closing_cost_rate: float = Field(default=0.045, ge=0, le=1.0)
-    tax_strategy: str = Field(default="cash_out", pattern="^(cash_out|1031_exchange)$")
+    # None means "not specified", and is resolved from the deal's detected
+    # strategy. A hard default of cash_out here silently overrode detection.
+    tax_strategy: Optional[str] = Field(default=None, pattern="^(cash_out|1031_exchange)$")
 
 class ValuationResponse(BaseModel):
     sale_price: float
@@ -311,6 +381,9 @@ class ValuationResponse(BaseModel):
     deposit_credit_pct: float
     finra_rule_2040_compliant: bool
     model_risk_designation: str
+    # Populated only on the 1031 route. Null on a taxable cash-out, and the UI
+    # keys the exchange panel off that null rather than off the strategy string.
+    exchange_timeline: Optional[ExchangeTimeline] = None
 
 class ConsultativeCallRequest(BaseModel):
     """Records that a banker actually spoke to the borrower.
@@ -328,6 +401,10 @@ class ConsultativeCallRequest(BaseModel):
     client_directed_proceeds: bool = True
     recorded_by: str = "Greg Miller (Commercial RM)"
     disposition: Optional[str] = None
+    # The route the banker had selected when the call was logged. None resolves
+    # from detection. Supplied by the UI so a manual override reaches the audit
+    # record instead of being discarded.
+    tax_strategy: Optional[str] = None
 
 
 class QuarantineToggleRequest(BaseModel):
@@ -668,14 +745,23 @@ async def calculate_valuation(
     """
     target_id = req.payoff_id or "PO-2026-8821"
     payoff = get_payoff_by_id(target_id)
-    payoff.noi_trailing_q1 = req.noi
-    payoff.submarket_cap_rate = req.cap_rate
-    payoff.payoff_quote_amount = req.debt_payoff
+
+    # Apply only the overrides the caller actually sent. Assigning these
+    # unconditionally meant an omitted field silently replaced the deal's own
+    # figure with PO-2026-8821's, so every other borrower was valued on the
+    # Vance deal's economics. The slider on the settlement screen is what these
+    # exist for; absent it, the deal speaks for itself.
+    if req.noi is not None:
+        payoff.noi_trailing_q1 = req.noi
+    if req.cap_rate is not None:
+        payoff.submarket_cap_rate = req.cap_rate
+    if req.debt_payoff is not None:
+        payoff.payoff_quote_amount = req.debt_payoff
 
     assessment = LiquidityEngine.assess(
         payoff=payoff,
         sale_price=req.sale_price,
-        tax_strategy=req.tax_strategy,
+        tax_strategy=resolve_tax_strategy(target_id, req.tax_strategy),
         closing_cost_rate=req.closing_cost_rate,
     )
     return ValuationResponse(**assessment.to_legacy_valuation_dict())
@@ -709,11 +795,28 @@ async def log_consultative_call(
     audit_data = f"{target_id}:{req.recorded_by}:{now_iso}:CONSULTATIVE-CALL-RECORD".encode("utf-8")
     crypto_hash = hashlib.sha256(audit_data).hexdigest()
 
-    disposition = req.disposition or (
-        "Borrower directed net settlement proceeds to Huntington Business Premier ICS."
-        if req.client_directed_proceeds
-        else "Borrower declined Huntington settlement routing. No packet generated."
-    )
+    # The disposition is the compliance record of what the client actually
+    # asked for, so it has to name the route the client was actually offered.
+    #
+    # This was a single hardcoded ICS sentence. On PO-2026-7492 -- an IRC §1031
+    # exchange -- it therefore recorded that the borrower "directed net
+    # settlement proceeds to Huntington Business Premier ICS", a sweep account
+    # titled to the borrower. Written down and shown on screen, that is a
+    # description of constructive receipt: the one act that voids the deferral
+    # the rest of this path exists to protect.
+    strategy = resolve_tax_strategy(target_id, req.tax_strategy)
+    if req.client_directed_proceeds:
+        default_disposition = (
+            "Borrower directed exchange proceeds to the Huntington 1031 Qualified Escrow "
+            "Depository, with IPX1031 as independent Qualified Intermediary. Proceeds are "
+            "not to pass through any account titled to the borrower."
+            if strategy == "1031_exchange"
+            else "Borrower directed net settlement proceeds to Huntington Business Premier ICS."
+        )
+    else:
+        default_disposition = "Borrower declined Huntington settlement routing. No packet generated."
+
+    disposition = req.disposition or default_disposition
 
     record = {
         **record,
@@ -941,19 +1044,23 @@ async def reset_demo(
 @app.get("/api/wire-instructions")
 async def get_wire_instructions(
     payoff_id: str = Query("PO-2026-8821"),
-    strategy: str = Query("cash_out", pattern="^(cash_out|1031_exchange)$"),
+    strategy: Optional[str] = Query(None, pattern="^(cash_out|1031_exchange)$"),
     sale_price: float = Query(8500000.00, gt=0),
     user: Dict[str, Any] = Depends(get_authenticated_user)
 ) -> Dict[str, Any]:
     """
     Generates structured Huntington Verified Settlement Wire Instruction data
     via the Commercial Liquidity Engine.
+
+    `strategy` omitted means "use what was detected for this deal". It used to
+    default to cash_out, which produced an ICS sweep packet -- titled to the
+    borrower -- for a deal classified as a §1031 exchange.
     """
     payoff = get_payoff_by_id(payoff_id)
     assessment = LiquidityEngine.assess(
         payoff=payoff,
         sale_price=sale_price,
-        tax_strategy=strategy,
+        tax_strategy=resolve_tax_strategy(payoff_id, strategy),
     )
     return rebase_demo_fixture(
         assessment.settlement_wire.model_dump(),
@@ -1046,6 +1153,56 @@ def _wealth_onboarding_payload(payoff_id: str) -> Dict[str, Any]:
             }
         }
 
+    # The consented dossier below describes where the money goes after closing.
+    # On an exchange that is a different account, a different mandate, and a
+    # different opportunity, so it cannot be authored once for both routes.
+    #
+    # The timing is what makes this load-bearing rather than cosmetic. Tier 2
+    # wealth release fires at closing + 30 days. On Buckeye that is before the
+    # 45-day identification deadline -- so at the exact moment this dossier
+    # opens, the proceeds are sitting in qualified escrow and are legally
+    # committed to a purchase the client has not yet named. Presenting them as
+    # an investable balance would invite an advisor to solicit an allocation of
+    # money that cannot be allocated, and moving it into a Huntington sweep
+    # titled to the client is constructive receipt -- it would void the very
+    # deferral the settlement path was built to protect.
+    is_exchange = detected_tax_strategy(payoff_id) == "1031_exchange"
+
+    if is_exchange:
+        source_of_wealth = {
+            "field": "Source of Wealth",
+            "value": (
+                f"IRC §1031 Like-Kind Exchange ({payoff.property_name}). Proceeds are "
+                "held by the Qualified Intermediary and are deferred, not realized."
+            ),
+            "status": "Pending Replacement Property Acquisition",
+        }
+        cash_depository_link = (
+            "Huntington 1031 Qualified Escrow Depository (IPX1031 as QI). Not a "
+            "client-titled account; funds are not available for allocation."
+        )
+        ips_mandate = (
+            "Replacement Property Acquisition Support — not a discretionary mandate. "
+            "Exchange proceeds are committed to a like-kind purchase inside the "
+            "statutory window and are not investable assets."
+        )
+        ips_horizon = "Constrained by the 180-day exchange deadline"
+        liquidity_sleeve = (
+            "$0.00 — exchange proceeds are escrowed and may not be swept. Only "
+            "boot (cash the client elects not to reinvest, and which is taxable) "
+            "becomes investable, and no boot has been elected."
+        )
+    else:
+        source_of_wealth = {
+            "field": "Source of Wealth",
+            "value": f"Commercial Real Estate Disposition ({payoff.property_name})",
+            "status": "Pending Closing Settlement",
+        }
+        cash_depository_link = "Huntington National Bank FDIC Pass-Through Sweep"
+        ips_mandate = "Conservative Capital Preservation & Liquidity Bridge"
+        ips_horizon = "Medium-to-Long Term (Post-Disposition)"
+        liquidity_sleeve = "$500,000 in Ultra-Short Treasury / Huntington ICS"
+
     return {
         "status": "Active / Ready for Advisor Authorship",
         "quarantined": False,
@@ -1061,7 +1218,7 @@ def _wealth_onboarding_payload(payoff_id: str) -> Dict[str, Any]:
                 {"field": "Taxpayer Identification", "value": "EIN on file (Commercial Credit Vault)", "status": "Verified"},
                 {"field": "Residential Address", "value": f"Guarantor File: {payoff.primary_guarantor}, Columbus, OH", "status": "Verified"},
                 {"field": "Primary Banking Source", "value": f"Huntington Commercial DDA {PRIMARY_DDA_BY_PAYOFF.get(payoff_id, 'on file (Commercial Credit Vault)')}", "status": "Verified"},
-                {"field": "Source of Wealth", "value": f"Commercial Real Estate Disposition ({payoff.property_name})", "status": "Pending Closing Settlement"}
+                source_of_wealth
             ],
             "pending_advisor_actions": [
                 "OCC Reg 9 (12 C.F.R. § 9) Fiduciary Suitability Review",
@@ -1074,12 +1231,12 @@ def _wealth_onboarding_payload(payoff_id: str) -> Dict[str, Any]:
             "account_title": f"{payoff.primary_guarantor} Individual Wealth Management Account (SEI Data Cloud)",
             "custodian": "SEI Wealth Platform (SEI Data Cloud / Snowflake Zero-ETL) / Huntington Private Bank",
             "clearing_status": "Active Staged Shell (Snowflake Zero-ETL Connected)",
-            "cash_depository_link": "Huntington National Bank FDIC Pass-Through Sweep"
+            "cash_depository_link": cash_depository_link
         },
         "draft_ips_scaffolding": {
-            "mandate": "Conservative Capital Preservation & Liquidity Bridge",
-            "horizon": "Medium-to-Long Term (Post-Disposition)",
-            "liquidity_reserve_sleeve": "$500,000 in Ultra-Short Treasury / Huntington ICS",
+            "mandate": ips_mandate,
+            "horizon": ips_horizon,
+            "liquidity_reserve_sleeve": liquidity_sleeve,
             "asset_allocation_scaffold": [],
             "fiduciary_disclaimer": "Asset allocations and investment policies are withheld. Under OCC Reg 9 (12 C.F.R. § 9) fiduciary standards — or SEC Reg BI / FINRA Rule 2111 if the relationship routes to the HFA retail brokerage channel — investment strategies are not generated by the commercial bank and must be authored by the licensed advisor following formal investor discovery."
         },
