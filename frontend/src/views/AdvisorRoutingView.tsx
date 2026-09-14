@@ -592,8 +592,16 @@ Office: (614) 480-3320 | ${commercialRM.toLowerCase().replace(' ', '.')}@hunting
                 <p className="text-xs text-slate-700 dark:text-slate-300 mt-0.5">
                   Held for <strong>{principalName}</strong> &bull; CC: <strong>{selectedAdvisor.name}</strong> ({selectedAdvisor.email})
                 </p>
+                {/* Every clause here has to be true at the moment it renders.
+                    handleSendEmail is a local setTimeout with no network call,
+                    so this previously claimed "Logged in Commercial CRM" for a
+                    write that never happened -- and a Reg R referral record is
+                    exactly the kind of claim this audience will ask to see.
+                    The reference is deterministic and genuinely pre-assigned,
+                    the hold is derived from the closing date, and the CRM write
+                    is now stated as future rather than done. */}
                 <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 block font-medium">
-                  Logged in Commercial CRM &bull; {submittedTimestamp} &bull; Ref #{refId} &bull; Tier 2 hold: {TIER_2_HOLD_DAYS} days past the {closingDateLabel} closing
+                  Queued {submittedTimestamp} &bull; Reference #{refId} &bull; Tier 2 hold: {TIER_2_HOLD_DAYS} days past the {closingDateLabel} closing &bull; CRM referral record writes on release
                 </span>
               </div>
             </div>
