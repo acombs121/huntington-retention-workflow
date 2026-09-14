@@ -1363,9 +1363,15 @@ async def serve_spa(request: Request, full_path: str):
 
     target_path = (DIST_DIR / full_path).resolve()
 
-    # Defense-in-depth: enforce IAP authentication on document routes
+    # Defense-in-depth: enforce IAP authentication on document routes.
+    #
+    # `get_authenticated_user` is a plain `def`, not a coroutine. It is normally
+    # consumed via `Depends(...)`, which is why nothing here caught it: awaiting
+    # its return value raises `TypeError: object dict can't be used in 'await'
+    # expression`, so every document in DOCUMENT_FILENAMES answered 500 while
+    # the SPA and the API were unaffected.
     if full_path in DOCUMENT_FILENAMES or target_path.name in DOCUMENT_FILENAMES:
-        await get_authenticated_user(request)
+        get_authenticated_user(request)
 
     # Strict Path Traversal Guard: ensure resolved path is strictly within DIST_DIR
     if (DIST_DIR in target_path.parents or target_path == DIST_DIR) and target_path.is_file():
@@ -1393,7 +1399,8 @@ async def serve_spa(request: Request, full_path: str):
             candidate_file = (candidate_dir / full_path).resolve()
             if (candidate_dir in candidate_file.parents or candidate_file == candidate_dir) and candidate_file.is_file():
                 if full_path in DOCUMENT_FILENAMES:
-                    await get_authenticated_user(request)
+                    # Synchronous; see the note on the same call above.
+                    get_authenticated_user(request)
                     headers = {}
                     if candidate_file.name.endswith(".html"):
                         headers = {
