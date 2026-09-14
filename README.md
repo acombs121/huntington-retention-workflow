@@ -169,7 +169,6 @@ Run both the FastAPI backend and Vite frontend proxy concurrently bound strictly
 | `/api/health` | GET | Diagnostic telemetry (Platform, Model, Project, Service, IAP status, Version 6.0.0). |
 | `/api/user` | GET | Authenticated Google / IAP user profile (`developer@google.com` locally). |
 | `/api/payoffs` | GET | Inbound commercial servicing queue items with Synthetic Capacity Meter. |
-| `/api/flight-risk-trace` | GET | Autonomous agent reasoning chain explaining liquidity event classification & confidence. |
 | `/api/signal-graph` | GET | Google Cloud Spanner Graph (ISO GQL) signal grounding topology & entity network. |
 | `/api/entity-resolution` | GET | Multimodal document extraction with verified entity records, DLP status, and non-guarantor exclusion. |
 | `/api/valuation` | POST | Deterministic valuation calculator, loan payoff, net proceeds, and yield math. |

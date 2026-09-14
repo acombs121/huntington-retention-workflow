@@ -46,36 +46,6 @@ export interface PayoffItem {
   loan_type?: string;
   flight_confidence_score?: number;
   flight_risk_classification?: string;
-  flight_risk_trace?: DetectionReasoningTrace;
-}
-
-export interface FusedSignal {
-  category: string;
-  signal_name: string;
-  source: string;
-  observation: string;
-  risk_impact: string;
-  verdict: string;
-}
-
-export interface HypothesisEvaluation {
-  hypothesis: string;
-  confidence_pct: number;
-  status: 'ACCEPTED' | 'REJECTED' | 'UNCONFIRMED';
-  rationale: string;
-}
-
-export interface DetectionReasoningTrace {
-  payoff_id: string;
-  confidence_score: number;
-  urgency_tier: string;
-  classification: string;
-  summary_verdict: string;
-  model_agent: string;
-  evaluation_timestamp: string;
-  fused_signals: FusedSignal[];
-  hypotheses: HypothesisEvaluation[];
-  trace_steps: string[];
 }
 
 export interface BoundingBox {

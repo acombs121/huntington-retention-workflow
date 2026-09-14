@@ -147,7 +147,7 @@ quarantine_states: Dict[str, Dict[str, Any]] = {
     "PO-2026-6104": get_default_quarantine("PO-2026-6104"),
 }
 
-from fixtures import DETECTION_TRACES, SIGNAL_GRAPHS
+from fixtures import SIGNAL_GRAPHS
 
 PAYOFF_QUEUE = [
     {
@@ -182,8 +182,7 @@ PAYOFF_QUEUE = [
         "loan_type": "Commercial Real Estate Loan / T-14 Payoff Demand",
         "status": "Staged for Call",
         "flight_confidence_score": 94,
-        "flight_risk_classification": "Commercial Asset Sale / Taxable Cash-Out (High Flight Risk)",
-        "flight_risk_trace": DETECTION_TRACES["PO-2026-8821"]
+        "flight_risk_classification": "Commercial Asset Sale / Taxable Cash-Out (High Flight Risk)"
     },
     {
         "id": "PO-2026-7492",
@@ -217,8 +216,7 @@ PAYOFF_QUEUE = [
         "loan_type": "SBA 7(a) Commercial Loan / T-120 Surveillance",
         "status": "Document Parsing Complete",
         "flight_confidence_score": 88,
-        "flight_risk_classification": "IRC §1031 Like-Kind Exchange (Identified QI Intermediary)",
-        "flight_risk_trace": DETECTION_TRACES["PO-2026-7492"]
+        "flight_risk_classification": "IRC §1031 Like-Kind Exchange (Identified QI Intermediary)"
     },
     {
         "id": "PO-2026-6104",
@@ -252,8 +250,7 @@ PAYOFF_QUEUE = [
         "loan_type": "Healthcare Practice Facility Loan / T-45 Watchlist",
         "status": "Monitoring Queue",
         "flight_confidence_score": 58,
-        "flight_risk_classification": "Competitive Refinance Inquiry / Equity Restructuring",
-        "flight_risk_trace": DETECTION_TRACES["PO-2026-6104"]
+        "flight_risk_classification": "Competitive Refinance Inquiry / Equity Restructuring"
     }
 ]
 
@@ -497,22 +494,6 @@ async def get_payoff_queue(
         },
         "payoff_items": rebase_demo_dates(items)
     }
-
-
-@app.get("/api/flight-risk-trace")
-async def get_flight_risk_trace(
-    payoff_id: str = Query("PO-2026-8821"),
-    user: Dict[str, Any] = Depends(get_authenticated_user)
-) -> Dict[str, Any]:
-    """
-    Returns the multimodal Detection Agent Reasoning Trace for a payoff event,
-    explaining signal fusion across payoff intake, core ledger and LOS replacement loan queries,
-    Qualified Intermediary exhibits, and hypothesis testing.
-    """
-    trace = DETECTION_TRACES.get(payoff_id)
-    if not trace:
-        raise HTTPException(status_code=404, detail=f"Flight risk trace for deal '{payoff_id}' not found.")
-    return rebase_demo_dates(trace)
 
 
 @app.get("/api/signal-graph")

@@ -130,7 +130,13 @@ export const WealthQueueView: React.FC<WealthQueueViewProps> = ({
                 <span>&bull;</span>
                 <span className="font-medium">SEI Custodial Shell Staged</span>
                 <span>&bull;</span>
-                <span className="font-medium">Draft IPS Ready for Authorship</span>
+                {/* Not "Draft IPS Ready for Authorship". asset_allocation_scaffold
+                    is deliberately empty on both the quarantined and consented
+                    branches, and the dossier one click away states that no asset
+                    allocation, product or strategy is recommended. Claiming a
+                    drafted IPS contradicted that, on precisely the compliance
+                    point the product depends on. */}
+                <span className="font-medium">IPS Authorship Reserved to the Advisor</span>
               </div>
             </div>
 
