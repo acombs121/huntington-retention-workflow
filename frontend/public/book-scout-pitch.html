@@ -500,6 +500,25 @@ svg {
     padding-left: 64px;
 }
 
+/* Single-column variant. Slide 3 carries only the forward-looking column, so
+   the grid collapses to one centred measure. The border and padding on
+   .col-right existed to separate it from the column on its left; with nothing
+   there, they would read as a stray rule and a stray indent. */
+.split.solo {
+    grid-template-columns: min(1100px, 100%);
+    justify-content: center;
+}
+
+.split.solo .col-right {
+    border-left: none;
+    padding-left: 0;
+}
+
+/* No .next-item padding override here. An earlier version opened the rhythm to
+   34px to fill the dead air left when the business-case column came out; the
+   subheader above now occupies that band, and keeping both pushed the fourth
+   entry into the footer rule. Base spacing applies. */
+
 .col-head {
     font-size: 12px;
     font-weight: 800;
@@ -649,6 +668,9 @@ svg {
 .d10 { transition-delay: 1.12s; }
 .d11 { transition-delay: 1.24s; }
 .d12 { transition-delay: 1.55s; }
+/* Slots between d11 and d12 in time, not in name: d12 is the footer delay on
+   every slide, and the longer pause before the footer is deliberate. */
+.d13 { transition-delay: 1.36s; }
 
 /* ===========================================
    DECK CHROME (outside the slide design system)
@@ -893,9 +915,9 @@ body.editing [contenteditable="true"]:focus {
             <div>
               <div class="beat-title">It watches</div>
               <p class="beat-note">
-                Reads the loan systems every night across
-                <strong>11,099 commercial facilities</strong>, and flags the
-                ones about to pay off.
+                Reads the loan systems every night across the bank&rsquo;s entire
+                commercial real estate book, and flags the loans about to pay
+                off.
               </p>
             </div>
           </div>
@@ -959,52 +981,34 @@ body.editing [contenteditable="true"]:focus {
         <p class="eyebrow reveal d2" style="margin-top:56px;">The Return</p>
 
         <h1 class="headline lg reveal d3" style="margin-top:22px;">
-          It pays for itself on <em>saved hours alone</em>.
+          It returns <em>~5 to 8 bankers&rsquo;</em> worth of capacity.
         </h1>
 
-        <div class="split" style="margin-top:46px;">
+        <!-- The subheader keeps the two revenue effects off the headline claim.
+             Capacity is the case; margin and fees are stated as upside so the
+             room never hears them as a commitment. -->
+        <p class="standfirst reveal d4" style="margin-top:30px;max-width:1180px;">
+          That is the case on saved capacity alone. The margin on the deposits
+          it keeps, and the wealth management fees that follow them, are
+          <strong>upside</strong>.
+        </p>
 
-          <!-- === LEFT: THE BUSINESS CASE === -->
-          <div class="col-left">
+        <!-- One column. The supporting figures were removed deliberately: the
+             capacity range, the $899M and the 34% each rest on inputs this repo
+             grades as estimates or inferences, and the deck is not the place to
+             defend them. The headline carries the claim; the presenter carries
+             the arithmetic. -->
+        <div class="split solo" style="margin-top:40px;">
 
-            <div class="col-head reveal d4">Today &mdash; the promise</div>
-
-            <div class="figures">
-              <div class="fig-block reveal d5">
-                <div class="fig-label">Capacity returned, per year</div>
-                <div class="fig-value figure">$1.62M&ndash;$2.43M</div>
-                <div class="fig-note">5.5 to 8.3 banker FTEs, at $292,302 loaded cost</div>
-              </div>
-            </div>
-
-            <p class="provenance reveal d7">
-              Every input above comes from
-              <strong>Huntington&rsquo;s own public filings</strong>. Nothing in
-              this case depends on a customer changing behaviour.
-            </p>
-
-            <div class="upside reveal d8">
-              <div class="upside-label">Upside &mdash; not in the business case</div>
-              <p class="upside-text">
-                <strong>$899M</strong> of customer cash is in play each year.
-                Retaining <strong>34%</strong> of it covers Book Scout on its own.
-                Treat anything above that as profit, never as a promise.
-              </p>
-            </div>
-
-          </div>
-
-          <!-- === RIGHT: WHERE IT GOES NEXT === -->
           <div class="col-right">
 
-            <div class="col-head reveal d4">Next &mdash; the same machinery</div>
+            <div class="col-head reveal d5">Next &mdash; the same machinery</div>
 
             <div class="next-item reveal d9">
               <div class="next-title"><span class="rank">01</span>Renewal defense</div>
               <p class="next-note">
-                Point the same radar at maturities on the
-                <strong>$33.3B</strong> commercial book. Defends net interest
-                income, not fee income.
+                Point the same radar at maturities across the commercial
+                book. Defends net interest income, not fee income.
               </p>
             </div>
 
@@ -1016,8 +1020,18 @@ body.editing [contenteditable="true"]:focus {
               </p>
             </div>
 
+            <!-- No figure here on purpose. RC-C Part II is defined by original
+                 loan amount, not SBA participation, so nothing public sizes
+                 Huntington's 7(a) book. See docs/rc2.md. -->
             <div class="next-item reveal d11">
-              <div class="next-title"><span class="rank">03</span>The control pattern</div>
+              <div class="next-title"><span class="rank">03</span>SBA 7(a) exits</div>
+              <p class="next-note">
+                Business sales and owner retirements, read the same way.
+              </p>
+            </div>
+
+            <div class="next-item reveal d13">
+              <div class="next-title"><span class="rank">04</span>The control pattern</div>
               <p class="next-note">
                 A worked, documented example of governed AI in a bank. It
                 unblocks the next ten projects.

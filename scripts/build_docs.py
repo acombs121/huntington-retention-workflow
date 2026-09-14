@@ -453,7 +453,11 @@ def build_citations() -> str:
 # demo_script.html
 # --------------------------------------------------------------------------
 
-STEP_RE = re.compile(r"^Step\s+(\d+):\s+(.*?)\s*\(([\d:]+)\s*[\u2013-]\s*([\d:]+)\)\s*$")
+# "Step" and "Screen" are both accepted. The walkthrough is organised by screen;
+# the renderer's numbered-card layout is the same either way.
+STEP_RE = re.compile(
+    r"^(?:Step|Screen)\s+(\d+):\s+(.*?)\s*\(([\d:]+)\s*[\u2013-]\s*([\d:]+)\)\s*$"
+)
 
 
 def _seconds(clock: str) -> int:
@@ -506,15 +510,30 @@ def build_demo_script() -> str:
             continue
         seen_numbered = True
         if low.startswith("1."):
+            # Section 1 is the value proposition and always leads. It is the one
+            # position still hard-coded, because "first section" is what makes
+            # it the callout, not anything detectable in its contents.
             out.append(_demo_callout(title, content))
-        elif low.startswith("2."):
-            out.append(_demo_checklist(title, content))
-        elif low.startswith("3."):
-            steps = _collect_steps(content)
+            continue
+
+        # Everything after section 1 dispatches on SHAPE, not on the section
+        # number. This used to key on the leading digit, so reordering the
+        # document silently rendered the walkthrough through the pre-flight
+        # checklist layout -- a two-column grid that shattered the reading
+        # order into unreadable fragments. A renderer chosen by what a section
+        # contains cannot be broken by renumbering it.
+        found = _collect_steps(content)
+        if found:
+            steps = found
+            # The steps path used to jump straight to the timeline, which left
+            # this section as the only one on the page with no title.
+            out.append(f'    <div class="section-heading">{inline(title)}</div>')
             out.append(_demo_timeline(steps))
             for s in steps:
                 out.append(_demo_step_card(*s))
-        elif low.startswith("4."):
+        elif any(b.kind == "checklist" for b in content):
+            out.append(_demo_checklist(title, content))
+        elif "q&a" in low or "q &amp; a" in low:
             out.append(_demo_qa(title, content))
         else:
             out.append(
@@ -545,10 +564,10 @@ def _demo_header() -> str:
       <div class="title-area">
         <div class="brand-eyebrow">Institutional Executive Presentation &bull; C-Level Blueprint</div>
         <h1>Huntington Book Scout <span class="green-mark">Customer Demo Script</span></h1>
-        <p>Executive Presentation Walkthrough, Spanner Graph Grounding Defense, &amp; OCC/GLBA Regulatory Safe Harbors (v6.0)</p>
+        <p>The value proposition, then what to show on each screen and why it matters (v7.0)</p>
       </div>
       <div class="header-actions">
-        <span class="version-tag">Production v6.0</span>
+        <span class="version-tag">Production v7.0</span>
         <button type="button" class="theme-btn" onclick="toggleTheme()">
           <span id="theme-icon">&#9681;</span>
           <span id="theme-text">Toggle Dark / Light</span>
@@ -640,12 +659,20 @@ def _demo_step_card(
     dims: list[tuple[str, list[tuple[int, str, bool]]]] = []
     extras: list[str] = []
 
-    for b in content:
-        if b.kind == "para" and not summary:
+    for i, b in enumerate(content):
+        # Only a LEADING paragraph becomes the italic summary. This used to take
+        # the first paragraph found anywhere in the step, which meant a sentence
+        # from the middle of a screen could be lifted out of its context and
+        # reprinted at the top as though it summarised the whole thing.
+        if i == 0 and b.kind == "para" and not summary:
             summary = b.text.strip().strip("*")
             continue
         if b.kind == "list":
-            # A step's list is "- **Dim Title**:" with nested detail items.
+            # A dimension list is "- **Dim Title**:" with nested detail items.
+            # An ordinary list is not, and used to be accumulated into `buf` and
+            # then thrown away when no title was found -- the bullets simply
+            # vanished from the rendered page, silently and without an error.
+            # Render it as a list instead.
             buf: list[tuple[int, str, bool]] = []
             title = ""
             for indent, text, ordered in b.items:
@@ -659,6 +686,8 @@ def _demo_step_card(
                     buf.append((max(indent - 1, 0), text, ordered))
             if title:
                 dims.append((title, buf))
+            else:
+                extras.append(render_list(b.items))
             continue
         if b.kind == "hr":
             continue  # the card border already separates steps
@@ -735,13 +764,34 @@ def _demo_qa(title: str, content: list[Block]) -> str:
                 else:
                     q, a = m.group(1), m.group(2)
                 n += 1
+                # A blockquote continuation inside the list item is a presenter
+                # caution, not part of the answer. The parser folds it into the
+                # item text, which used to render the marker as a literal ">"
+                # mid-sentence -- so a note saying "do NOT claim a rank" read as
+                # part of the answer the presenter delivers out loud. Peel it
+                # off and give it its own callout.
+                #
+                # The marker must be followed by a bold lead-in, optionally
+                # behind a glyph. A bare "> " is left alone: answers legitimately
+                # use it as a greater-than sign, and swallowing half an answer
+                # into a callout would be worse than the stray character.
+                answer, note = a, ""
+                qm = re.search(r"\s>\s*((?:[^\w\s]\uFE0F?\s*)?\*\*.*)$", a, re.S)
+                if qm:
+                    answer = a[: qm.start()]
+                    note = re.sub(r"^\s*>\s?", "", qm.group(1), flags=re.M).strip()
+
                 parts += [
                     '      <div class="qa-item">',
                     f'        <div class="qa-q"><span class="q-badge">Q{n}</span>'
                     f"{inline(q.strip())}</div>",
-                    f'        <div class="qa-a">{inline(a.strip())}</div>',
-                    "      </div>",
+                    f'        <div class="qa-a">{inline(answer.strip())}</div>',
                 ]
+                if note:
+                    parts.append(
+                        f'        <div class="callout">{inline(note)}</div>'
+                    )
+                parts.append("      </div>")
         elif b.kind == "alert":
             parts.append("      " + render_alert(b))
         else:

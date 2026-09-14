@@ -219,10 +219,21 @@ def test_shipped_sources_are_free_of_retracted_content(path: Path) -> None:
     )
 
 
-def test_preflight_checklist_ships_unchecked() -> None:
-    """A checklist that is complete on open asserts a check nobody performed."""
-    text = (REPO / "frontend" / "public" / "demo_script.html").read_text(encoding="utf-8")
-    assert 'type="checkbox">' in text, "expected pre-flight checkboxes"
-    assert "checkbox\" checked" not in text and "checkbox checked" not in text, (
-        "pre-flight checkboxes must ship unchecked"
-    )
+def test_no_generated_checkbox_ships_pre_checked() -> None:
+    """A checklist that is complete on open asserts a check nobody performed.
+
+    This began life as ``test_preflight_checklist_ships_unchecked`` and also
+    asserted that DEMO_SCRIPT.md still *had* a pre-flight checklist. That
+    section was deliberately cut when the script was reduced to a value
+    proposition plus a screen-by-screen walkthrough, so requiring its presence
+    would pin an editorial decision rather than protect a property.
+
+    The property worth protecting is narrower and applies everywhere: no
+    generated page may ship a box that is already ticked. Checking it across
+    all of GENERATED is strictly broader than checking one file.
+    """
+    for path in GENERATED:
+        text = path.read_text(encoding="utf-8")
+        assert 'checkbox" checked' not in text and "checkbox checked" not in text, (
+            f"{path.relative_to(REPO)} ships a pre-checked box"
+        )

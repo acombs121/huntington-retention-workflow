@@ -374,11 +374,19 @@
       margin-bottom: 2.5rem;
       box-shadow: var(--shadow-card);
     }
+    /* Section headings. .section-heading was styled only in the citations
+       template, so on this page every section title except the Q&A rendered at
+       unstyled body size -- the Q&A merely happened to carry a different class
+       that had a rule. Declare both together so they cannot drift apart. */
+    .section-heading,
     .qa-title {
       font-size: 1.35rem;
       font-weight: 800;
       color: var(--ink);
       margin-bottom: 1.25rem;
+      letter-spacing: -0.01em;
+    }
+    .qa-title {
       display: flex;
       align-items: center;
       gap: 0.5rem;

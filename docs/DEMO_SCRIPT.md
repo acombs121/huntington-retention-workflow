@@ -1,250 +1,253 @@
-# Demo Presenter Script: Huntington Book Scout
-## Institutional Liquidity & Treasury Orchestration (v6.0)
+# Huntington Book Scout — Presenter Script
 
-This presenter script guides the demonstration of **Huntington Book Scout** to Huntington Bancshares Incorporated (HBAN) executive leadership (CEO Steve Steinour, CFO Zach Wasserman, Head of Commercial Banking, Head of Wealth Management, Chief Risk Officer, and CIO/CTO). It articulates the customer and balance-sheet problem, step-by-step presenter actions, visual demo feedback, and how this architecture maps to enterprise Google Cloud production under real banking regulations.
-
----
-
-## 1. Executive Summary & Customer Value Proposition
-
-### 1.1 What Problem Does This Solve?
-- **Core Business Pain**: Huntington cannot scale its wealth management and commercial deposit franchise simply by asking bankers to work harder. Against a **$33.30B target commercial book** across **1,400 branches in 21 states**, roughly **$7.49B of payoff volume — about 2,497 liquidity events — turns over each year**, generating net equity proceeds ($2M–$10M+) that routinely wire out to Wall Street wirehouses within **48–72 hours**.
-- **The Operational Disconnect**:
-  - *The 6-Month Exit Marathon vs. 11th-Hour Payoff Demand*: Commercial dispositions and SBA business sales take 6–9 months. Arriving only when a title payoff demand arrives at T-14 means Huntington is engaging at the finish line after CPAs, QIs, and external wealth managers have already been selected.
-  - *Commercial Servicing Intake Latency*: Title payoff faxes and emails sent to `commercial.payoffs@huntington.com` take loan ops 3–5 business days to process manually, leaving bankers with zero operational lead time.
-  - *Cross-Line-of-Business Handoff Governance (Ameriprise Platform)*: Under the **Huntington Financial Advisors (HFA)** arrangement, **the advisors are Huntington employees and the clients remain Huntington customers** — Ameriprise supplies the technology platform, clearing and back office, and acts as the **supervising broker-dealer**. So the commercial-to-wealth handoff is an *intra-institutional* transfer, not a disclosure to a non-affiliated third party. Ameriprise's receipt of client NPI through the platform is governed as a **service-provider relationship under Reg P (12 C.F.R. § 1016.13)** — contractual confidentiality and use restrictions, not customer opt-out. What *does* bind the commercial RM is the **SEC Regulation R networking exception**: as an unregistered bank employee, Greg Miller may receive only a nominal, fixed-dollar, non-contingent referral fee and no securities transaction compensation.
-    > ⚠️ **Presenter caution — know which channel you're describing.** The Feb 4, 2026 Ameriprise release covers the **retail investment program (HFA)** only. Huntington **Private Bank** trust/discretionary business runs on **SEI** and is a *bank fiduciary* activity under **OCC Reg 9** — Reg BI, FINRA 2111 and Ameriprise supervision **do not apply** to it. If a CRO or GC asks why a "Senior Private Wealth Advisor" handoff is labeled Ameriprise-supervised, acknowledge the tiering: Tier A ($3M+ in the principal's projected personal investable assets) is Private Bank fiduciary; Tier B (sub-$3M) is the HFA/Ameriprise retail channel. The $3M line is our own service-tier convention, not a regulatory threshold — Reg BI has no dollar trigger. Marcus clears it on $2.10M already held plus his 85% share of the proceeds, not on the entity's $2.90M. See `CITATIONS.md` §1a.
-  - *Private Wealth Servicing Physics*: Advisors are constrained by high-touch fiduciary maintenance (quarterly reviews, tax strategy, emotional coaching), not clerical paperwork. Flooding advisors with raw leads degrades service and causes AUM churn.
-  - *The 1031 Exchange Leakage*: a substantial share of commercial property dispositions — industry estimates commonly cited in the 50–65% range, not a figure Huntington has published — execute IRC §1031 like-kind exchanges. Exchange proceeds cannot land in the seller's operating account without destroying the deferral, so absent an institutional Qualified Escrow Depository they leave for an outside accommodator **by default, not by legal compulsion**: Treas. Reg. § 1.1031(k)-1(g)(3) expressly permits a qualified escrow account at a financial institution, and § 1.1031(k)-1(k)(2)(ii) confirms that providing routine escrow does not make the bank a disqualified person. Huntington still pairs the escrow with an independent QI rather than acting as QI itself — a deliberate risk posture, not a legal bar, and one tax counsel should confirm before the product is offered.
-- **The Book Scout Solution**: Powered by the **Gemini Enterprise Agent Platform (fka Vertex AI Platform)** running `gemini-3.7-flash`:
-  - **Tier 1 (Commercial Balance Sheet Retention — Day 0)**: Retains 100% of entity net proceeds in **Business Premier Insured Cash Sweep (ICS)** at 4.85% APY (multi-million FDIC insurance) or **Institutional 1031 Qualified Escrow Depository**, capturing an estimated 85 bps on Day 0.
-
-    > ⚠️ **Say what the 85 bps is before someone tells you what it isn't.** It is a **funds-transfer-pricing (FTP) credit** — the marginal wholesale funding the deposit lets us stop buying, less the 4.85% APY we pay the client. It is **not** asset yield minus deposit rate. 85 bps over a 4.85% APY implies a marginal funding curve near **5.70%**; that is the number to challenge, it is derived rather than sourced, and **Huntington Treasury owns it**. The ~4.88% implied coupon on the maturing Vance facility (per-diem $692.50 on $5.18M unpaid principal) is a seasoned 2018-vintage asset yield on a loan being repaid at par — not the bank's cost of funds today, and not the comparison.
-  - **Tier 2 (Post-Distribution Wealth Advisory — Day T+30 to T+60)**: Respects corporate entity boundaries, engaging sponsors after CPA tax distributions. Routes principals below $3M in projected personal investable assets to the Centralized Wealth Advisory Hub and connects Huntington Private Bank to modern **SEI Data Cloud** (announced March 31, 2026) via Snowflake Secure Data Sharing.
-- **Quantifiable Business Impact & ROI**:
-  - **Headcount Scaling**: Achieves **2x CSA operational leverage** (1 CSA : 4 PWAs) and sustainably expands senior PWA capacity from 80 to **95–100 relationships (+19–25%)**, with zero net new commercial headcount across 1,400 branches.
-  - **Reclaimed Capacity (primary case)**: ~2,497 annual payoff events &times; 4–6 banker hours reclaimed each returns **5.5–8.3 FTE**, worth **$1.62M–$2.43M/year** at the $292,302 fully loaded cost per Commercial Banking FTE derived from the Q2 2026 10-Q (Table 25: $393M direct personnel / 2,689 avg FTE). **Both ends of the band clear the $1.25M run-rate.** Every input except hours-saved comes from a public filing.
-  - **Retained Liquidity (upside, not base case)**: roughly **$0.90B** of seller equity is genuinely in play annually after the full funnel is applied. At the duration-corrected **40.9 bps** blended yield, break-even requires recapturing **34%** of it. Present this as upside with the assumptions visible — never as a floor.
-
-### 1.2 Target Audience & Persona
-- **Primary Audience**: Executive Committee (CEO Steve Steinour, CFO Zach Wasserman, Head of Wealth, Head of Commercial, Chief Risk Officer, CIO/CTO).
-- **Presentation Tone**: Rigorous operational leverage, balance sheet preservation, and institutional compliance (GLBA Reg P, SEC Reg R, FINRA 2040, SEC Reg BI, OCC Bulletin 2011-12, Treas. Reg. § 1.1031(k)-1).
+**Audience:** Huntington executive leadership.  **Runtime:** about 10 minutes.
 
 ---
 
-## 2. Presenter Pre-Flight Checklist
+## 1. The Value Proposition
 
-Before launching the demo:
-- [ ] Cloud Run service is active and warm (`https://huntington-book-scout-<hash>.a.run.app`).
-- [ ] Presenter is authenticated via Identity-Aware Proxy (IAP badge displays `developer@huntington.com`).
-- [ ] Browser window is sized to 1920x1080 full screen.
-- [ ] Admin Panel gear icon (far right) is verified clickable to access the Brand Kit and this script.
-- [ ] Verify backup document (*Apex Logistics Payoff Request.pdf*) is pre-loaded in cache for live stage re-runs.
+### What this is
 
----
+Book Scout is a software agent for commercial banking. It runs on Google Cloud.
 
-## 3. Step-by-Step Presenter Walkthrough (10-Minute Sequence)
+### What problem does this solve?
 
-```mermaid
-flowchart LR
-    S1["Step 1 (00:00)<br/>Two-Tier Shield"] --> S2["Step 2 (01:30)<br/>Upstream Radar"]
-    S2 --> S3["Step 3 (03:30)<br/>Reconciled DLP"]
-    S3 --> S4["Step 4 (05:00)<br/>Borrower Routing"]
-    S4 --> S5["Step 5 (07:00)<br/>Advisor Match"]
-    S5 --> S6["Step 6 (08:30)<br/>CRO Guardrails"]
-    S6 --> S7["Step 7 (09:15)<br/>CFO Economics"]
-```
+A commercial borrower sells a property or refinances a loan. The loan pays off.
+The owner's equity then leaves the bank in two or three days. Most of it goes to
+an outside firm.
 
----
+The bank learns about these payoffs too late to act. Book Scout tells the bank
+early.
 
-### Step 1: The Problem & The Capacity Case (00:00–01:30)
-*Establish the scale of commercial liquidity events across Huntington's 1,400 branches and frame the two-tier response.*
+### How it works
 
-- **Presenter Action**:
-  1. Begin on the **Commercial Pipeline** — the app opens here by default. There is no separate briefing page; do not go looking for one.
-  2. Frame the core thesis, leading with the number they can check themselves: *"We cannot scale wealth management by asking bankers to work harder. Our own Q2 filing says a Commercial Banking FTE costs us $292,302 fully loaded. We see roughly 2,500 commercial liquidity events a year against a $33.3 billion target book, and each one burns four to six banker hours of clerical reconstruction. Automate that and you get back five and a half to eight and a third FTEs — $1.6 to $2.4 million a year against a $1.25 million run-rate. That case is made entirely out of Huntington's public filings. The deposit retention upside sits on top of it, and I'll show you those assumptions rather than assert them."*
-  3. Highlight the two-tier solution:
-     - *"Book Scout does not try to jam personal wealth products down a commercial sponsor's throat 12 days before closing. We separate Tier 1 Commercial Treasury Retention—locking the entity's funds in Business Premier ICS or 1031 Qualified Escrow on Day 0—from Tier 2 Post-Distribution Wealth Advisory at Day 30 to 60, after the sponsor's CPA has executed partnership tax distributions."*
-- **What is Shown in the Demo**:
-  - The **Commercial Pipeline** queue with three staged liquidity events, each showing borrower entity, property, unpaid principal, credit tier, closing window, and a clickable confidence score.
-- **Production Implementation Blueprint**:
-  - BigQuery analytical warehouse tracking historical core deposit wire patterns, SBA 7(a) portfolio registers, and historical loan payoff telemetry.
+1. Each night the agent reads the bank's own loan records. It lists the
+   commercial loans that will pay off soon.
+2. The agent reads the payoff documents that title companies send to the bank.
+   It finds the loan, the borrower company, and the owners of that company.
+3. The agent prepares the banker's work. This is a call script, a deposit
+   option, and a settlement routing form for the client to sign.
+4. The banker makes every decision. The agent starts no client work before the
+   banker speaks to the client.
+5. The system records each action. A person approves each step.
 
----
+### Why this is valuable
 
-### Step 2: Dual-Window Surveillance & Intake Ingestion (01:30–03:30)
-*Show how the agent builds a maturity watchlist at T-120 and then ingests the payoff demand at T-12 via the Loan Operations communication perimeter — the early sweep buys the conversation, the demand buys the classification.*
+The bank learns about the payoff weeks earlier. Early is the only time the money
+can stay.
 
-- **Presenter Action**:
-  1. Stay on the **Commercial Pipeline**. Scroll to the bottom and expand **Overnight Agent Telemetry & Ingestion Audit** — it starts collapsed, so the metrics below are not visible until you click it.
-  2. Read the four tiles left to right: *"Eleven thousand ninety-nine commercial facilities screened overnight. Three classified and staged — one outright sale, one 1031, one refinance. Fifteen documents through multimodal OCR. And about fifteen banker hours absorbed, which is those three events against a four-to-six hour manual baseline."*
-  3. Explain the upstream surveillance: *"We don't wait for the payoff demand. Book Scout screens loan facility maturities at T-120, and watches for the requests that arrive directly at our own desks — a payoff quote, a prepayment-penalty or defeasance quote, a consent-to-sale request. Those are the earliest things a borrower has to ask us for, and they put a banker in the conversation during transaction planning."*
-  4. Highlight First American Title's payoff demand on Riverfront Commercial Commons surfacing at T-12:
-     - *"When the payoff demand arrived from First American, it didn't wait in a loan ops inbox. Book Scout ingested the inbound eFax via Microsoft Graph API and RightFax, extracting the loan account and borrower LLC 72 hours before loan ops keyed the quote into the core ledger."*
-  5. Click the deal's **confidence score** to open the reasoning trace, then click **[Spanner Graph]** in its footer:
-     - *"How does the agent get to 94% on this being an outright commercial cash-out sale rather than a refi or a 1031? Be clear about what carries that number: maturity screening puts the loan on a watchlist, but it does not tell you sale versus refinance. The title demand does. Book Scout queries our Google Cloud Spanner Knowledge Graph via native ISO GQL. Notice the connected nodes: First American Title links to Note #CC-8821, which maps to Vance Riverfront Properties IV, LLC and primary guarantor Marcus Vance. The graph checks our own LOS for replacement debt — none at Huntington, though we can't see another lender's pipeline — picks up the prepayment premium quote the borrower asked our own servicing desk to price, and finds no Qualified Intermediary named to us. And be straight about what we do not get: the settlement statement and the exchange agreement never come to the payoff lender, so the tax treatment is a presumption, not a finding. It does not change the answer — under either treatment the balance leaves us; it only changes which product we stage. Notice Elena Vance is quarantined. She holds 15%, which is below the FinCEN threshold that would put her in our beneficial-owner records, so she exists only in the operating agreement in the credit file. That is exactly the fact a human reviewer misses — and we still firewall her."*
-- **What is Shown in the Demo**:
-  - The expanded telemetry strip (Scanned / Classified / Multimodal OCR / Absorbed Load), Pass Tier 2 credit rating badge, and the scheduled payoff countdown showing **12 Days**.
-  - Interactive **Spanner Graph Grounding Console** modal displaying the multi-tier SVG network topology, clickable node inspector, live ISO GQL query telemetry, and deal-switching comparative views.
-- **Production Implementation Blueprint**:
-  - Google Cloud Spanner Graph (ISO/IEC 39075 GQL pattern matching); Microsoft Graph API + OpenText RightFax ingesting incoming payoff faxes/emails into Cloud Run event-driven microservices; Snowflake core read-replica loan master.
+The bank keeps deposits that it loses today. Wealth management fees can follow
+those deposits. Treat both as upside.
+
+Each payoff costs a banker several hours of manual work. The agent does that
+work instead. The bankers get those hours back. The bank adds no staff.
+
+Each action has an audit record. The bank can show a regulator who decided what,
+and when.
+
+The same machinery works on other events. Examples are loan renewals, covenant
+reviews, and SBA 7(a) business sales.
+
+### What this is not
+
+Book Scout gives no investment advice. It sends no instruction to a title
+company. It opens no account by itself. A banker does all three, or nobody does.
 
 ---
 
-### Step 3: Reconciled Entity Intelligence & Internal Liquidity Triage (03:30–05:00)
-*Demonstrate multimodal extraction with pre-ingestion DLP, non-guarantor privacy exclusions, and internal triage heuristics governed under OCC Bulletin 2011-12.*
+## 2. The Walkthrough
 
-- **Presenter Action**:
-  1. Click Marcus Vance. Watch the agent decompose `Vance Riverfront Properties IV, LLC` into its beneficial owners, each one traced back to the page it came from.
-  2. Click each name in **Beneficial Ownership** and let the **Document Grounding** panel follow:
-     - *"Every one of these three is a claim, and every claim points at a region of a document we already hold — the Credit Agreement and Incumbency Certificate in our own credit vault, page eleven of fourteen. The highlight moves as I move. That is the extracted language and the coordinates it was read from, not a summary of it. If the agent asserts an ownership percentage, you can put your finger on the sentence it came from."*
-  3. Point out the **Automated Pre-Ingestion DLP**:
-     - *"Notice what the agent did NOT ingest. It stripped consumer credit-bureau data and personal tax returns before processing — that is our GLBA § 501(b) safeguards control, not a privacy notice. Beneficial-ownership facts are read from the entity's own formation and credit documents; BSA/CDD records stay under BSA data governance and are never copied into this pipeline. Elena Vance—a 15% non-guarantor member—is programmatically excluded. She never applied for this credit and she is not a party to it. Using her ownership interest, which we only hold because it appears in the operating agreement, to build a wealth profile is a purpose-limitation problem we refuse to create. If we ever wanted to look at her personally we would need a permissible purpose under FCRA, and we do not have one here. So we do not look."*
-  4. Point out the **internal liquidity triage** principle:
-     - *"The title letter omits the contract sale price. Rather than having an AI hallucinate an appraisal, Book Scout works from the underwritten baseline and trailing NOI to size the relationship internally. That calculation is strictly muzzled from the client; Greg Miller never asserts a property value to Marcus Vance. You'll see the sizing band itself at settlement in a moment."*
-  5. Click **[Proceed to Retention & Settlement]** to advance to Retention & Settlement.
-- **What is Shown in the Demo**:
-  - The **Deal Analysis** workspace: the payoff demand and its **Document Grounding** panel on the left, the extracted **Beneficial Ownership** and principal relationship on the right, and the liquidity band beneath both. Selecting an owner moves the highlighted region on the page and swaps the quoted document language and its coordinates. The panel renders the extracted text at its recorded position on the page — a rendering of what the resolver returned, not an image of the document. DLP Verified badge, non-guarantor exclusion flags, cap rate benchmark, payment record, and last touchpoint.
-- **Production Implementation Blueprint**:
-  - **Gemini Enterprise Agent Platform (fka Vertex AI Platform)** running `gemini-3.7-flash`; Google Cloud DLP; Core LOS REST integration; Cloud Run `CalculatorTool`.
+One screen at a time. For each screen: what to show, and why it matters.
 
 ---
 
-### Step 4: Consultative Commercial Call & Borrower-Directed Routing (05:00–07:00)
-*Read the suggested call script, log the call that authorises everything downstream, then inspect the DocuSign routing packet it produced and record affirmative client consent to lift the NPI Privacy Barrier before advisor engagement.*
+### Screen 1: Payoff Pipeline (0:00–2:00)
 
-- **Presenter Action**:
-  1. Land on **Step 1 · Consultative Call** and make the point that the right-hand workspace is empty:
-     - *"Before anything else, notice what is not on this screen. There is no account number, no envelope, no signature request. Book Scout has identified a payoff from documents we already hold — that is an inference, and an inference is not permission to open an account in a client's name. Everything to the right is locked until a banker has actually spoken to Marcus."*
-  2. Walk the **suggested script**, then read the **Do Not Say** panel aloud — it is the more interesting half:
-     - *"Greg is not pitching wealth products. He is pitching closing safety. And look at what the script forbids: he may not quote the $2.90M, because that is our internal triage estimate and not an appraisal; he may not name the co-investor; he may not tie payoff terms to where the money lands; and the wealth introduction is offered **after** closing, as a question. Step 1 promised we do not pitch wealth to a sponsor twelve days from a closing. This is where that promise is kept."*
-  3. Click **[Log Call — Client Directed Proceeds to Huntington]**:
-     - *"Marcus said yes. That call is now a record with its own hash, and it is the thing the packet descends from. If he had said no, the second button records that too — the ask was made and declined, and nothing gets staged."*
-  4. Drag the **Indicative Valuation Slider** from $8.50M to $9.00M, let the room watch **Net Seller Equity** re-index live to **$3.38M** (closing costs run at 4.5%), then point at the packet on the right and note that nothing in it moved:
-     - *"That figure sizes the relationship off trailing NOI and a submarket cap rate. It is not an appraisal and it never reaches Marcus. Now watch the packet while I drag this — it does not move, because there is no dollar amount in it to move."*
-  5. Inspect the **Borrower Settlement Routing Packet**, which now exists as a **draft**:
-     - *"Here is the fatal flaw we fixed: a lender has no authority to direct a seller's net proceeds. The settlement agent is the seller's escrow holder and disburses only on the seller's own executed closing instructions — that is the escrow agreement and agency law, not a statute I can point at. And after years of business-email-compromise losses in real estate closings, no title company acts on wire instructions arriving from a third party without independent call-back verification. So Book Scout never instructs title. It composes a Huntington Settlement Account Routing Packet addressed to Marcus Vance, which Marcus executes and submits as his own Seller Closing Authorization to First American Title, accompanied by Huntington's bank verification letter and call-back authentication line on `(614) 480-4401`."*
-     - *"Then look at the **Amount to Route** line, and notice it is blank. Printing our number there would have been wrong twice over: it is an internal triage estimate on a document the client signs, and it is gross of his prepayment premium and his tax liability, so it would never have reconciled to the settlement statement — First American would have kicked it back. Marcus elects all net proceeds, or he writes in his own figure. The bank supplies the destination and nothing else."*
-  6. Point at the **Draft — not sent** badge, then click **[Send to Marcus Vance for Signature]**:
-     - *"Notice the badge, and notice there is no envelope number anywhere on this screen. The packet is composed but nothing has left the building. We used to print an envelope id the moment the packet rendered, which meant a string that reads as proof of delivery existed before anyone had sent anything — an auditor finds that in a minute and everything around it becomes suspect."*
-     - *"Now watch where it goes. The envelope is addressed to Marcus, not to First American — that is the whole argument, and a button that submitted to title would destroy it. The id appears only now, and the server issues it, so its presence on the screen is evidence a banker pressed send."*
-     - *"And read the last line: awaiting borrower signature. Not signed. Whether Marcus signs comes back from DocuSign Connect against that envelope. We can prove we sent it. We cannot prove he signed it, and we don't pretend to."*
-  7. Click **[Record Client Opt-In]** to lift the GLBA Privacy Gate:
-     - *"Clicking Record Client Opt-In logs Marcus's affirmative verbal consent and writes a SHA-256 content digest of that record into a write-once Cloud Audit Log entry under WORM retention. Be precise about which half does the work: the digest on its own proves nothing, because whoever can alter the record can recompute it. The append-only audit log — which this application cannot write to or reach — is what makes the record hard to alter; the digest is how we detect drift between the stored consent and the audited copy. To be precise about why: Sarah is a Huntington employee and Marcus stays a Huntington client, so this handoff does not legally require Reg P consent. We gate it anyway. This is our cross-line-of-business marketing consent and the durable record of a Regulation R referral — it proves the client asked for the introduction, and it timestamps the referral so Greg's compensation stays demonstrably nominal and non-contingent. Note that this button was dead until the call was logged, and the server enforces that, not the button: a consent record that cannot point at the conversation that produced it is worthless in an exam."*
-  8. Click **[Proceed to Advisor Routing]**:
-     - *"With client opt-in recorded on the commercial call, we proceed to Advisor Routing to match Marcus with the right wealth specialist."*
-- **If challenged — "so the machine opens accounts?"**: Click **Retract call record**. The account number, the envelope and the routing packet all disappear, and the consent gate goes dead. The packet is downstream of the conversation, not of the detection.
-- **If challenged — "what if the banker sends it by mistake?"**: Click **Recall envelope**. The id and the dispatch record clear, and the packet returns to draft. The call record survives, because recalling an envelope does not un-ring the phone.
-- **What is Shown in the Demo**:
-  - A settlement packet that exists as a draft and becomes a dispatch only on an explicit banker action, with the DocuSign envelope id issued server-side at that moment.
-  - Indicative Valuation Slider recalculating net seller equity in the banker's workspace only — the figure never enters the client-facing packet.
-  - Settlement packet carrying a routing destination and an unfilled seller amount election, never a bank-computed proceeds figure.
-  - Dispatch recorded as "sent, awaiting signature" with a SHA-256 digest; execution status is left to the DocuSign Connect webhook rather than asserted.
-  - Affirmative consent toggle writing SHA-256 audit digest, unlocking the downstream advisor routing and intake.
-- **Production Implementation Blueprint**:
-  - DocuSign REST APIs; Apigee X API Gateway mTLS; Cloud Audit Logs WORM trail.
-  - DocuSign Connect webhook for envelope status. Execution is reported by DocuSign against the envelope id, never inferred here.
+The app opens here.
+
+#### Show
+- The queue of three staged liquidity events. Each row carries the borrower
+  entity, the property, the unpaid principal, the credit tier, and the closing
+  window.
+- Scroll to the bottom and expand **Overnight Agent Telemetry & Ingestion
+  Audit**. It starts collapsed. Read the four tiles: facilities screened,
+  deals classified, documents read, banker hours absorbed.
+- Click a **confidence score** to open the reasoning trace. Then click
+  **[Spanner Graph]** in its footer.
+
+#### Why it matters
+
+The bank already holds everything needed to predict this event. Nobody reads it
+in time. This screen is the thesis: the detection is a data problem, not a
+staffing problem.
+
+The graph answers the only question a skeptic has — *how does it know this is a
+sale and not a refinance?* The title payoff demand is what carries that
+distinction, and the connected nodes show the chain. A 15% member sits
+quarantined in the graph, visible but walled off.
 
 ---
 
-### Step 5: Objective Wealth Advisor Matching & Warm Introduction Dispatch (07:00–08:30)
-*Demonstrate objective, non-discriminatory advisor routing based on proximity, capacity, and CRE specialty, followed by a banker-authored warm introduction queued behind the Tier 2 post-closing hold.*
+### Screen 2: Deal Analysis (2:00–4:00)
 
-- **Presenter Action**:
-  1. Review the candidate advisor ranking:
-     - *"Notice how Book Scout selects Sarah Jenkins with a 98% match score. The match is grounded in objective criteria: geographic proximity (0.4 miles at Huntington Center Downtown), specialized CRE disposition experience, and verified bandwidth (72% utilized, capacity for 2 new relationships). Because Marcus recorded affirmative consent in the previous step, his contact coordinates are unlocked. Notice the fourth matching input — Sarah already advises a co-investor of Marcus's — and notice how it is labeled: **INTERNAL ONLY**. We rank on it because it is our own record and it genuinely predicts a good match. It never leaves this screen. The existence of another client's advisory relationship is their nonpublic information, not Marcus's context, so it is structurally excluded from anything client-facing."*
-  2. Contrast with secondary candidates:
-     - *"Brian Gallagher brings excellent corporate treasury fixed-income expertise, but lacks direct principal network ties. Elena Rostova brings deep trust and estate credentials, but is based in Cleveland and near portfolio capacity."*
-  3. Review and dispatch the warm introduction email:
-     - *"The email draft is pre-populated on behalf of commercial banker Greg Miller, which preserves the banker-client relationship. Read what is **not** in it. No co-investor is named. No valuation figure appears — the $2.90M we were just looking at is an internal triage estimate and it is muzzled from client-facing text. And the ask is for a conversation **after** closing, not before. Step 1 promised we do not pitch wealth to a sponsor twelve days from a closing; this is where that promise is either kept or broken."*
-  4. Click **[Queue Introduction]** — the banner confirms it is **held** until thirty days past the closing date, derived from the deal's own closing date rather than typed in.
-  5. Click **[Proceed to Private Wealth Intake (Sarah Jenkins)]** (or toggle the **Persona Switcher** in the header):
-     - *"At Day T+30, after Marcus's CPA has executed partnership distributions, Sarah Jenkins engages. We don't burden Sarah with manual data entry or legacy trust batch files. Huntington Private Bank's migration to the SEI Wealth Platform and SEI Data Cloud (announced March 31, 2026) enables real-time Snowflake Zero-ETL data sharing, delivering verified relationship dossiers. Be precise about the standard here: Sarah is a **Private Bank** advisor and this engagement is staged onto **SEI**, so it is bank fiduciary activity governed by **OCC Regulation 9** — Reg BI and FINRA 2111 apply to the HFA/Ameriprise retail channel, not to this one."*
-     > ⚠️ **Presenter note — dual-channel routing basis:** All three queue deals exceed $3M in projected personal investable assets, qualifying for Tier A Private Bank on SEI under OCC Reg 9. Sub-$3M relationships route to the Centralized Wealth Hub on HFA/Ameriprise under SEC Reg BI. Both channels are documented in Executive Analytics.
-- **What is Shown in the Demo**:
-  - Candidate advisor comparison cards with capacity gauges, geographic proximity badges, and verified entity network ties.
-  - Interactive email composer with pre-populated contextual deal facts, an internal-only marker on the principal network tie, the Tier 2 hold date derived from the closing date, one-click template reset, and queue audit timestamp logging in Commercial CRM.
-  - Smooth handoff into Wealth Advisor persona and Onboarding Dossier.
-- **Production Implementation Blueprint**:
-  - Advisor capacity index sourced from the commercial CRM; Apigee X API Gateway mTLS; Commercial CRM audit log event dispatch; SEI Data Cloud via Snowflake Secure Data Sharing.
+#### Show
+- Click each name under **Beneficial Ownership**. The **Document Grounding**
+  panel follows the selection and moves the highlight to the page region the
+  claim was read from.
+- The **Pre-Ingestion DLP** markers, and the non-guarantor member excluded from
+  profiling.
+- The internal liquidity band, which sizes the relationship and never reaches
+  the client.
 
----
+#### Why it matters
 
-### Step 6: Institutional Guardrails (CRO Defense) (08:30–09:15)
-*Disarm regulatory, privacy, title fraud, and model risk concerns.*
+Every assertion points at a page in a document the bank already owns. An
+executive can put a finger on the sentence. That is the difference between an
+agent and a chatbot.
 
-- **Presenter Action**:
-  1. Navigate to **Executive Analytics** and select the **CRO Defense** tab.
-  2. Review the seven green institutional verification badges:
-     - **Borrower-Directed Settlement Routing**: The bank issues no instruction to title. Wire instructions are delivered to the borrower, who executes and submits them as the seller's own closing authorization; Huntington's verification letter and call-back line support the title company's independent authentication. (ALTA Best Practices are voluntary industry guidance, not a rule.)
-     - **GLBA § 501(b) Safeguards — Pre-Ingestion DLP**: Consumer credit-bureau data and personal tax returns stripped at source under the Interagency Guidelines Establishing Information Security Standards (OCC, 12 C.F.R. Part 30 appendix). Non-guarantor individuals are excluded from profiling as a purpose-limitation control — a standard we hold ourselves to, not an obligation we have triggered. Ameriprise platform NPI is governed by service-provider contract under Reg P, 12 C.F.R. § 1016.13.
-     - **Channel-Matched Regulation R Networking**: Commercial RM receives 100% hard-dollar commercial deposit FTP credit; nominal, non-contingent referral fee only; zero securities fee-splitting. For principals **below $3M in projected personal investable assets**, routed to the HFA/Ameriprise retail channel, Reg R Rule 700 applies and Reg BI supervision sits with Ameriprise as supervising broker-dealer. For **$3M+**, routed to Private Bank on SEI, this is bank fiduciary activity under OCC Reg 9 and Reg R Rule 721 — Reg BI does not apply. The dollar line is an internal service tier; it selects the channel, and the channel selects the regime.
-     - **1031 Qualified Escrow Safe Harbor**: Huntington holds the qualified escrow under Treas. Reg. § 1.1031(k)-1(g)(3), with the routine-financial-services carve-out at § 1.1031(k)-1(k)(2)(ii) confirming that providing escrow does not make us a disqualified person; the exchange contract sits with an independent QI (IPX1031). Separately and as a conservative control, in-house DST placement is firewalled — that is a securities-conflict control, and it also avoids any argument that our services stop being "routine."
-     - **Model Risk Governance (OCC Bulletin 2011-12 / Fed SR 11-7)**: Classified internally as a relationship triage heuristic, exempt from credit AVM validation; client-facing valuation muzzled. The guidance itself defines no model tiers — we expect your MRM team to tier this at its lowest risk level, and we will take their classification.
-     - **SEI Data Cloud Integration**: Modern cloud-native Snowflake data exchange, eliminating legacy on-premise Trust 3000 batch files.
-     - **Conflicts, Tying & Fair Treatment**: No credit condition — payoff terms, extensions and pricing are unaffected by where the seller directs proceeds, consistent with Huntington's anti-tying policy under **12 U.S.C. § 1972**. The deposit leg sits in the traditional-bank-product exception; the wealth referral is not conditioned on credit at all. On unfair or deceptive practices (**FTC Act § 5**, which the OCC supervises national banks against — Dodd-Frank UDAAP reaches consumers, so a commercial LLC is largely outside it), the borrower executes his own disbursement instruction and the bank issues no instruction to title. Outreach prioritization uses only credit rating and proceeds size; no credit decision is made, so no adverse-action obligation arises.
-- **What is Shown in the Demo**:
-  - Comprehensive Corporate Governance & CRO Defense matrix with SHA-256 consent digests written to write-once Cloud Audit Logs, zero-data-logging boundary certifications, and statutory citations.
-- **Production Implementation Blueprint**:
-  - Cloud KMS customer-managed encryption keys (CMEK); VPC Service Controls (VPC-SC perimeter); Cloud Audit Logs immutable trail.
+The exclusion is the stronger point. The agent refuses data it has no business
+purpose to use, even though it holds that data. Restraint is a designed feature
+here, not an omission.
 
 ---
 
-### Step 7: Financial ROI & CFO Hand-off (09:15–10:00)
-*Lead with the number they can verify themselves. Hand them the dials on the number they cannot.*
+### Screen 3: Retention & Settlement (4:00–7:00)
 
-> [!IMPORTANT]
-> **Sequencing matters here.** Open on reclaimed capacity, which is built from Huntington's
-> own 10-Q. Only then move to retained liquidity, and introduce it explicitly as upside.
-> Do **not** ask anyone in the room what their deposit flight rate is — that question makes
-> a CRO admit a failure in front of the board. Present the 78% benchmark as an outside
-> figure and let them correct a third party's number if they wish.
+The centre of gravity. Do not rush it.
 
-- **Presenter Action**:
-  1. Show Layer A Capacity Economics:
-     - *"We do not claim an advisor can manage 150 accounts—fiduciary maintenance makes that impossible. We achieve 2x operational leverage for Client Service Associates (1 CSA supporting 4 advisors), cap senior PWAs at 95–100 accounts (+19–25%), and route principals below $3M in projected personal investable assets to our Centralized Wealth Advisory Hub."*
-  2. Lead with the capacity case:
-     - *"Your last 10-Q reports $393 million in Commercial Banking direct personnel costs against 2,689 average FTE. That's $292,000 fully loaded per banker. Your Call Report says roughly $7.5 billion of the commercial real estate book turns over in a year — about 2,500 payoff events. If Book Scout saves four hours on each one, that's 5.5 FTE, or $1.6 million. At six hours it's $2.4 million. Both clear the $1.25 million run-rate. I did not need a single internal number to build that."*
-  3. Move to retained liquidity, framed as upside:
-     - *"The deposit story is bigger, but it rests on assumptions I can't source to you. After the full funnel — turnover, sales versus refinances, seller equity, flight — about $900 million is genuinely in play. Break-even needs 34% recapture. I'd rather show you the model than defend a number."*
-  4. Open the **Admin Panel** (gear icon) and change a dial live — move the flight rate, or the disposition share — and let the room watch the break-even move. Invite them to set the inputs they believe.
-  5. Note the duration correction explicitly if the CFO has not already raised it: *"Tier 1 is 1031 escrow. A 1031 runs 180 days maximum, so we can't book an annual margin on it. That takes the blended yield from 78 basis points to 41."*
-  6. Show the componentized $1.25M enterprise cloud run-rate defense.
-  7. Hand the floor to CFO Zach Wasserman for discussion.
-- **What is Shown in the Demo**:
-  - Capacity case card (publicly sourced); at-risk equity funnel with per-step provenance badges; recapture sensitivity slider anchored on break-even; live assumption dials in the Admin Panel.
-- **Production Implementation Blueprint**:
-  - Client-side tabular calculation engine (`frontend/src/lib/assumptions.ts`); BigQuery ROI baseline model.
+#### Show
+- The empty right-hand workspace. No account, no envelope, no signature request.
+- Expand **Suggested script & compliance guardrails**. It starts collapsed.
+  Read the **Do Not Say** rules aloud — they are the more interesting half.
+- Click **[Log Call — Client Directed Proceeds to Huntington]**. The workspace
+  unlocks.
+- Drag the **Indicative Valuation Slider**. Net seller equity re-indexes live.
+  Point out that nothing in the client packet moves with it.
+- Inspect the **Borrower Settlement Routing Packet**, still marked **Draft — not
+  sent**. Note the blank **Amount to Route** line and the borrower addressee.
+- Click **[Send to Marcus Vance for Signature]**. The envelope id appears only
+  now, issued by the server.
+- Click **[Record Client Opt-In]** to lift the privacy gate.
+- If challenged, click **Retract call record**. The account, the envelope and
+  the packet all disappear.
+
+#### Why it matters
+
+Detection is an inference. An inference is not permission. Everything downstream
+is locked until a banker has actually spoken to the client, and the server
+enforces that, not the button.
+
+The packet goes to the borrower, never to the title company. A lender has no
+authority to direct a seller's proceeds. The blank amount is deliberate: a
+bank-computed figure on a document the client signs would be an estimate
+presented as a fact.
+
+The envelope id proves dispatch. It does not claim signature. The system says
+only what it can prove.
 
 ---
 
-## 4. Anticipated Executive Q&A (Presenter Defense)
+### Screen 4: Advisor Routing (7:00–8:30)
 
-* **"How does the Ameriprise partnership impact client data sharing?"**  
-  → Less than people assume, because of how the arrangement is actually structured. **Huntington employs the advisors and the client stays a Huntington customer.** Ameriprise provides the technology platform, clearing and back office, and acts as the supervising broker-dealer. So when Greg hands Marcus to Sarah Jenkins, that is an **intra-institutional handoff between two Huntington employees** — it is not a disclosure to a non-affiliated third party, and Reg P opt-out does not attach to it. Ameriprise does receive client NPI through the platform, and that is governed as a **service-provider relationship under 12 C.F.R. § 1016.13** — contractual confidentiality and use limitations rather than customer opt-out. The two controls that genuinely bind us are: **Regulation R**, which caps Greg's referral compensation at a nominal, non-contingent, fixed-dollar amount with zero securities fee-splitting; and **Reg BI supervision**, which sits with Ameriprise as the supervising broker-dealer — which is precisely why Book Scout generates administrative scaffolding only and never a recommendation.
+#### Show
+- The candidate advisor ranking, and the objective inputs behind the match:
+  proximity, capacity, and CRE disposition experience.
+- The fourth input, marked **INTERNAL ONLY**, which never reaches client-facing
+  text.
+- The warm introduction draft. Read what is absent from it.
+- Click **[Queue Introduction]**. The banner confirms the message is held until
+  thirty days after closing, derived from the deal's own closing date.
 
-* **"How does Book Scout connect to Huntington Private Bank's wealth platform?"**  
-  → We integrate natively with the **SEI Wealth Platform (SWP)** via the **SEI Data Cloud** (announced March 31, 2026). This utilizes Snowflake Secure Data Sharing (Zero-ETL) to securely exchange portfolio telemetry and verify account status in real time, completely bypassing legacy on-premises trust accounting batch files like Trust 3000.
+#### Why it matters
 
-* **"Why does Huntington's SBA 7(a) lending position matter for this platform?"**  
-  → Huntington's commercial payoff book is not just suburban office buildings. Across 1,400 branches in 21 states, Huntington is consistently among the top SBA 7(a) lenders in the country by approved loan count. SBA loan payoffs represent business sales, acquisitions, and entrepreneur retirements—inflection points where middle-market business owners experience multi-million-dollar liquidity windfalls. Book Scout monitors SBA 7(a) maturity queues and inbound prepayment notices to capture entrepreneur wealth.
+The match is explainable, so it survives a fair-treatment question.
+
+The hold is the promise being kept. Nobody pitches wealth products to a sponsor
+twelve days before a closing. The system enforces the wait rather than trusting
+the banker to remember it.
+
+---
+
+### Screen 5: Private Wealth (8:30–9:30)
+
+Switch persona in the header. This is the last screen.
+
+#### Show
+- The advisor receives a complete dossier. No retyping, no batch file, no
+  overnight wait.
+- Close on the loop: a payoff the bank would have learned about at the wire is
+  now a funded deposit and a scheduled advisory conversation.
+- Hand the floor to the CFO.
+
+#### Why it matters
+
+Advisor capacity is limited by fiduciary maintenance, not by paperwork. Raw
+leads make that worse. A finished dossier is the only form of help that adds
+capacity instead of consuming it.
+
+Stop here. Executive Analytics and the Admin Panel dials are real and they are
+one click away, but they are the wrong depth for ten minutes. The economics
+belong on the deck and in the Q&A below. Open them only if the room asks.
+
+---
+
+## 3. Anticipated Executive Q&A (Presenter Defense)
+
+### How it works day to day
+
+* **"You say Book Scout sees the payoff 120 days out. What does it actually see?"**  
+  → It sees a maturity date. The loan master holds the scheduled maturity of every commercial loan, so reading it 120 days ahead is easy. Be careful what you claim from that. A maturity date does not tell you the borrower will sell. Most maturities become renewals. The 120-day signal builds a watchlist and starts a conversation. It does not classify the event. The classification needs the title payoff demand, and that arrives about 12 days out.
+
+* **"What if the customer sells in year three of a seven-year loan?"**  
+  → Then the maturity screen never fires, and the 120 days does not apply. That is a real limit. Say so plainly. Three earlier signals still reach the bank first. The borrower asks for a payoff quote. The borrower asks the bank to price a prepayment penalty or a defeasance. The borrower asks for consent to sell. Each request lands on a Huntington desk before the title company writes. Book Scout watches those requests. They buy days or weeks, not months.
+
+* **"How does a 1031 exchange work with this?"**  
+  → The seller must not touch the money. If the proceeds reach the seller's own account, the tax deferral is destroyed. An independent Qualified Intermediary holds the exchange contract, and the bank cannot be that intermediary for its own borrower. The bank can hold the escrow account. Treas. Reg. § 1.1031(k)-1(g)(3) permits it. The deposit then stays for up to 180 days. Timing decides this one. The intermediary and the escrow bank are named in the exchange agreement **before** closing. If the bank waits for the closing, the money is already promised to someone else. This is the clearest reason to find the event early.
+
+* **"What must we connect on day one?"**  
+  → Four things. A read-only copy of the loan master, for maturity dates and balances. The mailbox and fax line that already receive payoff demands. The credit document store. The commercial CRM, to write the call and referral records. Book Scout reads. It does not write to the core.
+
+* **"Does this change what Loan Operations does?"**  
+  → No. Loan Operations still receives the payoff demand and still issues the payoff quote. Book Scout reads the same inbound document at the same time. It does not re-price the loan and it does not answer the title company. It gives the banker a head start while operations does its normal work.
+
+* **"Who runs this every day?"**  
+  → The commercial banker. There is no new team and no new queue to staff. The banker sees a flagged deal, makes one call, and presses the buttons. Everything else is preparation the banker would otherwise do by hand.
+
+* **"What if the agent reads a document incorrectly?"**  
+  → Every extracted fact points to the page and the position it came from. The banker sees the source text beside the claim, so a wrong reading is visible before anyone uses it. Nothing the agent extracts reaches the customer on its own. The internal valuation estimate never appears in client-facing text. The settlement form carries no bank-computed amount.
+
+* **"What happens if the customer says no?"**  
+  → The banker records the refusal. Nothing is staged. No account opens, no envelope goes out, and no wealth introduction is queued. The record shows that the bank asked and the customer declined. In an examination that record is worth as much as a yes.
+
+### The money
+
+* **"Why does it cost $1.25 million a year?"**  
+  → That figure is deliberately high. Present it that way. It is a standalone, fully loaded budget, and it assumes the bank buys every part new. Technology is about $260,000 of it. People and audits are the other $990,000. The largest single line is a two-person platform team at $650,000. Most banks already run the API gateway, the cloud account and a platform team. On that basis the added cost is far smaller. The high number is the hurdle the benefit must clear, and a conservative hurdle makes the case stronger, not weaker. Ask your own team for the incremental number. If it is lower, the payback improves.
+
+* **"You are paying 4.85% on money that was earning you 4.88%. How is that a win?"**  
+  → Those two numbers sit on opposite sides of the balance sheet, and neither one is the bank's cost of funds. The 4.88% is the coupon on a 2018 loan that is being repaid at par. That loan leaves the book on the closing date either way. The deposit is the only thing still in play. A deposit is priced at funds transfer pricing: the wholesale funding it displaces, less what the bank pays the client. On that basis the 85 basis points is a credit against the funding curve, not a spread over a loan. Interrogate the curve, not the spread. 85 bps over 4.85% implies a marginal funding cost near 5.70%, and Treasury owns that input. If Treasury's curve is lower, the Tier 1 contribution falls.
+
+* **"Our trust assets dropped 62% year over year. Why invest in wealth?"**  
+  → That number measures the business the bank left, not the business it is in. Total trust assets fell from $182.8B to $68.9B. Call Report Schedule RC-T shows where it went. Custody and safekeeping ran off $101.9B. Corporate trust closed, from 5,565 accounts to 3. Over the same year managed fiduciary assets grew 41%, to $39.8B. The income line settles it. Assets fell 62% and gross fiduciary fee income rose 17%, from $114.0M to $133.3M. The assets that left earned 0.78 basis points. The managed book that replaced them earns about 65.7. One caveat: part of that growth is Cadence and Veritex, not same-store.
+
+### Compliance and risk
+
+* **"Why not send wire instructions straight to the title company?"**  
+  → Because a lender has no authority to direct the seller's money. The settlement agent holds escrow for its own principals and disburses seller equity only on instructions the seller signs. That duty comes from the escrow agreement and agency law. Title companies also treat third-party wire instructions as a fraud risk and verify by independent call-back. So Book Scout prepares a routing packet and sends it to the borrower. The borrower signs it and submits it as his own instruction. The bank supplies a verification letter and a call-back line.
+
+* **"How does the Ameriprise arrangement affect client data?"**  
+  → Less than people assume. Huntington employs the advisors, and the client stays a Huntington customer. Ameriprise supplies the platform, the clearing and the back office, and supervises the broker-dealer activity. The handoff from banker to advisor is therefore internal. It is not a disclosure to an unaffiliated third party, so Reg P opt-out does not attach to it. Ameriprise does receive client information through the platform. That is a service-provider relationship under 12 C.F.R. § 1016.13, governed by contract rather than by customer opt-out. Two controls do bind the bank. Regulation R caps the banker's referral fee at a nominal, fixed, non-contingent amount. Reg BI supervision sits with Ameriprise. This is why Book Scout prepares administrative work only, and never a recommendation.
+
+* **"What keeps the bank from being disqualified on a 1031 exchange?"**  
+  → The bank acts only as escrow depository. An independent, unaffiliated Qualified Intermediary holds the exchange contract. The routine-financial-services carve-out at Treas. Reg. § 1.1031(k)-1(k)(2)(ii) permits the escrow on its face. Separately, Book Scout firewalls that escrow from wealth management and Delaware Statutory Trust desks for the 180 days. That is a conservative control, not a tax requirement. It also removes any argument that the bank's services stop being routine.
+
+* **"Why does Huntington's SBA 7(a) position matter here?"**  
+  → SBA payoffs are business sales and owner retirements. They create the same liquidity as a building sale. The seller is usually one person, so the money lands in one place. Many SBA loans are secured by the owner's real estate, and those produce a title payoff demand. The existing sensor already finds that slice today.
 
   > ⚠️ **Presenter caution.** Say "among the top" rather than a specific rank. The SBA publishes lender rankings, but this repo has not verified a current-year placement, and the Call Report's "small business" schedule is defined by original loan amount rather than SBA program participation — it does **not** substantiate an SBA ranking. See [`rc2.md`](rc2.md).
 
-* **"You're paying 4.85% on money that was earning you 4.88% — how is that a win?"**  
-  → Those two numbers sit on opposite sides of the balance sheet, and neither one is our cost of funds. The 4.88% is the implied coupon on the Vance facility — a 2018-vintage loan being repaid at par whether we keep the deposit or not. That asset leaves the book on the closing date; nothing on this screen changes it. What we are pricing is the **deposit**, and a deposit is valued at **funds transfer pricing**: the marginal wholesale funding it displaces, less what we pay the client. On that basis 85 basis points is a credit against the funding curve, not a spread over a loan. The number worth interrogating is the curve — 85 bps over 4.85% implies a marginal funding cost near **5.70%**, and **Treasury owns that input, not this model.** If Treasury's curve is lower, Tier 1 contribution comes down, and I would rather show you that than have you find it. The structural point holds either way: **the deposit is worth more to us than the loan it replaces**, because the loan is going regardless and the deposit is the only thing still in play.
-
-* **"Why don't we deliver wire instructions directly to the title company?"**  
-  → Because a lender has no authority to direct the seller's proceeds. The settlement agent holds escrow for its own principals and disburses seller equity only on the Seller's Closing Disbursement Instructions executed by the seller — that obligation comes from the escrow agreement, state escrow law and agency principles, not from a statute I can hand you. Separately, title companies treat third-party wire instructions as a fraud vector and authenticate by independent call-back; ALTA's Best Practices are the industry's voluntary articulation of that discipline rather than binding law. So Book Scout generates a routing packet delivered to Marcus Vance via DocuSign, and he submits it as his own seller instruction, backed by our bank verification letter and call-back line.
-
-* **"What prevents Huntington from being disqualified on a 1031 exchange?"**  
-  → Huntington National Bank acts solely as the institutional escrow depository, with an independent, unaffiliated national Qualified Intermediary (IPX1031). What keeps the bank out of disqualified-person status for providing that escrow is the routine-financial-services carve-out at Treas. Reg. § 1.1031(k)-1(k)(2)(ii) — the regulation permits it on its face. Separately, and as a conservative control rather than a tax requirement, Book Scout firewalls 1031 escrow from wealth management and Delaware Statutory Trust (DST) placement desks during the 180-day window. That is a securities-conflict control, and it also avoids any argument that our services stop being "routine."
-
-* **"Why does it cost $1.25M annually to run this platform?"**  
-  → Raw AI compute is minimal ($25k/yr). The $1.25M fully-loaded budget funds enterprise Cloud Spanner, Apigee X API gateway integration, SEI Data Cloud connectivity, annual SOC2 and OCC Bulletin 2011-12 model validations, and a dedicated 2-person platform engineering and MLOps pod.
-
-* **"Our trust assets dropped 62% year over year. Why are we investing in wealth?"**  
-  → Because that number is measuring the business you *left*, not the business you're in. Your Q2 2026 10-Q Table 24 shows total trust assets at $68.9B against $182.8B a year prior. Call Report Schedule RC-T decomposes it exactly: **custody and safekeeping ran off $101.9B** and **corporate trust exited entirely — 5,565 accounts to 3.** Over the same twelve months, **managed fiduciary assets grew 41%** to $39.8B and managed accounts grew 29% to 23,481. The decisive number is the income line: **total trust assets fell 62% while gross fiduciary fee income rose 17%**, from $114.0M to $133.3M. The assets that left were earning **0.78 basis points** on custody and 6.15 on corporate trust. The managed advisory book that replaced them earns **65.7 bps** — about 84 times the custody rate. Huntington has already decided to trade low-fee institutional processing for high-margin managed advice. Book Scout is an execution engine for the direction the bank is *already going*. One honest caveat: part of that managed growth is Cadence and Veritex, not same-store — but the composition shift is unambiguous.
+* **"How does this connect to Private Bank?"**  
+  → Through the SEI Wealth Platform and the SEI Data Cloud, using Snowflake secure data sharing. It reads in near real time. It replaces the overnight batch files from the legacy trust system.
 
 ---
-*Huntington Book Scout Presenter Script (v6.0) — Engineered for real-world banking execution, regulatory compliance, and balance sheet preservation.*
+*Huntington Book Scout Presenter Script (v7.0)*
