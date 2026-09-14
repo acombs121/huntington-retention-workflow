@@ -86,6 +86,8 @@ export const App: React.FC = () => {
         isDark={isDark}
         onToggleTheme={toggleTheme}
         isQuarantined={state.quarantineState?.quarantined}
+        onResetDemo={actions.resetDemo}
+        isResettingDemo={state.isResettingDemo}
       />
 
       {/* 2. Main Focused Workspace: Exactly ONE Thing Each Page Does */}
@@ -149,6 +151,7 @@ export const App: React.FC = () => {
             isSendingPacket={state.isSendingPacket}
             error={state.error}
             onClearError={actions.clearError}
+            demoResetNonce={state.demoResetNonce}
           />
         )}
 

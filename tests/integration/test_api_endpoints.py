@@ -407,6 +407,73 @@ def test_retracting_consent_does_not_recall_a_sent_envelope():
         reset_deal("PO-2026-8821")
 
 
+def test_demo_reset_closes_every_gate_on_every_deal():
+    """The reset is the start state, not a partial rollback.
+
+    Advances one deal all the way through -- call, dispatched envelope,
+    cross-LOB consent -- and dirties a second, then asserts both come back
+    fully gated. A reset that only cleaned the deal on screen would leave a
+    live envelope id behind on the deal the presenter had switched away from.
+    """
+    try:
+        log_call("PO-2026-8821")
+        sent = client.post("/api/settlement-packet", json={"payoff_id": "PO-2026-8821"}).json()
+        assert sent["docusign_envelope_id"].startswith("ENV-HBAN-")
+        consented = client.post("/api/quarantine", json={
+            "payoff_id": "PO-2026-8821", "verbal_consent_recorded": True,
+        }).json()
+        assert consented["quarantined"] is False
+
+        log_call("PO-2026-7492")
+
+        resp = client.post("/api/demo/reset")
+        assert resp.status_code == 200, resp.text
+        body = resp.json()
+        assert body["reset"] is True
+        assert "PO-2026-8821" in body["deals_reset"]
+        assert "PO-2026-7492" in body["deals_reset"]
+        assert "PO-2026-6104" in body["deals_reset"]
+
+        for payoff_id in body["deals_reset"]:
+            # Read back through the API rather than trusting the reset's own
+            # echo: the point of the test is what the next request sees.
+            state = client.get(f"/api/quarantine?payoff_id={payoff_id}").json()
+            assert state["call_logged"] is False, payoff_id
+            assert state["call_timestamp"] is None, payoff_id
+            assert state["client_directed_proceeds"] is False, payoff_id
+            assert state["call_disposition"] is None, payoff_id
+            assert state["packet_sent"] is False, payoff_id
+            assert state["packet_sent_at"] is None, payoff_id
+            assert state["packet_recipient"] is None, payoff_id
+            assert state["docusign_envelope_id"] is None, payoff_id
+            assert state["quarantined"] is True, payoff_id
+            assert state["verbal_consent_recorded"] is False, payoff_id
+            assert state["recorded_by"] is None, payoff_id
+            assert state["consent_timestamp"] is None, payoff_id
+            # The audit hashes must go back to their pending sentinels, not
+            # keep a digest for an event that no longer exists.
+            assert state["call_audit_hash"].endswith("-PENDING"), payoff_id
+            assert state["packet_audit_hash"].endswith("-PENDING"), payoff_id
+            assert state["audit_hash"].endswith("-PENDING"), payoff_id
+
+        # And the gate genuinely re-arms: consent is refused again.
+        refused = client.post("/api/quarantine", json={
+            "payoff_id": "PO-2026-8821", "verbal_consent_recorded": True,
+        })
+        assert refused.status_code == 409
+    finally:
+        reset_deal("PO-2026-8821")
+        reset_deal("PO-2026-7492")
+
+
+def test_demo_reset_is_idempotent_on_an_untouched_deal():
+    """Resetting a pristine deal is a no-op, not an error."""
+    before = client.get("/api/quarantine?payoff_id=PO-2026-6104").json()
+    assert client.post("/api/demo/reset").status_code == 200
+    after = client.get("/api/quarantine?payoff_id=PO-2026-6104").json()
+    assert after == before
+
+
 def test_wealth_onboarding_deal_parameterization():
     """Verifies wealth onboarding dossier redacts NPI when quarantined, and reveals verified data when consent is recorded."""
     # 1. Quarantined check (default state)

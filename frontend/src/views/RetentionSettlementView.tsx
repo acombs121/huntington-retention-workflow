@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ValuationData, QuarantineState, WireInstructionData, PayoffItem } from '../types';
 import { StaleRecordNotice } from '../components/StaleRecordNotice';
 import {
@@ -16,6 +16,7 @@ import {
   Phone,
   Send,
   AlertTriangle,
+  ChevronDown,
 } from 'lucide-react';
 
 /**
@@ -93,6 +94,12 @@ interface RetentionSettlementViewProps {
   isSendingPacket?: boolean;
   error?: string | null;
   onClearError?: () => void;
+  /**
+   * Bumped on a demo reset. Server state is reset by the API; this exists so
+   * purely local view state (the expanded call script) goes back to its start
+   * position too, rather than leaving the screen half-way through a run.
+   */
+  demoResetNonce?: number;
 }
 
 export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = ({
@@ -114,8 +121,21 @@ export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = (
   isSendingPacket = false,
   error = null,
   onClearError,
+  demoResetNonce = 0,
 }) => {
   const [copied, setCopied] = useState(false);
+
+  // The talk track is reference material, not the point of the screen. Closed
+  // by default so the card leads with the state of the relationship and the
+  // two things the banker can actually do; opened when the script is wanted.
+  const [scriptOpen, setScriptOpen] = useState(false);
+
+  // A reset returns the screen to its start position, and the start position
+  // has the script closed. Also collapses on a deal switch: an open script
+  // belongs to the borrower it was opened for.
+  useEffect(() => {
+    setScriptOpen(false);
+  }, [demoResetNonce, deal?.id]);
 
   // Gate 1. Everything client-facing on this screen hangs off it.
   const callLogged = quarantineState.call_logged === true;
@@ -284,45 +304,73 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
                 {borrowerName} asks for it.
               </p>
 
-              <div className="space-y-4">
-                <div className="text-[10px] uppercase font-bold tracking-widest text-slate-400">
-                  Suggested Script
-                </div>
-                {CALL_SCRIPT.map((s, i) => (
-                  <div key={i} className="flex gap-4">
-                    <span className="shrink-0 w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[11px] font-bold flex items-center justify-center tabular-nums">
-                      {i + 1}
+              {/* The talk track and its guardrails are reference material the
+                  banker opens when wanted. Collapsed by default so the card
+                  leads with the two actions, but the trigger names what is
+                  inside -- the guardrails are not hidden, only folded. */}
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setScriptOpen((open) => !open)}
+                  aria-expanded={scriptOpen}
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left bg-slate-50/70 dark:bg-slate-800/30 hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition"
+                >
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-slate-500 dark:text-slate-400">
+                    Suggested script &amp; compliance guardrails
+                  </span>
+                  <span className="flex items-center gap-2 shrink-0">
+                    <span className="text-[10px] text-slate-400 tabular-nums hidden sm:inline">
+                      {CALL_SCRIPT.length} beats · {CALL_GUARDRAILS.length} do-not-say rules
                     </span>
-                    <div className="space-y-1.5 min-w-0">
-                      <div className="text-[11px] font-bold uppercase tracking-wider text-[#006738] dark:text-emerald-400">
-                        {s.beat}
+                    <ChevronDown
+                      className={`w-4 h-4 text-slate-400 transition-transform ${
+                        scriptOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </span>
+                </button>
+
+                {scriptOpen && (
+                  <div className="p-4 space-y-5 border-t border-slate-200 dark:border-slate-800">
+                    <div className="space-y-4">
+                      {CALL_SCRIPT.map((s, i) => (
+                        <div key={i} className="flex gap-4">
+                          <span className="shrink-0 w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[11px] font-bold flex items-center justify-center tabular-nums">
+                            {i + 1}
+                          </span>
+                          <div className="space-y-1.5 min-w-0">
+                            <div className="text-[11px] font-bold uppercase tracking-wider text-[#006738] dark:text-emerald-400">
+                              {s.beat}
+                            </div>
+                            <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200 italic">
+                              &ldquo;{s.line}&rdquo;
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="rounded-xl border border-amber-300/70 dark:border-amber-800/60 bg-amber-50/70 dark:bg-amber-950/20 p-4 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-500 shrink-0" />
+                        <span className="text-[10px] uppercase font-bold tracking-widest text-amber-800 dark:text-amber-500">
+                          Do not say
+                        </span>
                       </div>
-                      <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200 italic">
-                        &ldquo;{s.line}&rdquo;
-                      </p>
+                      <ul className="space-y-1.5">
+                        {CALL_GUARDRAILS.map((g, i) => (
+                          <li
+                            key={i}
+                            className="text-[11px] leading-relaxed text-amber-900/90 dark:text-amber-200/80 flex gap-2"
+                          >
+                            <span className="shrink-0">&bull;</span>
+                            <span>{g}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
-                ))}
-              </div>
-
-              <div className="rounded-xl border border-amber-300/70 dark:border-amber-800/60 bg-amber-50/70 dark:bg-amber-950/20 p-4 space-y-2">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-500 shrink-0" />
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-amber-800 dark:text-amber-500">
-                    Do not say
-                  </span>
-                </div>
-                <ul className="space-y-1.5">
-                  {CALL_GUARDRAILS.map((g, i) => (
-                    <li
-                      key={i}
-                      className="text-[11px] leading-relaxed text-amber-900/90 dark:text-amber-200/80 flex gap-2"
-                    >
-                      <span className="shrink-0">&bull;</span>
-                      <span>{g}</span>
-                    </li>
-                  ))}
-                </ul>
+                )}
               </div>
 
               <div className="pt-1 flex flex-col sm:flex-row sm:items-center gap-3">

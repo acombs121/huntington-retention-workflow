@@ -1,7 +1,7 @@
 import React from 'react';
 import { PersonaType } from '../types';
 import { AdminPanel } from './AdminPanel';
-import { Moon, Sun, Briefcase, UserCheck } from 'lucide-react';
+import { Moon, Sun, Briefcase, UserCheck, RotateCcw } from 'lucide-react';
 
 export type AppView =
   | 'pipeline'
@@ -20,6 +20,9 @@ interface HeaderProps {
   isDark: boolean;
   onToggleTheme: () => void;
   isQuarantined?: boolean;
+  /** Returns every deal to the pristine, fully-gated start state. */
+  onResetDemo?: () => void;
+  isResettingDemo?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -30,7 +33,31 @@ export const Header: React.FC<HeaderProps> = ({
   isDark,
   onToggleTheme,
   isQuarantined = false,
+  onResetDemo,
+  isResettingDemo = false,
 }) => {
+  // Two-step confirm. The reset wipes the logged call, the dispatched envelope
+  // and the cross-LOB consent for every deal, and this button sits between the
+  // theme toggle and the admin gear -- both of which get clicked mid-demo. One
+  // stray click should not unwind the walkthrough in front of the room.
+  const [armed, setArmed] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!armed) return;
+    const t = window.setTimeout(() => setArmed(false), 4000);
+    return () => window.clearTimeout(t);
+  }, [armed]);
+
+  const handleResetClick = () => {
+    if (!onResetDemo || isResettingDemo) return;
+    if (!armed) {
+      setArmed(true);
+      return;
+    }
+    setArmed(false);
+    onResetDemo();
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-[#003319] bg-[#004724] text-white shadow-md">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
@@ -197,6 +224,30 @@ export const Header: React.FC<HeaderProps> = ({
           >
             {isDark ? <Sun className="w-4 h-4 text-[#A9D42C]" /> : <Moon className="w-4 h-4" />}
           </button>
+
+          {/* Demo Reset. Closes every gate again -- no logged call, no
+              dispatched envelope, no cross-LOB consent -- so the walkthrough
+              can be run from the top. */}
+          {onResetDemo && (
+            <button
+              onClick={handleResetClick}
+              disabled={isResettingDemo}
+              className={`flex items-center gap-1.5 rounded-full transition shrink-0 disabled:opacity-50 disabled:cursor-not-allowed ${
+                armed
+                  ? 'px-3 py-1.5 bg-amber-400 text-[#003319] font-semibold text-xs'
+                  : 'p-2 text-emerald-100 hover:text-white hover:bg-white/10'
+              }`}
+              title={
+                armed
+                  ? 'Click again to reset the demo'
+                  : 'Reset demo — closes every gate and clears the call, envelope and consent'
+              }
+              aria-label={armed ? 'Confirm demo reset' : 'Reset demo'}
+            >
+              <RotateCcw className={`w-4 h-4 shrink-0 ${isResettingDemo ? 'animate-spin' : ''}`} />
+              {armed && <span className="whitespace-nowrap">Confirm reset</span>}
+            </button>
+          )}
 
           {/* Mandatory Admin Panel Gear Icon (far right) */}
           <AdminPanel

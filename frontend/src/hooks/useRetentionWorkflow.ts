@@ -40,6 +40,13 @@ export interface WorkflowState {
   isTogglingConsent: boolean;
   isLoggingCall: boolean;
   isSendingPacket: boolean;
+  isResettingDemo: boolean;
+  /**
+   * Increments on every successful demo reset. Views watch it to return their
+   * own local UI state (expanded panels and the like) to the start position;
+   * the server-side reset cannot reach that state on its own.
+   */
+  demoResetNonce: number;
   /**
    * True when any per-deal dataset in state was fetched for a different deal.
    *
@@ -70,6 +77,12 @@ export interface WorkflowActions {
    */
   sendSettlementPacket: (send?: boolean) => Promise<void>;
   toggleQuarantine: () => Promise<void>;
+  /**
+   * Returns every deal to the pristine, fully-gated start state so the
+   * walkthrough can be run again: no call, no envelope, no consent. The
+   * server owns the reset; this re-reads the result rather than assuming it.
+   */
+  resetDemo: () => Promise<void>;
   clearError: () => void;
 }
 
@@ -121,7 +134,14 @@ export function useRetentionWorkflow(): {
   const [isTogglingConsent, setIsTogglingConsent] = useState<boolean>(false);
   const [isLoggingCall, setIsLoggingCall] = useState<boolean>(false);
   const [isSendingPacket, setIsSendingPacket] = useState<boolean>(false);
+  const [isResettingDemo, setIsResettingDemo] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Bumped after a demo reset to re-run the per-deal metadata effect. The
+  // reset clears state for every deal, not just the selected one, so the
+  // response for the current deal is not enough -- the whole per-deal
+  // synchronisation has to run again against the server's new truth.
+  const [refreshNonce, setRefreshNonce] = useState<number>(0);
 
   // Selected Deal Item
   const selectedDeal = useMemo(() => {
@@ -252,7 +272,7 @@ export function useRetentionWorkflow(): {
     return () => {
       controller.abort();
     };
-  }, [selectedPayoffId]);
+  }, [selectedPayoffId, refreshNonce]);
 
   // Valuation & Settlement Wire Synchronization with Race-Condition Guard (AbortController)
   useEffect(() => {
@@ -497,6 +517,43 @@ export function useRetentionWorkflow(): {
     }
   }, [isTogglingConsent, quarantineState.verbal_consent_recorded, selectedPayoffId, selectedDeal]);
 
+  // Action: Reset the demo (all gates back to closed).
+  //
+  // Server-side, like every other state transition here. Clearing the gates
+  // locally would be exactly the architectural deceit the gates exist to rule
+  // out -- the UI would show a pristine start state while the server still
+  // held a logged call and a live envelope id.
+  const resetDemo = useCallback(async () => {
+    if (isResettingDemo) return;
+    setIsResettingDemo(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/demo/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!res.ok) {
+        throw new Error(`Demo reset API returned HTTP ${res.status}`);
+      }
+      const data = await res.json();
+      // Adopt the selected deal's record straight from the response so the
+      // current screen updates without waiting on the refetch below.
+      const fresh = data?.states?.[selectedPayoffId];
+      if (fresh) {
+        setQuarantineState(fresh);
+        setQuarantineFailedFor(null);
+      }
+      // Every other per-deal dataset re-reads from the server.
+      setRefreshNonce((n) => n + 1);
+    } catch (e: any) {
+      console.error('Error resetting the demo via API:', e);
+      setError(e?.message || 'Unable to reset the demo. Please retry.');
+    } finally {
+      setIsResettingDemo(false);
+    }
+  }, [isResettingDemo, selectedPayoffId]);
+
   const clearError = useCallback(() => setError(null), []);
 
   return {
@@ -516,6 +573,8 @@ export function useRetentionWorkflow(): {
       isTogglingConsent,
       isLoggingCall,
       isSendingPacket,
+      isResettingDemo,
+      demoResetNonce: refreshNonce,
       isDealDataStale,
       error,
     },
@@ -526,6 +585,7 @@ export function useRetentionWorkflow(): {
       logConsultativeCall,
       sendSettlementPacket,
       toggleQuarantine,
+      resetDemo,
       clearError,
     },
   };

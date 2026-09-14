@@ -906,6 +906,38 @@ async def toggle_quarantine_status(
     return quarantine_states[target_id]
 
 
+@app.post("/api/demo/reset")
+async def reset_demo(
+    user: Dict[str, Any] = Depends(get_authenticated_user)
+) -> Dict[str, Any]:
+    """Return every deal to the pristine, fully-gated start state.
+
+    `quarantine_states` is the only mutable server-side state in the demo --
+    everything else is derived from fixtures on each request -- so rebuilding
+    it from `get_default_quarantine` is a complete reset, not a partial one.
+
+    Every gate closes again: no call logged, no envelope issued, no cross-LOB
+    consent. That is the point. A reset that left the gates open would leave
+    nothing to demonstrate, and it would leave an envelope id standing for a
+    dispatch that no longer has a call behind it.
+
+    Rebuilt rather than mutated in place so that any field added to the
+    default record in future is picked up here for free.
+    """
+    payoff_ids = {p["id"] for p in PAYOFF_QUEUE} | set(quarantine_states.keys())
+    for payoff_id in payoff_ids:
+        quarantine_states[payoff_id] = get_default_quarantine(payoff_id)
+
+    reset_at = datetime.now(timezone.utc)
+    return {
+        "reset": True,
+        "reset_at": reset_at.isoformat(),
+        "reset_by": user.get("email") or user.get("name") or "Unknown",
+        "deals_reset": sorted(payoff_ids),
+        "states": {pid: quarantine_states[pid] for pid in sorted(payoff_ids)},
+    }
+
+
 @app.get("/api/wire-instructions")
 async def get_wire_instructions(
     payoff_id: str = Query("PO-2026-8821"),
