@@ -13,6 +13,23 @@ from main import app
 client = TestClient(app)
 
 
+def log_call(payoff_id: str, client_directed_proceeds: bool = True):
+    """Satisfy Gate 1.
+
+    Cross-LOB consent is refused unless a consultative call has been logged
+    against the deal, so every test that records consent has to place the call
+    first. Returns the resulting compliance record.
+    """
+    resp = client.post("/api/consultative-call", json={
+        "payoff_id": payoff_id,
+        "call_completed": True,
+        "client_directed_proceeds": client_directed_proceeds,
+        "recorded_by": "Greg Miller (Commercial RM)",
+    })
+    assert resp.status_code == 200, resp.text
+    return resp.json()
+
+
 def test_health_endpoint():
     response = client.get("/api/health")
     assert response.status_code == 200
@@ -117,7 +134,11 @@ def test_wire_instructions_deal_parameterization():
     data = response.json()
     assert "Buckeye Precision Tooling Corp." in data["account_title"]
     assert "HBAN-QI-8819-01" == data["account_number"]
-    assert data["indicative_net_disbursement"] == 1588250.00
+    # The packet is signed by the seller, so it carries a destination and an
+    # unfilled election -- never a bank-computed proceeds figure.
+    assert "indicative_net_disbursement" not in data
+    assert "seller" in data["amount_election_note"].lower()
+    assert any("all net seller proceeds" in o.lower() for o in data["amount_election_options"])
     assert data["borrower_directed_packet"] is True
     assert "Borrower Settlement Routing Packet" in data["packet_type"]
     assert data["callback_verification_line"] == "(614) 480-4401 (Direct Banker Authentication Line)"
@@ -135,6 +156,9 @@ def test_wire_instructions_deal_parameterization():
 
 def test_glba_quarantine_flow():
     """Verifies GLBA verbal consent recording, genuine SHA-256 audit hash, and deal isolation."""
+    # Gate 1 first: consent cannot be recorded against a call that never happened.
+    log_call("PO-2026-8821")
+
     # Record consent for Vance Riverfront deal
     post_resp = client.post("/api/quarantine", json={
         "payoff_id": "PO-2026-8821",
@@ -151,6 +175,9 @@ def test_glba_quarantine_flow():
     raw_hash = vance_data["audit_hash"].replace("SHA256-", "")
     assert len(raw_hash) == 64
     assert all(c in "0123456789abcdefABCDEF" for c in raw_hash)
+    # Recording consent must not discard the Gate 1 record it depends on.
+    assert vance_data["call_logged"] is True
+    assert vance_data["call_timestamp"] is not None
 
     # Verify Buckeye Tooling remains quarantined (deal isolation)
     buckeye_resp = client.get("/api/quarantine?payoff_id=PO-2026-7492")
@@ -164,6 +191,84 @@ def test_glba_quarantine_flow():
     })
     assert reset_resp.status_code == 200
     assert reset_resp.json()["quarantined"] is True
+    # Retracting a wealth referral does not un-ring the phone.
+    assert reset_resp.json()["call_logged"] is True
+
+    # Clear Gate 1 so the module's shared state does not leak into other tests.
+    client.post("/api/consultative-call", json={
+        "payoff_id": "PO-2026-8821", "call_completed": False,
+    })
+
+
+def test_consent_is_refused_before_a_call_is_logged():
+    """Gate 2 must be unreachable until Gate 1 is satisfied.
+
+    Enforced server-side rather than by disabling a button: a consent record
+    whose only provenance is a clickable control cannot support a Regulation R
+    referral log.
+    """
+    # Ensure a clean slate for this deal.
+    client.post("/api/consultative-call", json={
+        "payoff_id": "PO-2026-6104", "call_completed": False,
+    })
+
+    refused = client.post("/api/quarantine", json={
+        "payoff_id": "PO-2026-6104",
+        "verbal_consent_recorded": True,
+    })
+    assert refused.status_code == 409
+    assert "consultative call" in refused.json()["detail"].lower()
+
+    # And the record is untouched by the refusal.
+    state = client.get("/api/quarantine?payoff_id=PO-2026-6104").json()
+    assert state["quarantined"] is True
+    assert state["verbal_consent_recorded"] is False
+
+    # Once the call is logged, the same request succeeds.
+    log_call("PO-2026-6104")
+    allowed = client.post("/api/quarantine", json={
+        "payoff_id": "PO-2026-6104",
+        "verbal_consent_recorded": True,
+    })
+    assert allowed.status_code == 200
+    assert allowed.json()["quarantined"] is False
+
+    client.post("/api/consultative-call", json={
+        "payoff_id": "PO-2026-6104", "call_completed": False,
+    })
+
+
+def test_retracting_the_call_cascades_to_consent():
+    """A consent obtained on a call cannot outlive the retraction of that call."""
+    log_call("PO-2026-7492")
+    client.post("/api/quarantine", json={
+        "payoff_id": "PO-2026-7492",
+        "verbal_consent_recorded": True,
+    })
+    assert client.get("/api/quarantine?payoff_id=PO-2026-7492").json()["quarantined"] is False
+
+    client.post("/api/consultative-call", json={
+        "payoff_id": "PO-2026-7492", "call_completed": False,
+    })
+    after = client.get("/api/quarantine?payoff_id=PO-2026-7492").json()
+    assert after["call_logged"] is False
+    assert after["quarantined"] is True, "consent survived the call it depended on"
+    assert after["verbal_consent_recorded"] is False
+
+
+def test_declined_call_records_the_ask_without_unlocking_the_packet():
+    """A 'no' is a real outcome: logged, but it stages nothing."""
+    record = log_call("PO-2026-7492", client_directed_proceeds=False)
+    assert record["call_logged"] is True
+    assert record["client_directed_proceeds"] is False
+    assert "declined" in record["call_disposition"].lower()
+    # Declining settlement routing does not by itself bar the wealth referral,
+    # but it must not silently authorise it either.
+    assert record["quarantined"] is True
+
+    client.post("/api/consultative-call", json={
+        "payoff_id": "PO-2026-7492", "call_completed": False,
+    })
 
 
 def test_wealth_onboarding_deal_parameterization():
@@ -179,6 +284,7 @@ def test_wealth_onboarding_deal_parameterization():
     assert vance_data["draft_ips_scaffolding"]["asset_allocation_scaffold"] == []
 
     # 2. Record consent for Vance
+    log_call("PO-2026-8821")
     client.post("/api/quarantine", json={
         "payoff_id": "PO-2026-8821",
         "verbal_consent_recorded": True,
@@ -204,6 +310,7 @@ def test_wealth_onboarding_deal_parameterization():
     client.post("/api/quarantine", json={"payoff_id": "PO-2026-8821", "verbal_consent_recorded": False})
 
     # 3. Record consent for Buckeye (Arthur Pendelton)
+    log_call("PO-2026-7492")
     client.post("/api/quarantine", json={
         "payoff_id": "PO-2026-7492",
         "verbal_consent_recorded": True,
@@ -218,6 +325,7 @@ def test_wealth_onboarding_deal_parameterization():
     client.post("/api/quarantine", json={"payoff_id": "PO-2026-7492", "verbal_consent_recorded": False})
 
     # 4. Record consent for Scioto Medical (Dr. Robert Miller)
+    log_call("PO-2026-6104")
     client.post("/api/quarantine", json={
         "payoff_id": "PO-2026-6104",
         "verbal_consent_recorded": True,
@@ -653,6 +761,7 @@ def test_one_borrower_one_operating_dda():
         accounts = [a for m in entity["grounded_members"] for a in m["known_hban_accounts"]]
         assert any(dda in a for a in accounts), f"{payoff_id}: {accounts}"
 
+        log_call(payoff_id)
         client.post("/api/quarantine", json={"payoff_id": payoff_id, "verbal_consent_recorded": True,
                                              "recorded_by": "Greg Miller (Commercial RM)"})
         try:
@@ -667,6 +776,7 @@ def test_one_borrower_one_operating_dda():
             assert f"DDA #..{suffix}" not in source["value"]
         finally:
             client.post("/api/quarantine", json={"payoff_id": payoff_id, "verbal_consent_recorded": False})
+            client.post("/api/consultative-call", json={"payoff_id": payoff_id, "call_completed": False})
 
 
 def test_deal_two_graph_agrees_with_its_own_entity_resolution():

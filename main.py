@@ -109,6 +109,18 @@ MANUAL_HRS_PER_EVENT = 5.0
 def get_default_quarantine(payoff_id: str) -> Dict[str, Any]:
     return {
         "payoff_id": payoff_id,
+        # --- Gate 1: the consultative call -------------------------------
+        # Nothing client-facing may be generated before a banker has actually
+        # spoken to the borrower. Detection is an inference, not a mandate:
+        # the settlement packet names the client's entity and an account
+        # title, so it cannot exist until the client has asked for it.
+        "call_logged": False,
+        "call_timestamp": None,
+        "call_recorded_by": None,
+        "client_directed_proceeds": False,
+        "call_audit_hash": f"SHA256-CALL-HBAN-{payoff_id}-PENDING",
+        "call_disposition": None,
+        # --- Gate 2: cross-LOB consent for the wealth referral -----------
         "quarantined": True,
         "verbal_consent_recorded": False,
         "recorded_by": None,
@@ -287,6 +299,24 @@ class ValuationResponse(BaseModel):
     deposit_credit_pct: float
     finra_rule_2040_compliant: bool
     model_risk_designation: str
+
+class ConsultativeCallRequest(BaseModel):
+    """Records that a banker actually spoke to the borrower.
+
+    This is the gate everything client-facing hangs off. A payoff detection is
+    an inference drawn from the bank's own documents; it confers no authority
+    to open an account, title it in the client's name, or send that client a
+    document to sign. Only the call does that.
+    """
+    payoff_id: Optional[str] = "PO-2026-8821"
+    call_completed: bool
+    # Whether the borrower asked for proceeds to land at Huntington. A logged
+    # call with a "no" is a legitimate and useful outcome -- it records that we
+    # asked and were declined, and it leaves the packet locked.
+    client_directed_proceeds: bool = True
+    recorded_by: str = "Greg Miller (Commercial RM)"
+    disposition: Optional[str] = None
+
 
 class QuarantineToggleRequest(BaseModel):
     payoff_id: Optional[str] = "PO-2026-8821"
@@ -623,6 +653,53 @@ async def calculate_valuation(
     return ValuationResponse(**assessment.to_legacy_valuation_dict())
 
 
+@app.post("/api/consultative-call")
+async def log_consultative_call(
+    req: ConsultativeCallRequest,
+    user: Dict[str, Any] = Depends(get_authenticated_user)
+) -> Dict[str, Any]:
+    """
+    Records the Commercial RM's consultative call with the borrower.
+
+    This is Gate 1. Until it is set, no settlement packet exists and the
+    cross-LOB consent gate cannot be opened. Clearing it cascades: a call that
+    did not happen cannot have produced a consent, so the downstream consent is
+    revoked with it rather than being left dangling.
+    """
+    target_id = req.payoff_id or "PO-2026-8821"
+    get_payoff_by_id(target_id)
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    record = quarantine_states.get(target_id) or get_default_quarantine(target_id)
+
+    if not req.call_completed:
+        # Cascade. Consent obtained "on" a call that is being retracted cannot
+        # survive the call it depended on.
+        quarantine_states[target_id] = get_default_quarantine(target_id)
+        return quarantine_states[target_id]
+
+    audit_data = f"{target_id}:{req.recorded_by}:{now_iso}:CONSULTATIVE-CALL-RECORD".encode("utf-8")
+    crypto_hash = hashlib.sha256(audit_data).hexdigest()
+
+    disposition = req.disposition or (
+        "Borrower directed net settlement proceeds to Huntington Business Premier ICS."
+        if req.client_directed_proceeds
+        else "Borrower declined Huntington settlement routing. No packet generated."
+    )
+
+    record = {
+        **record,
+        "call_logged": True,
+        "call_timestamp": now_iso,
+        "call_recorded_by": req.recorded_by,
+        "client_directed_proceeds": req.client_directed_proceeds,
+        "call_audit_hash": f"SHA256-{crypto_hash}",
+        "call_disposition": disposition,
+    }
+    quarantine_states[target_id] = record
+    return record
+
+
 @app.get("/api/quarantine")
 async def get_quarantine_status(
     payoff_id: str = Query("PO-2026-8821"),
@@ -648,25 +725,53 @@ async def toggle_quarantine_status(
     """
     Enforces GLBA compliance: records commercial RM verbal consent opt-in,
     unlocking the staged wealth management onboarding package.
+
+    Sequencing is enforced here rather than in the UI. A consent record whose
+    only provenance is "a button was clickable" is worth nothing in an exam;
+    the referral record has to be able to point at the call that produced it.
     """
     target_id = req.payoff_id or "PO-2026-8821"
     get_payoff_by_id(target_id)
     now_iso = datetime.now(timezone.utc).isoformat()
-    
+
+    record = quarantine_states.get(target_id) or get_default_quarantine(target_id)
+
     if req.verbal_consent_recorded:
+        if not record.get("call_logged"):
+            raise HTTPException(
+                status_code=409,
+                detail=(
+                    "Cannot record cross-LOB consent before a consultative call is logged. "
+                    "The Regulation R referral record must reference the call on which the "
+                    "client requested the introduction."
+                ),
+            )
         audit_data = f"{target_id}:{req.recorded_by}:{now_iso}:CROSS-LOB-CONSENT-RECORD".encode("utf-8")
         crypto_hash = hashlib.sha256(audit_data).hexdigest()
+        # Spread the existing record so the Gate 1 call fields survive.
         quarantine_states[target_id] = {
+            **record,
             "payoff_id": target_id,
             "quarantined": False,
             "verbal_consent_recorded": True,
             "recorded_by": req.recorded_by,
             "consent_timestamp": now_iso,
             "audit_hash": f"SHA256-{crypto_hash}",
-            "compliance_notes": f"Affirmative verbal consent recorded for {target_id} by {req.recorded_by} at {now_iso}. GLBA barrier lifted; SEI Wealth Platform and retail CRM synchronization unlocked."
+            "compliance_notes": f"Affirmative verbal consent recorded for {target_id} by {req.recorded_by} at {now_iso}, on the consultative call logged at {record.get('call_timestamp')}. GLBA barrier lifted; SEI Wealth Platform and retail CRM synchronization unlocked."
         }
     else:
-        quarantine_states[target_id] = get_default_quarantine(target_id)
+        # Reset Gate 2 only. The call still happened; retracting a wealth
+        # referral does not un-ring the phone.
+        base = get_default_quarantine(target_id)
+        quarantine_states[target_id] = {
+            **base,
+            "call_logged": record.get("call_logged", False),
+            "call_timestamp": record.get("call_timestamp"),
+            "call_recorded_by": record.get("call_recorded_by"),
+            "client_directed_proceeds": record.get("client_directed_proceeds", False),
+            "call_audit_hash": record.get("call_audit_hash", base["call_audit_hash"]),
+            "call_disposition": record.get("call_disposition"),
+        }
     return quarantine_states[target_id]
 
 

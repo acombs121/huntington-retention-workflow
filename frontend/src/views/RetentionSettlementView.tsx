@@ -13,7 +13,63 @@ import {
   ArrowLeft,
   CheckCircle2,
   FileCheck,
+  Phone,
+  AlertTriangle,
 } from 'lucide-react';
+
+/**
+ * The suggested talk track for the consultative call.
+ *
+ * Two rules govern the wording. First, no figure from this screen appears in
+ * it: the valuation is an internal relationship-sizing estimate, not an
+ * appraisal, and asserting it to the borrower would turn a triage number into
+ * something that looks like a bank opinion of value. Second, the wealth
+ * introduction is offered after closing and only as a question -- pitching
+ * advisory services to a sponsor days from settlement is the behaviour the
+ * whole consent gate exists to prevent.
+ */
+const CALL_SCRIPT: { beat: string; line: string }[] = [
+  {
+    beat: 'Open — name the reason, plainly',
+    line:
+      "Marcus, it's Greg Miller at Huntington. The payoff quote request came across my desk on the " +
+      'Riverfront Commons facility, so it looks like you have the property under contract. ' +
+      'Congratulations. I wanted to get ahead of the closing mechanics with you rather than have ' +
+      'them land on you the week of settlement.',
+  },
+  {
+    beat: 'Offer closing safety — not a product pitch',
+    line:
+      'The piece I want to make easy is where your net proceeds actually sit on settlement day. ' +
+      'We can have a Business Premier account with Insured Cash Sweep open and ready before you ' +
+      'close, so the funds land in an account titled to your LLC with FDIC passthrough across the ' +
+      'IntraFi network — currently 4.85% APY. Nothing sits uninsured over a weekend.',
+  },
+  {
+    beat: 'Hand control to the client — the bank never instructs title',
+    line:
+      "If that's useful, I'll send the routing packet to you by DocuSign — to you, not to First " +
+      'American. You execute it and submit it as your own seller closing authorization. We include ' +
+      "Huntington's bank verification letter and a direct callback line so their escrow officer " +
+      'can verify it independently before they move a dollar.',
+  },
+  {
+    beat: 'The introduction — after closing, and only if he opens the door',
+    line:
+      "Last thing, and only if it's helpful. Once you're through closing and you know what you're " +
+      'doing with the proceeds, I can introduce you to one of our wealth advisors. No need to ' +
+      "decide anything now — I'd rather do it after settlement. Would you like me to make that " +
+      'introduction?',
+  },
+];
+
+/** Things that turn a good call into a finding. */
+const CALL_GUARDRAILS: string[] = [
+  'Do not quote a property value or a net-proceeds figure. The number on this screen is an internal triage estimate, not an appraisal or an underwriting opinion.',
+  'Do not name co-investors, guarantors, or other principals surfaced by entity resolution.',
+  'Do not condition payoff terms, pricing, or an extension on where the proceeds land — anti-tying, 12 U.S.C. § 1972.',
+  'Do not present the wealth introduction as a requirement, and do not schedule it before closing.',
+];
 
 interface RetentionSettlementViewProps {
   deal?: PayoffItem;
@@ -25,10 +81,13 @@ interface RetentionSettlementViewProps {
   onTaxStrategyChange: (strategy: 'cash_out' | '1031_exchange') => void;
   quarantineState: QuarantineState;
   onToggleQuarantine: () => void;
+  /** Gate 1. Records the consultative call that authorises everything below it. */
+  onLogConsultativeCall: (clientDirectedProceeds?: boolean) => void;
   wireInstructions: WireInstructionData;
   onBackToAnalysis: () => void;
   onProceedToAdvisorRouting: () => void;
   isTogglingConsent?: boolean;
+  isLoggingCall?: boolean;
   error?: string | null;
   onClearError?: () => void;
 }
@@ -42,14 +101,24 @@ export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = (
   onTaxStrategyChange,
   quarantineState,
   onToggleQuarantine,
+  onLogConsultativeCall,
   wireInstructions,
   onBackToAnalysis,
   onProceedToAdvisorRouting,
   isTogglingConsent = false,
+  isLoggingCall = false,
   error = null,
   onClearError,
 }) => {
   const [copied, setCopied] = useState(false);
+
+  // Gate 1. Everything client-facing on this screen hangs off it.
+  const callLogged = quarantineState.call_logged === true;
+  const clientDirected = quarantineState.client_directed_proceeds === true;
+  // The packet names the client's entity and an account title, so it may only
+  // exist once the client has actually asked for it on the call.
+  const packetUnlocked = callLogged && clientDirected;
+  const borrowerName = wireInstructions?.managing_member || 'the borrower';
 
   const baseValuation =
     valuation.grounded_noi > 0 && valuation.grounded_cap_rate > 0
@@ -69,7 +138,11 @@ ABA Routing: ${wireInstructions.aba_routing}
 Account Title: ${wireInstructions.account_title}
 Account Number: ${wireInstructions.account_number}
 Escrow File: ${wireInstructions.escrow_file}
-Net Disbursement: $${valuation.net_equity_proceeds.toLocaleString()}
+
+AMOUNT TO ROUTE -- completed by seller. Huntington does not populate a proceeds figure.
+  [ ] All net seller proceeds due to seller at closing
+  [ ] $______________  (remainder disbursed per seller instruction)
+
 Special Instructions: ${wireInstructions.special_instructions}
 Authorized Banker: ${wireInstructions.officer_signature}`;
     navigator.clipboard.writeText(text)
@@ -139,6 +212,174 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
           dealName={deal?.borrower_entity}
           what="the settlement and consent record"
         />
+      )}
+
+      {/* ===================================================================
+          STEP 1 -- THE CONSULTATIVE CALL
+
+          This card is deliberately first. A payoff detection is an inference
+          drawn from the bank's own documents; it is not permission to act. The
+          account title, the DocuSign envelope and the wealth referral below all
+          descend from a conversation, so the conversation is what the screen
+          leads with -- and until it is logged, none of them render.
+          =================================================================== */}
+      {!isDealDataStale && (
+        <div
+          className={`rounded-2xl border shadow-sm overflow-hidden ${
+            callLogged
+              ? 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+              : 'bg-amber-50/40 dark:bg-amber-950/10 border-amber-300/70 dark:border-amber-800/60'
+          }`}
+        >
+          <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <Phone
+                className={`w-4 h-4 ${
+                  callLogged
+                    ? 'text-[#006738] dark:text-emerald-400'
+                    : 'text-amber-600 dark:text-amber-500'
+                }`}
+              />
+              <div>
+                <h2 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                  Step 1 &middot; Consultative Call
+                </h2>
+                <span className="text-[11px] text-slate-400 block font-normal mt-0.5">
+                  {wireInstructions.officer_signature || 'Greg Miller, Vice President'} &rarr;{' '}
+                  {borrowerName}
+                  {deal?.borrower_entity ? ` · ${deal.borrower_entity}` : ''}
+                </span>
+              </div>
+            </div>
+            <span
+              className={`text-xs font-bold uppercase tracking-wider ${
+                callLogged
+                  ? 'text-[#006738] dark:text-emerald-400'
+                  : 'text-amber-700 dark:text-amber-500'
+              }`}
+            >
+              {callLogged ? 'Call Logged' : 'Not Yet Contacted'}
+            </span>
+          </div>
+
+          {!callLogged ? (
+            <div className="p-6 space-y-5">
+              <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
+                Book Scout has <strong className="text-slate-700 dark:text-slate-300">identified</strong>{' '}
+                this payoff from documents the bank already holds. Nothing has been opened, staged, or
+                sent. Place the call below; the settlement packet is generated only if{' '}
+                {borrowerName} asks for it.
+              </p>
+
+              <div className="space-y-4">
+                <div className="text-[10px] uppercase font-bold tracking-widest text-slate-400">
+                  Suggested Script
+                </div>
+                {CALL_SCRIPT.map((s, i) => (
+                  <div key={i} className="flex gap-4">
+                    <span className="shrink-0 w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[11px] font-bold flex items-center justify-center tabular-nums">
+                      {i + 1}
+                    </span>
+                    <div className="space-y-1.5 min-w-0">
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-[#006738] dark:text-emerald-400">
+                        {s.beat}
+                      </div>
+                      <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200 italic">
+                        &ldquo;{s.line}&rdquo;
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="rounded-xl border border-amber-300/70 dark:border-amber-800/60 bg-amber-50/70 dark:bg-amber-950/20 p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-500 shrink-0" />
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-amber-800 dark:text-amber-500">
+                    Do not say
+                  </span>
+                </div>
+                <ul className="space-y-1.5">
+                  {CALL_GUARDRAILS.map((g, i) => (
+                    <li
+                      key={i}
+                      className="text-[11px] leading-relaxed text-amber-900/90 dark:text-amber-200/80 flex gap-2"
+                    >
+                      <span className="shrink-0">&bull;</span>
+                      <span>{g}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="pt-1 flex flex-col sm:flex-row sm:items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => onLogConsultativeCall(true)}
+                  disabled={isLoggingCall}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold tracking-wide bg-[#006738] hover:bg-[#1B5630] text-white shadow-xs transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Phone className="w-3.5 h-3.5" />
+                  <span>
+                    {isLoggingCall ? 'Recording…' : 'Log Call — Client Directed Proceeds to Huntington'}
+                  </span>
+                </button>
+                {/* A declined call is a real outcome and worth recording: it
+                    proves the ask was made and leaves the packet locked. */}
+                <button
+                  type="button"
+                  onClick={() => onLogConsultativeCall(false)}
+                  disabled={isLoggingCall}
+                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-full text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Log Call — Client Declined
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="p-6 space-y-4">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-[#006738] dark:text-emerald-400 shrink-0 mt-0.5" />
+                <div className="space-y-1 min-w-0">
+                  <div className="text-sm font-bold text-slate-900 dark:text-white">
+                    Consultative call logged
+                    {quarantineState.call_timestamp
+                      ? ` — ${new Date(quarantineState.call_timestamp).toLocaleTimeString()}`
+                      : ''}
+                  </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {quarantineState.call_disposition}
+                  </p>
+                  <div className="text-[11px] text-slate-400">
+                    Recorded by {quarantineState.call_recorded_by}
+                  </div>
+                  {quarantineState.call_audit_hash && (
+                    <div className="text-[10px] font-mono text-slate-400 dark:text-slate-500 break-all pt-1">
+                      {quarantineState.call_audit_hash}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {!clientDirected && (
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/30 p-4 text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                  {borrowerName} declined Huntington settlement routing. No account is staged and no
+                  settlement packet is generated. The relationship record still shows the ask was
+                  made.
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={() => onLogConsultativeCall(true)}
+                disabled={isLoggingCall}
+                className="text-[11px] font-semibold text-slate-500 hover:text-[#006738] dark:text-slate-400 dark:hover:text-emerald-400 transition disabled:opacity-50"
+              >
+                {isLoggingCall ? 'Working…' : 'Retract call record'}
+              </button>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Main 2-Column Staging Layout with Generous Whitespace */}
@@ -253,15 +494,33 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
                       Direct commercial depository sweep providing multi-million FDIC insurance passthrough via IntraFi Network.
                     </p>
                   </div>
-                  <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#006738] text-white">
-                    Pre-Staged
+                  <span
+                    className={`shrink-0 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
+                      packetUnlocked
+                        ? 'bg-[#006738] text-white'
+                        : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                    }`}
+                  >
+                    {packetUnlocked ? 'Staged' : 'Eligible — Not Opened'}
                   </span>
                 </div>
 
                 <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
-                  <div className="py-2.5 flex justify-between">
+                  <div className="py-2.5 flex justify-between gap-4">
                     <span className="text-slate-400">Target Depository</span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">HBAN-4401-9921-00 (Business Premier ICS)</span>
+                    {packetUnlocked ? (
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">
+                        HBAN-4401-9921-00 (Business Premier ICS)
+                      </span>
+                    ) : (
+                      // An account number implies an account exists. Opening one
+                      // requires the customer to apply -- CIP/CDD under 31 C.F.R.
+                      // 1020.220, a signature card and beneficial-ownership
+                      // certification. None of that can follow from a detection.
+                      <span className="font-medium text-slate-400 dark:text-slate-500 italic text-right">
+                        Assigned on client instruction
+                      </span>
+                    )}
                   </div>
                   <div className="py-2.5 flex justify-between">
                     <span className="text-slate-400">FDIC Protection</span>
@@ -359,21 +618,45 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-medium text-slate-400 hidden sm:inline">
-                  {wireInstructions.docusign_envelope_id || 'Pending envelope creation'}
+              {packetUnlocked ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-medium text-slate-400 hidden sm:inline">
+                    {wireInstructions.docusign_envelope_id || 'Pending envelope creation'}
+                  </span>
+                  <button
+                    onClick={handleCopy}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-slate-700 dark:text-slate-300"
+                  >
+                    {copied ? <Check className="w-3 h-3 text-[#006738] dark:text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    <span>{copied ? 'Copied' : 'Copy'}</span>
+                  </button>
+                </div>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <Lock className="w-3.5 h-3.5" />
+                  Locked
                 </span>
-                <button
-                  onClick={handleCopy}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-slate-700 dark:text-slate-300"
-                >
-                  {copied ? <Check className="w-3 h-3 text-[#006738] dark:text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                  <span>{copied ? 'Copied' : 'Copy'}</span>
-                </button>
-              </div>
+              )}
             </div>
 
-            {/* Wire Instruction Dossier */}
+            {!packetUnlocked ? (
+              /* No packet exists before the call. This is not a redaction of
+                 something already generated -- there is nothing to redact. */
+              <div className="p-6">
+                <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/20 p-6 text-center space-y-2">
+                  <Lock className="w-5 h-5 text-slate-400 mx-auto" />
+                  <div className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                    No settlement packet has been generated
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+                    {callLogged && !clientDirected
+                      ? `${borrowerName} declined Huntington settlement routing on the logged call. No account is titled and no envelope is created.`
+                      : 'The packet names the client\u2019s entity and an account title, and is delivered to the client for their signature. It is generated only after the consultative call in Step 1, and only if the client directs proceeds to Huntington.'}
+                  </p>
+                </div>
+              </div>
+            ) : (
+            /* Wire Instruction Dossier */
             <div className="p-6 text-xs space-y-4 text-slate-800 dark:text-slate-200 select-text">
               
               {/* Target & Property Summary */}
@@ -416,11 +699,47 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
                   <span className="text-slate-400">Account Number</span>
                   <span className="font-semibold text-slate-900 dark:text-white tabular-nums">{wireInstructions.account_number}</span>
                 </div>
-                <div className="py-3 flex justify-between items-baseline">
-                  <span className="font-bold text-slate-900 dark:text-white">Net Equity Disbursement</span>
-                  <span className="text-base font-extrabold text-[#006738] dark:text-emerald-400 tabular-nums">
-                    ${valuation.net_equity_proceeds.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                  </span>
+                {/* Amount to Route -- elected by the seller, never by the bank.
+                    There is deliberately no figure here. See the comment on
+                    SettlementWireInstruction in domain/models.py for why: the
+                    net-equity number is an internal triage estimate, it is gross
+                    of the prepayment premium and the seller's tax liability, and
+                    it would not reconcile to the settlement statement. */}
+                <div className="py-3 space-y-2">
+                  <div className="flex justify-between items-baseline gap-4">
+                    <span className="font-bold text-slate-900 dark:text-white">Amount to Route</span>
+                    <span className="text-[10px] uppercase font-semibold tracking-wider text-amber-700 dark:text-amber-500 shrink-0">
+                      Completed by seller
+                    </span>
+                  </div>
+                  <div className="space-y-1.5">
+                    {(wireInstructions.amount_election_options || []).map((option, i) => (
+                      <div key={option} className="flex items-start gap-2">
+                        <span
+                          aria-hidden="true"
+                          className="mt-[3px] w-3 h-3 shrink-0 rounded-[3px] border border-slate-400 dark:border-slate-600"
+                        />
+                        <span className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                          {option}
+                          {i === 1 && (
+                            <>
+                              {': '}
+                              <span className="tabular-nums text-slate-500 dark:text-slate-400">$</span>
+                              <span
+                                aria-hidden="true"
+                                className="inline-block w-20 mx-1 border-b border-slate-400 dark:border-slate-600 align-baseline"
+                              />
+                            </>
+                          )}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  {wireInstructions.amount_election_note && (
+                    <p className="text-[10px] leading-relaxed text-slate-400 dark:text-slate-500 pt-0.5">
+                      {wireInstructions.amount_election_note}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -436,6 +755,7 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
                 <div>Callback Authentication: <strong className="text-slate-600 dark:text-slate-300">{wireInstructions.callback_verification_line || '(614) 480-4401'}</strong></div>
               </div>
             </div>
+            )}
           </div>
 
           {/* Card 2: Cross-LOB Consent Gate & Reg R Referral Record */}
@@ -473,7 +793,12 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
 
               <button
                 onClick={onToggleQuarantine}
-                disabled={isTogglingConsent}
+                disabled={isTogglingConsent || !callLogged}
+                title={
+                  !callLogged
+                    ? 'Log the consultative call in Step 1 first. The referral record must reference the call on which the client asked for the introduction.'
+                    : undefined
+                }
                 className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition disabled:opacity-50 disabled:cursor-not-allowed ${
                   quarantineState.quarantined
                     ? 'bg-[#006738] hover:bg-[#1B5630] text-white shadow-xs'
@@ -487,6 +812,16 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
                     : 'Reset Gate'}
               </button>
             </div>
+
+            {!callLogged && (
+              <div className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400 flex gap-2">
+                <Lock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-slate-400" />
+                <span>
+                  Blocked until the Step 1 call is logged. A Regulation R referral record has to be
+                  able to point at the conversation on which the client asked for the introduction.
+                </span>
+              </div>
+            )}
           </div>
 
         </div>

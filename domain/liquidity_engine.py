@@ -106,6 +106,7 @@ class LiquidityEngine:
             wire_account_number = "HBAN-QI-8819-01"
             special_instructions = (
                 "DO NOT DISBURSE OUTSIDE OF HUNTINGTON ESCROW. Segregated Qualified Escrow account under IPX1031 custody. "
+                "Amount is elected by the seller on this authorization; Huntington does not specify a proceeds figure. "
                 "Borrower DocuSign Seller Authorization required. Title authentication via Huntington callback line."
             )
             qi_partner = "IPX1031 (Investment Property Exchange Services, Inc.)"
@@ -123,8 +124,10 @@ class LiquidityEngine:
             wire_account_title = f"{payoff.seller_entity} / Business Premier ICS Sweep"
             wire_account_number = "HBAN-4401-9921-00"
             special_instructions = (
-                "Disburse net seller equity directly into Huntington Business Premier ICS Sweep for FDIC passthrough protection. "
-                "Pre-filled Seller Closing Authorization delivered via DocuSign to borrower with Bank Verification Letter."
+                "Route seller-elected proceeds to the Huntington Business Premier ICS Sweep account titled above "
+                "for FDIC passthrough protection. Amount is elected by the seller on this authorization; Huntington "
+                "does not specify a proceeds figure. Seller Closing Authorization delivered via DocuSign to borrower "
+                "with Bank Verification Letter."
             )
             qi_partner = None
 
@@ -148,7 +151,6 @@ class LiquidityEngine:
             account_title=wire_account_title,
             account_number=wire_account_number,
             special_instructions=special_instructions,
-            indicative_net_disbursement=net_equity_proceeds,
             officer_signature=cls.OFFICER_SIGNATURE,
             officer_contact=cls.OFFICER_CONTACT,
             packet_type="Borrower Settlement Routing Packet & Official Bank Verification Letter",

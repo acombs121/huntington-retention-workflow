@@ -139,10 +139,12 @@ export const App: React.FC = () => {
             onTaxStrategyChange={actions.setTaxStrategy}
             quarantineState={state.quarantineState}
             onToggleQuarantine={actions.toggleQuarantine}
+            onLogConsultativeCall={actions.logConsultativeCall}
             wireInstructions={state.wireInstructions}
             onBackToAnalysis={() => setActiveView('analysis')}
             onProceedToAdvisorRouting={() => setActiveView('routing')}
             isTogglingConsent={state.isTogglingConsent}
+            isLoggingCall={state.isLoggingCall}
             error={state.error}
             onClearError={actions.clearError}
           />

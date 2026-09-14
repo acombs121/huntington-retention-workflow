@@ -146,6 +146,18 @@ export interface QuarantineState {
   /** Present on every API response; the views use it to reject a record
    *  fetched for a different deal. Optional because the seed object predates it. */
   payoff_id?: string;
+
+  /** Gate 1 -- the consultative call. Nothing client-facing exists until a
+   *  banker has spoken to the borrower. Optional for the same reason as
+   *  payoff_id: the seed object predates these fields. */
+  call_logged?: boolean;
+  call_timestamp?: string | null;
+  call_recorded_by?: string | null;
+  client_directed_proceeds?: boolean;
+  call_audit_hash?: string;
+  call_disposition?: string | null;
+
+  /** Gate 2 -- cross-LOB consent for the wealth referral. */
   quarantined: boolean;
   verbal_consent_recorded: boolean;
   recorded_by: string | null;
@@ -169,7 +181,16 @@ export interface WireInstructionData {
   account_title: string;
   account_number: string;
   special_instructions: string;
-  indicative_net_disbursement: number;
+  /**
+   * No bank-computed disbursement amount exists on this packet, by design. The
+   * seller signs it and submits it as their own closing authorization, so any
+   * figure here is one the bank asserted to the client. The net-equity estimate
+   * is an internal triage heuristic, is gross of the prepayment premium and the
+   * seller's tax liability, and would not reconcile to the settlement
+   * statement. The bank supplies the destination; the seller elects the amount.
+   */
+  amount_election_note?: string;
+  amount_election_options?: string[];
   officer_signature: string;
   officer_contact: string;
   packet_type?: string;

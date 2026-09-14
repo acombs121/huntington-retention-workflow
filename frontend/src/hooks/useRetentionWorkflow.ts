@@ -38,6 +38,7 @@ export interface WorkflowState {
   wealthOnboarding: WealthOnboardingData;
   isLoading: boolean;
   isTogglingConsent: boolean;
+  isLoggingCall: boolean;
   /**
    * True when any per-deal dataset in state was fetched for a different deal.
    *
@@ -55,6 +56,12 @@ export interface WorkflowActions {
   selectDeal: (id: string) => void;
   setSalePrice: (price: number) => void;
   setTaxStrategy: (strategy: 'cash_out' | '1031_exchange') => void;
+  /**
+   * Gate 1. Records the consultative call with the borrower, which is what
+   * authorises the settlement packet and the cross-LOB consent below it.
+   * Passing false records that the ask was made and declined.
+   */
+  logConsultativeCall: (clientDirectedProceeds?: boolean) => Promise<void>;
   toggleQuarantine: () => Promise<void>;
   clearError: () => void;
 }
@@ -105,6 +112,7 @@ export function useRetentionWorkflow(): {
   // Operational State Guards
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isTogglingConsent, setIsTogglingConsent] = useState<boolean>(false);
+  const [isLoggingCall, setIsLoggingCall] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   // Selected Deal Item
@@ -314,6 +322,61 @@ export function useRetentionWorkflow(): {
     [payoffItems]
   );
 
+  // Action: Log the consultative call (Gate 1).
+  // This is what authorises everything client-facing downstream, so it is a
+  // real round-trip to the compliance service rather than local state.
+  const logConsultativeCall = useCallback(
+    async (clientDirectedProceeds: boolean = true) => {
+      if (isLoggingCall) return;
+      setIsLoggingCall(true);
+      setError(null);
+
+      const alreadyLogged = quarantineState.call_logged === true;
+
+      try {
+        const res = await fetch('/api/consultative-call', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            payoff_id: selectedPayoffId,
+            call_completed: !alreadyLogged,
+            client_directed_proceeds: clientDirectedProceeds,
+            recorded_by: `${selectedDeal.commercial_rm || 'Greg Miller'} (Commercial RM)`,
+          }),
+        });
+        if (!res.ok) {
+          throw new Error(`Consultative call API returned HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        if (!data.payoff_id || data.payoff_id === selectedPayoffId) {
+          setQuarantineState(data);
+          setQuarantineFailedFor((failedFor) => (failedFor === selectedPayoffId ? null : failedFor));
+        }
+
+        // Retracting the call cascades server-side to the consent record, so the
+        // wealth dossier has to be re-read rather than assumed unchanged.
+        const wRes = await fetch(`/api/wealth-onboarding?payoff_id=${selectedPayoffId}`);
+        if (wRes.ok) {
+          const wData = await wRes.json();
+          if (!wData.payoff_id || wData.payoff_id === selectedPayoffId) {
+            setWealthOnboarding(wData);
+            setWealthOnboardingFailedFor((failedFor) =>
+              failedFor === selectedPayoffId ? null : failedFor,
+            );
+          }
+        } else {
+          setWealthOnboardingFailedFor(selectedPayoffId);
+        }
+      } catch (e: any) {
+        console.error('Error logging consultative call via API:', e);
+        setError('Unable to record the consultative call with the compliance service. Please retry.');
+      } finally {
+        setIsLoggingCall(false);
+      }
+    },
+    [isLoggingCall, quarantineState.call_logged, selectedPayoffId, selectedDeal],
+  );
+
   // Action: Toggle GLBA Consent Gate (Fail-fast, Zero-Mock Policy, In-flight Protected)
   const toggleQuarantine = useCallback(async () => {
     if (isTogglingConsent) return;
@@ -333,7 +396,16 @@ export function useRetentionWorkflow(): {
         }),
       });
       if (!res.ok) {
-        throw new Error(`Quarantine API returned HTTP ${res.status}`);
+        // The server refuses consent that precedes a logged call. That refusal
+        // is the whole point of the gate, so report its reason verbatim rather
+        // than flattening it into a generic failure.
+        let detail = '';
+        try {
+          detail = (await res.json())?.detail || '';
+        } catch {
+          /* non-JSON error body; fall through to the status code */
+        }
+        throw new Error(detail || `Quarantine API returned HTTP ${res.status}`);
       }
       const data = await res.json();
       // Stamp the dataset with the deal it belongs to, exactly as the fetch
@@ -362,7 +434,7 @@ export function useRetentionWorkflow(): {
       }
     } catch (e: any) {
       console.error('Error toggling quarantine via API:', e);
-      setError('Unable to record GLBA verbal consent with compliance service. Please retry.');
+      setError(e?.message || 'Unable to record GLBA verbal consent with compliance service. Please retry.');
     } finally {
       setIsTogglingConsent(false);
     }
@@ -385,6 +457,7 @@ export function useRetentionWorkflow(): {
       wealthOnboarding,
       isLoading,
       isTogglingConsent,
+      isLoggingCall,
       isDealDataStale,
       error,
     },
@@ -392,6 +465,7 @@ export function useRetentionWorkflow(): {
       selectDeal,
       setSalePrice,
       setTaxStrategy,
+      logConsultativeCall,
       toggleQuarantine,
       clearError,
     },

@@ -3,7 +3,7 @@ Huntington Book Scout: Domain Models
 Explicit domain types for Commercial Liquidity Orchestration.
 Follows ubiquitous language documented in docs/CONTEXT.md.
 """
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from pydantic import BaseModel
 
 
@@ -91,7 +91,34 @@ class SettlementWireInstruction(BaseModel):
     account_title: str
     account_number: str
     special_instructions: str
-    indicative_net_disbursement: float
+    # Deliberately absent: any bank-computed disbursement amount.
+    #
+    # The seller executes this packet and submits it to the settlement agent as
+    # their own closing authorization, so every figure on it is a number the
+    # bank has asserted to the client. Three reasons that cannot be the net
+    # equity estimate:
+    #
+    #   1. The estimate is an internal triage heuristic designated under OCC
+    #      Bulletin 2011-12 / Fed SR 11-7. That designation is held on the
+    #      express basis that the valuation is muzzled from client-facing use.
+    #      Printing it on an instrument the client signs forfeits the basis.
+    #   2. It is gross of the yield-maintenance prepayment premium and of the
+    #      seller's capital-gains and depreciation-recapture liability. It is an
+    #      upper bound, not a settlement figure, and it will not reconcile to
+    #      the settlement statement.
+    #   3. A lender has no authority to set the amount of a seller's proceeds.
+    #      The amount is the seller's to elect, and the settlement statement
+    #      determines it.
+    #
+    # The bank supplies the destination. The seller supplies the amount.
+    amount_election_note: str = (
+        "Amount to be elected and completed by seller. Huntington does not "
+        "populate a proceeds figure on this authorization."
+    )
+    amount_election_options: List[str] = [
+        "All net seller proceeds due to seller at closing",
+        "A specified amount, remainder disbursed per seller instruction",
+    ]
     officer_signature: str
     officer_contact: str
     packet_type: str = "Borrower Settlement Routing Packet & Official Bank Verification Letter"

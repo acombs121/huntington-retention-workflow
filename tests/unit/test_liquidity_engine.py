@@ -3,6 +3,9 @@ Unit Tests for Commercial Liquidity Engine
 Verifies financial math, statutory deposit routing, and wire instruction formulation.
 """
 from datetime import datetime
+import json
+import re
+
 import pytest
 
 from domain.models import PayoffStatement, LiquidityAssessment
@@ -98,13 +101,50 @@ def test_statutory_depository_1031_exchange_route(default_payoff: PayoffStatemen
     assert "DO NOT DISBURSE OUTSIDE OF HUNTINGTON ESCROW" in wire.special_instructions
 
 
-def test_wire_disbursement_matches_net_equity_invariant(default_payoff: PayoffStatement):
+def test_settlement_packet_carries_no_bank_computed_amount(default_payoff: PayoffStatement):
     """
-    Invariant: Settlement wire instruction net disbursement must exactly match
-    the net equity proceeds calculated by the valuation engine.
+    The packet is executed by the seller and submitted to the settlement agent as
+    their own closing authorization, so anything on it is a figure the bank has
+    asserted to the client. The net-equity estimate must never appear there:
+
+      - it is an internal triage heuristic whose OCC 2011-12 / SR 11-7
+        designation rests on the valuation being muzzled from client-facing use;
+      - it is gross of the yield-maintenance premium and the seller's tax
+        liability, so it is an upper bound that will not reconcile to the
+        settlement statement.
+
+    This asserts the absence structurally -- over the whole serialized model, not
+    just the fields we remembered to check -- so a future field cannot quietly
+    reintroduce the leak.
     """
     assessment = LiquidityEngine.assess(default_payoff, sale_price=8750000.00)
-    assert assessment.settlement_wire.indicative_net_disbursement == assessment.valuation.net_equity_proceeds
+    wire = assessment.settlement_wire
+
+    # The valuation itself is still computed; it belongs to the banker's
+    # internal workspace, not to the client's instrument.
+    assert assessment.valuation.net_equity_proceeds > 0
+
+    assert not hasattr(wire, "indicative_net_disbursement")
+
+    packet_blob = json.dumps(wire.model_dump())
+    assert str(int(assessment.valuation.net_equity_proceeds)) not in packet_blob
+    currency = re.search(r"\$\s*\d[\d,]*", packet_blob)
+    assert currency is None, f"client-facing packet leaks a currency figure: {currency.group(0)!r}"
+
+
+def test_settlement_packet_defers_the_amount_to_the_seller(default_payoff: PayoffStatement):
+    """
+    Removing the figure is only half the fix. The packet must positively state
+    that the amount is the seller's to elect, and offer the all-proceeds route,
+    or the escrow officer receives an instruction with no amount and no basis.
+    """
+    wire = LiquidityEngine.assess(default_payoff).settlement_wire
+
+    assert "seller" in wire.amount_election_note.lower()
+    assert "does not" in wire.amount_election_note.lower()
+    assert len(wire.amount_election_options) == 2
+    assert any("all net seller proceeds" in o.lower() for o in wire.amount_election_options)
+    assert "elected by the seller" in wire.special_instructions
 
 
 def test_non_negative_net_equity_floor(default_payoff: PayoffStatement):
@@ -113,7 +153,6 @@ def test_non_negative_net_equity_floor(default_payoff: PayoffStatement):
     """
     assessment = LiquidityEngine.assess(default_payoff, sale_price=5000000.00)  # less than 5.2148M debt
     assert assessment.valuation.net_equity_proceeds == 0.00
-    assert assessment.settlement_wire.indicative_net_disbursement == 0.00
 
 
 def test_legacy_valuation_dict_compatibility(default_payoff: PayoffStatement):

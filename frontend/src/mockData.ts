@@ -488,8 +488,12 @@ export const initialWireInstructions: WireInstructionData = {
   aba_routing: "044000024",
   account_title: "Vance Riverfront Properties IV LLC / Business Premier ICS Sweep",
   account_number: "HBAN-4401-9921-00",
-  special_instructions: "Disburse net seller equity directly into Huntington Business Premier ICS Sweep for FDIC passthrough protection. Pre-filled Seller Closing Authorization delivered via DocuSign to borrower with Bank Verification Letter.",
-  indicative_net_disbursement: 2902700.00,
+  special_instructions: "Route seller-elected proceeds to the Huntington Business Premier ICS Sweep account titled above for FDIC passthrough protection. Amount is elected by the seller on this authorization; Huntington does not specify a proceeds figure. Seller Closing Authorization delivered via DocuSign to borrower with Bank Verification Letter.",
+  amount_election_note: "Amount to be elected and completed by seller. Huntington does not populate a proceeds figure on this authorization.",
+  amount_election_options: [
+    "All net seller proceeds due to seller at closing",
+    "A specified amount, remainder disbursed per seller instruction"
+  ],
   officer_signature: "Greg Miller, Vice President, Commercial Real Estate",
   officer_contact: "greg.miller@huntington.com | (614) 480-4401",
   packet_type: "Borrower Settlement Routing Packet & Official Bank Verification Letter",
