@@ -889,12 +889,18 @@ body.editing [contenteditable="true"]:focus {
 
         <circle class="close-marker mint" cx="1000" cy="540" r="9"/>
 
+        <!-- Outer two ticks are the monitoring window. Inner two are the real
+             signal arrivals the app demonstrates, measured from each deal's own
+             closing date: the Buckeye title payoff demand lands 44 days out and
+             the Vance borrower prepayment request lands 21 days out. Both are
+             shift-invariant under the demo clock. -->
         <text class="arc-tick t1 on-mint" x="164" y="534">T&#8211;120</text>
         <text class="arc-tick t2 on-mint" x="364" y="534">T&#8211;90</text>
-        <text class="arc-tick t3 on-mint" x="554" y="534">T&#8211;60</text>
-        <text class="arc-tick t4 on-mint" x="806" y="534">T&#8211;12</text>
+        <text class="arc-tick t3 on-mint" x="554" y="534">T&#8211;44</text>
+        <text class="arc-tick t4 on-mint" x="806" y="534">T&#8211;21</text>
 
-        <text class="arc-caption" x="164" y="576">Months of warning, not days</text>
+        <text class="arc-caption" x="164" y="576">Monitoring opens months out</text>
+        <text class="arc-caption" x="988" y="576" text-anchor="end">Classification lands weeks out</text>
       </svg>
 
       <div class="frame narrow">
@@ -904,8 +910,8 @@ body.editing [contenteditable="true"]:focus {
         <p class="eyebrow reveal d2" style="margin-top:56px;">What It Does</p>
 
         <h1 class="headline xl reveal d3" style="margin-top:26px;">
-          Book Scout sees it<br>
-          <em>120 days</em> out.
+          Book Scout monitors it<br>
+          from up to <em>120 days</em> out.
         </h1>
 
         <div class="beats" style="margin-top:44px;">
@@ -916,8 +922,8 @@ body.editing [contenteditable="true"]:focus {
               <div class="beat-title">It watches</div>
               <p class="beat-note">
                 Reads the loan systems every night across the bank&rsquo;s entire
-                commercial real estate book, and flags the loans about to pay
-                off.
+                commercial real estate book, and opens a watchlist on every loan
+                approaching maturity.
               </p>
             </div>
           </div>
@@ -927,9 +933,11 @@ body.editing [contenteditable="true"]:focus {
             <div>
               <div class="beat-title">It reads</div>
               <p class="beat-note">
-                Classifies each payoff as a <strong>sale</strong>, a
-                <strong>refinance</strong>, or a <strong>1031 exchange</strong>
-                &mdash; and cites the source document for every fact.
+                A title company demands a payoff, or the borrower asks the bank
+                to price a prepayment. Book Scout classifies that document as a
+                <strong>sale</strong>, a <strong>refinance</strong>, or a
+                <strong>1031 exchange</strong> &mdash; and cites the source for
+                every fact.
               </p>
             </div>
           </div>

@@ -195,8 +195,8 @@ belong on the deck and in the Q&A below. Open them only if the room asks.
 
 ### How it works day to day
 
-* **"You say Book Scout sees the payoff 120 days out. What does it actually see?"**  
-  → It sees a maturity date. The loan master holds the scheduled maturity of every commercial loan, so reading it 120 days ahead is easy. Be careful what you claim from that. A maturity date does not tell you the borrower will sell. Most maturities become renewals. The 120-day signal builds a watchlist and starts a conversation. It does not classify the event. The classification needs the title payoff demand, and that arrives about 12 days out.
+* **"You say Book Scout monitors the payoff from 120 days out. What does it actually see?"**  
+  → It sees a maturity date. The loan master holds the scheduled maturity of every commercial loan, so reading it 120 days ahead is easy. Be careful what you claim from that. A maturity date does not tell you the borrower will sell. Most maturities become renewals. The 120-day signal builds a watchlist and starts a conversation. It does not classify the event. The classification needs an inbound document. In the two deals on screen, that document arrives 44 days and 21 days before closing.
 
 * **"What if the customer sells in year three of a seven-year loan?"**  
   → Then the maturity screen never fires, and the 120 days does not apply. That is a real limit. Say so plainly. Three earlier signals still reach the bank first. The borrower asks for a payoff quote. The borrower asks the bank to price a prepayment penalty or a defeasance. The borrower asks for consent to sell. Each request lands on a Huntington desk before the title company writes. Book Scout watches those requests. They buy days or weeks, not months.
