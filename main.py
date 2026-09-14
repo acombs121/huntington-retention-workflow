@@ -686,7 +686,7 @@ def _entity_resolution_payload(payoff_id: str) -> Dict[str, Any]:
                 "known_hban_balance": 0.00,
                 "bounding_box": {
                     "ymin": 330, "xmin": 120, "ymax": 390, "xmax": 680,
-                    "text_snippet": "Elena Vance, holding a fifteen percent (15%) non-managing Membership Interest, who shall not be required to execute any Guaranty..."
+                    "text_snippet": "Elena Vance, holding a fifteen percent (15%) non-managing Membership Interest, who is not a party to and has not executed any Guaranty of the Obligations..."
                 }
             },
             {

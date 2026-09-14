@@ -195,7 +195,7 @@ export const initialEntityResolution: EntityResolutionData = {
         xmin: 120,
         ymax: 390,
         xmax: 680,
-        text_snippet: "Elena Vance, holding a fifteen percent (15%) non-managing Membership Interest, who shall not be required to execute any Guaranty..."
+        text_snippet: "Elena Vance, holding a fifteen percent (15%) non-managing Membership Interest, who is not a party to and has not executed any Guaranty of the Obligations..."
       }
     },
     {

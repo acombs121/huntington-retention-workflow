@@ -73,7 +73,13 @@ export const DOCUMENT_FACSIMILES: Record<string, Facsimile> = {
         member: 'Elena Vance',
         variant: 'clause',
         text:
-          '(b)  Elena Vance, holding a fifteen percent (15%) non-managing Membership Interest, who shall not be required to execute any Guaranty and who holds no signatory authority hereunder.',
+          // States a fact the Managing Member can actually certify. The prior
+          // wording ("shall not be required to execute any Guaranty") purported
+          // to waive the Lender's right to demand one, which a borrower
+          // certification cannot do. Reads as the negative parallel of clause
+          // (a), and makes the guaranty status legible in the highlighted
+          // region itself rather than only in 7.3, which sits below the crop.
+          '(b)  Elena Vance, holding a fifteen percent (15%) non-managing Membership Interest, who is not a party to and has not executed any Guaranty of the Obligations, and who holds no signatory authority hereunder.',
       },
       {
         member: 'The Vance 2018 Family Trust',
