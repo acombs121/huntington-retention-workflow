@@ -193,7 +193,9 @@ def test_borrower_directed_wire_packet(default_payoff: PayoffStatement):
     co_wire = cash_out_assessment.settlement_wire
     assert co_wire.borrower_directed_packet is True
     assert "Borrower Settlement Routing Packet" in co_wire.packet_type
-    assert co_wire.docusign_envelope_id.startswith("ENV-HBAN-")
+    # Assessing composes a draft. Only a dispatch issues an envelope, so the
+    # engine must not mint an id that reads as evidence of delivery.
+    assert co_wire.docusign_envelope_id is None
     assert co_wire.callback_verification_line == "(614) 480-4401 (Direct Banker Authentication Line)"
     assert co_wire.independent_qi_partner is None
 

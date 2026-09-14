@@ -120,6 +120,18 @@ def get_default_quarantine(payoff_id: str) -> Dict[str, Any]:
         "client_directed_proceeds": False,
         "call_audit_hash": f"SHA256-CALL-HBAN-{payoff_id}-PENDING",
         "call_disposition": None,
+        # --- Gate 1b: packet dispatch ------------------------------------
+        # Composing a packet is not sending one. The DocuSign envelope id is
+        # issued here and nowhere else, so its presence is evidence that a
+        # banker dispatched the envelope rather than evidence that a template
+        # rendered. Nothing advances past "sent": whether the borrower signed
+        # arrives by DocuSign Connect webhook and is not ours to assert.
+        "packet_sent": False,
+        "packet_sent_at": None,
+        "packet_sent_by": None,
+        "packet_recipient": None,
+        "docusign_envelope_id": None,
+        "packet_audit_hash": f"SHA256-PACKET-HBAN-{payoff_id}-PENDING",
         # --- Gate 2: cross-LOB consent for the wealth referral -----------
         "quarantined": True,
         "verbal_consent_recorded": False,
@@ -323,6 +335,22 @@ class QuarantineToggleRequest(BaseModel):
     verbal_consent_recorded: bool
     recorded_by: str = "Greg Miller (Commercial RM)"
     client_notes: Optional[str] = "Borrower affirmed willingness to review Huntington Business Premier ICS and Private Wealth advisory options."
+
+
+class SettlementPacketSendRequest(BaseModel):
+    """Dispatches the routing packet to the borrower for signature.
+
+    The envelope goes to the borrower and only to the borrower. Huntington has
+    no authority to instruct the settlement agent: the escrow holder acts for
+    the seller and disburses on the seller's own executed closing instructions.
+    The borrower executes this packet and submits it to title himself, which is
+    also what lets the title company run its own call-back verification against
+    a party it already has a file on.
+    """
+    payoff_id: Optional[str] = "PO-2026-8821"
+    # False recalls a sent envelope (DocuSign void) and clears the id.
+    send: bool = True
+    sent_by: str = "Greg Miller (Commercial RM)"
 
 
 # =====================================================================
@@ -696,8 +724,103 @@ async def log_consultative_call(
         "call_audit_hash": f"SHA256-{crypto_hash}",
         "call_disposition": disposition,
     }
+
+    if not req.client_directed_proceeds:
+        # The borrower declined on this call. Any envelope dispatched under an
+        # earlier disposition is void -- it asks him to sign a routing he has
+        # just refused.
+        base = get_default_quarantine(target_id)
+        record.update({
+            "packet_sent": False,
+            "packet_sent_at": None,
+            "packet_sent_by": None,
+            "packet_recipient": None,
+            "docusign_envelope_id": None,
+            "packet_audit_hash": base["packet_audit_hash"],
+        })
+
     quarantine_states[target_id] = record
     return record
+
+
+@app.post("/api/settlement-packet")
+async def send_settlement_packet(
+    req: SettlementPacketSendRequest,
+    user: Dict[str, Any] = Depends(get_authenticated_user)
+) -> Dict[str, Any]:
+    """
+    Dispatches the routing packet to the borrower for signature, and issues the
+    DocuSign envelope id.
+
+    The id is minted here and nowhere else. Previously the assessment produced
+    one, which meant a string that reads as proof of delivery existed the moment
+    a packet was rendered, with nothing having been sent. Presence of an id now
+    means a banker pressed send.
+
+    Two preconditions, both enforced server-side:
+      - a consultative call must be logged, and
+      - the borrower must have directed proceeds to Huntington on it.
+
+    Sending to a borrower who declined, or who was never called, is the failure
+    mode this whole gate exists to prevent.
+
+    There is deliberately no "executed" transition. Whether the borrower signed
+    is reported by DocuSign Connect, not decided by this service, and inventing
+    it here would be a fabricated compliance record.
+    """
+    target_id = req.payoff_id or "PO-2026-8821"
+    payoff = get_payoff_by_id(target_id)
+    now = datetime.now(timezone.utc)
+    now_iso = now.isoformat()
+
+    record = quarantine_states.get(target_id) or get_default_quarantine(target_id)
+
+    if not req.send:
+        base = get_default_quarantine(target_id)
+        quarantine_states[target_id] = {
+            **record,
+            "packet_sent": False,
+            "packet_sent_at": None,
+            "packet_sent_by": None,
+            "packet_recipient": None,
+            "docusign_envelope_id": None,
+            "packet_audit_hash": base["packet_audit_hash"],
+        }
+        return quarantine_states[target_id]
+
+    if not record.get("call_logged"):
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Cannot send a settlement packet before a consultative call is logged. "
+                "The packet names the client's entity and an account title; it cannot "
+                "precede the conversation in which the client asked for it."
+            ),
+        )
+    if not record.get("client_directed_proceeds"):
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "The borrower declined Huntington settlement routing on the logged call. "
+                "No envelope may be sent."
+            ),
+        )
+
+    recipient = f"{payoff.managing_member} ({payoff.seller_entity})"
+    envelope_id = f"ENV-HBAN-{now:%Y%m%d}-{target_id.split('-')[-1]}"
+    audit_data = f"{target_id}:{req.sent_by}:{now_iso}:{envelope_id}:SETTLEMENT-PACKET-DISPATCH".encode("utf-8")
+    crypto_hash = hashlib.sha256(audit_data).hexdigest()
+
+    quarantine_states[target_id] = {
+        **record,
+        "packet_sent": True,
+        "packet_sent_at": now_iso,
+        "packet_sent_by": req.sent_by,
+        "packet_recipient": recipient,
+        "docusign_envelope_id": envelope_id,
+        "packet_audit_hash": f"SHA256-{crypto_hash}",
+    }
+    return quarantine_states[target_id]
 
 
 @app.get("/api/quarantine")
@@ -761,7 +884,9 @@ async def toggle_quarantine_status(
         }
     else:
         # Reset Gate 2 only. The call still happened; retracting a wealth
-        # referral does not un-ring the phone.
+        # referral does not un-ring the phone, and it does not recall an
+        # envelope the borrower is already holding. Those are Gate 1 facts and
+        # they carry their own retraction paths.
         base = get_default_quarantine(target_id)
         quarantine_states[target_id] = {
             **base,
@@ -771,6 +896,12 @@ async def toggle_quarantine_status(
             "client_directed_proceeds": record.get("client_directed_proceeds", False),
             "call_audit_hash": record.get("call_audit_hash", base["call_audit_hash"]),
             "call_disposition": record.get("call_disposition"),
+            "packet_sent": record.get("packet_sent", False),
+            "packet_sent_at": record.get("packet_sent_at"),
+            "packet_sent_by": record.get("packet_sent_by"),
+            "packet_recipient": record.get("packet_recipient"),
+            "docusign_envelope_id": record.get("docusign_envelope_id"),
+            "packet_audit_hash": record.get("packet_audit_hash", base["packet_audit_hash"]),
         }
     return quarantine_states[target_id]
 

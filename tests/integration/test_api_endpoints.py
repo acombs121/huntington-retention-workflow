@@ -30,6 +30,19 @@ def log_call(payoff_id: str, client_directed_proceeds: bool = True):
     return resp.json()
 
 
+def reset_deal(payoff_id: str):
+    """Clear a deal's workflow record.
+
+    Quarantine state is an in-memory dict shared across the whole session, so a
+    test that logs a call or dispatches a packet has to put it back or it leaks
+    into unrelated tests. Retracting the call cascades and resets everything.
+    """
+    client.post("/api/consultative-call", json={
+        "payoff_id": payoff_id,
+        "call_completed": False,
+    })
+
+
 def test_health_endpoint():
     response = client.get("/api/health")
     assert response.status_code == 200
@@ -142,7 +155,8 @@ def test_wire_instructions_deal_parameterization():
     assert data["borrower_directed_packet"] is True
     assert "Borrower Settlement Routing Packet" in data["packet_type"]
     assert data["callback_verification_line"] == "(614) 480-4401 (Direct Banker Authentication Line)"
-    assert data["docusign_envelope_id"].startswith("ENV-HBAN-")
+    # Composing a packet does not dispatch one, so no envelope exists yet.
+    assert data["docusign_envelope_id"] is None
     assert data["independent_qi_partner"] == "IPX1031 (Investment Property Exchange Services, Inc.)"
 
 
@@ -269,6 +283,128 @@ def test_declined_call_records_the_ask_without_unlocking_the_packet():
     client.post("/api/consultative-call", json={
         "payoff_id": "PO-2026-7492", "call_completed": False,
     })
+
+
+def test_no_envelope_exists_until_the_packet_is_sent():
+    """Composing a packet is not sending one.
+
+    The envelope id used to be minted by the assessment, so a string that reads
+    as proof of delivery existed the moment a packet rendered. It is now written
+    only by a dispatch.
+    """
+    log_call("PO-2026-8821")
+    try:
+        before = client.get("/api/quarantine?payoff_id=PO-2026-8821").json()
+        assert before["packet_sent"] is False
+        assert before["docusign_envelope_id"] is None
+        assert before["packet_audit_hash"].endswith("PENDING")
+
+        sent = client.post("/api/settlement-packet", json={"payoff_id": "PO-2026-8821"})
+        assert sent.status_code == 200
+        record = sent.json()
+        assert record["packet_sent"] is True
+        assert record["docusign_envelope_id"].startswith("ENV-HBAN-")
+        assert record["packet_sent_at"] is not None
+        assert "Marcus Vance" in record["packet_recipient"]
+        # A real digest, not the pending sentinel.
+        assert not record["packet_audit_hash"].endswith("PENDING")
+        assert len(record["packet_audit_hash"].removeprefix("SHA256-")) == 64
+    finally:
+        reset_deal("PO-2026-8821")
+
+
+def test_packet_cannot_be_sent_before_a_call_is_logged():
+    """The sequencing gate is server-side, not a disabled button."""
+    reset_deal("PO-2026-6104")
+    resp = client.post("/api/settlement-packet", json={"payoff_id": "PO-2026-6104"})
+    assert resp.status_code == 409
+    assert "consultative call" in resp.json()["detail"].lower()
+
+    state = client.get("/api/quarantine?payoff_id=PO-2026-6104").json()
+    assert state["packet_sent"] is False
+    assert state["docusign_envelope_id"] is None
+
+
+def test_packet_cannot_be_sent_when_the_borrower_declined():
+    """A logged 'no' must not be a route to an envelope."""
+    log_call("PO-2026-7492", client_directed_proceeds=False)
+    try:
+        resp = client.post("/api/settlement-packet", json={"payoff_id": "PO-2026-7492"})
+        assert resp.status_code == 409
+        assert "declined" in resp.json()["detail"].lower()
+        state = client.get("/api/quarantine?payoff_id=PO-2026-7492").json()
+        assert state["docusign_envelope_id"] is None
+    finally:
+        reset_deal("PO-2026-7492")
+
+
+def test_recalling_an_envelope_clears_the_dispatch_record():
+    log_call("PO-2026-8821")
+    try:
+        client.post("/api/settlement-packet", json={"payoff_id": "PO-2026-8821"})
+        recalled = client.post(
+            "/api/settlement-packet", json={"payoff_id": "PO-2026-8821", "send": False}
+        )
+        assert recalled.status_code == 200
+        record = recalled.json()
+        assert record["packet_sent"] is False
+        assert record["docusign_envelope_id"] is None
+        assert record["packet_audit_hash"].endswith("PENDING")
+        # Recalling an envelope does not un-log the call that authorised it.
+        assert record["call_logged"] is True
+    finally:
+        reset_deal("PO-2026-8821")
+
+
+def test_retracting_the_call_cascades_to_the_dispatched_packet():
+    """The packet is downstream of the conversation, so it cannot outlive it."""
+    log_call("PO-2026-8821")
+    client.post("/api/settlement-packet", json={"payoff_id": "PO-2026-8821"})
+    assert client.get("/api/quarantine?payoff_id=PO-2026-8821").json()["packet_sent"] is True
+
+    reset_deal("PO-2026-8821")
+    after = client.get("/api/quarantine?payoff_id=PO-2026-8821").json()
+    assert after["call_logged"] is False
+    assert after["packet_sent"] is False
+    assert after["docusign_envelope_id"] is None
+
+
+def test_re_logging_a_call_as_declined_voids_a_dispatched_packet():
+    """He cannot be left holding a request to sign a routing he just refused."""
+    log_call("PO-2026-8821")
+    try:
+        client.post("/api/settlement-packet", json={"payoff_id": "PO-2026-8821"})
+        # Same call record, corrected disposition.
+        declined = client.post("/api/consultative-call", json={
+            "payoff_id": "PO-2026-8821",
+            "call_completed": True,
+            "client_directed_proceeds": False,
+        }).json()
+        assert declined["call_logged"] is True
+        assert declined["packet_sent"] is False
+        assert declined["docusign_envelope_id"] is None
+    finally:
+        reset_deal("PO-2026-8821")
+
+
+def test_retracting_consent_does_not_recall_a_sent_envelope():
+    """Gate 2 and Gate 1b are separate facts with separate retraction paths."""
+    log_call("PO-2026-8821")
+    try:
+        client.post("/api/settlement-packet", json={"payoff_id": "PO-2026-8821"})
+        client.post("/api/quarantine", json={
+            "payoff_id": "PO-2026-8821", "verbal_consent_recorded": True,
+        })
+        withdrawn = client.post("/api/quarantine", json={
+            "payoff_id": "PO-2026-8821", "verbal_consent_recorded": False,
+        }).json()
+        assert withdrawn["verbal_consent_recorded"] is False
+        # The borrower is still holding the envelope; pretending otherwise
+        # would make the record disagree with the world.
+        assert withdrawn["packet_sent"] is True
+        assert withdrawn["docusign_envelope_id"].startswith("ENV-HBAN-")
+    finally:
+        reset_deal("PO-2026-8821")
 
 
 def test_wealth_onboarding_deal_parameterization():
@@ -736,12 +872,20 @@ def test_dates_that_are_not_transaction_dates_stay_put():
     assert note["properties"]["Maturity"] == "2029-05-15"
 
 
-def test_settlement_packet_is_dated_today_but_carries_a_rebased_envelope():
-    """The letter date is a live stamp; the envelope id carries an authored date."""
+def test_settlement_packet_is_dated_today_and_carries_no_envelope_until_sent():
+    """The letter date is a live stamp; the envelope is issued only on dispatch."""
     packet = client.get("/api/wire-instructions?payoff_id=PO-2026-8821").json()
     # The engine stamps the letter from UTC; the re-base keys off the local day.
     assert packet["date"] == datetime.now(timezone.utc).strftime("%B %d, %Y")
-    assert packet["docusign_envelope_id"] == f"ENV-HBAN-{date.today():%Y%m%d}-8821"
+    assert packet["docusign_envelope_id"] is None
+
+    log_call("PO-2026-8821")
+    try:
+        sent = client.post("/api/settlement-packet", json={"payoff_id": "PO-2026-8821"})
+        assert sent.status_code == 200
+        assert sent.json()["docusign_envelope_id"] == f"ENV-HBAN-{date.today():%Y%m%d}-8821"
+    finally:
+        client.post("/api/consultative-call", json={"payoff_id": "PO-2026-8821", "call_completed": False})
 
 
 def test_one_borrower_one_operating_dda():

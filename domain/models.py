@@ -122,7 +122,15 @@ class SettlementWireInstruction(BaseModel):
     officer_signature: str
     officer_contact: str
     packet_type: str = "Borrower Settlement Routing Packet & Official Bank Verification Letter"
-    docusign_envelope_id: str = "ENV-HBAN-20260904-8821"
+    # No envelope id until something actually sends one.
+    #
+    # A DocuSign envelope identifier is issued by DocuSign when an envelope is
+    # created. Minting one inside a pure assessment made the packet look
+    # dispatched the instant it was computed, and the demo pointed at that
+    # string as evidence of delivery. The id now lives on the workflow record
+    # and is written by POST /api/settlement-packet, so its presence means a
+    # send occurred and its absence means the packet is still a draft.
+    docusign_envelope_id: Optional[str] = None
     delivery_channel: str = "Borrower Direct Execution (DocuSign Envelope) -> Seller Authorization to Title"
     borrower_directed_packet: bool = True
     callback_verification_line: str = "(614) 480-4401 (Direct Banker Authentication Line)"

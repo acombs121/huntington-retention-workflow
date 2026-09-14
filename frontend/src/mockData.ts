@@ -497,7 +497,8 @@ export const initialWireInstructions: WireInstructionData = {
   officer_signature: "Greg Miller, Vice President, Commercial Real Estate",
   officer_contact: "greg.miller@huntington.com | (614) 480-4401",
   packet_type: "Borrower Settlement Routing Packet & Official Bank Verification Letter",
-  docusign_envelope_id: "ENV-HBAN-20260904-8821",
+  // Draft. The envelope id is issued by POST /api/settlement-packet on send.
+  docusign_envelope_id: null,
   delivery_channel: "Borrower Direct Execution (DocuSign Envelope) -> Seller Authorization to Title",
   borrower_directed_packet: true,
   callback_verification_line: "(614) 480-4401 (Direct Banker Authentication Line)",

@@ -157,6 +157,17 @@ export interface QuarantineState {
   call_audit_hash?: string;
   call_disposition?: string | null;
 
+  /** Gate 1b -- packet dispatch. The envelope id is issued by the send action
+   *  and by nothing else, so a present id means an envelope really went out.
+   *  There is no "executed" state: whether the borrower signed arrives by
+   *  DocuSign Connect webhook and is not ours to assert. */
+  packet_sent?: boolean;
+  packet_sent_at?: string | null;
+  packet_sent_by?: string | null;
+  packet_recipient?: string | null;
+  docusign_envelope_id?: string | null;
+  packet_audit_hash?: string;
+
   /** Gate 2 -- cross-LOB consent for the wealth referral. */
   quarantined: boolean;
   verbal_consent_recorded: boolean;
@@ -194,7 +205,9 @@ export interface WireInstructionData {
   officer_signature: string;
   officer_contact: string;
   packet_type?: string;
-  docusign_envelope_id?: string;
+  /** Always null. The computed packet is a draft; the envelope id is issued by
+   *  the send action and read from QuarantineState.docusign_envelope_id. */
+  docusign_envelope_id?: string | null;
   delivery_channel?: string;
   borrower_directed_packet?: boolean;
   callback_verification_line?: string;

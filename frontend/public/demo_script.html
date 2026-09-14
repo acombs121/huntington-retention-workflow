@@ -719,10 +719,16 @@
 </ul>
 <div class="script-quote"><em>"That figure sizes the relationship off trailing NOI and a submarket cap rate. It is not an appraisal and it never reaches Marcus. Now watch the packet while I drag this — it does not move, because there is no dollar amount in it to move."</em></div>
 <ul class="doc-list">
-<li>Inspect the <strong>Borrower Settlement Routing Packet</strong>, which now exists:</li>
+<li>Inspect the <strong>Borrower Settlement Routing Packet</strong>, which now exists as a <strong>draft</strong>:</li>
 </ul>
-<div class="script-quote"><em>"Here is the fatal flaw we fixed: a lender has no authority to direct a seller's net proceeds. The settlement agent is the seller's escrow holder and disburses only on the seller's own executed closing instructions — that is the escrow agreement and agency law, not a statute I can point at. And after years of business-email-compromise losses in real estate closings, no title company acts on wire instructions arriving from a third party without independent call-back verification. So Book Scout never instructs title. It generates a Huntington Settlement Account Routing Packet delivered directly to Marcus Vance via DocuSign — the envelope id on screen — which Marcus executes and submits as his own Seller Closing Authorization to First American Title, accompanied by Huntington's bank verification letter and call-back authentication line on <code>(614) 480-4401</code>."</em></div>
+<div class="script-quote"><em>"Here is the fatal flaw we fixed: a lender has no authority to direct a seller's net proceeds. The settlement agent is the seller's escrow holder and disburses only on the seller's own executed closing instructions — that is the escrow agreement and agency law, not a statute I can point at. And after years of business-email-compromise losses in real estate closings, no title company acts on wire instructions arriving from a third party without independent call-back verification. So Book Scout never instructs title. It composes a Huntington Settlement Account Routing Packet addressed to Marcus Vance, which Marcus executes and submits as his own Seller Closing Authorization to First American Title, accompanied by Huntington's bank verification letter and call-back authentication line on <code>(614) 480-4401</code>."</em></div>
 <div class="script-quote"><em>"Then look at the <strong>Amount to Route</strong> line, and notice it is blank. Printing our number there would have been wrong twice over: it is an internal triage estimate on a document the client signs, and it is gross of his prepayment premium and his tax liability, so it would never have reconciled to the settlement statement — First American would have kicked it back. Marcus elects all net proceeds, or he writes in his own figure. The bank supplies the destination and nothing else."</em></div>
+<ul class="doc-list">
+<li>Point at the <strong>Draft — not sent</strong> badge, then click <strong>[Send to Marcus Vance for Signature]</strong>:</li>
+</ul>
+<div class="script-quote"><em>"Notice the badge, and notice there is no envelope number anywhere on this screen. The packet is composed but nothing has left the building. We used to print an envelope id the moment the packet rendered, which meant a string that reads as proof of delivery existed before anyone had sent anything — an auditor finds that in a minute and everything around it becomes suspect."</em></div>
+<div class="script-quote"><em>"Now watch where it goes. The envelope is addressed to Marcus, not to First American — that is the whole argument, and a button that submitted to title would destroy it. The id appears only now, and the server issues it, so its presence on the screen is evidence a banker pressed send."</em></div>
+<div class="script-quote"><em>"And read the last line: awaiting borrower signature. Not signed. Whether Marcus signs comes back from DocuSign Connect against that envelope. We can prove we sent it. We cannot prove he signed it, and we don't pretend to."</em></div>
 <ul class="doc-list">
 <li>Click <strong>[Record Client Opt-In]</strong> to lift the GLBA Privacy Gate:</li>
 </ul>
@@ -733,14 +739,16 @@
 <div class="script-quote"><em>"With client opt-in recorded on the commercial call, we proceed to Advisor Routing to match Marcus with the right wealth specialist."</em></div>
 <ul class="doc-list">
 <li><strong>If challenged — "so the machine opens accounts?"</strong>: Click <strong>Retract call record</strong>. The account number, the envelope and the routing packet all disappear, and the consent gate goes dead. The packet is downstream of the conversation, not of the detection.</li>
+<li><strong>If challenged — "what if the banker sends it by mistake?"</strong>: Click <strong>Recall envelope</strong>. The id and the dispatch record clear, and the packet returns to draft. The call record survives, because recalling an envelope does not un-ring the phone.</li>
 </ul></div>
         </div>
         <div class="dim-col">
           <div class="dim-title">What is Shown in the Demo</div>
           <div class="dim-desc"><ul class="doc-list">
-<li>Live DocuSign routing packet with official Huntington National Bank Account Verification Letter and direct callback authentication line.</li>
+<li>A settlement packet that exists as a draft and becomes a dispatch only on an explicit banker action, with the DocuSign envelope id issued server-side at that moment.</li>
 <li>Indicative Valuation Slider recalculating net seller equity in the banker's workspace only — the figure never enters the client-facing packet.</li>
 <li>Settlement packet carrying a routing destination and an unfilled seller amount election, never a bank-computed proceeds figure.</li>
+<li>Dispatch recorded as "sent, awaiting signature" with a SHA-256 digest; execution status is left to the DocuSign Connect webhook rather than asserted.</li>
 <li>Affirmative consent toggle writing SHA-256 audit digest, unlocking the downstream advisor routing and intake.</li>
 </ul></div>
         </div>
@@ -748,6 +756,7 @@
           <div class="dim-title">Production Implementation Blueprint</div>
           <div class="dim-desc"><ul class="doc-list">
 <li>DocuSign REST APIs; Apigee X API Gateway mTLS; Cloud Audit Logs WORM trail.</li>
+<li>DocuSign Connect webhook for envelope status. Execution is reported by DocuSign against the envelope id, never inferred here.</li>
 </ul></div>
         </div>
       </div>

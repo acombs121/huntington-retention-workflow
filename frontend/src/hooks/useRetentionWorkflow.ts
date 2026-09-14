@@ -39,6 +39,7 @@ export interface WorkflowState {
   isLoading: boolean;
   isTogglingConsent: boolean;
   isLoggingCall: boolean;
+  isSendingPacket: boolean;
   /**
    * True when any per-deal dataset in state was fetched for a different deal.
    *
@@ -62,6 +63,12 @@ export interface WorkflowActions {
    * Passing false records that the ask was made and declined.
    */
   logConsultativeCall: (clientDirectedProceeds?: boolean) => Promise<void>;
+  /**
+   * Gate 1b. Dispatches the routing packet to the borrower for signature and
+   * issues the DocuSign envelope id. Passing false recalls a sent envelope.
+   * The envelope goes to the borrower, never to the settlement agent.
+   */
+  sendSettlementPacket: (send?: boolean) => Promise<void>;
   toggleQuarantine: () => Promise<void>;
   clearError: () => void;
 }
@@ -113,6 +120,7 @@ export function useRetentionWorkflow(): {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isTogglingConsent, setIsTogglingConsent] = useState<boolean>(false);
   const [isLoggingCall, setIsLoggingCall] = useState<boolean>(false);
+  const [isSendingPacket, setIsSendingPacket] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   // Selected Deal Item
@@ -377,6 +385,55 @@ export function useRetentionWorkflow(): {
     [isLoggingCall, quarantineState.call_logged, selectedPayoffId, selectedDeal],
   );
 
+  // Action: Dispatch the settlement packet to the borrower (Gate 1b).
+  //
+  // The envelope id is issued by the server on this call and by nothing else,
+  // so this cannot be faked client-side: if the request fails there is no id to
+  // display, which is the correct outcome.
+  const sendSettlementPacket = useCallback(
+    async (send: boolean = true) => {
+      if (isSendingPacket) return;
+      setIsSendingPacket(true);
+      setError(null);
+
+      try {
+        const res = await fetch('/api/settlement-packet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            payoff_id: selectedPayoffId,
+            send,
+            sent_by: `${selectedDeal.commercial_rm || 'Greg Miller'} (Commercial RM)`,
+          }),
+        });
+        if (!res.ok) {
+          // A 409 here is the sequencing gate refusing the send. Surface the
+          // server's reason rather than flattening it to "please retry" -- the
+          // banker needs to know a call is missing, not that the network hiccuped.
+          let detail = `Settlement packet API returned HTTP ${res.status}`;
+          try {
+            const body = await res.json();
+            if (body?.detail) detail = body.detail;
+          } catch {
+            /* non-JSON error body; keep the status line */
+          }
+          throw new Error(detail);
+        }
+        const data = await res.json();
+        if (!data.payoff_id || data.payoff_id === selectedPayoffId) {
+          setQuarantineState(data);
+          setQuarantineFailedFor((failedFor) => (failedFor === selectedPayoffId ? null : failedFor));
+        }
+      } catch (e: any) {
+        console.error('Error dispatching settlement packet via API:', e);
+        setError(e?.message || 'Unable to dispatch the settlement packet. Please retry.');
+      } finally {
+        setIsSendingPacket(false);
+      }
+    },
+    [isSendingPacket, selectedPayoffId, selectedDeal],
+  );
+
   // Action: Toggle GLBA Consent Gate (Fail-fast, Zero-Mock Policy, In-flight Protected)
   const toggleQuarantine = useCallback(async () => {
     if (isTogglingConsent) return;
@@ -458,6 +515,7 @@ export function useRetentionWorkflow(): {
       isLoading,
       isTogglingConsent,
       isLoggingCall,
+      isSendingPacket,
       isDealDataStale,
       error,
     },
@@ -466,6 +524,7 @@ export function useRetentionWorkflow(): {
       setSalePrice,
       setTaxStrategy,
       logConsultativeCall,
+      sendSettlementPacket,
       toggleQuarantine,
       clearError,
     },

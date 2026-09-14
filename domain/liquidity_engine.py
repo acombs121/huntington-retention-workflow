@@ -126,8 +126,8 @@ class LiquidityEngine:
             special_instructions = (
                 "Route seller-elected proceeds to the Huntington Business Premier ICS Sweep account titled above "
                 "for FDIC passthrough protection. Amount is elected by the seller on this authorization; Huntington "
-                "does not specify a proceeds figure. Seller Closing Authorization delivered via DocuSign to borrower "
-                "with Bank Verification Letter."
+                "does not specify a proceeds figure. Seller Closing Authorization accompanies this packet for "
+                "borrower execution, together with Huntington's Bank Verification Letter."
             )
             qi_partner = None
 
@@ -154,7 +154,9 @@ class LiquidityEngine:
             officer_signature=cls.OFFICER_SIGNATURE,
             officer_contact=cls.OFFICER_CONTACT,
             packet_type="Borrower Settlement Routing Packet & Official Bank Verification Letter",
-            docusign_envelope_id=f"ENV-HBAN-20260904-{payoff.id.split('-')[-1]}",
+            # docusign_envelope_id is deliberately left unset. Assessing a
+            # payoff composes a draft; it does not dispatch one. The id is
+            # written by the send action once an envelope actually exists.
             delivery_channel="Borrower Direct Execution (DocuSign Envelope) -> Seller Authorization to Title",
             borrower_directed_packet=True,
             callback_verification_line="(614) 480-4401 (Direct Banker Authentication Line)",

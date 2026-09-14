@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   FileCheck,
   Phone,
+  Send,
   AlertTriangle,
 } from 'lucide-react';
 
@@ -83,11 +84,13 @@ interface RetentionSettlementViewProps {
   onToggleQuarantine: () => void;
   /** Gate 1. Records the consultative call that authorises everything below it. */
   onLogConsultativeCall: (clientDirectedProceeds?: boolean) => void;
+  onSendSettlementPacket?: (send?: boolean) => void;
   wireInstructions: WireInstructionData;
   onBackToAnalysis: () => void;
   onProceedToAdvisorRouting: () => void;
   isTogglingConsent?: boolean;
   isLoggingCall?: boolean;
+  isSendingPacket?: boolean;
   error?: string | null;
   onClearError?: () => void;
 }
@@ -102,11 +105,13 @@ export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = (
   quarantineState,
   onToggleQuarantine,
   onLogConsultativeCall,
+  onSendSettlementPacket,
   wireInstructions,
   onBackToAnalysis,
   onProceedToAdvisorRouting,
   isTogglingConsent = false,
   isLoggingCall = false,
+  isSendingPacket = false,
   error = null,
   onClearError,
 }) => {
@@ -118,6 +123,12 @@ export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = (
   // The packet names the client's entity and an account title, so it may only
   // exist once the client has actually asked for it on the call.
   const packetUnlocked = callLogged && clientDirected;
+
+  // Gate 1b. A composed packet is a draft. The envelope id is read from the
+  // workflow record, never from the computed packet, because only a real send
+  // writes one -- that is what makes its presence mean something.
+  const packetSent = quarantineState.packet_sent === true;
+  const envelopeId = quarantineState.docusign_envelope_id || null;
   const borrowerName = wireInstructions?.managing_member || 'the borrower';
 
   const baseValuation =
@@ -130,7 +141,9 @@ export const RetentionSettlementView: React.FC<RetentionSettlementViewProps> = (
 
   const handleCopy = () => {
     const text = `THE HUNTINGTON NATIONAL BANK - BORROWER SETTLEMENT ROUTING PACKET
-DocuSign Envelope ID: ${wireInstructions.docusign_envelope_id || 'Pending envelope creation'}
+${envelopeId
+  ? `DocuSign Envelope ID: ${envelopeId}\nSent to: ${quarantineState.packet_recipient || borrowerName}`
+  : 'DRAFT -- not sent. No DocuSign envelope has been created.'}
 Callback Authentication Line: ${wireInstructions.callback_verification_line || '(614) 480-4401 (Direct Banker Authentication Line)'}
 
 Bank: ${wireInstructions.bank_name}
@@ -620,9 +633,15 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
               
               {packetUnlocked ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-medium text-slate-400 hidden sm:inline">
-                    {wireInstructions.docusign_envelope_id || 'Pending envelope creation'}
-                  </span>
+                  {packetSent ? (
+                    <span className="text-[11px] font-medium text-slate-400 hidden sm:inline tabular-nums">
+                      {envelopeId}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-500 border border-amber-200 dark:border-amber-500/20">
+                      Draft — not sent
+                    </span>
+                  )}
                   <button
                     onClick={handleCopy}
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-slate-700 dark:text-slate-300"
@@ -753,6 +772,82 @@ Authorized Banker: ${wireInstructions.officer_signature}`;
               <div className="pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-400 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                 <div>Banker: <strong className="text-slate-600 dark:text-slate-300">{wireInstructions.officer_signature}</strong></div>
                 <div>Callback Authentication: <strong className="text-slate-600 dark:text-slate-300">{wireInstructions.callback_verification_line || '(614) 480-4401'}</strong></div>
+              </div>
+
+              {/* Dispatch. Composing this packet did not send it; the envelope
+                  id below is written by the server on send and by nothing else. */}
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
+                {!packetSent ? (
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => onSendSettlementPacket?.(true)}
+                      disabled={isSendingPacket}
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-[#006738] hover:bg-[#00562f] disabled:opacity-50 disabled:cursor-not-allowed text-white transition"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      {isSendingPacket ? 'Creating envelope\u2026' : `Send to ${borrowerName} for Signature`}
+                    </button>
+                    <p className="text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">
+                      The envelope goes to {borrowerName}, not to the settlement agent.
+                      Huntington cannot instruct the escrow holder: it acts for the seller
+                      and disburses on the seller&rsquo;s own executed closing instructions.{' '}
+                      {borrowerName} executes this packet and submits it to{' '}
+                      {wireInstructions.title_company || 'the title company'} himself.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#006738] dark:text-emerald-400">
+                        <Send className="w-3.5 h-3.5" />
+                        Sent &mdash; awaiting borrower signature
+                      </span>
+                      <button
+                        onClick={() => onSendSettlementPacket?.(false)}
+                        disabled={isSendingPacket}
+                        className="text-[10px] font-medium text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 underline underline-offset-2 disabled:opacity-50"
+                      >
+                        Recall envelope
+                      </button>
+                    </div>
+                    <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-[11px]">
+                      <div className="flex justify-between gap-2">
+                        <dt className="text-slate-400">Envelope</dt>
+                        <dd className="font-semibold text-slate-700 dark:text-slate-200 tabular-nums">{envelopeId}</dd>
+                      </div>
+                      <div className="flex justify-between gap-2">
+                        <dt className="text-slate-400">Recipient</dt>
+                        <dd className="font-semibold text-slate-700 dark:text-slate-200 text-right">
+                          {quarantineState.packet_recipient || borrowerName}
+                        </dd>
+                      </div>
+                      <div className="flex justify-between gap-2">
+                        <dt className="text-slate-400">Dispatched</dt>
+                        <dd className="font-semibold text-slate-700 dark:text-slate-200 tabular-nums">
+                          {quarantineState.packet_sent_at
+                            ? new Date(quarantineState.packet_sent_at).toLocaleString()
+                            : '\u2014'}
+                        </dd>
+                      </div>
+                      <div className="flex justify-between gap-2">
+                        <dt className="text-slate-400">Sent by</dt>
+                        <dd className="font-semibold text-slate-700 dark:text-slate-200 text-right">
+                          {quarantineState.packet_sent_by || '\u2014'}
+                        </dd>
+                      </div>
+                    </dl>
+                    {quarantineState.packet_audit_hash && (
+                      <div className="text-[10px] text-slate-400 break-all font-mono">
+                        {quarantineState.packet_audit_hash}
+                      </div>
+                    )}
+                    <p className="text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">
+                      Execution status is not asserted here. Whether {borrowerName} has
+                      signed is reported by DocuSign Connect against the envelope above;
+                      this service records only that the envelope was dispatched.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
             )}
