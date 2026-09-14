@@ -58,9 +58,14 @@ export const App: React.FC = () => {
     setActiveView('analysis');
   };
 
+  // The handoff is a referral, not a document open. The commercial RM routes
+  // the relationship and it arrives in the advisor's queue; the advisor then
+  // chooses to open the dossier from there. Landing directly on the dossier
+  // skipped the arrival and made the referral look like a page change rather
+  // than work moving between two people.
   const handleHandoffToWealth = () => {
     setPersona('wealth_advisor');
-    setActiveView('wealth_dossier');
+    setActiveView('wealth_queue');
   };
 
   return (
