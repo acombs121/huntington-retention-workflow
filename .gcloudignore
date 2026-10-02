@@ -32,3 +32,6 @@ docs/
 *.png
 !frontend/public/*.png
 pytest.ini
+
+# Launch-video working files (373MB of frames/stems); the web copy ships from frontend/public/
+brag-output/

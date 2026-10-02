@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, X, ExternalLink, Palette, Presentation, FileText, Server, ShieldCheck, Cpu, User, RefreshCw, CheckCircle2, TrendingUp, ArrowRight, SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { Settings, X, ExternalLink, Palette, Presentation, FileText, Film, Server, ShieldCheck, Cpu, User, RefreshCw, CheckCircle2, TrendingUp, ArrowRight, SlidersHorizontal, RotateCcw } from 'lucide-react';
 import { useAssumptions } from '../context/AssumptionsContext';
 import {
   ASSUMPTION_META,
@@ -32,6 +32,7 @@ export interface AdminPanelProps {
   brandKitUrl?: string;
   demoScriptUrl?: string;
   citationsUrl?: string;
+  launchVideoUrl?: string;
   onViewExecutive?: () => void;
 }
 
@@ -119,6 +120,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   brandKitUrl = '/brand_kit.html',
   demoScriptUrl = '/demo_script.html',
   citationsUrl = '/citations.html',
+  launchVideoUrl = '/book-scout-launch.mp4',
   onViewExecutive,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -246,6 +248,24 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     Reference Materials
                   </h3>
                   <div className="grid grid-cols-1 gap-2">
+                    <a
+                      href={launchVideoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-800 hover:border-[#006738] dark:hover:border-[#006738] bg-slate-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 transition group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-md bg-white dark:bg-slate-700 text-[#006738] shadow-sm">
+                          <Film className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="font-semibold text-slate-900 dark:text-white">Launch Video</div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400">51-second narrated walkthrough</div>
+                        </div>
+                      </div>
+                      <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-[#006738] transition" />
+                    </a>
+
                     <a
                       href={pitchDeckUrl}
                       target="_blank"
